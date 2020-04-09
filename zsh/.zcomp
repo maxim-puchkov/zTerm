@@ -30,7 +30,7 @@ compdef _vared      vdebug
 # Homebrew
 compdef _brew       bs
 
-
+compdef _sln        sln 
 
 #compdef _brew       brew_quick_list
 #compdef _brew       brew_quick_relink

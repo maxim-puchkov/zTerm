@@ -12,7 +12,10 @@ export ICLOUD="$HOME/Library/Mobile Documents/com~apple~CloudDocs"
 export ztermdir="$DEV/Terminal"
 export ztermxcodeproj="$ztermdir/Terminal.xcodeproj"
 export zfunc="$ztermdir/zsh/functions"
+export zcompdir="$ztermdir/zsh/completions"
 
+export lib="$DEV/Library"
+lib() { cdp "$lib"; }
 
 # Package Managers.
 export HOMEBREW="/usr/local/Homebrew"
@@ -24,9 +27,10 @@ export SFU_USER='mpuchkov'
 export SFU_CSIL='csil-cpu4.cs.surrey.sfu.ca'
 export SFU_MNT="/usr/local/mnt/$SFU_USER@$SFU_CSIL"
 export SFU_TERM="$SFU/10-Spring-2020"
-export A404="$SFU_TERM/404"
-export A473="$SFU_TERM/473"
-export A310="$SFU_TERM/PHIL 310"
+
+export A404="$SFU_TERM/404/assignments"
+export A473="$SFU_TERM/473/assignments"
+export A310="$SFU_TERM/PHIL 310/assignments"
 
 
 # Variables.
