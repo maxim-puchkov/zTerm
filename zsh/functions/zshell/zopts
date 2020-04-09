@@ -1,0 +1,25 @@
+#!/bin/zsh
+
+#  zopts
+#  devx
+#
+#  Created by admin on 2020-03-02.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Show enabled/disabled options.
+function zopts() {
+    local ON=$(green 'on')
+    local OFF=$(red 'off')
+    local k v
+    
+    printf '%-20s%5s\n' "Option" "Status"
+    for k v in ${(kv)options}; do
+        local option_label=$k
+        local value_label=$OFF
+        if [[ $v == 'on' ]]; then
+            value_label=$ON;
+        fi
+        printf '%-20s%5s\n' "$option_label" "$value_label"
+    done
+}

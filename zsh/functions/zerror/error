@@ -1,0 +1,40 @@
+#!/bin/zsh
+
+#  error
+#  devx
+#
+#  Created by admin on 2020-03-02.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Raise runtime function error:
+#   error [-c exit_code] [-n] description
+#
+# Options:
+#   -c X    exit from function with code X.
+#   -n      non-terminating error.
+function error() {
+    builtin setopt errreturn
+    
+    typeset -A opts
+    get_options opts "$@"
+    
+    #MARK: Error properties.
+    # Error title.
+    local _title="$( red 'Error.' ) "
+    # Error description.
+    local _desc="${@:-no message.}"
+      _desc="${(C)_desc[1]}${${_desc:1}}"
+    # Exit code.
+    local _ecode=${opts[c]:-1}
+    # Non-termination flag.
+    local _nonterm=${opts[n]}
+      if [[ $_nonterm == $SETOPT ]]; then
+          options[errexit]='off'
+          options[errreturn]='off'
+      fi
+    
+    #MARK: Display and return.
+    builtin echo "${_title}${_desc}"
+    return _ecode
+}

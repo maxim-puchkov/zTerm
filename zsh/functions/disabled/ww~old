@@ -1,0 +1,50 @@
+#!/bin/zsh
+
+#  ww
+#  devx
+#
+#  Created by admin on 2020-03-03.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+
+function ww~old() {
+    
+
+    local program=$1
+    SYNTAX=(ww program)
+    if [[ -z $program ]]; then
+        serror 'program' "$SYNTAX"
+    fi
+    
+    local CMD_BREAK="BREAK"
+    local wwcommands=(
+        'type -w' 'command -v' 'file -bIp'
+        $CMD_BREAK
+        'which' 'whence' 'whichmod' 'what size'
+        $CMD_BREAK
+        'when access' 'when mod'
+        $CMD_BREAK
+        'fsrc' 'pscount'
+        $CMD_BREAK
+    )
+    
+    local tmp=$( tempfile )
+    for cmd in $wwcommands; do
+        setopt noerrreturn
+        if [[ $cmd == $CMD_BREAK ]]; then
+            echo; continue;
+        fi
+        ${(z)cmd} $program >& $tmp
+        local ecode=$?
+        local result=$(< $tmp)
+        if [[ $ecode -ne 0 || -z $result ]]; then
+            result=$(_darkgrey 'no result')
+        fi
+        echo "${(r:30:)$(Info $cmd)} - $result"
+    done
+    
+    rm -f $tmp
+    learnmore $program
+    return 0
+}

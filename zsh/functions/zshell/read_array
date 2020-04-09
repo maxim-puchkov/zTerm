@@ -1,0 +1,23 @@
+#!/bin/zsh
+
+#  read_array
+#  Z-Function
+#
+#  Created by Maxim Puchkov on 2020-04-08.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Read saved array from file.
+function read_array() {
+    local identifier="$1"
+    if [[ -n ${(P)identifier} ]]; then
+        printf 'Unsetting current value of %s...\n' "$identifier" >&2
+    fi
+    local file="$DEV/Library/Data/$identifier.array"
+    if [[ ! -r $file ]]; then
+        printf 'Not a saved array: %s.\n' "$(Bad $identifier)" >&2
+        return 1
+    fi
+    eval "$identifier=($( cat -- $file ))"
+    return 0
+}

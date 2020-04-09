@@ -1,0 +1,24 @@
+#!/bin/sh
+
+#  learnmore
+#  devx
+#
+#  Created by admin on 2020-03-03.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+function learnmore() {
+    local p=$1
+    local lmcommands=( man tldr eg cheat info )
+    local tmp=$( tempfile )
+    for cmd in $lmcommands; do
+        ${(z)cmd} $p >& $tmp
+        local ecode=$?
+        local result="$(OK "$cmd $p")"
+        if [[ $ecode -ne 0 || -z $result ]]; then
+            result=$(_darkgrey 'no result')
+        fi
+        echo "${(r:30:)$(Info $cmd)} - $result"
+    done
+    rm $tmp
+}

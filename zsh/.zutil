@@ -1,0 +1,237 @@
+# User-specific functions for interactive zsh(1) shells.
+
+
+# Open iTerm2.
+function term2() {
+    open -a iTerm
+}
+# Open in editor.
+function edit() {
+    if ( ! open -a "$EDITOR" "$@" ); then
+        $EDITOR "$@"
+    fi
+}
+
+
+
+
+#MARK: - Oh-my-zsh Plugins
+# Open oh-my-zsh root directory.
+function myzsh() {
+    open "$ZSH"
+}
+# Open oh-my-zsh/plugins.
+function myplugins() {
+    open "$ZSH/plugins"
+}
+# List plugins.
+function list-plugins() {
+    ls "$ZSH/plugins"
+}
+# Display information about an oh-my-zsh plugin.
+function info-plugin() {
+    local plugin_name="$1"
+    open -a Xcode -g "$ZSH/plugins/$plugin_name/README"*
+}
+# Print plugin's README to stdout.
+function cat-plugin() {
+    local plugin_name="$1"
+    cat "$ZSH/plugins/$plugin_name/README"*
+}
+# View next plugin's.
+function next-plugin() {
+    # Array of all plugin
+    local all_plugins=($( command ls -1 "$ZSH/plugins" ))
+    readarr
+    # Seen/unseen plugins
+    local seen=( $arr )
+    local notseen=( ${all_plugins:|seen} )
+    # Exit if seen all
+    if [[ ${#notseen} -eq 0 ]]; then
+        echo "<<< $(b_greenbg 'ALL PLUGINS SEEN') >>>"
+        return 1
+    fi
+    # Next plugin is the first unseen
+    local next=${notseen[1]}
+    arr+=( $next )
+    savearr
+    # Sizes
+    local N=${#all_plugins}
+    local n=$(( ${#seen} + 1 ))
+    echo "Opening plugin $( b_magenta "#${n} - $next"  ) out of ${N} total."
+    info-plugin $next
+}
+
+
+#MARK: - Oh-my-zsh Themes
+# List themes.
+function list-themes() {
+    local themes=(${$( command ls "$ZSH/themes" )%.zsh-theme})
+    echo $themes
+}
+# View next theme.
+function next-theme() {
+    # All themes
+    local themes=($( list-themes ))
+    # Tried themes
+    touch "$DEV/Library/Data/tried_themes.array"
+    typeset -a tried_themes
+    read_array tried_themes
+    # Not tried themes
+    local not_tried_themes=( ${themes:|tried_themes} )
+    if [[ ${#not_tried_themes} -eq 0 ]]; then
+        echo "<<< $(b_greenbg 'ALL THEMES TRIED') >>>"
+        return 1
+    fi
+    # Pick first theme which has not been tried yet
+    local next=${not_tried_themes[1]}
+    tried_themes+=( $next )
+    save_array tried_themes
+    export ZSH_THEME=$next
+    re "Current theme: $next"
+}
+
+
+
+
+#MARK: - Z-Functions (zf)
+# Find Z-Function definition file.
+function zf-find() {
+    local fdir="$1"
+    local fname="$2"
+    if [[ -z $fdir ]] || [[ -z $fname ]]; then
+        echo "$(Info zf-find): Function directory or function name is not defined."
+        return 1
+    fi
+    f=$( find "$fdir" -name "$fname" )
+    if [[ -z "$f" ]]; then
+        echo "$(Info zf-find): Function '$(Bad $fname)' not found."
+        return 1
+    fi
+    echo "$f"
+    return 0
+}
+
+
+# Enable a Z-Function.
+function zf-enable() {
+    local fname="$1"
+    local target_dir="${2:-zshell}"
+    local subdirs=($( ls -d $zfunc/z* ))
+    local subdirs_names=(${subdirs:t})
+    # Check output subdirectory in 'zsh/functions'
+    if [[ $subdirs_names[(wi)$target_dir] -gt ${#subdirs_names} ]]; then
+        echo "Subdirectory '$(Bad $target_dir)' is not found in:"
+        print -C 4 "$subdirs"
+        return 1
+    fi
+    # Find disabled function
+    f=$( zf-find "$zfunc/disabled" "$fname" )
+    if [[ $? -ne 0 ]]; then
+        echo "Function '$(Bad $fname)' is not disabled."
+        return 1
+    fi
+    # Move function to an autoloaded directory
+    mv "$f" "$zfunc/$target_dir/"
+    echo "$(OK 'OK'): enabled '$(bold $fname)'."
+    return 0
+}
+# Disable a Z-Function.
+function zf-disable() {
+    local fname="$1"
+    # Find an enabled function
+    f=$( zf-find "$zfunc" "$fname" )
+    if [[ $? -ne 0 ]]; then
+        echo "Function '$(Bad $fname)' is not enabled."
+        return 1
+    fi
+    # Move function to 'zsh/function/disabled'
+    mv "$f" "$zfunc/disabled/"
+    echo "$(OK 'OK'): disabled '$(bold $fname)'."
+    return 0
+}
+
+# List all enabled and disabled Z-Functions.
+function zf-list() {
+    # Display enabled functions
+    local fdirs=($( ls -d $zfunc/z* ))
+    local enabled_list=()
+    for fdir in $fdirs; do
+        enabled_list+=($( ls -1G "$fdir" ))
+    done
+    b_greenbg 'ENABLED'
+    print -C 4 ${(o)enabled_list}
+    echo
+    # Display disabled functions.
+    local disabled_fdir="$zfunc/disabled"
+    local disabled_list=$( ls -1G "$disabled_fdir" )
+    b_redbg 'DISABLED'
+    print -C 4 ${(o)disabled_list}
+    echo
+}
+# Display number of enabled and disabled Z-Functions.
+function zf-stat() {
+    local on=($( echo $zfunc/z*/* ))
+    local off=($( echo $zfunc/disabled/* ))
+    local n_on=${#on}
+    local n_off=${#off}
+    local n_total=$(( $n_on + $n_off ))
+    InfoSection 'Z-Functions'
+    print -C 2 "Enabled: " "$n_on"
+    print -C 2 "Disabled:" "$n_off"
+    print -C 2 "Total:   " "$n_total"
+}
+
+
+
+
+#MARK: - File Directories (fdctl)
+# Paths to Developer directories.
+export importantdir="$DEV/Files/Important"
+export tempdir="$DEV/Files/Temporary"
+export testdir="$DEV/Files/Test"
+export miscdir="$DEV/Files/Miscellaneous"
+
+
+# Go to Importrant Files.
+function important() {
+    cdp "$importantdir"
+}
+# Go to Temporary Files.
+function temp() {
+    cdp "$tempdir"
+}
+# Go to Test Files.
+function $testdir() {
+    cdp "$testdir"
+}
+# Go to Miscellaneous Files.
+function miscdir() {
+    cdp "$miscdir"
+}
+
+# Go to Z-Terminal root directory.
+function zt() {
+    cdp "$ztermdir"
+}
+# Go to Z-Functions root directory.
+function zf() {
+    cdp "$zfunc"
+}
+
+# Go to SFU Spring 2020 directory.
+function sfu() {
+    cdp "$SFU_TERM"
+}
+
+
+
+# Brew search
+function bs() {
+    brew search "$@" --desc | grep -i -E "$@"
+}
+
+function styles() {
+    local long=($( pygmentize -L 'styles' ))
+    printf '%s' "$long" | grep -E '\* [[:alnum:]-]*' -o | sed -E 's/\* //g'
+}

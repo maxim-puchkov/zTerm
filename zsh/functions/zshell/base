@@ -1,0 +1,42 @@
+#!/bin/zsh
+
+#  base
+#  devx
+#
+#  Created by admin on 2020-03-01.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Represent a numerical value as a number with a
+#   different base.
+# Base can be changed from base 2 to base 32.
+function base() {
+    # Change number base to
+    function change_base() {
+        local value=$1
+        local value_base10=$( base10 $value $from_base )
+        printf 'obase=%s; %s\n' "$to_base" "$value_base10" | BC_LINE_LENGTH=0 bc
+    }
+    
+    typeset -A opts
+    set -A opts $(read_options "$@")
+    local from_base=${opts[f]:-10}
+    local to_base=$opts[t]
+    shift $( options_shift_distance "$@" )
+    
+    SYNTAX=(base '-f' from_base '-t' to_base number'*')
+#    if [[ -z $opts[f] ]];       then serror '-f'        "$SYNTAX"; fi
+    if [[ $from_base -le 0 ]];  then serror 'from_base' "$SYNTAX"; fi
+    if [[ -z $opts[t] ]];       then serror '-t'        "$SYNTAX"; fi
+    if [[ $to_base -le 0 ]];    then serror 'to_base'   "$SYNTAX"; fi
+    
+    
+    for n in $*; do
+        local result=$(change_base $n)
+        if [[ -z $opts[q] ]]; then
+            echo "$(cyan $n) (base $from_base) = $(cyan $result) (base $to_base)"
+        else
+            echo "$result"
+        fi
+    done
+}

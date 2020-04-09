@@ -1,0 +1,49 @@
+___SHEBANG___
+
+#  ___FILENAME___
+#  ___PACKAGE_NAME___
+#
+#  Created by ___USERNAME___ on ___DATE_FULL___.
+#  Copyright © ___DATE_YEAR___ ___OWNER___. All rights reserved.
+
+
+# <#FILL#>
+function ___FILENAME___() {
+    # Primary script properties: function base,
+    # sub-command, and options.
+    local src                # ___FILENAME___
+    typeset -A opts          # -flag, --option [option_value]
+    local cmd                # Command of ___FILEMNAME___ to invoke
+    local ecode=0
+    
+    function ___FILENAME____help() {
+        printf 'Usage:\n'
+        printf '  %s %s: open documentation\n' "$(b_bcyan $src)" "$(cyan 'name')"
+        printf '  %s %s: print help\n' "$(b_bcyan $src)" "$(cyan 'help')"
+    }
+    
+    function ___FILENAME____foo() {
+        printf 'Template function: %s\n' "$0"
+    }
+    
+    src=$( basename $0 )
+    get_options opts "$@"
+    shift $opts[shift_distance]
+    cmd=$1
+    
+    case $cmd in
+        '')
+            ___FILENAME____help
+            ;;
+        *)
+            shift
+            ${src}_${cmd} "$@"
+            ecode=$?
+            if [[ $ecode = 127 ][; then
+                printf 'Unknown command: %s (Exit code: %u).\n' "$(Bad $cmd)" "$ecode" >&2
+            fi
+            ;;
+    esac
+    
+    return $ecode
+}

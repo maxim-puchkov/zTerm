@@ -1,0 +1,23 @@
+#!/bin/zsh
+
+#  charlines
+#
+#
+#  Created by mpuchkov on 2020-02-14.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Print lines of characters with specified width
+function charlines'~orig'() {
+    local char=${1:-' '}
+    local n_lines=${2:-1}
+    local width=${3:-$( tput cols )}
+    
+    if [[ $n_lines -le 0 ]]; then
+        return 0
+    fi
+    
+    for i in {1..$n_lines}; do
+        printf "$char%.0s" {1..$width}
+    done
+}

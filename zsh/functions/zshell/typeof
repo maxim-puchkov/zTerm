@@ -1,0 +1,21 @@
+#!/bin/zsh
+
+#  typeof
+#  Z-Function
+#
+#  Created by Maxim Puchkov on 2020-04-08.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Print type of variables.
+function typeof() {
+    local results=()
+    for var_id in "$@"; do
+        local var_type="$(Bad 'undefined')"
+        if [[ -n ${(P)var_id} ]]; then
+            var_type="$(Info ${(t)${(P)var_id}})"
+        fi
+        results+=( "typeof $var_id:" "$var_type" )
+    done
+    print -aC 2 $results
+}

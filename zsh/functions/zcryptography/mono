@@ -1,0 +1,49 @@
+#!/bin/zsh
+
+#  Cryptography
+#  
+#
+#  Created by mpuchkov on 2020-01-28.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Common Eng: e, t, a
+# al + b (mod 26)
+function mono() {
+#    ciphertext=${1? Ciphertext not set} # c, message to decode
+#    letter=$(letter $2)
+#    final_letter=$(letter $3)
+#    key1=$4 # k
+#    key2=$5
+#    distance=$(( $key1 * $letter + $key2 ))
+#    distance=$(( $distance % 26 ))
+#    print -c "l=$letter" "a=$key1" "b=$key2" "d=$distance"
+#    result="${ciphertext:u}" # uppercase only
+#
+#    for i in {1..26}; do
+#        l=$alphabet[$i]
+#        d=$(( $key1 * $(( $i + 1 )) + $key2 ))
+#        d=$(( $d % 26 ))
+#        l2=${alphabet[$d]}
+#        echo $l $d $i $l2
+#        echo "REPLACE: $l WITH $l2"
+#        result="${result//$l/$l2}"
+#        print ${GREY}$result${NORMAL}
+#    done
+    ciphertext=$1
+    a2="$2"
+    a1="${3:=ABCDEFGHIJKLMNOPQRSTUVWXYZ}"
+    result=${ciphertext}
+    for i in {1..26}; do
+        l1=${a1[$i]}
+        l2=${a2[$i]}
+        echo $l1 $l2
+        t="${result:l}"
+        result="${t//${l1:l}/${l2:u}}"
+        result=${result:u}
+        print $result
+    done
+#    result=$(tr "${a1:0:26}" "${a2:0:26}" <<< $ciphertext )
+    print "$result"
+#    print -c "${CYAN}k=$distance:${NORMAL}" $result
+}

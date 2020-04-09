@@ -1,0 +1,44 @@
+# User-specific network configuration for interactive zsh(1) shells.
+
+
+#MARK: - SSH
+# SSH connect to one of SFU's CSIL servers.
+function csil() {
+    ssh -p '24' -l 'mpuchkov' $SFU_CSIL
+}
+
+
+#MARK: - SSHFS
+# Mount CSIL home directory (~/.ssh/config).
+function mount_csil() {
+    if ! $( sshfs $SFU_CSIL:/home/$SFU_USER "$SFU_MNT" ); then
+        printf 'Error: failed to mount %s.\n' "'$(Bad $SFU_MNT)'"
+        return 1
+    fi
+    printf 'OK: %s successfully mounted.\n' "'$(OK $SFU_MNT)'"
+    return 0
+}
+# Unmount CSIL.
+function umount_csil() {
+    if $( dir isempty "$SFU_MNT" noerr ); then
+        printf 'Error: %s is not a mountpoint.\n' "'$(Bad $SFU_MNT)'"
+        return 1
+    fi
+    umount "$SFU_MNT"
+    printf 'OK: unmounted %s.\n' "'$(OK $SFU_MNT)'"
+    return 0
+}
+
+
+function mnts() {
+    local mountpoint_root='/usr/local/mnt'
+    printf 'Mountpoints:\n'
+    for m in $mountpoint_root/*; do
+        local m_status=$(OK 'mounted')
+        if $( dir isempty "$SFU_MNT" noerr ); then
+            m_status=$(Bad 'not mounted')
+        fi
+        printf '  %s:    %s\n' "$m" "$m_status"
+    done
+    
+}

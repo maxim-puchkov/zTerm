@@ -1,0 +1,31 @@
+# User-specific zsh script loader.
+
+
+source "$ZIO"
+source "$ZALIAS"
+source "$ZEXPORT"
+
+
+# PATH
+path=( $path '/usr/local/sbin' )
+path=( $path "$DEV/Terminal/.config/bin" )
+path=( $path "$SFU/bin" )
+path=( $path "/usr/local/opt/python@3/bin" )
+
+
+# Function path
+fpath=( "/usr/local/share/zsh-completions" $fpath )
+fpath=( "$DEV/Terminal/zsh/functions" $fpath )
+fpath=( "$DEV/Terminal/zsh/completions" $fpath )
+
+autoload finclude
+finclude
+
+
+source "$ZUTIL"
+source "$ZNET"
+source "$ZMISC"
+source "$ZCOMP"
+
+source "/usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+source "/usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh"

@@ -1,0 +1,24 @@
+# User-specific miscellaneous additions for interactive zsh(1) shells.
+
+
+
+# Show the newest-directory.
+function show-newest-dir() {
+    ls -dG *(/om[1])
+}
+# Show files modified more than 10 days ago.
+function show-last-modified10+() {
+    print -rl -- *(Dmh+10^/)
+}
+# Lists every executable in PATH.
+function show-executables() {
+    print -l ${^path}/*(-*N)
+}
+
+
+function printf_formats() {
+    open 'https://www.linuxjournal.com/content/bashs-built-printf-function'
+}
+function zshrc_template() {
+    open 'https://dev.to/manan30/what-is-the-best-zshrc-config-you-have-seen-14id'
+}

@@ -1,0 +1,24 @@
+#!/bin/sh
+
+#  foo.sh
+#  devx
+#
+#  Created by admin on 2020-03-11.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+function foo() {
+    local stat=$status
+
+    function foo_print() {
+        local title=$1
+        local value=${@:2}
+        local def_value=$(red 'x')
+        printf '  - %s: <%s>\n' "${1}" "$(bmagenta ${value:-$def_value})"
+    }
+    
+    Info "Function $0()"
+    foo_print 'ArgC' $#
+    foo_print 'ArgV' $@
+    foo_print 'Stat' $stat
+}

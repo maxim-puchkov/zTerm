@@ -1,0 +1,34 @@
+#!/bin/sh
+
+#  re
+#  Quick shell reload
+#
+#  Created by mpuchkov on 2020-01-30.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Reload current terminal shell.
+function re() {
+    # Confirm with '-c' flag.
+    if [[ "$1" == '-c' ]]; then
+        shift
+        confirm 'Reload shell?'
+    fi
+    
+    # Clear screen and print shell.
+    /usr/bin/clear
+    printf 'Interactive shell %s(%s) reloaded.\n' "$SHELL" "$SHLVL"
+    
+    # Print optional message.
+    local message="$@"
+    if [[ -n "$message" ]]; then
+        printf '%s\n' "$message"
+    fi
+    
+    # Execute new shell.
+    local binary='zsh'
+    if [[ -n "$SHELL" ]]; then
+        binary="${SHELL%-*}"
+    fi
+    exec -l $binary
+}

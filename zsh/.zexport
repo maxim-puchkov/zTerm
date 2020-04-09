@@ -1,0 +1,38 @@
+# User-specific profile for interactive zsh(1) shells.
+
+
+# Home.
+export DEV="$HOME/Developer"
+export DESK="$HOME/Desktop"
+export DOCS="$HOME/Documents"
+export ICLOUD="$HOME/Library/Mobile Documents/com~apple~CloudDocs"
+
+
+# Projects.
+export ztermdir="$DEV/Terminal"
+export ztermxcodeproj="$ztermdir/Terminal.xcodeproj"
+export zfunc="$ztermdir/zsh/functions"
+
+
+# Package Managers.
+export HOMEBREW="/usr/local/Homebrew"
+
+
+# SFU Files.
+export SFU="$ICLOUD/SFU"
+export SFU_USER='mpuchkov'
+export SFU_CSIL='csil-cpu4.cs.surrey.sfu.ca'
+export SFU_MNT="/usr/local/mnt/$SFU_USER@$SFU_CSIL"
+export SFU_TERM="$SFU/10-Spring-2020"
+export A404="$SFU_TERM/404"
+export A473="$SFU_TERM/473"
+export A310="$SFU_TERM/PHIL 310"
+
+
+# Variables.
+export SETOPT='set'
+export FALSE=1
+export TRUE=0
+# Pass/Fail symbol.
+export P="$(b_green '✔︎')"
+export F="$(b_bred '✘')"

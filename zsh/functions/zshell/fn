@@ -1,0 +1,147 @@
+#!/bin/zsh
+
+#  fn
+#  Dev X
+#
+#  Created by mpuchkov on 2020-03-12.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Function fn.
+function fn() {
+    
+    #MARK: - Function Body
+#    function fn_body() {
+#        # Check syntax.
+#        SYNTAX=(fn body function_name...)
+#        if [[ -z $1 ]]; then
+#            serror 'function_name' "$SYNTAX"; return 1
+#        fi
+#
+#
+#        # Highlight function name, brackets, shell keywords, etc.
+#        function function_highlight() {
+#            # Highlight declaration.
+#            h_fname=$(underline $(bold $(b_bmagenta $fname)))
+#            local h_fdef="function ${h_fname}() {$fbody}"
+#
+#            # Highlight syntax elements.
+#            local h_brackets=( '{' '}' "'" )
+#              highlight_format[magenta]=$h_brackets
+#            local h_quotes=( "\'" "\"" )
+#              highlight_format[b_yellow]=$h_quotes
+#            local h_reswords=( $reswords ']]' )
+#              EXCLUDE=( $h_brackets )
+#              highlight_format[b_magenta]=${h_reswords:|EXCLUDE}
+#            local h_builtins=( ${(k)builtins} '$' '%' '@' )
+#              EXCLUDE=( '[' 'r' '.' )
+#              highlight_format[green]=${h_builtins:|EXCLUDE}
+#
+#            # For every color, highlight every element.
+#            for color in ${(k)highlight_format}; do
+#                for element in ${(z)highlight_format[$color]}; do
+#                    local highlight_element=$( $color $element )
+#                    h_fdef=${h_fdef//$element/$highlight_element}
+#                done
+#            done
+#            echo $h_fdef
+#        }
+#
+#
+#       # Function contents.
+#        local fname fdef fdecl fbody
+#        local fprefix fsuffix
+#
+#        # Syntax highlight.
+#        typeset -A highlight_format
+#        local h_fname
+#
+#        # For each name in input, check if a function with
+#        # the same name is defined.
+#        for fname in "$@"; do
+#            fdef=$( functions $fname )
+#            fdecl="$fname ()"
+#            # Prefix and Suffix delimiters.
+#            fprefix="$fdecl {"
+#            fsuffix="}"
+#
+#            # Print highlighted function syntax and its source file.
+#            if [[ -n $fdef ]]; then
+#                fbody=${${fdef#$fprefix}%$fsuffix}
+#                fsourcefile=$(fn src $fname)
+#                # Highlighted.
+#                h_fname="$(underline $(b_bmagenta $fname))"
+#                h_fdecl="function ${h_fname}() { $fbody \n}"
+#                h_fdef=$( function_highlight $fdef $fname )
+#                echo $h_fdef
+#                echo; echo;
+#                echo "> $h_fname is a function defined in"
+#                echo "    $fsourcefile"
+#            else
+#                # Otherwise, print error.
+#                echo "$(Bad $fname) is not a function."
+#            fi
+#        done
+#    }
+    
+    function fn_body() {
+        for fname in "$@"; do
+            fdef=$( functions $fname )
+            printf '%s\n' "$fdef" | pygmentize -l zsh
+        done
+    }
+    
+    #MARK: - Function Source
+    function fn_src() {
+        # Check syntax.
+        SYNTAX=(fn src function_name)
+        if [[ -z $1 ]]; then
+            serror 'function_name' "$SYNTAX"; return 1
+        fi
+        
+        # Find function source file.
+        local fname=$1
+        local fsource=$functions_source[$fname]
+        if [[ -z $fsource ]]; then
+            echo "Definition file not found: '$(Bad $fname)'."
+            return 1
+        fi
+        echo "$fsource"
+        return 0
+    }
+    
+    
+    # Primary script properties: function base,
+    # sub-command, and options.
+    typeset BASE                # fn
+    typeset -A optlist          # -flags and --options [option_value]
+    typeset COMMAND             # Command of ___FILEMNAME___ to invoke
+    
+    BASE=$( basename $0 )
+    get_options optlist "$@"
+    shift $optlist[shift_distance]
+    COMMAND=$1
+    
+    
+    # Compound command type.
+    case $COMMAND in
+        ## Print usage if 'fn' function
+        ## was called without any arguments.
+        '')
+            echo "Usage:"
+            echo "  $(b_bcyan $BASE) $(c 'command') $(underline $(cyan 'arguments'))$(b_magenta '...') - "\
+                 "invoke '$BASE command' function with some arguments."
+            ;;
+        
+        ## If command is specified, check that it exists and invoke it.
+        *)
+            shift
+            ${BASE}_${COMMAND} "$@"
+            exitcode=$?
+            if [[ $exitcode -eq 127 ]]; then
+                echo "Unknown command: $(Bad $COMMAND) (exit code: $exitcode)." >&2
+            fi
+            ;;
+    esac
+    
+}

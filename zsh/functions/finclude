@@ -1,0 +1,18 @@
+#!/bin/zsh
+
+#  finclude
+#
+#
+#  Created by mpuchkov on 2020-01-28.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+function finclude() {
+#    autoload -Uz fio; fio
+    autoload -z fload; fload
+#    autoload -z fnset; fnset
+    autoload -z signal; signal
+    autoload +X confirm;
+}
+
+#finclude

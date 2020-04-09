@@ -1,0 +1,19 @@
+#!/bin/sh
+
+#  pscount.sh
+#  devx
+#
+#  Created by admin on 2020-03-03.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# 
+function pscount() {
+    local process_name=${1:-'.*'}
+    local process_count=$( ps -e -c -o comm | grep -i -E "(^| )$process_name( |\$)" -c )
+    echo "$process_count"
+    if [[ $process_count -eq 0 ]]; then
+        return 1
+    fi
+    return 0
+}

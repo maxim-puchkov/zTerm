@@ -1,0 +1,29 @@
+#!/bin/zsh
+
+#  Print Heading
+#
+#
+#  Created by mpuchkov on 2020-02-15.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Print header text with background color.
+function print_h() {
+    # Text, offset, and background color.
+    local heading_text="${1:-Empty}"
+    local v_offset=${2:-0}
+    local bgcolor="${3:-blue}bg"
+    
+    # Limit max offset.
+    local v_limit=4
+    if [[ $v_offset -gt $v_limit ]]; then
+        v_offset=$v_limit
+    fi
+    
+    # Offset vertically with blank lines.
+    local blank_line=$( charlines ' ' $v_offset )
+    heading_text="${blank_line}${heading_text}${blank_line}"
+    
+    # Print highlighted header.
+    echo "$( ${(F)bgcolor} "$(full_width $heading_text)" )"
+}

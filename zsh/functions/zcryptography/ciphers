@@ -1,0 +1,33 @@
+#!/bin/zsh
+
+#  Cryptography
+#  
+#
+#  Created by mpuchkov on 2020-01-28.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Open URL
+function ciphers() {
+    local url="https://www.dcode.fr"
+    local kinds=( "caesar-cipher" "affine-cipher"
+                  "monoalphabetic-substitution" "vigenere-cipher" )
+    confirm "Open ${#kinds} URLs in Safari?"
+    print "Opening online tools:"
+    for k in $kinds; do
+        print "\t$(c $k)"
+        open -b com.apple.Safari "${url}/${k}"
+    done
+}
+
+#    local url="http://www.richkni.co.uk/php/crypta/freq.php"
+#    urls=(https://www.dcode.fr/caesar-cipher https://www.dcode.fr/vigenere-cipher)
+#    print "${CYAN}${url}${NORMAL}"
+#    open -b "com.apple.Safari" $url
+#echo "
+#https://www.dcode.fr/affine-cipher
+#https://www.dcode.fr/monoalphabetic-substitution
+#}
+# https://cryptii.com/pipes/vigenere-cipher
+#https://cryptii.com/pipes/vigenere-cipher"
+#}

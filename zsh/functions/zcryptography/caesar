@@ -1,0 +1,25 @@
+#!/bin/zsh
+
+#  Cryptography
+#  
+#
+#  Created by mpuchkov on 2020-01-28.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+#MARK: - Caesar Cipher
+function caesar() {
+    local ctext="${1:u}"  # c, message to decode (upper case)
+    local keys=( ${@:2} ) # list of keys to try
+    if [[ ${#keys} -lt 1 ]]; then
+        keys=( {0..25} )
+    fi
+#    local keys=$(or {${@:2},{0..25}})
+    
+    for key in $keys; do
+        local d=$(( $key % 26 ))
+        local ptext=$( tr "${AZ:0:26}" "${AZ:${d}}${AZ:0:${d}}" <<< $ctext )
+        print "> $(g "k=$d"):"
+        print "$(gr ${ptext})"
+    done
+}

@@ -1,0 +1,20 @@
+#!/bin/zsh
+
+#  delete_array
+#  Z-Function
+#
+#  Created by Maxim Puchkov on 2020-04-08.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Read saved array from file.
+function delete_array() {
+    local identifier="$1"
+    local file="$DEV/Library/Data/$identifier.array"
+    if [[ ! -r $file ]]; then
+        printf 'Not a saved array: %s.\n' "$(Bad $identifier)" >&2
+        return 1
+    fi
+    printf '' > $file 
+    return 0
+}

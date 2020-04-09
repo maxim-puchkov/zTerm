@@ -1,0 +1,37 @@
+# Z-Shell command completions.
+
+
+#MARK: - Load Completion Functions
+# Load completion functions.
+for comp in $DEV/Terminal/zsh/completions/*; do
+    autoload +X ${comp:t}
+done
+
+# Initialize the completion system.
+autoload -U compinit
+compinit
+
+
+
+
+#MARK: - Completions
+# Directories.
+compdef _cd         cdp
+
+# Python Package Installer.
+compctl -K _pip     pip pip3 pip3.7 pip3.8
+
+# Command Desctiption.
+compdef _command    syntax brief
+
+# Variables.
+compdef _vared      vdebug
+
+# Homebrew
+compdef _brew       bs
+
+
+
+#compdef _brew       brew_quick_list
+#compdef _brew       brew_quick_relink
+#compdef _command    which_which

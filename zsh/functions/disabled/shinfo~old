@@ -1,0 +1,17 @@
+#!/bin/sh
+
+#  Shell
+#
+#
+#  Created by mpuchkov on 2020-02-01.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# which shell
+function shinfo() {
+    local all=$( echo $options | wc -w )
+    local on=$( echo $options | grep 'on' -o | wc -l )
+    all="${all// }"
+    on="${on// }"
+    echo "$SHELL - level $SHLVL, $on/$all options enabled"
+}

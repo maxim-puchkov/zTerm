@@ -1,0 +1,17 @@
+#!/bin/zsh
+
+#  printx
+#  devx
+#
+#  Created by admin on 2020-03-01.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+function printx() {
+    local input="$*"
+    if [[ ${#input} -eq 0 ]]; then
+        read input
+    fi
+    local hex=$( ascii2hex "$input" )
+    echo "$hex"
+}

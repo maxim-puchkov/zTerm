@@ -1,0 +1,52 @@
+#!/bin/zsh
+
+#  doc2
+#  Documents & Support
+#
+#  Created by mpuchkov on 2020-03-07.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Function doc2.
+function doc2() {
+    
+    export DOC_SRC="$xct_data/Documents/doc2.txt"
+    
+    #
+    function ra_safari() {
+        e
+    }
+    
+    typeset -A display_types
+    display_types['S']='() { doc2_safari  "$@" }'
+    display_types['D']='() { doc2_default "$@" }'
+    display_types['Sc']='() { confirm; }'
+    
+    src=$( basename $0 )
+    # Command options.
+    typeset -A ${src}_opts
+    set -A ${src}_opts $( read_options "$@" )
+    # Source utility and command string.
+    cmd=$1
+    
+    
+    # Compound command type.
+    case $cmd in
+        ## Print usage if 'doc2' function
+        ## was called without any arguments.
+        '')
+            print 'Usage:'
+            print -x2 "\t$(Bc $src) $(c 'command') $(Uc 'arguments')$(bmagenta '*') - "\
+                "invoke '$src command' function with some arguments."
+            ;;
+        ## If command is specified, check that it exists and invoke it.
+        *)
+            shift
+            ${src}_${cmd} "$@"
+            ecode=$?
+            if [[ $ecode -eq 127 ]]; then
+                echo "Unknown command: $(Bad $cmd) (exit code: $ecode)." >&2
+            fi
+            ;;
+    esac
+}

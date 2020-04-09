@@ -1,0 +1,54 @@
+#!/bin/zsh
+
+#  fload
+#
+#
+#  Created by mpuchkov on 2020-01-28.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Autoload z-shell functions placed in a 'z'
+# subdirectory of 'devx/functions':
+#   'devx/functions/z[directory]/[function]'
+function fload() {
+    
+    declare -a fzdir
+    fzdir=( "$zfunc/z"* )
+    fpath=( $fpath $fzdir )
+    
+    # Quiet autoload.
+    function __fload() {
+        for fsubdir in $fzdir; do
+            local d=( $fsubdir/* )
+            for func in $d; do
+                autoload -Uz ${func:t}
+            done
+        done
+    }
+    # Verbose: print number of autoloaded functions
+    # in each 'z' subdirectory.
+    function __fload_verbose() {
+        for fsubdir in $fzdir; do
+            local count=0
+            local d=( $fsubdir/* )
+            for func in $d; do
+                autoload -Uz ${func:t}
+                count=$(( $count + 1 ))
+            done
+            local label="functions"
+            if [[ $nf -lt 2 ]]; then label="function"; fi
+            print -x 2 "\t$(bblue ${fsubdir:t})($count)"
+        done
+    }
+    
+    
+    local VERBOSE=$FALSE
+    if [[ $VERBOSE == $SETOPT ]]; then
+        print "${BOLD}Autoload...${NORMAL}"
+        __fload_verbose
+        print "${BOLD}Done${NORMAL}."
+    else
+        __fload
+    fi
+    
+}

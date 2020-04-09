@@ -1,0 +1,28 @@
+#!/bin/zsh
+
+#  brief
+#  devx
+#
+#  Created by admin on 2020-03-11.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Display brief description (first paragraph)
+# of a command, function, or file.
+function brief() {
+    # Get contents of the manual page.
+    local manpage=$1
+    local contents=$( command man $manpage | colcrt - )
+    
+    # Print first paragraph of description.
+    while read line; do
+        if [[ $line == 'DESCRIPTION' ]]; then
+            while read desc_line; do
+                if [[ -z $desc_line ]]; then break; fi
+                echo $desc_line
+            done
+        fi
+    done <<< $contents
+    
+    return 0
+}

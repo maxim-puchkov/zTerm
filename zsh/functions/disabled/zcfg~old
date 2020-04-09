@@ -1,0 +1,12 @@
+#!/bin/zsh
+
+#  zsh configuration settings
+#
+#
+#  Created by mpuchkov on 2020-02-12.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+function zcfg() {
+    open -b 'com.apple.dt.Xcode' $ZSH_CONFIG
+}

@@ -1,0 +1,26 @@
+#!/bin/zsh
+
+
+
+
+
+
+
+
+# Print environmental variables with varying colors.
+function rainbow() {
+    # Check syntax.
+    SYNTAX=(rainbow 'variable_identifier*')
+    if [[ $# -eq 0 ]]; then
+        serror 'str' "$SYNTAX"
+    fi
+    # Alternate colors for every variable.
+    local colors=(red b_yellow green cyan b_blue magenta)
+    for i in {1..$#}; do
+        local ci=$(( $i % ${#colors} ))
+        if [[ $ci -eq 0 ]]; then
+            ci=${#colors}
+        fi
+        echo "$( ${colors[$ci]} ${@[$i]}: ${(P)@[$i]} )"
+    done
+}

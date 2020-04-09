@@ -1,0 +1,38 @@
+#!/bin/zsh
+
+#  vdebug
+#  devx/Doctor
+#
+#  Created by admin on 2020-02-23.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Variable debugger.
+# Alias: 'v'.
+function vdebug() {
+    while [[ -n $1 ]]; do
+        # Identifier
+        local identifier=$1
+        local identifier_label="${identifier}"
+        
+        # Value
+        local value=(${(P)1})
+        if [[ ! -v $identifier ]]; then
+            value="$( _red "NOT SET" )";
+        elif [[ -z $value ]]; then
+            value="$( _red "EMPTY" )";
+        elif [[ ${#value} -eq 1 ]]; then
+            local t=${value[1]}
+            unset value
+            local value=$t
+        fi
+        local value_type=$( magenta "${(t)value}" )
+        local value_size=$(group '_darkgrey' "(" ")" $( _blue "${#value}" ))
+        local value=$( _bcyan "$value" )
+        value_label="= ${value_type}${value_size}$(group '_darkgrey' "<" ">" "${value}")"
+        
+        # Print info
+        echo "  $identifier_label ${value_label}"
+        shift
+    done
+}

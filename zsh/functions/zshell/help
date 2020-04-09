@@ -1,0 +1,21 @@
+#!/bin/zsh
+
+#  help
+#  Dev X
+#
+#  Created by admin on 2020-03-12.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+function help() {
+    local builtin_name=$1
+    local querry="help $1"
+    { printf '%s' "$querry" | sh } >& /dev/null
+    if [[ $? -ne 0 ]]; then
+        printf 'Not found: %s.\n' "'$(Bad $querry)'"
+        return 1
+    fi
+    local ret=$( printf '%s\n' "$querry" | sh )
+    local highlight_builtin_name=$( b_magenta "$builtin_name" )
+    printf '%s\n' "${ret//$builtin_name/$highlight_builtin_name}"
+}

@@ -1,0 +1,109 @@
+#!/bin/zsh
+
+#  Documents
+#  Documents & Support
+#
+#  Created by mpuchkov on 2020-02-01.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+function doc() {
+
+    declare -a DOCS
+    DOCS=()
+
+    #MARK: - Private
+    function get_docs() {
+        src="$devx_fpath/zdocuments/doc"
+        funcs=$( grep -i -o -E "function\sdoc_([a-z0-9]*)\(\)" <(cat $src) )
+        local i=1
+        while read docfunc; do
+            local name=${docfunc##*function doc_}
+            name=${name%\(*}
+            DOCS+=("\n  $i. $(magenta $name)")
+            i=$(( i + 1 ))
+        done <<< $funcs
+    }
+
+    #MARK: - Public
+    # List all functions
+    function doc_help() {
+        get_docs
+        echo "$(Uc 'Available doc links:')$DOCS"
+    }
+    
+    function doc_dir() {
+        echo $0
+        echo $_
+        echo ${0%/*}
+    }
+
+    function doc_1() {
+        print "$(yellow 'Document One')"
+    }
+
+    function O() {
+        local url=${1:?}
+        open -b 'com.apple.Safari' $url
+        print "$(cyan $url)"
+    }
+
+    function doc_zscripting() {
+        O "https://scriptingosx.com/zsh/"
+    }
+    function doc_zman() {
+        O "http://zsh.sourceforge.net/Doc/Release/index.html#Top"
+    }
+    function doc_zcomp() {
+        O "https://github.com/zsh-users/zsh-completions/blob/master/zsh-completions-howto.org"
+    }
+    function doc_subcommands() {
+        O "https://gist.github.com/waylan/4080362"
+    }
+    function doc_books() {
+        O "https://github.com/EbookFoundation/free-programming-books/blob/master/free-programming-books.md"
+    }
+    function doc_bash() {
+        O "https://devhints.io/bash"
+    }
+    function doc_faq() {
+        O "http://zsh.sourceforge.net/FAQ/"
+    }
+    function doc_git() {
+        O "file:///usr/local/Cellar/git/2.25.0/share/doc/git-doc/user-manual.html"
+    }
+    function doc_projects() {
+        O "https://www.sitepoint.com/organize-project-files/"
+    }
+    function doc_cheatsheet() {
+        O "https://www.andreafortuna.org/2018/09/17/unix-terminal-a-simple-cheatsheet/"
+    }
+    
+    function doc_latex() {
+        O "https://support.apple.com/en-ca/HT202501#latexcommands"
+        open -a Preview "file:///Users/admin/SmartHome/Documents/References/blahtexml-0.9-doc.pdf"
+    }
+    function doc_links() {
+        O "https://ss64.com/links/macos.html"
+    }
+
+    SRC=$(basename $0)
+    subcommand=$1
+    autoload +U doc
+    case $subcommand in
+        "")
+            print "Usage:"
+            print -x2 "\t$(Bc 'doc') $(Uc 'name'): open documentation"
+            print -x2 "\t$(Bc 'doc') $(c 'help'): view available commands"
+            ;;
+        *)
+            shift
+            ${SRC}_${subcommand} $@
+            s=$?
+            if [ $s = 127 ]; then
+                echo "Unknown command: $(r $subcommand) ($s)." >&2
+            fi
+            ;;
+    esac
+    
+}

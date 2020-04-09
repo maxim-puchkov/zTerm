@@ -1,0 +1,44 @@
+# User-specific profile for interactive zsh(1) shells.
+
+
+# Command 'ls'.
+alias ls='command ls -GF'
+alias l='ls -lAh'
+alias la='ls -lah'
+alias ll='ls -lh'
+
+# Command 'echo'.
+alias e='echo'
+alias E='b_redbg'
+
+# Command 'rm'.
+alias rm='rm -i'
+
+# Command 'grep'.
+alias grep='grep --color'
+
+# Command 'open'.
+alias xopen='open "/Applications/Xcode.app"'
+alias txtopen='open "/System/Applications/TextEdit.app"'
+alias webopen='open "/Applications/Safari.app"'
+alias scriptopen='open "/System/Applications/Utilities/Script Editor.app"'
+
+
+# Script 'dir'.
+alias dm='dir mod'
+
+
+# Main local directories.
+alias desk='cd "$DESK"'
+alias dev='cd "$DEV"'
+alias docs='cd "$DOCS"'
+
+
+# Shell output.
+alias -g noerr='2> /dev/null'  # redirect stderr
+alias -g quiet='&> /dev/null'  # redirect stdout and stderr
+
+
+# Python.
+alias python='python3'
+alias idle='idle3'
