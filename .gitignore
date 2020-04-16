@@ -1,7 +1,9 @@
 .DS_Store
-.config
+.config/bin/*
+Profiles/*
 *.xcodeproj/*
 zsh/.oh-my-zsh
 zsh/.iterm2*
 zsh/.zcompdump*
 zsh/.zsh_history
+
