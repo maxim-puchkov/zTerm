@@ -20,14 +20,14 @@ function base() {
     
     typeset -A opts
     set -A opts $(read_options "$@")
-    local from_base=${opts[f]:-10}
-    local to_base=$opts[t]
+    local from_base=${opts[from]:-10}
+    local to_base=$opts[to]
     shift $( options_shift_distance "$@" )
     
-    SYNTAX=(base '-f' from_base '-t' to_base number'*')
+    SYNTAX=(base '-from' from_base '-to' to_base number'*')
 #    if [[ -z $opts[f] ]];       then serror '-f'        "$SYNTAX"; fi
     if [[ $from_base -le 0 ]];  then serror 'from_base' "$SYNTAX"; fi
-    if [[ -z $opts[t] ]];       then serror '-t'        "$SYNTAX"; fi
+    if [[ -z $opts[to] ]];      then serror '-t'        "$SYNTAX"; fi
     if [[ $to_base -le 0 ]];    then serror 'to_base'   "$SYNTAX"; fi
     
     

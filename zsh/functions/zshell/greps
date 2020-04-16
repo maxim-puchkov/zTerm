@@ -1,0 +1,36 @@
+#!/bin/zsh
+
+#  greps
+#  Z-Function
+#
+#  Created by Maxim Puchkov on 2020-04-14.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Search files for the specified
+# multi-line pattern in a file.
+function greps() {
+    
+    local opts=$1
+    local pattern="$2"
+    shift 2
+    
+cat <<-EOF
+pcregrep "$opts" \
+    --color='always' \
+    --multiline \
+    --newline='CR' \
+    --regex "$pattern" \
+    < "$filepath"
+EOF
+    
+    while read -r filepath; do
+        pcregrep $opts \
+            --color='always' \
+            --multiline \
+            --newline='CR' \
+            --regex "$pattern" \
+            < "$filepath"
+    done <<< "$@"
+    
+}

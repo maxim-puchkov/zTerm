@@ -11,7 +11,6 @@
 #   Display name, synopsis, and brief description (first
 #   paragraph) of a command, function, or file.
 function syntax() {
-    setopt noerrreturn
     export SYNTAX=(syntax name)
     local manpage=$1
     

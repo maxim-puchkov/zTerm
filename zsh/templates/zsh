@@ -39,7 +39,7 @@ function ___FILENAME___() {
             shift
             ${src}_${cmd} "$@"
             ecode=$?
-            if [[ $ecode = 127 ][; then
+            if [[ $ecode = 127 ]]; then
                 printf 'Unknown command: %s (Exit code: %u).\n' "$(Bad $cmd)" "$ecode" >&2
             fi
             ;;

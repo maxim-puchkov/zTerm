@@ -26,7 +26,6 @@ function confirm() {
     read response
     
     # Interrupt if the response was not affirmative.
-    setopt errreturn
     setopt nocasematch
     if [[ ! $response =~ '^y(es)?$' ]]; then
         signal interrupt

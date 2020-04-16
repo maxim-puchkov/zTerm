@@ -1,0 +1,5 @@
+#compdef temp
+
+
+temp_dirs=($( ls -A $tempdir ))
+_describe 'temp dirs' temp_dirs

@@ -1,0 +1,24 @@
+#!/bin/zsh
+
+#  __which_alias
+#  Z-Function
+#
+#  Created by Maxim Puchkov on 2020-04-13.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Change directory and print its path.
+function __which_alias() {
+    local result=()
+    for cmd in "$@"; do
+        local command_info=()
+        local line_break="\n"
+        which -a $cmd | while read -r line; do
+            command_info+=( "$line" )
+        done
+        command_info[1]=$(bgreen ">  ${command_info[1]}")
+        result+=$( printf "%s\n" "${(@)command_info}" )
+    done
+    printf '%s\n' $result
+}
+

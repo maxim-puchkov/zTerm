@@ -14,7 +14,7 @@ function man() {
     tmp=$( tempfile )
     command man -w $args >& $tmp
     found=$(< $tmp)
-    rm -f  $tmp
+    command rm -f $tmp
     
     colored command man $args
     if [[ -r $found ]]; then

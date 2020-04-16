@@ -7,7 +7,7 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# Create new empty subdirectory 'dir'. Move all
+# Create new empty subdirectory 'subdir'. Move all
 # files in the parent directory 'dir' to 'dir/subdir'.
 function pack() {
     if [[ -z $1 || -z $2 ]]; then
@@ -18,9 +18,9 @@ function pack() {
     local subdir=$dir/$2
     local files=($dir/*)
     mkdir -p $subdir
-    for f in files; do
+    for f in $files; do
         echo $f
     done
-    yellow "dir=$(count_files $dir)"
-    yellow "sub=$(count_files $subdir)"
+    yellow "dir=$(countf . $dir)"
+    yellow "sub=$(countf . $subdir)"
 }

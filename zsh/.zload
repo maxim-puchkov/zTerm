@@ -7,10 +7,16 @@ source "$ZEXPORT"
 
 
 # PATH
-path=( $path '/usr/local/sbin' )
+path=( "/usr/local/sbin" $path  )
+path=( "/usr/local/opt/python@3/bin" $path)
+path=( "/usr/local/opt/llvm/bin" $path )
+
+path=( $path "$DEV/bin" )
 path=( $path "$DEV/Terminal/.config/bin" )
+path=( $path "$DEV/Terminal/Python" )
+
 path=( $path "$SFU/bin" )
-path=( $path "/usr/local/opt/python@3/bin" )
+
 
 
 # Function path
@@ -18,8 +24,8 @@ fpath=( "/usr/local/share/zsh-completions" $fpath )
 fpath=( "$DEV/Terminal/zsh/functions" $fpath )
 fpath=( "$DEV/Terminal/zsh/completions" $fpath )
 
-autoload finclude
-finclude
+autoload fload
+fload
 
 
 source "$ZUTIL"

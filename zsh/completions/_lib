@@ -1,0 +1,5 @@
+#compdef lib
+
+
+lib_dirs=($( ls -A $DEV/Library ))
+_describe 'Developer Library' lib_dirs

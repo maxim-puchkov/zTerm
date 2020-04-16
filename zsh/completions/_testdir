@@ -1,0 +1,5 @@
+#compdef testdir
+
+
+testdir=($( ls -A $testdir ))
+_describe 'testdir' testdir

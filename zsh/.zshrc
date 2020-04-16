@@ -29,17 +29,20 @@ export GPG_TTY
 
 
 # Preferred editor for local and remote sessions.
-if [[ -n $SSH_CONNECTION ]];
-    then EDITOR='nano'
-    else EDITOR='Xcode'
-fi
-export EDITOR
+export EDITOR="/usr/bin/nano"
 
 
 # iTerm 2 shell integration.
 test -e "${ZDOTDIR}/.iterm2_shell_integration.zsh" && source "${ZDOTDIR}/.iterm2_shell_integration.zsh"
 
 
+# Python
+#export PYTHONPATH
+export PYTHONSTARTUP="/Users/admin/Developer/Terminal/Python/.pyenv"
+export PYTHONPATH="$DEV/Terminal/Python:$PYTHONPATH"
+
+
+bindkey "^X\\x7f" backward-kill-line
 
 
 #plugins=(
@@ -322,5 +325,8 @@ test -e "${ZDOTDIR}/.iterm2_shell_integration.zsh" && source "${ZDOTDIR}/.iterm2
 #    zsh-navigation-tools
 #    zsh_reload
 #)
+
+
+
 
 

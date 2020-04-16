@@ -1,0 +1,30 @@
+#!/bin/zsh
+
+#  tempfile
+#  Z-Function
+#
+#  Created by Maxim Puchkov on 2020-04-13.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Change directory and print its path.
+function tempfile() {
+    local ext="${1}"
+    local subdirname='tempfiled'
+    local prefix="${subdirname}/tempfile"
+    local subdir="${TMPDIR}/${subdirname}"
+    # Create 'tempfiled' subdirectory in 'TMPDIR'.
+    if [[ ! -d "${subdir}" ]]; then
+        mkdir -- "${subdir}"
+    fi
+    # Create temporary file.
+    local filepath=$( mktemp -t "${prefix}" )
+    local exitcode=$?
+    if [[ -n "${ext}" ]]; then
+        mv "${filepath}" "${filepath}.${ext}"
+        filepath="${filepath}.${ext}"
+    fi
+    printf '%s' "${filepath}"
+    return $exitcode
+}
+

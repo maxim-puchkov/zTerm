@@ -11,6 +11,14 @@ function edit() {
         $EDITOR "$@"
     fi
 }
+# Hexdump files.
+function hx() {
+    for f in "$@"; do
+        printf '%s\n' "$(bold $f)"
+        hexyl -v $f
+        printf '\n'
+    done
+}
 
 
 
@@ -42,7 +50,7 @@ function cat-plugin() {
 function next-plugin() {
     # Array of all plugin
     local all_plugins=($( command ls -1 "$ZSH/plugins" ))
-    readarr
+    read_array arr
     # Seen/unseen plugins
     local seen=( $arr )
     local notseen=( ${all_plugins:|seen} )
@@ -54,7 +62,7 @@ function next-plugin() {
     # Next plugin is the first unseen
     local next=${notseen[1]}
     arr+=( $next )
-    savearr
+    save_array arr
     # Sizes
     local N=${#all_plugins}
     local n=$(( ${#seen} + 1 ))
@@ -109,6 +117,45 @@ function zf-find() {
         return 1
     fi
     echo "$f"
+    return 0
+}
+
+
+# Enable a Z-Function.
+function zf-localfunction() {
+    local fname="$1"
+    local target_dir="${2:-zshell}"
+    local subdirs=($( ls -d $zfunc/z* ))
+    local subdirs_names=(${subdirs:t})
+    # Check output subdirectory in 'zsh/functions'
+    if [[ $subdirs_names[(wi)$target_dir] -gt ${#subdirs_names} ]]; then
+        echo "Subdirectory '$(Bad $target_dir)' is not found in:"
+        print -C 4 "$subdirs"
+        return 1
+    fi
+    # Find disabled function
+    f=$( zf-find "$DEV/Terminal/zsh/site-functions/" "$fname" )
+    if [[ $? -ne 0 ]]; then
+        echo "Function '$(Bad $fname)' is not a site function."
+        return 1
+    fi
+    # Move function to an autoloaded directory
+    mv "$f" "$zfunc/$target_dir/"
+    echo "$(OK 'OK'): '$(bold $fname)' is now a local function."
+    return 0
+}
+# Disable a Z-Function.
+function zf-sitefunction() {
+    local fname="$1"
+    # Find an enabled function
+    f=$( zf-find "$zfunc" "$fname" )
+    if [[ $? -ne 0 ]]; then
+        echo "Function '$(Bad $fname)' is not a site function."
+        return 1
+    fi
+    # Move function to 'zsh/function/disabled'
+    mv "$f" "$DEV/Terminal/zsh/site-functions"
+    echo "$(OK 'OK'): '$(bold $fname)' is now a site function."
     return 0
 }
 
@@ -171,8 +218,8 @@ function zf-list() {
 }
 # Display number of enabled and disabled Z-Functions.
 function zf-stat() {
-    local on=($( echo $zfunc/z*/* ))
-    local off=($( echo $zfunc/disabled/* ))
+    local on=($( printf '%s\n' $zfunc/z*/* ))
+    local off=($( printf '%s\n' $zfunc/disabled/* ))
     local n_on=${#on}
     local n_off=${#off}
     local n_total=$(( $n_on + $n_off ))
@@ -185,31 +232,7 @@ function zf-stat() {
 
 
 
-#MARK: - File Directories (fdctl)
-# Paths to Developer directories.
-export importantdir="$DEV/Files/Important"
-export tempdir="$DEV/Files/Temporary"
-export testdir="$DEV/Files/Test"
-export miscdir="$DEV/Files/Miscellaneous"
-
-
-# Go to Importrant Files.
-function important() {
-    cdp "$importantdir"
-}
-# Go to Temporary Files.
-function temp() {
-    cdp "$tempdir"
-}
-# Go to Test Files.
-function $testdir() {
-    cdp "$testdir"
-}
-# Go to Miscellaneous Files.
-function miscdir() {
-    cdp "$miscdir"
-}
-
+#MARK: - File Directories
 # Go to Z-Terminal root directory.
 function zt() {
     cdp "$ztermdir"
@@ -225,13 +248,33 @@ function sfu() {
 }
 
 
-
-# Brew search
-function bs() {
-    brew search "$@" --desc | grep -i -E "$@"
+function pygments-styles() {
+    local list=($( pygmentize -L 'styles' ))
+    printf '%s' "$list" | grep -E '\* [[:alnum:]-]*' -o | sed -E 's/\* //g'
 }
 
-function styles() {
-    local long=($( pygmentize -L 'styles' ))
-    printf '%s' "$long" | grep -E '\* [[:alnum:]-]*' -o | sed -E 's/\* //g'
+
+
+# Go to Desktop.
+function desk()     { cdp "${(q)HOME}/Desktop/${@}"; }
+# Go to Development root.
+function dev()      { cdp "${(q)DEV}/${@}"; }
+# Go to Library.
+function lib()      { cdp "${(q)lib}/${@}"; }
+# Go to Temporary Files.
+function temp()     { cdp "${(q)tempdir}/${@}"; }
+# Go to Test Files.
+function testdir()  { cdp "${(q)testdir}/${@}" }
+
+
+
+
+# Pass/Fail symbols.
+function pass() {
+    printf '%s\n' "$(b_green '✔︎')"
+    return 0
+}
+function fail() {
+    printf '%s\n' "$(b_bred '✘')"
+    return 1
 }

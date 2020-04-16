@@ -17,6 +17,6 @@ function ztool() {
         return 1
     fi
     local exitcode=$( osascript -l AppleScript $script )
-    echo $exitcode >&2
+    printf '%u\n' $exitcode >&2
     return $exitcode
 }

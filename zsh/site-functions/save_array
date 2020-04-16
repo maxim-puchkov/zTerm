@@ -1,0 +1,54 @@
+#!/bin/zsh
+
+#  save_array
+#  Z-Function
+#
+#  Created by Maxim Puchkov on 2020-04-08.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Save an array to file.
+function save_array() {
+    # Variable name of the array to save
+    local var_id=$1
+    if [[ -z $var_id || -z ${(P)var_id} ]]; then
+        error "'$(Bad $var_id)' is not a valid identifier."
+        return 1
+    fi
+    
+    # Convert associative arrays
+#    if [[ $var_type =~ 'association' ]]; then
+#        set -a arr ${(Pkv)var_id}
+#    fi
+    typeset -a arr
+    local var_type=${(Pt)var_id}
+    case $var_type in
+        *association*)
+            arr=(${(Pkv)var_id})
+            ;;
+        *array*)
+            arr=(${(P)var_id})
+            ;;
+        *)
+         echo $var_type
+            return 1
+            ;;
+    esac
+    
+    # Check type
+    if [[ ! ${(t)arr} =~ 'array' ]]; then
+        error "$(Bad var_id) is not an array."
+        return 1
+    fi
+    
+    # File to which the array will be written to
+    local default_filepath="$DEV/Library/Data/$var_id.array"
+    local filepath="${${2:a}:-$default_filepath}"
+    if [[ -d "$filepath" ]]; then
+        filepath="${filepath}/${var_id}"
+    fi
+    
+    # Write to file
+    print -r -- ${(qq)arr} > "$filepath"
+    return 0
+}

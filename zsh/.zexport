@@ -1,42 +1,44 @@
 # User-specific profile for interactive zsh(1) shells.
 
 
-# Home.
+# Home
 export DEV="$HOME/Developer"
-export DESK="$HOME/Desktop"
-export DOCS="$HOME/Documents"
 export ICLOUD="$HOME/Library/Mobile Documents/com~apple~CloudDocs"
 
+export desk="$HOME/Desktop"
+export testdir="$DEV/Test"
+export lib="$DEV/Library"
+export tempdir="${TMPDIR}tempfiled"
 
-# Projects.
+
+# Projects
 export ztermdir="$DEV/Terminal"
 export ztermxcodeproj="$ztermdir/Terminal.xcodeproj"
 export zfunc="$ztermdir/zsh/functions"
 export zcompdir="$ztermdir/zsh/completions"
 
-export lib="$DEV/Library"
-lib() { cdp "$lib"; }
 
-# Package Managers.
+# Package Managers
 export HOMEBREW="/usr/local/Homebrew"
 
 
-# SFU Files.
+# SFU Files
 export SFU="$ICLOUD/SFU"
 export SFU_USER='mpuchkov'
 export SFU_CSIL='csil-cpu4.cs.surrey.sfu.ca'
-export SFU_MNT="/usr/local/mnt/$SFU_USER@$SFU_CSIL"
+export SFU_MNT="/usr/local/mnt/${SFU_USER}@${SFU_CSIL}"
 export SFU_TERM="$SFU/10-Spring-2020"
-
 export A404="$SFU_TERM/404/assignments"
 export A473="$SFU_TERM/473/assignments"
 export A310="$SFU_TERM/PHIL 310/assignments"
 
 
-# Variables.
+# Command variables
+export GREP_COLOR="01;95"
+export PCREGREP_COLOUR="$GREP_COLOR"
+
+
+# Misc. variables
 export SETOPT='set'
 export FALSE=1
 export TRUE=0
-# Pass/Fail symbol.
-export P="$(b_green '✔︎')"
-export F="$(b_bred '✘')"

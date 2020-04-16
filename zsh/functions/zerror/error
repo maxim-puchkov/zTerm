@@ -14,17 +14,13 @@
 #   -c X    exit from function with code X.
 #   -n      non-terminating error.
 function error() {
-    builtin setopt errreturn
-    
-    typeset -A opts
-    get_options opts "$@"
-    
+#    builtin setopt errreturn
     #MARK: Error properties.
     # Error title.
     local _title="$( red 'Error.' ) "
     # Error description.
     local _desc="${@:-no message.}"
-      _desc="${(C)_desc[1]}${${_desc:1}}"
+    _desc="${(C)_desc[1]}${${_desc:1}}"
     # Exit code.
     local _ecode=${opts[c]:-1}
     # Non-termination flag.
@@ -35,6 +31,6 @@ function error() {
       fi
     
     #MARK: Display and return.
-    builtin echo "${_title}${_desc}"
+    builtin echo "${_title}${_desc}" >&2
     return _ecode
 }

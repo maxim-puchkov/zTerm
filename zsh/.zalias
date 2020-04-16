@@ -1,6 +1,14 @@
 # User-specific profile for interactive zsh(1) shells.
 
 
+# Shell output.
+alias -g noerr='2> /dev/null'  # redirect stderr
+alias -g quiet='&> /dev/null'  # redirect stdout and stderr
+
+# Custom errors.
+#alias error='error "$@"; return 1;'
+
+
 # Command 'ls'.
 alias ls='command ls -GF'
 alias l='ls -lAh'
@@ -23,22 +31,17 @@ alias txtopen='open "/System/Applications/TextEdit.app"'
 alias webopen='open "/Applications/Safari.app"'
 alias scriptopen='open "/System/Applications/Utilities/Script Editor.app"'
 
+# Command 'which'.
+alias which='__which_alias'
 
 # Script 'dir'.
-alias dm='dir mod'
-
-
-# Main local directories.
-alias desk='cd "$DESK"'
-alias dev='cd "$DEV"'
-alias docs='cd "$DOCS"'
-
-
-# Shell output.
-alias -g noerr='2> /dev/null'  # redirect stderr
-alias -g quiet='&> /dev/null'  # redirect stdout and stderr
+alias dm='idir mod'
 
 
 # Python.
 alias python='python3'
 alias idle='idle3'
+
+
+alias mang='grepman'
+alias rr='zsh "$DEV/bin/run.sh"'

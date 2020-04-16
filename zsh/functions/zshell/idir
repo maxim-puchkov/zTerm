@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/zsh
 
-#  dir
+#  idir
 #  Z-Function
 #
 #  Created by mpuchkov on 2020-04-07.
@@ -8,9 +8,9 @@
 
 
 #
-function dir() {
+function idir() {
     # Test if directory is empty.
-    function dir_isempty() {
+    function idir_isempty() {
         local n_files=$( countf "$dirpath" )
         if [[ $n_files -gt 0 ]]; then
             printf 'Directory %s is not empty.\n' "'$dirpath'" >&2
@@ -22,7 +22,7 @@ function dir() {
     # Display file access permissions for every
     #   file in the directory.
     # Alias: 'dm'.
-    function dir_mod() {
+    function idir_mod() {
         # Header-1 style.
         function H1() {
             printf '%s' $(bold $(underline $1))
@@ -31,7 +31,6 @@ function dir() {
         local file_permissions=( $(H1 'File') $(H1 'Permissions')  $(H1 'Type') )
         for f in $files; do
             local filepath="$dirpath/${(q)f}"
-            
             local t=$( file -b "${(q)filepath}" )
             local p=$( whichmod "${(q)filepath}" )
             file_permissions+=( $f $p $t )
@@ -39,7 +38,7 @@ function dir() {
         print -aC 3 $file_permissions
     }
     
-    function dir_new() {
+    function idir_new() {
         
     }
     
@@ -51,7 +50,11 @@ function dir() {
     src=$( basename $0 )
     get_options opts "$@"
     shift $opts[shift_distance]
-    cmd=$1
+    if [[ $# -gt 0 ]]; then
+        cmd=$1
+        shift
+    fi
+    
     
     # Directory path
     local dirpath="${(q)2:-.}"
@@ -59,7 +62,6 @@ function dir() {
         printf 'Not a directory %s.\n' "$(Bad $dirpath)" >&2
         return 1
     fi
-    OK $dirpath
     
     local flags=''
     if [[ $opts[A] ]]; then
@@ -71,7 +73,6 @@ function dir() {
             pwd -P
             ;;
         *)
-            shift 1
             ${src}_${cmd} "$@"
             exitcode=$?
             if [[ $exitcode = 127 ]]; then

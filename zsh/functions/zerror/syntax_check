@@ -1,0 +1,48 @@
+#!/bin/zsh
+
+#  serror
+#  devx
+#
+#  Created by admin on 2020-03-02.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Syntax error.
+function syntax_check() {
+    local syntax=(${(z)1})
+    shift
+    local undefined_values=()
+    
+    local result=()
+    result+="$( printf '%s' $(U $(bgreen ${syntax[1]}) ))"
+    for keyword in ${syntax:1}; do
+        case $keyword in
+            -*)
+                result+="$( printf ' %s' $(bdgrey ${keyword%=*})) )"
+                ;;
+            -*=*)
+                result+="$( printf ' %s' $(bdgrey ${keyword%=*})) )"
+                result+="$( printf '=%s' $(dgrey ${keyword#*=})) )"
+                ;;
+            *)
+                result+="$( printf ' %s' $(cyan $keyword) )"
+                local value=${(P)keyword}
+                if [[ -n $value ]]; then
+                    result+="$( printf '(%s)' $(green $value) )"
+                else
+                    result+="$( printf '(%s)' $(U $(b_bred 'undefined')) )"
+                    undefined_values+=( $keyword )
+                fi
+                ;;
+        esac
+    done
+    
+    if [[ ${#undefined_values} -ne 0 ]]; then
+        printf '%s Invalid keywords: %s.\n' "$(Bad 'Error.')" "$undefined_values"
+        printf '     %s\n' "$result"
+        return 1
+    else
+        return 0
+    fi
+#    echo "Var = ${(P)var}"
+}

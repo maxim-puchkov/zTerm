@@ -1,7 +1,7 @@
 # Input/output styles.
 
 
-export -H __COLOR_NAMES__=( 'RED' 'GREEN' 'YELLOW' 'BLUE' 'MAGENTA' 'CYAN' )
+__COLOR_NAMES__=( 'RED' 'GREEN' 'YELLOW' 'BLUE' 'MAGENTA' 'CYAN' )
 
 function fg_color() {
     tput setaf ${1:?}
@@ -17,74 +17,70 @@ function __style_print() {
     echo
 }
 
-#export GREP_COLOR="$( fg_color 13 && boldtext )"
-export GREP_COLOR="01;95"
-
-
 
 #MARK: Styles Definitions
-export -H NORMAL="$( tput sgr0 )"
-export -H BOLD="$( tput bold )"
-export -H UNDERLINE="$( tput smul )"
-export -H REVERSE="$( tput rev )"
+NORMAL="$( tput sgr0 )"
+BOLD="$( tput bold )"
+UNDERLINE="$( tput smul )"
+REVERSE="$( tput rev )"
 
 #MARK: Foreground Definitions
 # Default
-export -H BLACK="$( fg_color 0 )"
-export -H WHITE="$( fg_color 255 )"
-export -H RED="$( fg_color 1 )"
-export -H GREEN="$( fg_color 2 )"
-export -H YELLOW="$( fg_color 3 )"
-export -H BLUE="$( fg_color 4 )"
-export -H MAGENTA="$( fg_color 5 )"
-export -H CYAN="$( fg_color 6 )"
-export -H GREY="$( fg_color 7 )"
-export -H DGREY="$( fg_color 8 )"
+BLACK="$( fg_color 0 )"
+WHITE="$( fg_color 255 )"
+RED="$( fg_color 1 )"
+GREEN="$( fg_color 2 )"
+YELLOW="$( fg_color 3 )"
+BLUE="$( fg_color 4 )"
+MAGENTA="$( fg_color 5 )"
+CYAN="$( fg_color 6 )"
+GREY="$( fg_color 7 )"
+DGREY="$( fg_color 8 )"
 # Bright
-export -H B_RED="$( fg_color 9 )"
-export -H B_GREEN="$( fg_color 10 )"
-export -H B_YELLOW="$( fg_color 11 )"
-export -H B_BLUE="$( fg_color 12 )"
-export -H B_MAGENTA="$( fg_color 13 )"
-export -H B_CYAN="$( fg_color 14 )"
+B_RED="$( fg_color 9 )"
+B_GREEN="$( fg_color 10 )"
+B_YELLOW="$( fg_color 11 )"
+B_BLUE="$( fg_color 12 )"
+B_MAGENTA="$( fg_color 13 )"
+B_CYAN="$( fg_color 14 )"
 # Bold
-export -H BBLACK="${BOLD}${BLACK}"
-export -H BWHITE="${BOLD}${WHITE}"
-export -H BRED="${BOLD}${RED}"
-export -H BGREEN="${BOLD}${GREEN}"
-export -H BYELLOW="${BOLD}${YELLOW}"
-export -H BBLUE="${BOLD}${BLUE}"
-export -H BMAGENTA="${BOLD}${MAGENTA}"
-export -H BCYAN="${BOLD}${CYAN}"
-export -H BGREY="${BOLD}${GREY}"
-export -H BDGREY="${BOLD}${DGREY}"
+BBLACK="${BOLD}${BLACK}"
+BWHITE="${BOLD}${WHITE}"
+BRED="${BOLD}${RED}"
+BGREEN="${BOLD}${GREEN}"
+BYELLOW="${BOLD}${YELLOW}"
+BBLUE="${BOLD}${BLUE}"
+BMAGENTA="${BOLD}${MAGENTA}"
+BCYAN="${BOLD}${CYAN}"
+BGREY="${BOLD}${GREY}"
+BDGREY="${BOLD}${DGREY}"
 # Bold
-export -H B_BRED="${BOLD}${B_RED}"
-export -H B_BGREEN="${BOLD}${B_GREEN}"
-export -H B_BYELLOW="${BOLD}${B_YELLOW}"
-export -H B_BBLUE="${BOLD}${B_BLUE}"
-export -H B_BMAGENTA="${BOLD}${B_MAGENTA}"
-export -H B_BCYAN="${BOLD}${B_CYAN}"
+B_BRED="${BOLD}${B_RED}"
+B_BGREEN="${BOLD}${B_GREEN}"
+B_BYELLOW="${BOLD}${B_YELLOW}"
+B_BBLUE="${BOLD}${B_BLUE}"
+B_BMAGENTA="${BOLD}${B_MAGENTA}"
+B_BCYAN="${BOLD}${B_CYAN}"
 
 #MARK: Background Definitions
 # Default
-export -H BLACKBG="$( bg_color 0 )"
-export -H WHITEBG="$( bg_color 255 )"
-export -H REDBG="$( bg_color 1 )"
-export -H GREENBG="$( bg_color 2 )"
-export -H YELLOWBG="$( bg_color 3 )"
-export -H BLUEBG="$( bg_color 4 )"
-export -H MAGENTABG="$( bg_color 5 )"
-export -H CYANBG="$( bg_color 6 )"
-export -H GREYBG="$( bg_color 7 )"
-export -H DGREYBG="$( bg_color 8 )"
+BLACKBG="$( bg_color 0 )"
+WHITEBG="$( bg_color 255 )"
+REDBG="$( bg_color 1 )"
+GREENBG="$( bg_color 2 )"
+YELLOWBG="$( bg_color 3 )"
+BLUEBG="$( bg_color 4 )"
+MAGENTABG="$( bg_color 5 )"
+CYANBG="$( bg_color 6 )"
+GREYBG="$( bg_color 7 )"
+DGREYBG="$( bg_color 8 )"
 # Bright
-export -H B_REDBG="$( bg_color 9 )"
-export -H B_GREENBG="$( bg_color 10 )"
-export -H B_YELLOWBG="$( bg_color 11 )"
-export -H B_BLUEBG="$( bg_color 12 )"
-export -H B_MAGENTABG="$( bg_color 13 )"
-export -H B_CYANBG="$( bg_color 14 )"
+B_REDBG="$( bg_color 9 )"
+B_GREENBG="$( bg_color 10 )"
+B_YELLOWBG="$( bg_color 11 )"
+B_BLUEBG="$( bg_color 12 )"
+B_MAGENTABG="$( bg_color 13 )"
+B_CYANBG="$( bg_color 14 )"
 
 
 

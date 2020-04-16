@@ -6,6 +6,9 @@
 function csil() {
     ssh -p '24' -l 'mpuchkov' $SFU_CSIL
 }
+function csil-tmux() {
+    ssh -p '24' -l 'mpuchkov' $SFU_CSIL -t tmux a
+}
 
 
 #MARK: - SSHFS
