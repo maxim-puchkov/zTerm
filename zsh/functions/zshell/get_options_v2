@@ -1,9 +1,9 @@
 #!/bin/zsh
 
-#  get_options
-#  devx
+#  get_options_v2
+#  Z-Function
 #
-#  Created by admin on 2020-03-06.
+#  Created by admin on 2020-04-15.
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
  
 
@@ -21,11 +21,29 @@ function get_options_v2() {
     
     typeset -A result
     local opt=''
-    while getopts "$optstring" opt ${(z)arguments[@]}; do
-        echo "Option: $opt | Argument: $OPTARG"
-        result[$opt]=${OPTARG:-true}
+    local length=0
+    while getopts "$optstring" opt ${(z)arguments[@]} 2> /dev/null ; do
+        echo "Option: $opt | Argument: $OPTARG | I: $OPTIND"
+        if [[ $opt == '?' ]]; then
+            length=$(( $length + 1 ))
+            continue;
+        fi
+        if [[ -n $OPTARG ]]; then
+            result[$opt]=$OPTARG
+            length=$(( $length + 2 ))
+        else
+            result[$opt]='true'
+            length=$(( $length + 1 ))
+        fi
     done
     
+    arg_list=(${(z)arguments})
+    result[length]=$length
+    result[command_arguments]=${(qq)${arg_list:$length}:-''}
+    cyan $result[command_arguments]
+#    local length=(${(kv)#result})
+    green $length
+    bluebg ${(kv)result}
     typeset -Ag $identifier
     set -A $identifier ${(kv)result}
     return 0

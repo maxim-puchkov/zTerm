@@ -10,23 +10,34 @@
 # Read a saved array from file.
 function read_array() {
     # Name of the array variable
-    local identifier="$1"
-    if [[ -n ${(P)identifier} ]]; then
-        printf 'Unsetting current value of %s...\n' "'$identifier'" >&2
-    fi
+    local var_id=$1
     
     # File to which the array was saved
-    local default_filepath="$DEV/Library/Data/$identifier.array"
-    local filepath="${2:-$default_filepath}"
+    local default_filepath="$DEV/Library/Data/$var_id.array"
+    local filepath="${${2:a}:-$default_filepath}"
     if [[ -d "$filepath" ]]; then
-        filepath="${filepath}/${identifier}"
+        filepath="${filepath}/${var_id}"
     fi
+    
     if [[ ! -r "$filepath" ]]; then
-        printf 'Error: save file for %s not found.\n' "'$(Bad $identifier)'" >&2
+        error "No save file for $(Bad var_id)."
         return 1
     fi
     
     # Read and set the array
-    eval "$identifier=($( cat -- $filepath ))"
+    local var_type="${3[1]:-a}"
+    case "$var_type" in
+        'A')
+            typeset -Ag $var_id
+            eval "set -A $var_id $(< $filepath)"
+            ;;
+        'a')
+            eval "$var_id=($(< $filepath))"
+            ;;
+        *)
+            error 'Invalid type.'
+            return 1
+            ;;
+    esac
     return 0
 }

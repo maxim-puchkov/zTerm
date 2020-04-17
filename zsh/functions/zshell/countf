@@ -36,4 +36,5 @@ function countf() {
     local filename=$2
     local command_type=${3:-prefix}
     ${0}_${command_type} "$@"
+    return 0
 }

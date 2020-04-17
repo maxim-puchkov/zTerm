@@ -13,32 +13,34 @@ function save_array() {
     local var_id=$1
     if [[ -z $var_id || -z ${(P)var_id} ]]; then
         error "'$(Bad $var_id)' is not a valid identifier."
-        return 1
+        return 2
     fi
     
     # Convert associative arrays
-#    if [[ $var_type =~ 'association' ]]; then
-#        set -a arr ${(Pkv)var_id}
-#    fi
     typeset -a arr
     local var_type=${(Pt)var_id}
     case $var_type in
-        *association*)
+        *'association'*)
             arr=(${(Pkv)var_id})
             ;;
-        *array*)
+        *'array'*)
             arr=(${(P)var_id})
             ;;
         *)
-         echo $var_type
-            return 1
+            error 'Invalid type.'
+            return 2
             ;;
     esac
     
     # Check type
     if [[ ! ${(t)arr} =~ 'array' ]]; then
         error "$(Bad var_id) is not an array."
-        return 1
+        return 2
+    fi
+    # Check null values
+    if [[ ! $(( ${(Pk)#var_id} * 2 )) -eq ${#arr} ]]; then
+        error "$(Bad var_id) invalid association."
+        return 2
     fi
     
     # File to which the array will be written to
@@ -49,6 +51,8 @@ function save_array() {
     fi
     
     # Write to file
-    print -r -- ${(qq)arr} > "$filepath"
+    if (! print -r -- ${(qq)arr} > "$filepath"); then
+        return 1
+    fi
     return 0
 }

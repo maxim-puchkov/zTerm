@@ -1,48 +1,90 @@
 #!/bin/zsh
 
-#  serror
-#  devx
+#  syntax_check
+#  Z-Function
 #
-#  Created by admin on 2020-03-02.
+#  Created by admin on 2020-04-15.
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# Syntax error.
+# Check syntax of a function.
+# Usage: 'syntax_check "$0 -option variable ..."'
 function syntax_check() {
+    if [[ $# -eq 0 ]]; then
+        printf '%s %s\n' "$(Bad 'Error.')" 'Nothing to check.' >&2
+        return 2
+    fi
+    
     local syntax=(${(z)1})
     shift
     local undefined_values=()
     
+    # Check all keywords.
     local result=()
     result+="$( printf '%s' $(U $(bgreen ${syntax[1]}) ))"
     for keyword in ${syntax:1}; do
+        local value=${(P)keyword}
         case $keyword in
-            -*)
-                result+="$( printf ' %s' $(bdgrey ${keyword%=*})) )"
-                ;;
             -*=*)
-                result+="$( printf ' %s' $(bdgrey ${keyword%=*})) )"
-                result+="$( printf '=%s' $(dgrey ${keyword#*=})) )"
+                # -option=option_arg
+                result+="$( printf '%s=%s' \
+                    $(bdgrey ${keyword%'='*}) \
+                    $(dgrey ${keyword#*'='}) )"
+                ;;
+            -*)
+                # -option
+                result+="$( printf '%s' $(bdgrey ${keyword%'='*}) )"
+                ;;
+            *'?')
+                # optional variable
+                result+="$( printf '%s%s' \
+                    $(dgrey ${keyword%'?'}) \
+                    $(blue '?') )"
+                ;;
+            *'*')
+                # repeated optional variable
+                result+="$( printf '%s%s' \
+                    $(dgrey ${keyword%'*'}) \
+                    $(blue '*') )"
+                ;;
+            *'+')
+                # repeated variable
+                if [[ -n $value ]]; then
+                    result+="$( printf '%s%s' \
+                        $(bgreen ${keyword%'+'}) \
+                        $(blue '+') )"
+                else
+                    result+="$( printf '%s(%s)%s' \
+                        $(b_red ${keyword%'+'}) \
+                        $(U $(b_bred 'undefined')) \
+                        $(blue '+') )"
+                    undefined_values+=( $keyword )
+                fi
                 ;;
             *)
-                result+="$( printf ' %s' $(cyan $keyword) )"
-                local value=${(P)keyword}
+                # variable
                 if [[ -n $value ]]; then
-                    result+="$( printf '(%s)' $(green $value) )"
+                    result+="$( printf '%s(%s)' \
+                        $(bgreen $keyword) \
+                        $(green $value) )"
                 else
-                    result+="$( printf '(%s)' $(U $(b_bred 'undefined')) )"
+                    result+="$( printf '%s(%s)' \
+                        $(b_red $keyword) \
+                        $(U $(b_bred 'undefined')) )"
                     undefined_values+=( $keyword )
                 fi
                 ;;
         esac
     done
     
+    # Return error if missing required value.
     if [[ ${#undefined_values} -ne 0 ]]; then
-        printf '%s Invalid keywords: %s.\n' "$(Bad 'Error.')" "$undefined_values"
-        printf '     %s\n' "$result"
+        printf '%s Invalid keywords: %s.\n     %s\n' \
+            "$(Bad 'Error.')" \
+            "$undefined_values" \
+            "$result" >&2
         return 1
     else
         return 0
     fi
-#    echo "Var = ${(P)var}"
 }

@@ -26,43 +26,38 @@ function zmisc()    { open -a Xcode "$ZMISC" }
 function zcomp()    { open -a Xcode "$ZCOMP" }
 
 
-#source "$ZDOTDIR/.zload"
-#
-#
-#function foo() {
-#    echo "Running $0..."
-#    echo "Raising error..."
-#
-#    error "$0"
-#    red "Exiting $0..."
-#    return 0
-#}
-#
-## Compdef test function.
-#function bar() {
-#    SYNTAX="$0 -opt=string var1 var2"
-#    local var1="value-1"
-#    local var2="value-2"
-#    syntax_check "$SYNTAX" var1 var2
-#    printf '%s\n' "$(magentabg 'Function' ${0})"
-#    printf 'Defined in %s\n' "$ZPROFILE"
-#}
 
-function analyze() {
-    function __analyze() {
-        printf "\n$(magenta 'Analyzing') $(bmagenta %s)...\n" "$@"
-#        setopt xtrace
-        local trace=$(zsh --xtrace -c "$@" 2>&1)
-        printf "$(Info %s)\n" "$trace"
-#        setopt noxtrace
-        printf "$(magenta %s)\n\n" 'Analysis complete...'
-    }
-    echo "ARGS: <$@>"
-    __analyze "$@"
+typeset -Ag _A
+_A[k0]='v0'
+_A[k1]='v1'
+_A[k2]='v2'
+
+typeset -Ag _Inv
+_Inv[k0]=''
+_Inv[k1]='v1'
+_Inv[k2]='v2'
+
+
+# Compdef test function.
+function foo() {
+    printf '%s\n' "$(magenta 'Function' ${0})"
+    printf 'Defined in %s\n' "$ZPROFILE"
 }
 
+# Compdef test function.
+function bar() {
+    printf '%s\n' "$(magenta 'Function' ${0})"
+    printf 'Defined in %s\n' "$ZPROFILE"
+}
 
-
-function stderr() {
-    printf '%s' 2>&1
+function ztrace() {
+    function __ztrace() {
+        printf "\n$(magenta 'Analyzing') $(bmagenta %s)...\n" "$*"
+        setopt xtrace
+        local trace=$( "$@" 2>&1 )
+        printf "$(Info %s)\n" "$trace"
+        setopt noxtrace
+        printf "$(magenta %s)\n\n" 'Analysis complete...'
+    }
+    __ztrace "$@"
 }

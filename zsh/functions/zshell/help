@@ -10,7 +10,7 @@
 function help() {
     local builtin_name=$1
     local querry="help $1"
-    { printf '%s' "$querry" | sh } >& /dev/null
+    { printf '%s' "$querry" | sh } &> /dev/null
     if [[ $? -ne 0 ]]; then
         printf 'Not found: %s.\n' "'$(Bad $querry)'"
         return 1

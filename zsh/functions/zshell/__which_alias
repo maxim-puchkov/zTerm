@@ -7,8 +7,12 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# Change directory and print its path.
+# 'which' command alias.
 function __which_alias() {
+    if [[ $# -eq 0 ]]; then
+        return 1
+    fi
+    
     local result=()
     for cmd in "$@"; do
         local command_info=()
@@ -20,5 +24,6 @@ function __which_alias() {
         result+=$( printf "%s\n" "${(@)command_info}" )
     done
     printf '%s\n' $result
+    return 0
 }
 

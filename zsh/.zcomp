@@ -29,6 +29,11 @@ compctl -K _pip     pip pip3 pip3.7 pip3.8
 # Commands
 compdef _command    syntax brief
 
+# Processes
+compdef _pids       leaks
+compdef _pids       lskq
+compdef _pids       malloc_history
+
 # Symbolic linker
 compdef _sln        sln
 
