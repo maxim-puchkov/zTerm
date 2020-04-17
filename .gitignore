@@ -1,6 +1,8 @@
 .DS_Store
-.config/bin/*
+.config/*
+!.config/crontab
 Profiles/*
+Python/__pycache__
 *.xcodeproj/*
 zsh/.oh-my-zsh
 zsh/.iterm2*
