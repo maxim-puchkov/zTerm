@@ -2,6 +2,6 @@
 
 
 _arguments \
-    '-L[display the logical current working directory (default)]' \
-    '-P[display the physical current working directory (all symbolic links resolved)]' \
+    '(-P):-L[display the logical current working directory (default)]' \
+    '(-L):-P[display the physical current working directory (all symbolic links resolved)]' \
     '*:: :->' && return 0

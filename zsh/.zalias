@@ -5,8 +5,7 @@
 alias -g noerr='2> /dev/null'  # redirect stderr
 alias -g quiet='&> /dev/null'  # redirect stdout and stderr
 
-# Custom errors.
-#alias error='error "$@"; return 1;'
+
 
 
 # Command 'ls'.
@@ -22,8 +21,12 @@ alias E='b_redbg'
 # Command 'rm'.
 alias rm='rm -i'
 
+# Command 'git'.
+alias gs='git status'
+
 # Command 'grep'.
 alias grep='grep --color'
+alias mang='grepman'
 
 # Command 'open'.
 alias xopen='open "/Applications/Xcode.app"'
@@ -34,14 +37,14 @@ alias scriptopen='open "/System/Applications/Utilities/Script Editor.app"'
 # Command 'which'.
 alias which='__which_alias'
 
+
+
+
 # Script 'dir'.
 alias dm='idir mod'
-
 
 # Python.
 alias python='python3'
 alias idle='idle3'
 
-
-alias mang='grepman'
 alias rr='zsh "$DEV/bin/run.sh"'

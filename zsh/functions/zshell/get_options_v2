@@ -10,7 +10,7 @@
 # Read all command options and store in an array with
 # the specified identifier.
 #   get_options identifier options...
-function get_options2() {
+function get_options_v2() {
     local identifier=$1
     local optstring="$2"
     shift 2
@@ -18,7 +18,6 @@ function get_options2() {
     
     SYNTAX="$0 identifier optstring arguments"
     syntax_check "$SYNTAX"
-#    serrif "-z $identifier" "-z $optstring arguments" $SYNTAX
     
     typeset -A result
     local opt=''

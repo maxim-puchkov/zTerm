@@ -1,0 +1,17 @@
+#compdef template
+
+
+_arguments -C \
+  '-d[specify output directory]:file:_files' \
+  '(-d):command:->command' && ret=0
+
+case $state in
+    (command)
+        declare -a commands
+        commands=(
+            zsh:'generate a new zsh script'
+            zfunction:'create an autoloadable zsh function'
+        )
+        _describe -t commands command commands && ret=0
+    ;;
+esac

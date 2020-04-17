@@ -1,0 +1,24 @@
+#!/bin/zsh
+
+#  cdp
+#
+#
+#  Created by mpuchkov on 2020-01-30.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Change directory and print its path.
+function cdp() {
+    local dir=${${1:-$HOME}:a}
+    
+    if [[ ! -e "$dir" ]]; then
+        echo "no such file or directory: $( red $dir )."
+        return 1
+    fi
+    
+    if [[ "$dir" != "$PWD" ]] && cd "$dir"; then
+        echo "current directory changed to '$( green $PWD )'"
+        return 0
+    fi
+}
+

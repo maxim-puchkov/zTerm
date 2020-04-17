@@ -8,4 +8,4 @@ _arguments \
             desk\:'create symbolic link on Desktop' ))" \
         '*:file:_files' \
     - set2 \
-      ":cmd:(( help\:'display help message' ))"
+        ":cmd:(( help\:'display help message' ))"
