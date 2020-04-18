@@ -23,11 +23,15 @@ compinit
 # Homebrew
 compdef _brew       bs
 
+# Shell builtin commands help
+compdef _builtins   help
+
 # Python Package Installer
 compctl -K _pip     pip pip3 pip3.7 pip3.8
 
 # Commands
 compdef _command    syntax brief
+compdef _command    __which_alias
 
 # Processes
 compdef _pids       leaks
@@ -36,6 +40,13 @@ compdef _pids       malloc_history
 
 # Symbolic linker
 compdef _sln        sln
+
+#
+compdef _nothing    update.sh
+
+#
+compdef _vars       try tryregex
+compdef _vars       typeof
 
 # Navigation
 compdef _cd         cdp

@@ -1,1 +1,23 @@
-/Users/admin/Developer/Terminal/zsh/templates/template_zsh
+___SHEBANG___
+
+#  ___FILENAME___
+#  ___PACKAGE_NAME___
+#
+#  Created by ___USERNAME___ on ___DATE_FULL___.
+#  Copyright © ___DATE_YEAR___ ___OWNER___. All rights reserved.
+
+
+# <#Function description#>
+function ___FILENAME___() {
+    printf 'Template z-function: %s.\n' $(blue "$0")
+    
+    # Print to stderr
+    local def=$(fn src $0)
+    if [[ $? -ne 0 ]]; then
+        printf 'Definition not found.\n' >&2
+        return 1
+    fi
+    
+    printf 'Defined in: %s.\n' $(blue "$def")
+    return 0
+}

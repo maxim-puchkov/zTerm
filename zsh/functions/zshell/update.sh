@@ -10,15 +10,18 @@
 # Update Homebrew and formulae
 function update.sh() {
     # Update package manager
-    Info "Updating Homebrew"
+    Info "Updating Homebrew..."
     brew update
     # Upgrade formulae
-    Info "Upgrading Homebrew formulae"
+    Info "Upgrading Homebrew formulae..."
     brew upgrade
     # Display outdated and missing formulae
     brew outdated
     brew missing
     # Update tldr
-    Info "Updating tldr"
+    Info "Updating tldr..."
     tldr --update
+    
+    echo
+    OK 'Shell updated.'
 }

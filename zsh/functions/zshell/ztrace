@@ -1,0 +1,27 @@
+#!/bin/zsh
+
+#  ztrace
+#  Z-Function
+#
+#  Created by Maxim Puchkov on 2020-04-17.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Trace a command.
+function ztrace() {
+    function __ztrace() {
+        printf "\n$(magenta %s) $(bmagenta %s)...\n" 'Tracing' "${*}"
+        setopt xtrace
+        local trace=$( "$@" 2>&1 )
+        printf "$(Info %s)\n" "${trace:-<No output>}"
+        setopt noxtrace
+        printf "$(magenta %s)\n\n" 'Trace complete.'
+    }
+    
+    if [[ $# -eq 0 ]]; then
+        return 1
+    fi
+    
+    __ztrace "$@"
+    return 0
+}

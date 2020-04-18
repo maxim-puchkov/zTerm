@@ -9,8 +9,9 @@ case $state in
     (command)
         declare -a commands
         commands=(
-            zsh:'generate a new zsh script'
-            zfunction:'create an autoloadable zsh function'
+            zsh:'default zsh script template'
+            zfunction:'autoloadable zsh function template'
+            zcmdfunction:'autoloadable zsh command function template'
         )
         _describe -t commands command commands && ret=0
     ;;

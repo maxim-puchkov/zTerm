@@ -30,5 +30,5 @@ function lorem() {
 
 
 
-export src="$HOME/Developer/Projects/neovim/src/"
-export fuzzdir="$HOME/Developer/Projects/neovim/src/nvim/viml/parser"
+#export src="$HOME/Developer/Projects/neovim/src/"
+#export fuzzdir="$HOME/Developer/Projects/neovim/src/nvim/viml/parser"

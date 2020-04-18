@@ -144,4 +144,5 @@ function fn() {
             ;;
     esac
     
+    return $exitcode
 }

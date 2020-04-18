@@ -13,17 +13,16 @@
 function get_options_v2() {
     local identifier=$1
     local optstring="$2"
-    shift 2
-    local arguments="$@"
+    local arguments=${@:3}
     
     SYNTAX="$0 identifier optstring arguments"
-    syntax_check "$SYNTAX"
+    syntax_check "$SYNTAX" ||
+        return 1
     
     typeset -A result
     local opt=''
     local length=0
     while getopts "$optstring" opt ${(z)arguments[@]} 2> /dev/null ; do
-        echo "Option: $opt | Argument: $OPTARG | I: $OPTIND"
         if [[ $opt == '?' ]]; then
             length=$(( $length + 1 ))
             continue;
@@ -40,10 +39,7 @@ function get_options_v2() {
     arg_list=(${(z)arguments})
     result[length]=$length
     result[command_arguments]=${(qq)${arg_list:$length}:-''}
-    cyan $result[command_arguments]
-#    local length=(${(kv)#result})
-    green $length
-    bluebg ${(kv)result}
+    
     typeset -Ag $identifier
     set -A $identifier ${(kv)result}
     return 0

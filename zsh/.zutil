@@ -1,13 +1,18 @@
 # User-specific functions for interactive zsh(1) shells.
 
 
+# Open default macOS Terminal.
+function term1() {
+    open -g '/System/Applications/Utilities/Terminal.app'
+}
 # Open iTerm2.
 function term2() {
-    open -a iTerm
+    open -g '/Applications/iTerm.app'
 }
+
 # Open in editor.
 function edit() {
-    if ( ! open -a "$EDITOR" "$@" ); then
+    if ( ! open -a $EDITOR "$@" ); then
         $EDITOR "$@"
     fi
 }

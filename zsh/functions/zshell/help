@@ -8,14 +8,14 @@
 
 
 function help() {
-    local builtin_name=$1
-    local querry="help $1"
-    { printf '%s' "$querry" | sh } &> /dev/null
+    local querry=$1
+    local help_command="help $1"
+    { printf '%s' "$help_command" | sh } &> /dev/null
     if [[ $? -ne 0 ]]; then
-        printf 'Not found: %s.\n' "'$(Bad $querry)'"
+        printf 'Help not found: %s.\n' "'$(Bad $help_command)'" >&2
         return 1
     fi
-    local ret=$( printf '%s\n' "$querry" | sh )
-    local highlight_builtin_name=$( b_magenta "$builtin_name" )
-    printf '%s\n' "${ret//$builtin_name/$highlight_builtin_name}"
+    local ret=$( printf '%s\n' "$help_command" | sh )
+    local highlight_querry=$( b_magenta "$querry" )
+    printf '%s\n' "${ret//$querry/$highlight_querry}"
 }

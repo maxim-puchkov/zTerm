@@ -8,29 +8,26 @@
 
 
 # Raise runtime function error:
-#   error [-c exit_code] [-n] description
-#
-# Options:
-#   -c X    exit from function with code X.
-#   -n      non-terminating error.
+#   error [-c exit_code] description
 function error() {
-#    builtin setopt errreturn
-    #MARK: Error properties.
-    # Error title.
-    local _title="$( red 'Error.' ) "
-    # Error description.
-    local _desc="${@:-no message.}"
-    _desc="${(C)_desc[1]}${${_desc:1}}"
     # Exit code.
-    local _ecode=${opts[c]:-1}
-    # Non-termination flag.
-    local _nonterm=${opts[n]}
-      if [[ $_nonterm == $SETOPT ]]; then
-          options[errexit]='off'
-          options[errreturn]='off'
-      fi
+    typeset -A opts
+    get_options_v2 opts 'c:C' "$@"
+    local _exitcode=${opts[c]:-1}
+    shift $opts[length]
     
-    #MARK: Display and return.
-    builtin echo "${_title}${_desc}" >&2
-    return _ecode
+    # Error title and description.
+    local _title="$( b_red 'Error.' )"
+    local _desc="${@:-no message.}"
+    
+    # Capitalize first letter and add trailing period.
+    _desc="${(C)_desc[1]}${${_desc:1}}"
+    if [[ ! "${(q)_desc}" =~ $'\\n' ]] &&
+        [[ ! "${(q)_desc}" =~ '^.*\.$' ]]; then
+        _desc="${_desc}."
+    fi
+    
+    # Print error and return.
+    printf '%s %s\n' "$_title" "$_desc" >&2
+    return _exitcode
 }

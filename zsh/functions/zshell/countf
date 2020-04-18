@@ -11,30 +11,30 @@
 function countf() {
     #
     function __count__() {
-        if [[ ! -e $in_dir ]]; then
+        if [[ ! -e "$in_dir" ]]; then
             echo "Directory not found: $in_dir."
             return 1
         fi
-        cd $in_dir
+        cd "$in_dir"
         echo $( find . ! -name . -prune -print | grep -i -E "$regex" -c )
-        cd $OLDPWD
+        cd "$OLDPWD"
     }
     
     # Match files by prefix.
     function countf_prefix() {
         local regex="^\.\/${filename}[[:alnum:]_\.\-]*"
-        echo $( __count__ $in_dir $regex )
+        echo $( __count__ "$in_dir" $regex )
     }
     # Exact filename match.
     function countf_exact() {
         local regex="^\.\/${filename}[[:space:]]*$"
-        echo $( __count__ $in_dir $regex )
+        echo $( __count__ "$in_dir" $regex )
     }
     
     #
-    local in_dir=${${1:-.}:a}
-    local filename=$2
-    local command_type=${3:-prefix}
+    local in_dir="${${1:-.}:a}"
+    local filename="$2"
+    local command_type="${3:-prefix}"
     ${0}_${command_type} "$@"
     return 0
 }

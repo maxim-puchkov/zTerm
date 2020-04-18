@@ -37,7 +37,7 @@ function template() {
             suffix="-$file_number"
         fi
         
-        # Applend file extension if necessary.
+        # Append file extension if necessary.
         local ext=''
         if [[ -n ${name:e} ]]; then
             ext=".${name:e}"
@@ -62,41 +62,63 @@ function template() {
         done
     }
     
-    
-    #MARK: - Z-Shell Command Template
-    function template_zsh() {
-        local name=${$( generate_filename ${1:-${(U)0}})}
-        local package=$2
-        local new_template=$target_dir/$name
-        local TEMPLATE_ORIG=$TEMPLATES_DIR/$0
-        
+    function copy_template() {
+        local m_filename="$1"
+        local m_package_name="$2"
+        local original="$3"
+        local new_template="$4"
         # Create new file from a copy of the original file.
-         if (cp $TEMPLATE_ORIG $new_template); then
-             m_filename=$name
-             m_package_name=$package
-             # Substitute template macro strings.
-             substitute_macros $new_template $TEMPLATE_MACROS
-             echo "Generated template file: $(OK $new_template)."
-         fi
-    }
-    
-    #MARK: - Z-Shell Environment Function
-    function template_zfunction() {
-        local name=${$( generate_filename $1 ):-${(U)0}}
-        local package='Z-Function'
-#        local target_dir="${zfunc}/zshell"
-        local new_template="${target_dir:-${zfunc}/zshell}/${name}"
-        local TEMPLATE_ORIG=$TEMPLATES_DIR/$0
-        
-       # Create new file from a copy of the original file.
-        if (cp $TEMPLATE_ORIG $new_template); then
+        if (cp -n $original $new_template); then
             m_filename=$name
             m_package_name=$package
             # Substitute template macro strings.
             substitute_macros $new_template $TEMPLATE_MACROS
             echo "Generated template file: $(OK $new_template)."
-        fi
+            return 0
+        else
+            error 'Fatal error.'
+            return 1
+         fi
     }
+    
+    
+    #MARK: - Z-Shell Command Template
+    function template_zsh() {
+        target_dir="${target_dir:-${PWD}}"
+        local name=${$( generate_filename ${1:-${(U)0}})}
+        local package=$2
+        local new_template="${target_dir}/${name}"
+        local TEMPLATE_ORIG=$TEMPLATES_DIR/$0
+        
+        copy_template "$name" "$package" "$TEMPLATE_ORIG" "$new_template"
+    }
+    
+    #MARK: - Z-Shell Function
+    function template_zfunction() {
+        target_dir="${target_dir:-${zfunc}/zshell}"
+        local name=${$( generate_filename $1 ):-${(U)0}}
+        local package='Z-Function'
+        local new_template="${target_dir}/${name}"
+        local TEMPLATE_ORIG=$TEMPLATES_DIR/$0
+        
+        copy_template "$name" "$package" "$TEMPLATE_ORIG" "$new_template"
+    }
+    
+    #MARK: - Z-Shell Command Function
+    function template_zcmdfunction() {
+        target_dir="${target_dir:-${zfunc}/zshell}"
+        local name=${$( generate_filename $1 ):-${(U)0}}
+        local package='Z-Function'
+        local new_template="${target_dir}/${name}"
+        local TEMPLATE_ORIG=$TEMPLATES_DIR/$0
+        
+        copy_template "$name" "$package" "$TEMPLATE_ORIG" "$new_template"
+    }
+    
+    
+    if [[ $# -eq 0 ]]; then
+        return 1
+    fi
     
     
     # Template macro strings.
@@ -112,7 +134,7 @@ function template() {
     m_filename="<#name#>"
     m_package_name="<#package#>"
     m_owner='Maxim Puchkov'
-    m_username='mpuchkov'
+    m_username='Maxim Puchkov'
     m_date_full=$( date +'%Y-%m-%d' )
     m_date_year=$( date +'%Y' )
     m_organization_id='com.maximpuchkov'
@@ -121,6 +143,7 @@ function template() {
     # Function options.
     typeset -A optlist
     get_options_v2 optlist 'd:D' "$@"
+    blue $optlist
     shift $optlist[length]
         
     # Source and compound commands.
@@ -128,9 +151,9 @@ function template() {
     cmd=$1
     
     # Template output directory (-d).
-    target_dir=${${optlist[d]:-$PWD}:a}
-    if [[ ! -d $target_dir ]]; then
-        error 'Invalid directory.'
+    target_dir=${optlist[d]:a}
+    if [[ -n $target_dir ]] && [[ ! -d "$target_dir" ]]; then
+        error "Invalid directory: '$target_dir'"
         return 2
     fi
     
@@ -149,4 +172,5 @@ function template() {
             fi
             ;;
     esac
+    return $ecode
 }

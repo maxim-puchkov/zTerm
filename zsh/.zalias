@@ -5,8 +5,15 @@
 alias -g noerr='2> /dev/null'  # redirect stderr
 alias -g quiet='&> /dev/null'  # redirect stdout and stderr
 
-
-
+# If statement: if [[ ... ]] T.
+alias -g T='; \
+    then \
+        echo "-- $(green True) $(pass) --"; \
+        return 0; \
+    else \
+        echo "-- $(red False) $(fail) --"; \
+        return 1; \
+    fi;'
 
 # Command 'ls'.
 alias ls='command ls -GF'
@@ -15,11 +22,11 @@ alias la='ls -lah'
 alias ll='ls -lh'
 
 # Command 'echo'.
-alias e='echo'
+alias e='builtin echo'
 alias E='b_redbg'
 
 # Command 'rm'.
-alias rm='rm -i'
+alias rm='command rm -i'
 
 # Command 'git'.
 alias gs='git status'
@@ -42,6 +49,10 @@ alias which='__which_alias'
 
 # Script 'dir'.
 alias dm='idir mod'
+
+# Script 'get_options'.
+alias get_options='get_options_v2'
+
 
 # Python.
 alias python='python3'

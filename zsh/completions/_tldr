@@ -1,7 +1,7 @@
 #compdef tldr
 
 
-_arguments \
+_arguments -S \
     '(-h --help)'{-h,--help}'   [display help text]' \
     '(-V --version)'{-V,--version}'[display version information]' \
     '(-l --list)'{-l,--list}'[list all commands in the cache]' \
@@ -17,4 +17,4 @@ _arguments \
     '*:: :-> subcmds' && return 0
 
 local tldr_commands=(${$( tldr --list )%,})
-_describe 'tldr commands' tldr_commands
+_describe -S 'tldr commands' tldr_commands

@@ -26,18 +26,6 @@ function zmisc()    { open -a Xcode "$ZMISC" }
 function zcomp()    { open -a Xcode "$ZCOMP" }
 
 
-
-typeset -Ag _A
-_A[k0]='v0'
-_A[k1]='v1'
-_A[k2]='v2'
-
-typeset -Ag _Inv
-_Inv[k0]=''
-_Inv[k1]='v1'
-_Inv[k2]='v2'
-
-
 # Compdef test function.
 function foo() {
     printf '%s\n' "$(magenta 'Function' ${0})"
@@ -48,16 +36,4 @@ function foo() {
 function bar() {
     printf '%s\n' "$(magenta 'Function' ${0})"
     printf 'Defined in %s\n' "$ZPROFILE"
-}
-
-function ztrace() {
-    function __ztrace() {
-        printf "\n$(magenta 'Analyzing') $(bmagenta %s)...\n" "$*"
-        setopt xtrace
-        local trace=$( "$@" 2>&1 )
-        printf "$(Info %s)\n" "$trace"
-        setopt noxtrace
-        printf "$(magenta %s)\n\n" 'Analysis complete...'
-    }
-    __ztrace "$@"
 }

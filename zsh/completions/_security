@@ -1,7 +1,7 @@
 #compdef security
 
 
-_arguments \
+_arguments -S \
     ":cmd:(( help\:'Show all commands, or show usage for a command.' \
         list-keychains\:'Display or manipulate the keychain search list.' \
         list-smartcards\:'Display available smartcards.' \
