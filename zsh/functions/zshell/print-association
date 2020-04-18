@@ -1,0 +1,25 @@
+#!/bin/zsh
+
+#  print-association
+#  Z-Function
+#
+#  Created by Maxim Puchkov on 2020-04-17.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function print-association() {
+    local var_id=$1
+    local var_type=${(Pt)var_id}
+    if [[ -z $var_id ]] || [[ ! $var_type =~ 'association' ]]; then
+        error "Variable '$(Bad "$var_id ($var_type)")' is not an association."
+        return 2
+    fi
+    
+    print-line
+    for k v in ${(Pkv)var_id}; do
+        printf "  %s[$(cyan %s)] = $(bold %s)\n" "$var_id" "$k" "$v"
+    done
+    print-line
+    printf '%s (size: %s)\n' "$var_id" "${(P)#var_id}"
+}

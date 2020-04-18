@@ -239,16 +239,16 @@ function zf-stat() {
 
 #MARK: - File Directories
 # Go to Z-Terminal root directory.
-function zt() {
+function ztermdir() {
     cdp "$ztermdir"
 }
 # Go to Z-Functions root directory.
-function zf() {
+function zfuncdir() {
     cdp "$zfunc"
 }
 
 # Go to SFU Spring 2020 directory.
-function sfu() {
+function sfudir() {
     cdp "$SFU_TERM"
 }
 

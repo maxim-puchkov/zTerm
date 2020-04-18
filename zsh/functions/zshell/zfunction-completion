@@ -1,0 +1,37 @@
+#!/bin/zsh
+
+#  zfunction-completion
+#  Z-Function
+#
+#  Created by Maxim Puchkov on 2020-04-17.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function zfunction-completion() {
+    local fn_name="$1"
+    typeset -A reply
+    typeset -a commands
+    local fn=$( find "$zfunc" -name "$fn_name" )
+    
+    commands=($(
+        grep -o -i -E "function ${fn_name}_.*\(\) {" -- "$fn" |
+        sed -e "s/^.*${fn_name}_//g" -e 's/().*$//g'
+    ))
+    
+    for cmd in $commands; do
+        local description=$(
+            greps '-o' "## ${cmd}: .+ ##.*function ${fn_name}_${cmd}[\s]*\(\)" $fn |
+            head -n 1 | sed -e "s/## ${cmd}: //g" -e "s/ ##.*//g"
+        )
+        if [[ -n "$description" ]]; then
+            reply[$cmd]="$description"
+        else
+            reply[$cmd]="''"
+        fi
+    done
+    
+    
+    print-association reply
+    echo ${(kv)reply}
+}

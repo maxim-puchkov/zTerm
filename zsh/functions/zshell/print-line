@@ -1,0 +1,16 @@
+#!/bin/zsh
+
+#  print-line
+#  Z-Function
+#
+#  Created by Maxim Puchkov on 2020-04-17.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function print-line() {
+    local character="${1[1]:-*}"
+    local width=${2:-$(tput cols)}
+    tput sgr0
+    grey $( printf '%*s%s\n' $width '' | tr ' ' "$character" )
+}
