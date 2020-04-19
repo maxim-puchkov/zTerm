@@ -311,8 +311,24 @@ function date_formats_preview() {
 }
 
 
-function letters() {
+function magnetize() {
+    open /Applications/Magnet.app -g
+    local positions=('← Left ◧' '→ Right ◨' '↑ Up ⬒ ' '↓ Down ⬓')
+    local group1=("⇧⌘"${^positions})
+    printf "$(underline %s):\n" 'Magnet Commands'
+    for cmd in $group1; do
+        printf '%-*s' 35 "$(bold $cmd)"
+    done
+    echo
     
+    #'Top Left ◰' 'Top Right ◳'
+    #'Bottom Left ◱' 'Bottom Right ◲'
+#    for cmd in $group2; do
+#        printf '%-*s' 35 "$(bold $cmd)"
+#    done
+}
+
+function letters() {
     typeset -ag Asym
     typeset -ag Anum
     
