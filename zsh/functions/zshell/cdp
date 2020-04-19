@@ -18,9 +18,8 @@ function cdp() {
     
     if [[ "$dir" != "$PWD" ]] && cd "$dir"; then
         echo "current directory changed to '$( green $PWD )'"
-        return 0
-    else
-        return 1
     fi
+    
+    return 0
 }
 
