@@ -9,12 +9,12 @@
 
 # <#Function description#>
 function zfunction-new() {
-    local newest=($zfunc/zshell/*(Nc0oc[1]))
-    local change_time=$(stat -f '%Sc' $newest)
+    local newest=($zfunc/zshell/*(Nm0om[1]))
+    local change_time=$(stat -f '%Sm' $newest)
     if [[ ! -f "$newest" ]]; then
         return 1
     fi
     newest=${newest#$zfunc}
-    printf 'Newest: %s (created on %s).\n' $(blue "$newest") "$change_time"
+    printf 'Newest: %s (modified on %s).\n' $(blue "$newest") "$change_time"
     return 0
 }

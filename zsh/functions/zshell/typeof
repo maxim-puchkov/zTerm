@@ -17,5 +17,6 @@ function typeof() {
         fi
         results+=( "typeof $var_id:" "$var_type" )
     done
-    print -aC 2 $results
+    
+    print -a -C 2 $results
 }

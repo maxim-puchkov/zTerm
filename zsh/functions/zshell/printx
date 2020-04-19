@@ -8,10 +8,24 @@
 
 
 function printx() {
+    # Get ASCII input
     local input="$*"
-    if [[ ${#input} -eq 0 ]]; then
+    if [[ -z "$input" ]]; then
         read input
     fi
-    local hex=$( ascii2hex "$input" )
-    echo "$hex"
+    if [[ -z "$input" ]]; then
+        error 'No input.'
+        return 2
+    fi
+    
+    # Convert to hexadecimal
+    local hex=''
+    hex=$( ascii2hex.py "$input" 2> /dev/null )
+    
+    if [[ -z $hex ]]; then
+        return 1
+    fi
+    
+    printf '%s\n' "$hex"
+    return 0
 }

@@ -12,6 +12,9 @@ for comp in $DEV/Terminal/zsh/completions/*; do
     autoload ${comp:t}
 done
 
+
+
+
 # Initialize the completion system.
 autoload -U compinit
 compinit
@@ -20,6 +23,9 @@ compinit
 
 
 #MARK: - Completions
+# Aliases
+#compdef _alias
+
 # Homebrew
 compdef _brew       bs
 
@@ -27,11 +33,14 @@ compdef _brew       bs
 compdef _builtins   help
 
 # Python Package Installer
-compctl -K _pip     pip pip3 pip3.7 pip3.8
+compctl -K _pip     pip  pip3  pip3.7  pip3.8
 
 # Commands
-compdef _command    syntax brief
+compdef _command    syntax  brief
 compdef _command    __which_alias
+
+#
+compdef _command    hist
 
 # Processes
 compdef _pids       leaks
@@ -43,9 +52,10 @@ compdef _sln        sln
 
 #
 compdef _nothing    update.sh
+compdef _nothing    spectrum  color_scheme
 
 #
-compdef _vars       try tryregex
+compdef _vars       try  tryregex
 compdef _vars       typeof
 
 # Navigation

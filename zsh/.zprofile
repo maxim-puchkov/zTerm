@@ -42,10 +42,15 @@ function bar() {
 
 
 #MARK: - Predefined Test Variables
-tl1=( 'a' 'b' 'c' 'd' 'e' 'f' )
-tl2=( '1' '2' '3' )
-tvar1='Hello, world!'
+l1=( 'a' 'b' 'c' 'x' 'y' 'z' )
+l2=( '1' '2' '3' )
+var1='Hello, world!'
+typeset -A A1
+l3=( {a..z} )
 
+for i in {1..26}; do
+    A1[$i]=${(U)l3[$i]}
+done
 
 alias '$'tl='$tl1'
 alias '$'tvar='$tvar'

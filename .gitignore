@@ -3,7 +3,7 @@
 !.config/crontab
 Logs/*
 Profiles/*
-Python/__pycache__
+Python/**/__pycache__
 *.xcodeproj/*
 zsh/.oh-my-zsh
 zsh/.iterm2*

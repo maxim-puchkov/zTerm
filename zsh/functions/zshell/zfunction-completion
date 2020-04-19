@@ -16,13 +16,15 @@ function zfunction-completion() {
     
     commands=($(
         grep -o -i -E "function ${fn_name}_.*\(\) {" -- "$fn" |
-        sed -e "s/^.*${fn_name}_//g" -e 's/().*$//g'
+            sed -e "s/^.*${fn_name}_//g" -e 's/().*$//g'
     ))
     
     for cmd in $commands; do
+        local pattern="## ${cmd}: .+ ##.*function ${fn_name}_${cmd}[\s]*\(\)"
         local description=$(
-            greps '-o' "## ${cmd}: .+ ##.*function ${fn_name}_${cmd}[\s]*\(\)" $fn |
-            head -n 1 | sed -e "s/## ${cmd}: //g" -e "s/ ##.*//g"
+            greps '-o' "$pattern" "$fn" |
+                head -n 1 |
+                sed -e "s/## ${cmd}: //g" -e "s/ ##.*//g"
         )
         if [[ -n "$description" ]]; then
             reply[$cmd]="$description"

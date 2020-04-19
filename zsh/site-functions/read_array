@@ -20,13 +20,13 @@ function read_array() {
     fi
     
     if [[ ! -r "$filepath" ]]; then
-        error "No save file for $(Bad var_id)."
+        error "No save file for '$(Bad var_id)'."
         return 1
     fi
     
     # Read and set the array
     local var_type="${3[1]:-a}"
-    case "$var_type" in
+    case $var_type in
         'A')
             typeset -Ag $var_id
             eval "set -A $var_id $(< $filepath)"
@@ -35,9 +35,19 @@ function read_array() {
             eval "$var_id=($(< $filepath))"
             ;;
         *)
-            error 'Invalid type.'
+            error "Cannot convert to type '$(Bad $var_type)'.\n"
+                "Valid types: array ($(OK 'a'))," \
+                "associative array ($(OK 'A'))."
             return 1
             ;;
     esac
+    
+    integer size=${#${(P)var_id}}
+    if [[ $size -eq 0 ]]; then
+        error "Could not read array values."
+        return 1
+    fi
+    
+    printf "OK: read %d values of '$(OK %s)'.\n" $size "$var_id"
     return 0
 }

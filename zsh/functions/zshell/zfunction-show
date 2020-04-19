@@ -51,7 +51,7 @@ function zfunction-show() {
     
     # Header
     local column1_header='FUNCTION' #"$(bold 'Z-Function')"
-    local column2_header='DATE' # "$(bold 'Date')"
+    local column2_header='DATE MODIFIED' # "$(bold 'Date')"
     table_header=(
         "$( printf '%s\t\t%s' "$column1_header" "$column2_header" |
                 expand -t 8 )"
@@ -86,7 +86,7 @@ function zfunction-show() {
                 printf '%s %s' $formatted_name $formatted_date
 
                 if [[ $fn_name == $recent ]]; then
-                    printf '\t (%s)' "$(green 'recent')"
+                    printf '\t (%s)' "$(green 'most recent')"
                 fi
                 printf '\n'
             done |

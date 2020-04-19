@@ -10,12 +10,15 @@
 function help() {
     local querry=$1
     local help_command="help $1"
-    { printf '%s' "$help_command" | sh } &> /dev/null
-    if [[ $? -ne 0 ]]; then
+    { printf '%s' "$help_command" |
+        sh } &> /dev/null
+    local exitcode=$?
+    if [[ $exitcode -ne 0 ]]; then
         printf 'Help not found: %s.\n' "'$(Bad $help_command)'" >&2
-        return 1
+        return $exitcode
     fi
     local ret=$( printf '%s\n' "$help_command" | sh )
     local highlight_querry=$( b_magenta "$querry" )
     printf '%s\n' "${ret//$querry/$highlight_querry}"
+    return 0
 }

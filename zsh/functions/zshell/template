@@ -140,12 +140,14 @@ function template() {
     m_organization_id='com.maximpuchkov'
     export TEMPLATE_MACROS
     
+    
+    
+    
     # Function options.
     typeset -A optlist
     get_options_v2 optlist 'd:D' "$@"
-    blue $optlist
     shift $optlist[length]
-        
+    
     # Source and compound commands.
     src=$( basename $0 )
     cmd=$1

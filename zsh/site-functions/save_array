@@ -22,6 +22,11 @@ function save_array() {
     case $var_type in
         *'association'*)
             arr=(${(Pkv)var_id})
+            # Check null values
+            if [[ ! $(( ${(Pk)#var_id} * 2 )) -eq ${#arr} ]]; then
+                error "'$(Bad var_id)' is not a valid association."
+                return 2
+            fi
             ;;
         *'array'*)
             arr=(${(P)var_id})
@@ -34,14 +39,10 @@ function save_array() {
     
     # Check type
     if [[ ! ${(t)arr} =~ 'array' ]]; then
-        error "$(Bad var_id) is not an array."
+        error "'$(Bad var_id)' is not an array."
         return 2
     fi
-    # Check null values
-    if [[ ! $(( ${(Pk)#var_id} * 2 )) -eq ${#arr} ]]; then
-        error "$(Bad var_id) invalid association."
-        return 2
-    fi
+
     
     # File to which the array will be written to
     local default_filepath="$DEV/Library/Data/$var_id.array"
@@ -51,8 +52,10 @@ function save_array() {
     fi
     
     # Write to file
-    if (! print -r -- ${(qq)arr} > "$filepath"); then
+    if ( ! print -r -- ${(qq)arr} > "$filepath" ); then
         return 1
     fi
+    
+    printf "OK: '$(OK %s)' is saved in '$(OK %s)'.\n" "$var_id" "$filepath"
     return 0
 }

@@ -12,19 +12,11 @@ function term2() {
 
 # Open in editor.
 function edit() {
-    if ( ! open -a $EDITOR "$@" ); then
-        $EDITOR "$@"
-    fi
+    $EDITOR "$@"
+#    if ( ! open -a $EDITOR "$@" ); then
+#        $EDITOR "$@"
+#    fi
 }
-# Hexdump files.
-function hx() {
-    for f in "$@"; do
-        printf '%s\n' "$(bold $f)"
-        hexyl -v $f
-        printf '\n'
-    done
-}
-
 
 
 
@@ -346,6 +338,9 @@ function letters() {
     Anum[$index]=$(b_bred $Anum[$index])
     { printf '  %s' ${Asym}; echo
         printf '%s ' $Anum; echo } | \
-    column -t
+        column -t
+    
+    echo; echo;
+    printf '  %s %s\n' ${Asym} ${Anum} | column -t
 }
 
