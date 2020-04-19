@@ -1,0 +1,27 @@
+#!/bin/zsh
+
+#  alphabet
+#  Z-Function
+#
+#  Created by Maxim Puchkov on 2020-04-18.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function alphabet() {
+    printf 'Template z-function: %s.\n' $(blue "$0")
+    
+    # Print to stderr
+    local def=$(fn src $0)
+    if [[ $? -ne 0 ]]; then
+        printf 'Definition not found.\n' >&2
+        return 1
+    fi
+    
+    local first_letter="${1:c}"
+    local formulae=($( brew search ))
+    
+    
+    printf 'Defined in: %s.\n' $(blue "$def")
+    return 0
+}

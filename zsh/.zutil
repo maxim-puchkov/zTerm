@@ -283,3 +283,53 @@ function fail() {
     printf '%s\n' "$(b_bred '✘')"
     return 1
 }
+
+
+
+# Z-Cmd-Function
+# date
+function date_list_formats() {
+    typeset -ag formats
+    formats=()
+    man strftime |
+        colcrt - |
+        fgrep -- '%' |
+        awk '{ print $1 }' |
+        while read fmt; do
+            if [[ $fmt[1] == '%' ]]; then
+                formats+=($fmt);
+            fi
+        done
+    print -a -C 8 ${formats}
+}
+function date_formats_preview() {
+    for format in $( date_list_formats ); do
+        local full_command="\$( $(green "date -j +\'$format\'") )"
+        local preview="$(blue ${(qq)$( date -j +"$format" )})"
+        print -a -C2 "${format}\t ${full_command}\t" "${preview}"
+    done
+}
+
+
+function letters() {
+    
+    typeset -ag Asym
+    typeset -ag Anum
+    
+    Asym=({A..Z})
+    Anum=({1..26})
+    local letter=${1[1]:-L}
+#    local compareTo=${2[1]}
+    
+    local index=${Asym[(wi)$letter]}
+    if [[ $index -gt ${#Asym} ]]; then
+        return 1
+    fi
+    
+    Asym[$index]=$(b_bred $Asym[$index])
+    Anum[$index]=$(b_bred $Anum[$index])
+    { printf '  %s' ${Asym}; echo
+        printf '%s ' $Anum; echo } | \
+    column -t
+}
+

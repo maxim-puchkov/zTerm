@@ -33,6 +33,7 @@ alias rm='command rm -i'
 
 # Command 'git'.
 alias gs='git status'
+alias gt='() { cdp "$ztermdir"; git status; }'
 
 # Command 'grep'.
 alias grep='grep --color'

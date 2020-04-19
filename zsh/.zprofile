@@ -38,6 +38,19 @@ function bar() {
     printf 'Defined in %s\n' "$ZPROFILE"
 }
 
+
+
+
+#MARK: - Predefined Test Variables
+tl1=( 'a' 'b' 'c' 'd' 'e' 'f' )
+tl2=( '1' '2' '3' )
+tvar1='Hello, world!'
+
+
+alias '$'tl='$tl1'
+alias '$'tvar='$tvar'
+
+# 10-second long job.
 function job10() {
     local tmpf=$(tempfile)
     printf 'Job 10 (%s) started on %s.\n' "$0" "$(date)" &>> $tmpf
