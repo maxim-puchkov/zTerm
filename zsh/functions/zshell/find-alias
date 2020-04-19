@@ -1,0 +1,19 @@
+#!/bin/zsh
+
+#  find-alias
+#  Z-Function
+#
+#  Created by Maxim Puchkov on 2020-04-18.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function find-alias() {
+    local alias_id="$1"
+    if [[ -z "$alias_id" ]]
+    for fsrc in $functions_source; do
+        grep 'alias lsa' $fsrc;
+    done
+    printf 'Defined in: %s.\n' $(blue "$def")
+    return 0
+}

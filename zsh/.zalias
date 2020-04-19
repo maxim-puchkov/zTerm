@@ -25,6 +25,9 @@ alias ll='ls -lh'
 alias e='builtin echo'
 alias E='b_redbg'
 
+# Command 'history'.
+alias h='() { n=100; n=${@:+$HISTCMD}; history -${n} | grep -E "${@:-''}" }'
+
 # Command 'rm'.
 alias rm='command rm -i'
 

@@ -1,0 +1,19 @@
+#!/bin/zsh
+
+#  hist
+#  Z-Function
+#
+#  Created by Maxim Puchkov on 2020-04-17.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function hist() {
+    local pattern="$1"
+    local n=${2:-1000}
+    if [[ -z $pattern ]]; then
+        n=25
+    fi
+    fc -l -${n} | grep --color -i -E "$pattern"
+    return 0
+}

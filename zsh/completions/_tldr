@@ -16,5 +16,5 @@ _arguments -S \
     '--seed-config[create a basic config]' \
     '*:: :-> subcmds' && return 0
 
-local tldr_commands=(${$( tldr --list )%,})
-_describe -S 'tldr commands' tldr_commands
+local tldr_commands=(${$( tldr --list )%','})
+_describe 'tldr commands' tldr_commands

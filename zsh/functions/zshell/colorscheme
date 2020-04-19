@@ -1,0 +1,27 @@
+#!/bin/zsh
+
+#  colorscheme
+#  Z-Function
+#
+#  Created by Maxim Puchkov on 2020-04-17.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function colorscheme() {
+    local normal=( black red   green   yellow   blue   magenta   cyan   grey  )
+    local bright=( dgrey b_red b_green b_yellow b_blue b_magenta b_cyan white )
+    bg_suffix='bg'
+    local normal_bg=( ${^normal}$bg_suffix )
+    local bright_bg=( ${^bright}$bg_suffix )
+
+    for i in {1..8}; do
+        local f1=${normal[$i]}
+        local f2=${bright[$i]}
+        local b1=${normal_bg[$i]}
+        local b2=${bright_bg[$i]}
+        printf '%d.  FG: %s  %s  |  BG: %s  %s\n' $i \
+            "$($f1 'Normal')" "$($f2 'Bright')" \
+            "$($b1 'Normal')" "$($b2 'Bright')"
+    done
+}
