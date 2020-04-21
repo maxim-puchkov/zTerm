@@ -46,7 +46,7 @@ alias webopen='open "/Applications/Safari.app"'
 alias scriptopen='open "/System/Applications/Utilities/Script Editor.app"'
 
 # Command 'which'.
-alias which='__which_alias'
+#alias which='__which_alias'
 
 
 

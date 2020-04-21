@@ -11,9 +11,6 @@
 #   Display name, synopsis, and brief description (first
 #   paragraph) of a command, function, or file.
 function syntax() {
-    export SYNTAX=(syntax name)
-    local manpage=$1
-    
     # Search manual page.
     function pattern_search() {
         local text=$1
@@ -32,15 +29,17 @@ function syntax() {
     }
     
     
+    local manpage=$1
     # Check arguments.
-    if [[ -z $manpage ]]; then
+    export SYNTAX="$0 manpage"
+    if [[ -z "$manpage" ]]; then
         serror 'name' "$SYNTAX"
     fi
     
     # Check that manual page exists.
     man $manpage >& /dev/null
     if [[ $status -ne 0 ]]; then
-        error "Manual page for $(Bad $manpage) not found."
+        error "Manual page for '$(Bad $manpage)' not found."
     fi
     
     # Get name, synopsis, and description from manual page contents.

@@ -1,5 +1,0 @@
-#compdef cmplte
-
-
-desk_dirs=($( ls -A $HOME/Desktop ))
-_describe 'Desktop' desk_dirs

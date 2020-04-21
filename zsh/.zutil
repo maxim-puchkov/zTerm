@@ -343,4 +343,3 @@ function letters() {
     echo; echo;
     printf '  %s %s\n' ${Asym} ${Anum} | column -t
 }
-

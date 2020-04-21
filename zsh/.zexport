@@ -20,6 +20,7 @@ export zcompdir="$ztermdir/zsh/completions"
 
 # Package Managers
 export HOMEBREW="/usr/local/Homebrew"
+export ZSHLIB="/usr/local/Cellar/zsh/5.8/share/zsh"
 
 
 # SFU Files

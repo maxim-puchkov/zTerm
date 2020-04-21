@@ -24,7 +24,8 @@ compinit
 
 #MARK: - Completions
 # Aliases
-#compdef _alias
+compdef _alias      find-alias
+compdef _alias      alias_value
 
 # Homebrew
 compdef _brew       bs
@@ -37,7 +38,6 @@ compctl -K _pip     pip  pip3  pip3.7  pip3.8
 
 # Commands
 compdef _command    syntax  brief
-compdef _command    __which_alias
 
 #
 compdef _command    hist

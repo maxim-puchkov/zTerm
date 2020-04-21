@@ -3,8 +3,6 @@
 
 # Path to oh-my-zsh.
 export ZSH="$ZDOTDIR/.oh-my-zsh"
-export ZSHLIB="/usr/local/Cellar/zsh/5.8/share/zsh"
-
 if [[ -z $ZSH_THEME ]]; then
     ZSH_THEME="af-magic" #"theunraveler"
 fi

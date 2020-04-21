@@ -17,11 +17,13 @@ function alphabet() {
         printf 'Definition not found.\n' >&2
         return 1
     fi
-    
-    local first_letter="${1:c}"
     local formulae=($( brew search ))
+    for fn in $formulae; do
+    local first_letter="${1:c}"
+    local f=$( maketemp )
+        printf '%s\n' "$fn"
     
-    
-    printf 'Defined in: %s.\n' $(blue "$def")
+    printf 'Defined in: %s.\n' "$(blue def)"
+    done
     return 0
 }

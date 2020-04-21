@@ -9,25 +9,23 @@
 
 # <#Function description#>
 function zfunction-show() {
-    typeset -ag list
     
-    list=() #( 'Z-Function' 'Date Modified' )
+    # Format the date
+    function format_date() {
+        printf '%s\n' "$( date -r $1 -j +'%b-%d-%Y %R' )"
+    }
+    
+    #MARK: Preprocess files
+    # Process files in the functions' directory
+    local -a list=()
     local dir="$zfunc/zshell"
     for file in $dir/*; do
         local mod_date="$(stat -f '%m' $file)"
         list+=( "${(q)file##*'/'}" "${(q)mod_date}" )
     done
     
-    
-    local recent=$( printf '%s %s\n' $list | sort -k2n | tail -1 | awk '{print $1}' )
-    
-    
-    function format_date() {
-        printf '%s\n' "$( date -r $1 -j +'%b-%d-%Y %R' )"
-    }
-    
-    
-    # Options
+    # MARK: Options
+    # Determine output format
     local show_lines=${#list:2}
     local sort_options='--key 2n'
     if [[ $# -gt 0 ]]; then
@@ -41,24 +39,24 @@ function zfunction-show() {
     fi
     
     
+    #MARK: Table Data
     # Table
     local -a table_header=()
     local table_div=''
     local div_length=0
-    typeset -ag table_body=()
+    local -a table_body=()
     local div_length=''
     
     
     # Header
-    local column1_header='FUNCTION' #"$(bold 'Z-Function')"
-    local column2_header='DATE MODIFIED' # "$(bold 'Date')"
+    local column1_header='FUNCTION'
+    local column2_header='DATE MODIFIED'
     table_header=(
         "$( printf '%s\t\t%s' "$column1_header" "$column2_header" |
                 expand -t 8 )"
     )
     
-    
-    # Divider
+    # Divider line
     longest_row=(
         $( printf '%s %s\n' $list |
             awk '{print length, $1, $2}' |
@@ -75,9 +73,14 @@ function zfunction-show() {
             tr ' ' '-'
     )
     
-    
     # Table body
-    function generate_table() {
+    local recent=$(
+        printf '%s %s\n' $list |
+            sort -k2n |
+            tail -1 |
+            awk '{print $1}'
+    )
+    table_body=$(
         printf '%s %s\n' ${(@)list} |
             sort ${(z)sort_options} |
             while read fn_name fn_mod_date; do
@@ -85,25 +88,19 @@ function zfunction-show() {
                 local formatted_date="$(date -r $fn_mod_date -j +'%b-%d-%Y %R')"
                 printf '%s %s' $formatted_name $formatted_date
 
-                if [[ $fn_name == $recent ]]; then
+                if [[ "$fn_name" == "$recent" ]]; then
                     printf '\t (%s)' "$(green 'most recent')"
                 fi
                 printf '\n'
             done |
-            column -t |
-            head -n $show_lines
-    }
-    table_body="$( generate_table )"
+        column -t |
+        head -n $show_lines
+    )
     
     
-    # Print table
+    # Print the table
     printf '%s\n' "$table_header"
     printf '%s\n' "$table_div"
     printf '%s\n'   "$table_body"
-    
-#    printf '%s %s\n' ${table_body}
-#    printf '\t(%s)\n'  #
-
-
     return 0
 }
