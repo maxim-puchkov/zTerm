@@ -1,14 +1,14 @@
 #!/bin/zsh
 
-#  alphabet
+#  helpme
 #  Z-Function
 #
-#  Created by Maxim Puchkov on 2020-04-18.
+#  Created by Maxim Puchkov on 2020-04-21.
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
 # <#Function description#>
-function alphabet() {
+function helpme() {
     printf 'Template z-function: %s.\n' $(blue "$0")
     
     # Print to stderr
@@ -17,13 +17,8 @@ function alphabet() {
         printf 'Definition not found.\n' >&2
         return 1
     fi
-    local formulae=($( brew search ))
-    for fn in $formulae; do
-    local first_letter="${1:c}"
-    local f=$( maketemp )
-        printf '%s\n' "$fn"
     
-    printf 'Defined in: %s.\n' "$(blue $def)"
-    done
+    printf 'Defined in: %s.\n' $(blue "$def")
+#    printf '%s\n' ${"$(fn body $0)"}
     return 0
 }

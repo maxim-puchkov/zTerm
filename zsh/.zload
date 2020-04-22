@@ -39,3 +39,6 @@ source "/usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
 unalias run-help
 autoload run-help
+
+
+export SHELLSTARTUP=$(tempfile 'time')

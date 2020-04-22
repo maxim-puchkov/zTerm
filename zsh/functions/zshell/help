@@ -13,6 +13,8 @@ function help() {
     { printf '%s' "$help_command" |
         sh } &> /dev/null
     local exitcode=$?
+    
+    if [[ $exitcode -ne 0]]
     if [[ $exitcode -ne 0 ]]; then
         printf 'Help not found: %s.\n' "'$(Bad $help_command)'" >&2
         return $exitcode

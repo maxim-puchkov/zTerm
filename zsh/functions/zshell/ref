@@ -1,0 +1,29 @@
+#!/bin/zsh
+
+#  ref
+#  Quick shell reload
+#
+#  Created by mpuchkov on 2020-04-21.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Reload autoloaded functions
+function ref() {
+    updated_files=($( find "$zfunc/zshell" -type f -mnewer $SHELLSTARTUP ))
+    if [[ ${#updated_files} -eq 0 ]]; then
+        return 1
+    fi
+    
+    printf 'Functions updated:\n'
+    for filepath in $updated_files; do
+        local fn_name=${filepath:t}
+        builtin unfunction "$fn_name" &&
+            builtin autoload "$fn_name"
+        printf '  %s\n' "$(blue $fn_name)"
+    done
+    
+    touch $SHELLSTARTUP
+#    LASTUPDATE=$(date -j +'%s')
+#    export LASTUPDATE
+    return 0
+}

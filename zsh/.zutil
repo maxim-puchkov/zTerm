@@ -253,7 +253,7 @@ function pygments-styles() {
 
 
 # Go to Desktop.
-function desk()     { cdp "${(q)HOME}/Desktop/${@}"; }
+function desk()     { cdp "${(q)HOME}/Desktop/${(q)@}"; }
 # Go to Development root.
 function dev()      { cdp "${(q)DEV}/${@}"; }
 # Go to Library.
@@ -262,6 +262,8 @@ function lib()      { cdp "${(q)lib}/${@}"; }
 function temp()     { cdp "${(q)tempdir}/${@}"; }
 # Go to Test Files.
 function testdir()  { cdp "${(q)testdir}/${@}" }
+# Go to local var.
+function var()      { cdp "${(q)HOME}/var/${(q)@}"; }
 
 
 

@@ -54,7 +54,8 @@ alias scriptopen='open "/System/Applications/Utilities/Script Editor.app"'
 # Script 'dir'.
 alias dm='idir mod'
 
-# Script 'get_options'.
+# Updated scripts.
+alias re='re_v2'
 alias get_options='get_options_v2'
 
 
@@ -63,3 +64,4 @@ alias python='python3'
 alias idle='idle3'
 
 alias rr='zsh "$DEV/bin/run.sh"'
+alias modf='echo "#   $RANDOM" >> $zfunc/zshell/test-ref'

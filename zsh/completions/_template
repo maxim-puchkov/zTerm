@@ -6,13 +6,16 @@ _arguments -C \
   '(-d):command:->command' && ret=0
 
 case $state in
-    (command)
+    command)
         declare -a commands
         commands=(
-            zsh:'default zsh script template'
-            zfunction:'autoloadable zsh function template'
+            python:'python file'
+            zcompletion:'zsh compdef template'
             zcmdfunction:'autoloadable zsh command function template'
+            zfunction:'autoloadable zsh function template'
+            zsh:'default zsh script template'
         )
-        _describe -t commands command commands && ret=0
+        _describe -t commands command commands &&
+            ret=0
     ;;
 esac

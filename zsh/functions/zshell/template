@@ -85,10 +85,10 @@ function template() {
     #MARK: - Z-Shell Command Template
     function template_zsh() {
         target_dir="${target_dir:-${PWD}}"
-        local name=${$( generate_filename ${1:-${(U)0}})}
-        local package=$2
+        local name="${$( generate_filename ${1:-${(U)0}})}"
+        local package="$2"
         local new_template="${target_dir}/${name}"
-        local TEMPLATE_ORIG=$TEMPLATES_DIR/$0
+        local TEMPLATE_ORIG="$TEMPLATES_DIR/$0"
         
         copy_template "$name" "$package" "$TEMPLATE_ORIG" "$new_template"
     }
@@ -96,10 +96,10 @@ function template() {
     #MARK: - Z-Shell Function
     function template_zfunction() {
         target_dir="${target_dir:-${zfunc}/zshell}"
-        local name=${$( generate_filename $1 ):-${(U)0}}
+        local name="${$( generate_filename $1 ):-${(U)0}}"
         local package='Z-Function'
         local new_template="${target_dir}/${name}"
-        local TEMPLATE_ORIG=$TEMPLATES_DIR/$0
+        local TEMPLATE_ORIG="$TEMPLATES_DIR/$0"
         
         copy_template "$name" "$package" "$TEMPLATE_ORIG" "$new_template"
     }
@@ -107,12 +107,25 @@ function template() {
     #MARK: - Z-Shell Command Function
     function template_zcmdfunction() {
         target_dir="${target_dir:-${zfunc}/zshell}"
-        local name=${$( generate_filename $1 ):-${(U)0}}
+        local name="${$( generate_filename $1 ):-${(U)0}}"
         local package='Z-Function'
         local new_template="${target_dir}/${name}"
-        local TEMPLATE_ORIG=$TEMPLATES_DIR/$0
+        local TEMPLATE_ORIG="$TEMPLATES_DIR/$0"
         
         copy_template "$name" "$package" "$TEMPLATE_ORIG" "$new_template"
+    }
+    
+    function template_python() {
+        target_dir="${target_dir:-${PWD}}"
+        local name="${$( generate_filename ${1:-${(U)0}})}"
+        local package="$2"
+        local new_template="${target_dir}/${name}"
+        local TEMPLATE_ORIG="$TEMPLATES_DIR/$0.py"
+        m_shebang='\#\!\/usr\/bin\/env\ python3'
+        
+        if (copy_template "$name" "$package" "$TEMPLATE_ORIG" "$new_template"); then
+            chmod a+x $new_template
+        fi
     }
     
     

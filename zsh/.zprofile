@@ -42,18 +42,16 @@ function bar() {
 
 
 #MARK: - Predefined Test Variables
+var1='Hello, world!'
 l1=( 'a' 'b' 'c' 'x' 'y' 'z' )
 l2=( '1' '2' '3' )
-var1='Hello, world!'
-typeset -A A1
 l3=( {a..z} )
 
+typeset -A A1
 for i in {1..26}; do
     A1[$i]=${(U)l3[$i]}
 done
 
-alias '$'tl='$tl1'
-alias '$'tvar='$tvar'
 
 # 10-second long job.
 function job10() {

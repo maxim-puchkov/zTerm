@@ -1,6 +1,8 @@
 # User-specific z-shell shell configuration.
 
 
+#export LASTUPDATE=$(date -j +'%s')
+
 # Path to oh-my-zsh.
 export ZSH="$ZDOTDIR/.oh-my-zsh"
 if [[ -z $ZSH_THEME ]]; then
@@ -31,11 +33,12 @@ export EDITOR="/usr/bin/nano"
 
 
 # iTerm 2 shell integration.
-test -e "${ZDOTDIR}/.iterm2_shell_integration.zsh" && source "${ZDOTDIR}/.iterm2_shell_integration.zsh"
+if [[ -e "$ZDOTDIR/.iterm2_shell_integration.zsh" ]]; then
+    source "${ZDOTDIR}/.iterm2_shell_integration.zsh"
+fi
 
 
 # Python
-#export PYTHONPATH
 export PYTHONSTARTUP="/Users/admin/Developer/Terminal/Python/.pyenv"
 export PYTHONPATH="$DEV/Terminal/Python:$PYTHONPATH"
 

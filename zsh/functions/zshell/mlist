@@ -1,0 +1,22 @@
+#!/bin/zsh
+
+#  mlist
+#  Z-Function
+#
+#  Created by Maxim Puchkov on 2020-04-21.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function mlist() {
+    printf "Functions modified after $(bcyan %s).\n" "$(stat -f '%Sm' $SHELLSTARTUP)" # "$(bcyan $(date -r $LASTUPDATE))"
+    
+    local updated_files=($( find "$zfunc/zshell" -type f -mnewer $SHELLSTARTUP ))
+    for filepath in $updated_files; do
+        local fn_name=${filepath:t}
+        local fn_mtime=$(stat -f '%Sm' $filepath)
+        printf "$(blue %s): modified on %s\n" "$fn_name" "$fn_mtime"
+    done
+    
+    return 0
+}
