@@ -35,7 +35,7 @@ export A310="$SFU_TERM/PHIL 310/assignments"
 
 
 # Command variables
-export GREP_COLOR="01;95"
+export GREP_COLOR="00;95"
 export PCREGREP_COLOUR="$GREP_COLOR"
 
 
@@ -43,3 +43,5 @@ export PCREGREP_COLOUR="$GREP_COLOR"
 export SETOPT='set'
 export FALSE=1
 export TRUE=0
+export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"
+export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include"

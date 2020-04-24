@@ -1,14 +1,14 @@
 #!/bin/zsh
 
-#  zfunction-show
+#  zfc_list
 #  Z-Function
 #
 #  Created by Maxim Puchkov on 2020-04-18.
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# <#Function description#>
-function zfunction-show() {
+## list: list functions sorted by modification date ##
+function zfc_list() (
     
     # Format the date
     function format_date() {
@@ -103,4 +103,4 @@ function zfunction-show() {
     printf '%s\n' "$table_div"
     printf '%s\n'   "$table_body"
     return 0
-}
+)

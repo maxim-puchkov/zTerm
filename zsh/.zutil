@@ -99,132 +99,7 @@ function next-theme() {
 
 
 
-#MARK: - Z-Functions (zf)
-# Find Z-Function definition file.
-function zf-find() {
-    local fdir="$1"
-    local fname="$2"
-    if [[ -z $fdir ]] || [[ -z $fname ]]; then
-        echo "$(Info zf-find): Function directory or function name is not defined."
-        return 1
-    fi
-    f=$( find "$fdir" -name "$fname" )
-    if [[ -z "$f" ]]; then
-        echo "$(Info zf-find): Function '$(Bad $fname)' not found."
-        return 1
-    fi
-    echo "$f"
-    return 0
-}
 
-
-# Enable a Z-Function.
-function zf-localfunction() {
-    local fname="$1"
-    local target_dir="${2:-zshell}"
-    local subdirs=($( ls -d $zfunc/z* ))
-    local subdirs_names=(${subdirs:t})
-    # Check output subdirectory in 'zsh/functions'
-    if [[ $subdirs_names[(wi)$target_dir] -gt ${#subdirs_names} ]]; then
-        echo "Subdirectory '$(Bad $target_dir)' is not found in:"
-        print -C 4 "$subdirs"
-        return 1
-    fi
-    # Find disabled function
-    f=$( zf-find "$DEV/Terminal/zsh/site-functions/" "$fname" )
-    if [[ $? -ne 0 ]]; then
-        echo "Function '$(Bad $fname)' is not a site function."
-        return 1
-    fi
-    # Move function to an autoloaded directory
-    mv "$f" "$zfunc/$target_dir/"
-    echo "$(OK 'OK'): '$(bold $fname)' is now a local function."
-    return 0
-}
-# Disable a Z-Function.
-function zf-sitefunction() {
-    local fname="$1"
-    # Find an enabled function
-    f=$( zf-find "$zfunc" "$fname" )
-    if [[ $? -ne 0 ]]; then
-        echo "Function '$(Bad $fname)' is not a site function."
-        return 1
-    fi
-    # Move function to 'zsh/function/disabled'
-    mv "$f" "$DEV/Terminal/zsh/site-functions"
-    echo "$(OK 'OK'): '$(bold $fname)' is now a site function."
-    return 0
-}
-
-
-# Enable a Z-Function.
-function zf-enable() {
-    local fname="$1"
-    local target_dir="${2:-zshell}"
-    local subdirs=($( ls -d $zfunc/z* ))
-    local subdirs_names=(${subdirs:t})
-    # Check output subdirectory in 'zsh/functions'
-    if [[ $subdirs_names[(wi)$target_dir] -gt ${#subdirs_names} ]]; then
-        echo "Subdirectory '$(Bad $target_dir)' is not found in:"
-        print -C 4 "$subdirs"
-        return 1
-    fi
-    # Find disabled function
-    f=$( zf-find "$zfunc/disabled" "$fname" )
-    if [[ $? -ne 0 ]]; then
-        echo "Function '$(Bad $fname)' is not disabled."
-        return 1
-    fi
-    # Move function to an autoloaded directory
-    mv "$f" "$zfunc/$target_dir/"
-    echo "$(OK 'OK'): enabled '$(bold $fname)'."
-    return 0
-}
-# Disable a Z-Function.
-function zf-disable() {
-    local fname="$1"
-    # Find an enabled function
-    f=$( zf-find "$zfunc" "$fname" )
-    if [[ $? -ne 0 ]]; then
-        echo "Function '$(Bad $fname)' is not enabled."
-        return 1
-    fi
-    # Move function to 'zsh/function/disabled'
-    mv "$f" "$zfunc/disabled/"
-    echo "$(OK 'OK'): disabled '$(bold $fname)'."
-    return 0
-}
-
-# List all enabled and disabled Z-Functions.
-function zf-list() {
-    # Display enabled functions
-    local fdirs=($( ls -d $zfunc/z* ))
-    local enabled_list=()
-    for fdir in $fdirs; do
-        enabled_list+=($( ls -1G "$fdir" ))
-    done
-    b_greenbg 'ENABLED'
-    print -C 4 ${(o)enabled_list}
-    echo
-    # Display disabled functions.
-    local disabled_fdir="$zfunc/disabled"
-    local disabled_list=$( ls -1G "$disabled_fdir" )
-    b_redbg 'DISABLED'
-    print -C 4 ${(o)disabled_list}
-    echo
-}
-# Display number of enabled and disabled Z-Functions.
-function zf-stat() {
-    local on=($( printf '%s\n' $zfunc/z*/* ))
-    local off=($( printf '%s\n' $zfunc/disabled/* ))
-    local n_on=${#on}
-    local n_off=${#off}
-    local n_total=$(( $n_on + $n_off ))
-    InfoSection 'Z-Functions'
-    print -C 2 "Enabled: " "$n_on"
-    print -C 2 "Disabled:" "$n_off"
-    print -C 2 "Total:   " "$n_total"
-}
 
 
 
@@ -261,7 +136,7 @@ function lib()      { cdp "${(q)lib}/${@}"; }
 # Go to Temporary Files.
 function temp()     { cdp "${(q)tempdir}/${@}"; }
 # Go to Test Files.
-function testdir()  { cdp "${(q)testdir}/${@}" }
+function testdir()  { cdp "${(q)testdir}/${@}"; }
 # Go to local var.
 function var()      { cdp "${(q)HOME}/var/${(q)@}"; }
 
@@ -279,6 +154,27 @@ function fail() {
 }
 
 
+
+# Hex print.
+function hexpr() {
+    printf '%s' $(xxd -p "${@:?}")
+}
+function hexprl() {
+    echo ${#$(hexpr "$@")}
+}
+function hexprline() {
+    echo $(hexpr "$@")
+}
+
+
+# Upposecase.
+function uc() {
+    printf '%s' "${(U)@}"
+}
+# Remove whitespaces.
+function nosp() {
+    printf '%s' "${@// /}"
+}
 
 # Z-Cmd-Function
 # date

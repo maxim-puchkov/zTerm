@@ -21,8 +21,8 @@ function greps() {
     
     # Search every file
     for filepath in $filepaths; do
-        pcregrep $opts \
-            --color='always' \
+        pcregrep ${(z)opts} \
+            --color='auto' \
             --multiline \
             --newline='CR' \
             --regex "$pattern" \

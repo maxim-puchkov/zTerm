@@ -15,7 +15,7 @@ function get_options_v2() {
     local optstring="$2"
     local arguments=${@:3}
     
-    SYNTAX="$0 identifier optstring arguments"
+    SYNTAX="$0 identifier optstring arguments*"
     syntax_check "$SYNTAX" ||
         return 1
     

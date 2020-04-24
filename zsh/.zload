@@ -42,3 +42,15 @@ autoload run-help
 
 
 export SHELLSTARTUP=$(tempfile 'time')
+
+# FINAL 404
+#export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"
+#path=( $path "$HOME/Desktop" )
+#cdp ~/Desktop
+#
+#source ~/Desktop/final.zsh
+#echo $precmd_functions
+#
+#finalf() {
+#    source ~/Desktop/final.zsh
+#}

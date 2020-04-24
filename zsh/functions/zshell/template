@@ -68,12 +68,12 @@ function template() {
         local original="$3"
         local new_template="$4"
         # Create new file from a copy of the original file.
-        if (cp -n $original $new_template); then
+        if ( cp -n $original $new_template ); then
             m_filename=$name
             m_package_name=$package
             # Substitute template macro strings.
             substitute_macros $new_template $TEMPLATE_MACROS
-            echo "Generated template file: $(OK $new_template)."
+            echo "Generated template file: '$(OK $new_template)'."
             return 0
         else
             error 'Fatal error.'
@@ -85,7 +85,7 @@ function template() {
     #MARK: - Z-Shell Command Template
     function template_zsh() {
         target_dir="${target_dir:-${PWD}}"
-        local name="${$( generate_filename ${1:-${(U)0}})}"
+        local name="${$( generate_filename ${1:-${(U)0}} )}"
         local package="$2"
         local new_template="${target_dir}/${name}"
         local TEMPLATE_ORIG="$TEMPLATES_DIR/$0"
@@ -117,7 +117,7 @@ function template() {
     
     function template_python() {
         target_dir="${target_dir:-${PWD}}"
-        local name="${$( generate_filename ${1:-${(U)0}})}"
+        local name="${$( generate_filename ${1:-${(U)0}} )}"
         local package="$2"
         local new_template="${target_dir}/${name}"
         local TEMPLATE_ORIG="$TEMPLATES_DIR/$0.py"
@@ -126,6 +126,17 @@ function template() {
         if (copy_template "$name" "$package" "$TEMPLATE_ORIG" "$new_template"); then
             chmod a+x $new_template
         fi
+    }
+    
+    function template_zcompletion() {
+        target_dir="${target_dir:-${ZDOTDIR}/completions}"
+        local name="${$( generate_filename _${1:-${(U)0}} )}"
+        local package="$2"
+        local new_template="${target_dir}/${name}"
+        local TEMPLATE_ORIG=$( tempfile )
+        zfc completion "$1" > "$TEMPLATE_ORIG"
+        copy_template "$name" "$package" "$TEMPLATE_ORIG" "$new_template"
+        rm -f "$TEMPLATE_ORIG"
     }
     
     

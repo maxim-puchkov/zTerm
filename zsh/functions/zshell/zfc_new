@@ -1,14 +1,14 @@
 #!/bin/zsh
 
-#  zfunction-new
+#  zfc_new
 #  Z-Function
 #
 #  Created by Maxim Puchkov on 2020-04-18.
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# <#Function description#>
-function zfunction-new() {
+## new: print the name of last modified function ##
+function zfc_new() {
     local newest=($zfunc/zshell/*(Nm0om[1]))
     local change_time=$(stat -f '%Sm' $newest)
     if [[ ! -f "$newest" ]]; then

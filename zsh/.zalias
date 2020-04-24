@@ -20,6 +20,7 @@ alias ls='command ls -GF'
 alias l='ls -lAh'
 alias la='ls -lah'
 alias ll='ls -lh'
+alias recent='command ls -ldGFT -- **(om[1,10])'
 
 # Command 'echo'.
 alias e='builtin echo'
@@ -61,7 +62,11 @@ alias get_options='get_options_v2'
 
 # Python.
 alias python='python3'
+alias pip='pip3'
 alias idle='idle3'
 
 alias rr='zsh "$DEV/bin/run.sh"'
 alias modf='echo "#   $RANDOM" >> $zfunc/zshell/test-ref'
+
+alias p='python'
+#alias openssl='/usr/local/Cellar/openssl@1.1/1.1.1f/bin/openssl'

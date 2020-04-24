@@ -1,0 +1,64 @@
+#!/bin/zsh
+
+#  bindump
+#  Z-Function
+#
+#  Created by Maxim Puchkov on 2020-04-22.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function bindump() {
+    
+    if [[ $# -eq 0 ]]; then
+        read a
+    fi
+    
+    # Print to stderr
+    local def=$(fn src $0)
+    if [[ $? -ne 0 ]]; then
+        printf 'Definition not found.\n' >&2
+        return 1
+    fi
+    
+    local filepath="$1"
+    local hex=$( printf '%s' $(xxd -p "$filepath") )
+    
+#    hexdump -v -e '1/1 "%X"' $filepath
+    echo; echo;
+    
+    echo $#hex
+    
+    local pos=0
+    local group_length=2
+    local row_length=32
+    while [[ $pos -lt ${#hex} ]]; do
+        local group=${hex:$pos:$group_length}
+
+        printf '%s' $group
+        if [[ ${#group} -lt $group_length ]]; then
+#        printf '%s' "$group"
+            printf '%00*d' $(( $group_length - ${#group} )) 0
+        fi
+        pos=$(( $pos + $group_length ))
+        case $(( $pos % $row_length )) in
+            0)  printf '\n' ;;
+            *)  printf ' '  ;;
+        esac
+    done
+    
+#    local -a HEX
+#    local -a BIN
+#    HEX=( {0..9} {'A'..'F'} )
+#    bin_digits=( {0,1}{0,1}{0,1}{0,1} )
+#    for b in ${bin_digits}; do
+#        echo "Bit=$b"
+#        echo "HEX=$HEX"
+#
+##        BIN+=($( printf "ibase=2; obase=16; $b; \n" | bc ))
+#    done
+#
+#    echo $BIN
+    
+    return 0
+}

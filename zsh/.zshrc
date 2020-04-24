@@ -46,6 +46,9 @@ export PYTHONPATH="$DEV/Terminal/Python:$PYTHONPATH"
 bindkey "^X\\x7f" backward-kill-line
 
 
+precmd_functions+=( ref )
+
+
 #plugins=(
 #    adb
 #    alias-finder

@@ -12,7 +12,7 @@
 function error() {
     # Exit code.
     typeset -A opts
-    get_options_v2 opts 'c:C' "$@"
+    get_options_v2 opts 'c:C' "$@" 2>/dev/null
     local _exitcode=${opts[c]:-1}
     shift $opts[length]
     
@@ -22,7 +22,7 @@ function error() {
     
     # Capitalize first letter and add trailing period.
     _desc="${(C)_desc[1]}${${_desc:1}}"
-    if [[ ! "${(q)_desc}" =~ $'\\n' ]] &&
+    if [[ ! "${(q)_desc}" =~ $'\n' ]] &&
         [[ ! "${(q)_desc}" =~ '^.*\.$' ]]; then
         _desc="${_desc}."
     fi
