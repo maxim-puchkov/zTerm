@@ -16,10 +16,9 @@ function DoAppleScript() {
     local ecode=0
     
     local PREFIX="${0}_"
-    local SRC_DIR="$HOME/Developer/Terminal/AppleScript"
+    local SRC_DIR="$HOME/Developer/Terminal/AppleScript/libexec"
     local EXT='scpt'
     
-    function Bad() { "$'\033'\[31m${@}$'\033'\(B$'\033'\[m" }
     function DoAppleScript_CloseAllWindows() {
         local script="${SRC_DIR}/${0#${PREFIX}}.${EXT}"
         result=$( osascript $script )
@@ -52,7 +51,7 @@ function DoAppleScript() {
             ${src}_${cmd} "$@"
             ecode=$?
             if [[ $ecode = 127 ]]; then
-                printf 'Unknown command: %s (Exit code: %u).\n' "$(Bad $cmd)" "$ecode" >&2
+                printf 'Unknown command: %s (Exit code: %u).\n' "$cmd" "$ecode" >&2
             fi
             ;;
     esac
