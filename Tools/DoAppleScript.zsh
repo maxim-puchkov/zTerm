@@ -16,7 +16,7 @@ function DoAppleScript() {
     local ecode=0
     
     local PREFIX="${0}_"
-    local SRC_DIR="$HOME/Developer/Terminal/AppleScript/libexec"
+    local SRC_DIR="$HOME/Developer/Terminal/AppleScript/scripts"
     local EXT='scpt'
     
     function DoAppleScript_CloseAllWindows() {
