@@ -58,8 +58,6 @@ alias dm='idir mod'
 
 # Updated scripts.
 alias re='re_v2'
-alias get_options='get_options_v2'
-
 
 # Python.
 alias python='python3'

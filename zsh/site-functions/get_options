@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-#  get_options_v2
+#  get_options
 #  Z-Function
 #
 #  Created by admin on 2020-04-15.
@@ -10,7 +10,7 @@
 # Read all command options and store in an array with
 # the specified identifier.
 #   get_options identifier options...
-function get_options_v2() {
+function get_options() {
     local identifier=$1
     local optstring="$2"
     local arguments=${@:3}

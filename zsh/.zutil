@@ -140,7 +140,7 @@ function testdir()  { cdp "${(q)testdir}/${@}"; }
 # Go to local var.
 function var()      { cdp "${(q)HOME}/var/${(q)@}"; }
 
-
+function serv()     { cdp "${(q)HOME}/Library/LaunchAgents/${(q)@}"; }
 
 
 # Pass/Fail symbols.

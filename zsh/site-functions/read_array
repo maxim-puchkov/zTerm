@@ -48,6 +48,6 @@ function read_array() {
         return 1
     fi
     
-    printf "OK: read %d values of '$(OK %s)'.\n" $size "$var_id"
+#    printf "OK: read %d values of '$(OK %s)'.\n" $size "$var_id"
     return 0
 }

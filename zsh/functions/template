@@ -168,7 +168,7 @@ function template() {
     
     # Function options.
     typeset -A optlist
-    get_options_v2 optlist 'd:D' "$@"
+    get_options optlist 'd:D' "$@"
     shift $optlist[length]
     
     # Source and compound commands.

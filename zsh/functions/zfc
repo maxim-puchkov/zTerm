@@ -18,7 +18,7 @@ function zfc() {
     ## find: find Z-Function definition file ##
     function zfc_find() {
         local fdir="$1"
-        local fname="$2"
+        local fname=$2
         if [[ -z $fdir ]] || [[ -z $fname ]]; then
             echo "$(Info zfc_find): Function directory or function name is not defined."
             return 1
@@ -34,7 +34,7 @@ function zfc() {
     
     ## localfunction: make a Z-Function local ##
     function zfc_localfunction() {
-        local fname="$1"
+        local fname=$1
         # Find disabled function
         f=$( zfc_find "$zsitefunc" "$fname" )
         if [[ $? -ne 0 ]]; then
@@ -49,7 +49,7 @@ function zfc() {
     
     ## sitefunction: make a Z-Function accessible to all scripts ##
     function zfc_sitefunction() {
-        local fname="$1"
+        local fname=$1
         # Find an enabled function
         f=$( zfc_find "$zfunc" "$fname" )
         if [[ $? -ne 0 ]]; then
@@ -57,14 +57,14 @@ function zfc() {
             return 1
         fi
         # Move function to 'zsh/function/disabled'
-        mv "$f" "$zsitefunc"
+        mv "$f" "$zsitefunc/"
         echo "$(OK 'OK'): '$(bold $fname)' is now a site function."
         return 0
     }
     
     ## enable: enable a Z-Function ##
     function zfc_enable() {
-        local fname="$1"
+        local fname=$1
         # Find disabled function
         f=$( zfc_find "$zdisabled" "$fname" )
         if [[ $? -ne 0 ]]; then
@@ -72,14 +72,14 @@ function zfc() {
             return 1
         fi
         # Move function to an autoloaded directory
-        mv "$f" "$zfunc//"
+        mv "$f" "$zfunc/"
         echo "$(OK 'OK'): enabled '$(bold $fname)'."
         return 0
     }
     
     ## disable: disable a Z-Function ##
     function zfc_disable() {
-        local fname="$1"
+        local fname=$1
         # Find an enabled function
         f=$( zfc_find "$zfunc" "$fname" )
         if [[ $? -ne 0 ]]; then
@@ -130,9 +130,6 @@ function zfc() {
     
     local cmd=${1:-dir}
     shift ${+1}
-    if [[ -z $cmd ]]; then
-        cmd='try'
-    fi
     
     if ( ! fn isdef ${0}_${cmd} ); then
         error "Unknown command: '$(Bad $cmd)'."

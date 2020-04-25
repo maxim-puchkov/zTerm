@@ -12,10 +12,11 @@ function sln() {
     
     #
     function make_symbolic_link() {
-        local link_source=${1:A}
-        local link_target_dir=${2:A}
-        local link_name=${opts[name]:-${link_source:t}}
-        local link_target=$link_target_dir/$link_name
+        local link_source="${1:A}"
+        local link_name="${optlist[n]:-${link_source:t}}"
+        
+        local link_target_dir="${2:A}"
+        local link_target="$link_target_dir/$link_name"
         
         # v link_source link_target_dir link_name link_target
         errif "-z '$link_source'"       "Source file is required."
@@ -23,71 +24,58 @@ function sln() {
         errif "! -e '$link_source'"     "Source not found: '$link_source'."
         errif "-e '$link_target'"       "Link '$link_target' already exists."
         
-        ln -s $link_source $link_target
-        echo "Symbolic link '$( green ${link_name} )' has been created in $( green ${link_target_dir:t} ) directory."
-    }
-
-    #MARK: - Public
-    # List all functions.
-    function sln_help() {
-        echo "Usage:"
-        echo "  $(b_bcyan $src) $(b_cyan '.') $(underline '/path/to/file')    - create symbolic link to 'file' in current directory."
-        echo "  $(b_bcyan $src) $(b_cyan 'desk') $(underline '/path/to/file') - create symbolic link to 'file' on Desktop."
-        echo "  $(b_bcyan $src) $(b_cyan 'check') $(underline '/path/to/dir') - check if 'dir' contains broken symbolic links."
-        echo "  $(b_bcyan $src) $(b_cyan 'help') $(underline '')              - display help message."
-        echo
-        echo "Options:"
-        echo "  $(b_cyan --name) - symbolic link name."
+        ln -s "$link_source" "$link_target"
+        echo "Created symbolic link '$( green ${link_name} )' in $( green ${link_target_dir:t} )."
     }
     
-    # Find broken symbolic links in a folder.
-    function sln_check() {
-        local dir=${${1:-.}:A}
-        local links="$(\ls -ld $dir*(-@))" >& /dev/null
-        local n="$( printf "$links" | wc -l )"
-        if [[ $n -gt 0 ]]; then
-            echo "$links"
-        fi
-        echo "Found ${(z)n} broken symbolic links in '$dir'."
-    }
     
-    # Create s-link on desktop.
+    #MARK: - Commands
+    ## desk: create a symbolic link on desktop ##
     function sln_desk() {
         local src=$1
         local dir="$HOME/Desktop"
         make_symbolic_link "$src" "$dir"
     }
     
-    # Create s-link in current directory.
+    ## .: create a symbolic link in the current directory ##
     function sln_.() {
         local src=$1
         local dir=$( pwd -P )
         make_symbolic_link "$src" "$dir"
     }
     
-
+    ## bin: create a symbolic link in /usr/local/bin ##
+    function sln_bin() {
+        local src=$1
+        local dir='/usr/local/bin'
+        make_symbolic_link "$src" "$dir"
+    }
     
     # Function options
-    typeset -A opts
-    set -A opts $( read_options "$@" )
-    shift $( options_shift_distance "$@" )
+    typeset -A optlist
+    get_options optlist 'n:N' "$@"
+    shift $optlist[length]
     
-    src=$( basename $0 )
-#    get_options opts "$@"
+    if [[ $# -eq 0 ]]; then
+        fn print-commands 'sln'
+        return 2
+    fi
+    
     cmd=$1
+    shift
     
-    case $cmd in
-        "")
-            sln_help
-            ;;
-        *)
-            shift
-            ${src}_${cmd} "$@"
-            local ecode=$?
-            if [ $ecode = 127 ]; then
-                echo "Unknown command: $(Bad $cmd) (Exit code $ecode)." >&2
-            fi
-            ;;
-    esac
+    if ( ! fn isdef ${0}_${cmd} ); then
+        error 2
+        return 2
+    fi
     
+    ${0}_${cmd} "$@"
+    local code=$?
+    if [[ $? = 127 ]]; then
+        error "Unknown command: '$(Bad $cmd)'."
+        return 127
+    fi
+    
+    
+    return $code
 }

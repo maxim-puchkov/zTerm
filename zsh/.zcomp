@@ -60,11 +60,11 @@ compdef _vars       typeof
 
 # Navigation
 compdef _cd         cdp
-compdef _desk       desk
-compdef _dev        dev
-compdef _lib        lib
-compdef _testdir    testdir
-compdef _temp       temp
+#compdef _desk       desk
+#compdef _dev        dev
+#compdef _lib        lib
+#compdef _testdir    testdir
+#compdef _temp       temp
 
 
 # Variables.

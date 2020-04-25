@@ -12,7 +12,7 @@
 function error() {
     # Exit code.
     typeset -A opts
-    get_options_v2 opts 'c:C' "$@" 2>/dev/null
+    get_options opts 'c:C' "$@" 2>/dev/null
     local _exitcode=${opts[c]:-1}
     shift $opts[length]
     

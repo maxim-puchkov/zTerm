@@ -56,6 +56,6 @@ function save_array() {
         return 1
     fi
     
-    printf "OK: '$(OK %s)' is saved in '$(OK %s)'.\n" "$var_id" "$filepath"
+#    printf "OK: '$(OK %s)' is saved in '$(OK %s)'.\n" "$var_id" "$filepath"
     return 0
 }

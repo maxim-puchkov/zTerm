@@ -16,7 +16,7 @@ function bindump() {
     
     # Get bindump options
     typeset -A optlist
-    get_options_v2 optlist 'c' "$@"
+    get_options optlist 'c' "$@"
     shift $optlist[length]
 
     # If file is not provided, read input until Ctrl+D
@@ -41,10 +41,6 @@ function bindump() {
     local hex_digits=( {0..9} {'A'..'F'} )
     local bin_digits=( {0,1}{0,1}{0,1}{0,1} )
     hexbin_map=( ${hex_digits:^bin_digits} )
-    
-    if [[ ${optlist[c]} == 'true' ]]; then
-        hexbin_map=${hexbin_map//0/$(dgrey 0)}
-    fi
     
     # Size of hexadecimal digit groups
     local hexdump=$( printf '%s' $(xxd -p "$filepath") )
@@ -72,6 +68,11 @@ function bindump() {
     done
     echo
     
-    sed -e "s/0/$(grey 0)/g" -e "s/1/$(bold 1)/g" $buffer
+    if [[ $optlist[c] == true ]]; then
+        sed -e "s/0/$(grey 0)/g" -e "s/1/$(bold 1)/g" $buffer
+    else
+        cat $buffer
+    fi
+    
     return 0
 }

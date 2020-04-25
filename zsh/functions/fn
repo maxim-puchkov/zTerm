@@ -47,7 +47,7 @@ function fn() (
             return 1
         fi
         prefix="${prefix:-${fname%%_*}}"
-        list=($( grep -E -o "${prefix}_\w+\(\)" $srcfile ))
+        list=($( grep -E -o "${prefix}_(\w)+\(\)" $srcfile ))
         for f in $list; do
             local subfname=${f%'()'} # ${${f#${prefix}}%'()'}
             if [[ ${+functions[$subfname]} ]]; then
@@ -60,17 +60,23 @@ function fn() (
     ## commands: list function commands ##
     function fn_commands() {
         prefix="${prefix:-${fname%%_*}}"
-        local fcommands=(${$( fn -p ${prefix} sub $fname )//${prefix}_/})
+        local fcommands=(${$( fn -p $prefix sub $fname )//${prefix}_/})
         printf '%s\n' $fcommands
         return 0
     }
     
-    
+    ##
+    function fn_print-commands() {
+        prefix="${prefix:-${fname%%_*}}"
+        printf 'Available commands:\n'
+        printf "  $(cyan %s)\n" $( fn -p $prefix commands $fname )
+        return 0
+    }
     
     
     # Options
     typeset -A optlist
-    get_options_v2 optlist 'p:Ph' "$@" 2>/dev/null
+    get_options optlist 'p:Ph' "$@" 2>/dev/null
     shift $optlist[length]
     
     prefix="${optlist[p]}"
@@ -78,8 +84,7 @@ function fn() (
     # Function command
     local cmd=$1
     if [[ $# -eq 0 ]] || [[ -z $cmd ]] || [[ ${optlist[h]} == 'true' ]]; then
-        printf 'Available commands:\n'
-        printf "  $(cyan %s)\n" $( fn commands 'fn' )
+        fn print-commands 'fn'
         return 0
     fi
     shift
@@ -112,7 +117,5 @@ function fn() (
     # Execute the command
     autoload +X $fname
     ${0}_${cmd} $fname
-    code=$?
-    
-    return $code
+    return $?
 )
