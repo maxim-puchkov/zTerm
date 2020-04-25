@@ -3,7 +3,7 @@
 
 #MARK: - Z-Terminal
 # Open Z-Terminal project.
-function zterm()    { open -a Xcode "$ztermxcodeproj" }
+function ztermx()   { open -a Xcode "$ztermxcodeproj" }
 # zshenv - zsh environment for all shells.
 function zenv()     { open -a Xcode "$ZSHENV" }
 # zprofile - profile for zsh shells.

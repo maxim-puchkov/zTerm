@@ -106,8 +106,8 @@ function next-theme() {
 
 #MARK: - File Directories
 # Go to Z-Terminal root directory.
-function ztermdir() {
-    cdp "$ztermdir"
+function zterm() {
+    cdp "$zterm"
 }
 # Go to Z-Functions root directory.
 function zfuncdir() {

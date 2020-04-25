@@ -9,7 +9,7 @@
 
 ## new: print the name of last modified function ##
 function zfc_new() {
-    local newest=($zfunc/zshell/*(Nm0om[1]))
+    local newest=($zfunc/*(Nm0om[1]))
     local change_time=$(stat -f '%Sm' $newest)
     if [[ ! -f "$newest" ]]; then
         return 1

@@ -35,7 +35,7 @@ alias rm='command rm -i'
 
 # Command 'git'.
 alias gs='git status'
-alias gt='() { cdp "$ztermdir"; git status; }'
+alias gt='() { cdp "$zterm"; git status; }'
 
 # Command 'grep'.
 alias grep='grep --color'
@@ -67,7 +67,7 @@ alias pip='pip3'
 alias idle='idle3'
 
 alias rr='zsh "$DEV/bin/run.sh"'
-alias modf='echo "#   $RANDOM" >> $zfunc/zshell/test-ref'
+alias modf='echo "#   $RANDOM" >> $zfunc/test-ref'
 
 alias p='python'
 #alias openssl='/usr/local/Cellar/openssl@1.1/1.1.1f/bin/openssl'

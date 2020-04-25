@@ -18,7 +18,7 @@ function zfc_completion() (
     typeset -a fn_commands
     
     # Find files starting with the specified 'fn_name'
-    local fn_files=($( find "$zfunc/zshell" -regex "$zfunc/zshell/$fn_name.*" ))
+    local fn_files=($( find "$zfunc" -regex "$zfunc/$fn_name.*" ))
     
     # Parse each file and generate associative array 'reply[command]=description'
     for fn_file in $fn_files; do

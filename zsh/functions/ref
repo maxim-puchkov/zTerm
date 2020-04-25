@@ -9,7 +9,7 @@
 
 # Reload autoloaded functions
 function ref() {
-    updated_files=($( find "$zfunc/zshell" -type f -mnewer $SHELLSTARTUP ))
+    updated_files=($( find "$zfunc" -type f -mnewer $SHELLSTARTUP ))
     if [[ ${#updated_files} -eq 0 ]]; then
         return 1
     fi

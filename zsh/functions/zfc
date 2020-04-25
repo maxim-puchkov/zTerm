@@ -35,23 +35,14 @@ function zfc() {
     ## localfunction: make a Z-Function local ##
     function zfc_localfunction() {
         local fname="$1"
-        local target_dir="${2:-zshell}"
-        local subdirs=($( ls -d $zfunc/z* ))
-        local subdirs_names=(${subdirs:t})
-        # Check output subdirectory in 'zsh/functions'
-        if [[ $subdirs_names[(wi)$target_dir] -gt ${#subdirs_names} ]]; then
-            echo "Subdirectory '$(Bad $target_dir)' is not found in:"
-            print -C 4 "$subdirs"
-            return 1
-        fi
         # Find disabled function
-        f=$( zfc_find "$DEV/Terminal/zsh/site-functions/" "$fname" )
+        f=$( zfc_find "$zsitefunc" "$fname" )
         if [[ $? -ne 0 ]]; then
             echo "Function '$(Bad $fname)' is not a site function."
             return 1
         fi
         # Move function to an autoloaded directory
-        mv "$f" "$zfunc/$target_dir/"
+        mv "$f" "$zfunc/"
         echo "$(OK 'OK'): '$(bold $fname)' is now a local function."
         return 0
     }
@@ -66,7 +57,7 @@ function zfc() {
             return 1
         fi
         # Move function to 'zsh/function/disabled'
-        mv "$f" "$DEV/Terminal/zsh/site-functions"
+        mv "$f" "$zsitefunc"
         echo "$(OK 'OK'): '$(bold $fname)' is now a site function."
         return 0
     }
@@ -74,23 +65,14 @@ function zfc() {
     ## enable: enable a Z-Function ##
     function zfc_enable() {
         local fname="$1"
-        local target_dir="${2:-zshell}"
-        local subdirs=($( ls -d $zfunc/z* ))
-        local subdirs_names=(${subdirs:t})
-        # Check output subdirectory in 'zsh/functions'
-        if [[ $subdirs_names[(wi)$target_dir] -gt ${#subdirs_names} ]]; then
-            echo "Subdirectory '$(Bad $target_dir)' is not found in:"
-            print -C 4 "$subdirs"
-            return 1
-        fi
         # Find disabled function
-        f=$( zfc_find "$zfunc/disabled" "$fname" )
+        f=$( zfc_find "$zdisabled" "$fname" )
         if [[ $? -ne 0 ]]; then
             echo "Function '$(Bad $fname)' is not disabled."
             return 1
         fi
         # Move function to an autoloaded directory
-        mv "$f" "$zfunc/$target_dir/"
+        mv "$f" "$zfunc//"
         echo "$(OK 'OK'): enabled '$(bold $fname)'."
         return 0
     }
@@ -105,7 +87,7 @@ function zfc() {
             return 1
         fi
         # Move function to 'zsh/function/disabled'
-        mv "$f" "$zfunc/disabled/"
+        mv "$f" "$zdisabled/"
         echo "$(OK 'OK'): disabled '$(bold $fname)'."
         return 0
     }
@@ -113,7 +95,7 @@ function zfc() {
     ## statfull: list all enabled and disabled Z-Functions ##
     function zfc_statfull() {
         # Display enabled functions
-        local fdirs=($( ls -d $zfunc/z* ))
+        local fdirs=($( ls -d $zfunc ))
         local enabled_list=()
         for fdir in $fdirs; do
             enabled_list+=($( ls -1G "$fdir" ))
@@ -132,8 +114,8 @@ function zfc() {
     
     ## stat: display number of enabled and disabled Z-Functions ##
     function zfc_stat() {
-        local on=($( printf '%s\n' $zfunc/z*/* ))
-        local off=($( printf '%s\n' $zfunc/disabled/* ))
+        local on=($( printf '%s\n' $zfunc/* ))
+        local off=($( printf '%s\n' $zdisabled/* ))
         local n_on=${#on}
         local n_off=${#off}
         local n_total=$(( $n_on + $n_off ))
