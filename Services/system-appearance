@@ -1,0 +1,13 @@
+#!/bin/sh
+
+#  system-appearance.sh
+#  Services
+#
+#  Created by Maxim Puchkov on 2020-04-25.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+echo 'Hello!'
+echo '------'
+
+echo "Program: <$0>"
+echo "Args: <$@>"
