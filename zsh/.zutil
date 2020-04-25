@@ -219,25 +219,28 @@ function magnetize() {
 }
 
 function letters() {
-    typeset -ag Asym
-    typeset -ag Anum
+    typeset -ag A
+    typeset -ag N
     
-    Asym=({A..Z})
-    Anum=({1..26})
+    A=({A..Z})
+    N=({1..26})
     local letter=${1[1]:-L}
-#    local compareTo=${2[1]}
+    local compareTo=${2[1]}
     
-    local index=${Asym[(wi)$letter]}
-    if [[ $index -gt ${#Asym} ]]; then
+    
+    local index=${A[(wi)$letter]}
+    if [[ $index -gt ${#A} ]]; then
         return 1
     fi
+    A[$index]=$(b_bred $A[$index])
+    N[$index]=$(b_bred $N[$index])
     
-    Asym[$index]=$(b_bred $Asym[$index])
-    Anum[$index]=$(b_bred $Anum[$index])
-    { printf '  %s' ${Asym}; echo
-        printf '%s ' $Anum; echo } | \
-        column -t
     
-    echo; echo;
-    printf '  %s %s\n' ${Asym} ${Anum} | column -t
+    local index2=${A[(wi)$compareTo]}
+    A[$index2]=$(blue $A[$index2])
+    N[$index2]=$(blue $N[$index2])
+    
+    {{ printf '  %s' $A; echo
+        printf '%s ' $N; echo } |
+        column -t }
 }

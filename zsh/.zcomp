@@ -2,16 +2,16 @@
 
 
 #MARK: - Load Completion Functions
-# Site functions.
-for sfunc in $ZDOTDIR/site-functions/*; do
-    autoload ${sfunc:t}
-done
-
-# Load completion functions.
-for comp in $DEV/Terminal/zsh/completions/*; do
-    autoload ${comp:t}
-done
-
+## Site functions.
+#for sfunc in $ZDOTDIR/site-functions/*; do
+#    autoload ${sfunc:t}
+#done
+#
+## Load completion functions.
+#for comp in $DEV/Terminal/zsh/completions/*; do
+#    autoload ${comp:t}
+#done
+#
 
 
 

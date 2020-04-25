@@ -22,8 +22,10 @@ function zutil()    { open -a Xcode "$ZUTIL" }
 function znet()     { open -a Xcode "$ZNET" }
 # zmisc - miscellaneous zsh additions.
 function zmisc()    { open -a Xcode "$ZMISC" }
-# zcomp 
+# zcomp - zsh completion functions.
 function zcomp()    { open -a Xcode "$ZCOMP" }
+
+
 
 
 # Compdef test function.
@@ -52,6 +54,8 @@ typeset -A A1
 for i in {1..26}; do
     A1[$i]=${(U)l3[$i]}
 done
+typeset -A A2
+A2=( key1 val1 key2 val2 X-key3 val3 key4 X-val4 )
 
 
 # 10-second long job.

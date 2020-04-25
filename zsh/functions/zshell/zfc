@@ -15,7 +15,7 @@ function zfc() {
         return 0
     }
     
-    ## find: Find Z-Function definition file ##
+    ## find: find Z-Function definition file ##
     function zfc_find() {
         local fdir="$1"
         local fname="$2"
@@ -142,6 +142,9 @@ function zfc() {
         print -C 2 "Disabled:" "$n_off"
         print -C 2 "Total:   " "$n_total"
     }
+    
+    
+    
     
     local cmd=${1:-dir}
     shift ${+1}

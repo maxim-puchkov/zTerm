@@ -12,9 +12,14 @@ function tempfile() {
     local ext="${1}"
     local subdirname='tempfiled'
     local prefix="${subdirname}/tempfile"
-    local subdir="${TMPDIR}/${subdirname}"
+    
+    if [[ ! -v TMPDIR ]]; then
+        error "Environment variable '$(Bad TMPDIR)' is not set."
+        return 1
+    fi
     
     # Create 'tempfiled' subdirectory in 'TMPDIR'
+    local subdir="${TMPDIR}/${subdirname}"
     if [[ ! -d "${subdir}" ]]; then
         mkdir -- "${subdir}"
     fi

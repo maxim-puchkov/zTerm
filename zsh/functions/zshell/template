@@ -11,10 +11,6 @@
 # Synopsis:
 #   template [options...] kind
 function template() {
-#    export SYNTAX=(template ${option}${__optlist__} kind)
-    export TEMPLATES_DIR="$ZDOTDIR/templates"
-    
-    
     # Generate unique suffixes for files which
     # already exist in Output directory.
     #   E.g.: file, file-2, ..., file-N.
@@ -115,6 +111,7 @@ function template() {
         copy_template "$name" "$package" "$TEMPLATE_ORIG" "$new_template"
     }
     
+    #MARK: - Python Script
     function template_python() {
         target_dir="${target_dir:-${PWD}}"
         local name="${$( generate_filename ${1:-${(U)0}} )}"
@@ -128,22 +125,25 @@ function template() {
         fi
     }
     
+    #MARK: - Z-Shell Completion
     function template_zcompletion() {
         target_dir="${target_dir:-${ZDOTDIR}/completions}"
         local name="${$( generate_filename _${1:-${(U)0}} )}"
         local package="$2"
         local new_template="${target_dir}/${name}"
         local TEMPLATE_ORIG=$( tempfile )
+        
         zfc completion "$1" > "$TEMPLATE_ORIG"
         copy_template "$name" "$package" "$TEMPLATE_ORIG" "$new_template"
         rm -f "$TEMPLATE_ORIG"
     }
     
     
-    if [[ $# -eq 0 ]]; then
-        return 1
-    fi
     
+    
+    if [[ $# -eq 0 ]]; then
+        return 2
+    fi
     
     # Template macro strings.
     typeset -a TEMPLATE_MACROS=(
@@ -162,10 +162,9 @@ function template() {
     m_date_full=$( date +'%Y-%m-%d' )
     m_date_year=$( date +'%Y' )
     m_organization_id='com.maximpuchkov'
+    
     export TEMPLATE_MACROS
-    
-    
-    
+    export TEMPLATES_DIR="$ZDOTDIR/templates"
     
     # Function options.
     typeset -A optlist

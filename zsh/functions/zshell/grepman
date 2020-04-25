@@ -10,11 +10,16 @@
 # Search manual pages for lines matching the pattern.
 function grepman() {
     local manpage=$1
-    local pattern=$2
+    local grep_options=(${@:2})
+    
     # Display error if manual page not specified
-    SYNTAX="$0 manpage pattern?"
-    if (! syntax_check "$SYNTAX"); then return 1; fi
+    SYNTAX="$0 manpage grep_options?"
+    if (! syntax_check "$SYNTAX"); then
+        return 1;
+    fi
+    
     # Print matching lines
-    local contents=$( man $manpage | colcrt - )
-    printf '%s\n' "$contents" | grep -a -i --color -e "${pattern}"
+    man $manpage |
+        colcrt - |
+        grep --color -a -i -e $grep_options
 }

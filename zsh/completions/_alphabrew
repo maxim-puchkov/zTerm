@@ -1,0 +1,5 @@
+#compdef alphabrew
+
+
+_arguments -C \
+  '1: :({a..z})'

@@ -3,19 +3,20 @@
 
 _arguments -C \
   '-d[specify output directory]:file:_files' \
-  '(-d):command:->command' && ret=0
+  '(-d):command:->command' &&
+    ret=0
 
 case $state in
-    command)
-        declare -a commands
-        commands=(
-            python:'python file'
-            zcompletion:'zsh compdef template'
-            zcmdfunction:'autoloadable zsh command function template'
-            zfunction:'autoloadable zsh function template'
-            zsh:'default zsh script template'
-        )
-        _describe -t commands command commands &&
-            ret=0
-    ;;
+  command)
+    declare -a commands
+    commands=(
+      python:'python file'
+      zcompletion:'zsh compdef template'
+      zcmdfunction:'autoloadable zsh command function template'
+      zfunction:'autoloadable zsh function template'
+      zsh:'default zsh script template'
+    )
+    _describe -t commands command commands &&
+      ret=0
+  ;;
 esac

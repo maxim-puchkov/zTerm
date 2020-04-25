@@ -1,5 +1,4 @@
 #compdef testdir
 
 
-testdir=($( ls -A $testdir ))
-_describe 'testdir' testdir
+_files -/ -W /Users/admin/Developer/Test

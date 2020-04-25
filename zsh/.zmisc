@@ -1,15 +1,6 @@
 # User-specific miscellaneous additions for interactive zsh(1) shells.
 
 
-
-# Show the newest-directory.
-function show-newest-dir() {
-    ls -dG *(/om[1])
-}
-# Show files modified more than 10 days ago.
-function show-last-modified10+() {
-    print -rl -- *(Dmh+10^/)
-}
 # Lists every executable in PATH.
 function show-executables() {
     print -l ${^path}/*(-*N)

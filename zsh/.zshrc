@@ -1,8 +1,6 @@
 # User-specific z-shell shell configuration.
 
 
-#export LASTUPDATE=$(date -j +'%s')
-
 # Path to oh-my-zsh.
 export ZSH="$ZDOTDIR/.oh-my-zsh"
 if [[ -z $ZSH_THEME ]]; then
@@ -41,9 +39,6 @@ fi
 # Python
 export PYTHONSTARTUP="/Users/admin/Developer/Terminal/Python/.pyenv"
 export PYTHONPATH="$DEV/Terminal/Python:$PYTHONPATH"
-
-
-bindkey "^X\\x7f" backward-kill-line
 
 
 precmd_functions+=( ref )

@@ -1,0 +1,25 @@
+#!/bin/zsh
+
+#  alphabrew
+#  Z-Function
+#
+#  Created by Maxim Puchkov on 2020-04-18.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function alphabrew() {
+    local letter=${1[1]}
+    if [[ -z $letter ]]; then
+        return 2
+    fi
+    
+    local option=${2:-'-s'}
+    brew desc $option "/^$letter.*/" |
+        grep -E "^${letter}\w+:"
+    
+    if [[ $? -ne 0 ]]; then
+        return 1
+    fi
+    return 0
+}

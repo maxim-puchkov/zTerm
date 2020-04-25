@@ -16,11 +16,12 @@ alias -g T='; \
     fi;'
 
 # Command 'ls'.
-alias ls='command ls -GF'
-alias l='ls -lAh'
-alias la='ls -lah'
-alias ll='ls -lh'
-alias recent='command ls -ldGFT -- **(om[1,10])'
+alias ls='command ls -GFh'
+alias l='ls -l'
+alias la='ls -la'
+alias ll='ls -lA'
+alias lsc='ls -lUTtr'
+alias recent='ls -ldGFT -- **(om[1,10])'
 
 # Command 'echo'.
 alias e='builtin echo'

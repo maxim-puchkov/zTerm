@@ -23,7 +23,5 @@ function ref() {
     done
     
     touch $SHELLSTARTUP
-#    LASTUPDATE=$(date -j +'%s')
-#    export LASTUPDATE
     return 0
 }

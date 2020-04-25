@@ -38,10 +38,11 @@ function mnts() {
     printf 'Mountpoints:\n'
     for m in $mountpoint_root/*; do
         local m_status=$(OK 'mounted')
-        if $( dir isempty "$SFU_MNT" noerr ); then
+        if $( idir isempty "$SFU_MNT" noerr ); then
             m_status=$(Bad 'not mounted')
+            return 1
         fi
         printf '  %s:    %s\n' "$m" "$m_status"
     done
-    
+    return 0
 }

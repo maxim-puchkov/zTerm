@@ -16,8 +16,11 @@ function zfc_completion() (
     
     typeset -A reply
     typeset -a fn_commands
+    
+    # Find files starting with the specified 'fn_name'
     local fn_files=($( find "$zfunc/zshell" -regex "$zfunc/zshell/$fn_name.*" ))
     
+    # Parse each file and generate associative array 'reply[command]=description'
     for fn_file in $fn_files; do
         local fn=${fn_file:t}
         autoload +X $fn
@@ -33,11 +36,10 @@ function zfc_completion() (
         done
     done
     
-#    print-association reply
-#    echo ${(kv)reply}
-    
+    # Print completion for 'fn_name'
     cat <<- EOF
 #compdef $fn_name
+
 
 _arguments -C \\
   '-h[display help]:file:_files' \\

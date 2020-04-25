@@ -1,0 +1,23 @@
+#compdef fn
+
+
+_arguments -C \
+  '-h[display help]: :_nothing' \
+  '(-h):command:->command' \
+  '*:f:_functions' &&
+    return 0
+
+case $state in
+  command)
+    declare -a commands
+    commands=(
+      isdef:"check if a function is defined" \ 
+      commands:"list function commands" \ 
+      sub:"list functions defined within a function" \ 
+      src:"find function source file" \
+      def:"print function definition" \ 
+    )
+    _describe -t commands command commands &&
+      ret=0
+  ;;
+esac

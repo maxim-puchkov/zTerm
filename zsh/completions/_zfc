@@ -1,0 +1,28 @@
+#compdef zfc
+
+
+_arguments -C \
+  '-h[display help]: :_nothing' \
+  '(-h):command:->command' &&
+    ret=0
+
+case $state in
+  command)
+    declare -a commands
+    commands=(
+      stat:"display number of enabled and disabled Z-Functions"
+      enable:"enable a Z-Function"
+      disable:"disable a Z-Function"
+      dir:"go to z-functions directory [default]"
+      new:"print the name of last modified function"
+      find:"Find Z-Function definition file"
+      localfunction:"make a Z-Function local"
+      sitefunction:"make a Z-Function global"
+      completion:"autogenerate function completion"
+      list:"list functions sorted by modification date"
+      statfull:"list all enabled and disabled Z-Functions"
+    )
+    _describe -t commands command commands &&
+      ret=0
+  ;;
+esac

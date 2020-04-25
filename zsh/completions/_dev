@@ -1,5 +1,4 @@
 #compdef dev
 
 
-dev_dirs=($( ls -A $DEV ))
-_describe 'dev dirs' dev_dirs
+_files -/ -W /Users/admin/Developer

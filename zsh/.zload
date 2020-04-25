@@ -42,6 +42,7 @@ autoload run-help
 
 
 export SHELLSTARTUP=$(tempfile 'time')
+trap "rm -f \"$SHELLSTARTUP\"" EXIT
 
 # FINAL 404
 #export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"
