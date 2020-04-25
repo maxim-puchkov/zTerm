@@ -58,10 +58,13 @@ def keygen(keydata):
     print(breakline())
     # Compute modulus
     n = (p * q)
+    print('N=,', n)
     # Compute Euler value
     z = euler(p, q)
+    print('EULER=', z)
     # Compute values of D and A
     (_, d, a) = egcd(e, z)
+    print('D=', d)
     mod_inverse = (e * d) + (a * z)
     # Generate and print keys
     public_key = (n, e)

@@ -1,6 +1,3 @@
-
-
-
 # from rsa import *
 # from hexio import *
 
@@ -9,8 +6,10 @@
 # from SIGN import *
 
 
-from Cryptodome.Util.number import getPrime, isPrime
+from Cryptodome.Util.number import getPrime, isPrime, inverse
 import random
+MOD_BASE = 1
 
+from cfin import *
 
-from SETS import *
+# from SETS import *

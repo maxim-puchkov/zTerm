@@ -20,7 +20,7 @@ def write_hex_as_bytes(filepath, hexstring):
     file = open(filepath, 'ab')
     buffer = bytes.fromhex(hexstring.lstrip('0').lstrip('xX'))
     file.close()
-    return file.write(buffer)
+    return file.write(buffer)????
 
 
 def read_bytes(filepath):
