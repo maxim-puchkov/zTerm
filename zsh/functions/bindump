@@ -68,7 +68,7 @@ function bindump() {
     done
     echo
     
-    if [[ $optlist[c] == true ]]; then
+    if [[ $optlist[c] == 'true' ]]; then
         sed -e "s/0/$(grey 0)/g" -e "s/1/$(bold 1)/g" $buffer
     else
         cat $buffer

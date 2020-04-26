@@ -8,14 +8,12 @@ if [[ -z $ZSH_THEME ]]; then
 fi
 
 plugins=(
-    'colored-man-pages'
     'colorize'
     'git'
     'osx'
     'z'
     'zsh-navigation-tools'
 )
-
 
 source "$ZSH/oh-my-zsh.sh"
 source "$ZDOTDIR/.zload"
@@ -39,6 +37,15 @@ fi
 # Python
 export PYTHONSTARTUP="/Users/admin/Developer/Terminal/Python/.pyenv"
 export PYTHONPATH="$DEV/Terminal/Python:$PYTHONPATH"
+
+
+#
+if [[ -f $SHELLSTARTUP ]]; then
+    touch $SHELLSTARTUP
+else
+    export SHELLSTARTUP=$(tempfile 'time')
+fi
+trap "rm -f \"$SHELLSTARTUP\"" EXIT
 
 
 precmd_functions+=( ref )

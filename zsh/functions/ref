@@ -9,19 +9,25 @@
 
 # Reload autoloaded functions
 function ref() {
+    if [[ ! -f $SHELLSTARTUP ]]; then
+        touch $SHELLSTARTUP
+    fi
+    
     updated_files=($( find "$zfunc" -type f -mnewer $SHELLSTARTUP ))
     if [[ ${#updated_files} -eq 0 ]]; then
         return 1
     fi
     
-    printf 'Functions updated:\n'
-    for filepath in $updated_files; do
-        local fn_name=${filepath:t}
-        builtin unfunction "$fn_name" &&
-            builtin autoload "$fn_name"
-        printf '  %s\n' "$(blue $fn_name)"
-    done
+#    printf 'Functions updated:\n'
+    for fn in ${updated_files:t}; do {
+        builtin unfunction $fn
+        builtin autoload $fn
+#        printf "$(green $fn_name)"
+    }
+    done 2> /dev/null
     
     touch $SHELLSTARTUP
     return 0
 }
+
+

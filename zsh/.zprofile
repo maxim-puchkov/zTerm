@@ -49,6 +49,7 @@ l1=( 'a' 'b' 'c' 'x' 'y' 'z' )
 l2=( '1' '2' '3' )
 l3=( {a..z} )
 l4=( 'word' 'word abc' 'abc word' 'word abc word' )
+l5=( '/path/to/a' '/path/to/b' '/c' 'c/d' )
 
 typeset -A A1
 for i in {1..26}; do

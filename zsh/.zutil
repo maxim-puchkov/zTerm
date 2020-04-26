@@ -13,9 +13,6 @@ function term2() {
 # Open in editor.
 function edit() {
     $EDITOR "$@"
-#    if ( ! open -a $EDITOR "$@" ); then
-#        $EDITOR "$@"
-#    fi
 }
 
 

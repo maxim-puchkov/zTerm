@@ -52,12 +52,14 @@ function template() {
         fi
         shift
         for macro in "$@"; do
-            local macro_id="___${(U)macro#m_}___"
+            local macro_id="___${(U)macro#'m_'}___"
             local macro_value=${(P)macro}
             sed -i '' "s/$macro_id/$macro_value/g" $file
         done
     }
     
+    # Copy template file to the target directory and
+    # replace macro strings.
     function copy_template() {
         local m_filename="$1"
         local m_package_name="$2"
@@ -68,8 +70,9 @@ function template() {
             m_filename=$name
             m_package_name=$package
             # Substitute template macro strings.
-            substitute_macros $new_template $TEMPLATE_MACROS
+            substitute_macros "$new_template" $TEMPLATE_MACROS
             echo "Generated template file: '$(OK $new_template)'."
+            save_array m_template_id $savefile
             return 0
         else
             error 'Fatal error.'
@@ -91,7 +94,7 @@ function template() {
     
     #MARK: - Z-Shell Function
     function template_zfunction() {
-        target_dir="${target_dir:-${zfunc}/zshell}"
+        target_dir="${target_dir:-${zfunc}}"
         local name="${$( generate_filename $1 ):-${(U)0}}"
         local package='Z-Function'
         local new_template="${target_dir}/${name}"
@@ -102,7 +105,7 @@ function template() {
     
     #MARK: - Z-Shell Command Function
     function template_zcmdfunction() {
-        target_dir="${target_dir:-${zfunc}/zshell}"
+        target_dir="${target_dir:-${zfunc}}"
         local name="${$( generate_filename $1 ):-${(U)0}}"
         local package='Z-Function'
         local new_template="${target_dir}/${name}"
@@ -142,8 +145,13 @@ function template() {
     
     
     if [[ $# -eq 0 ]]; then
+        fn print-commands 'template'
         return 2
     fi
+    
+    local savefile="$zterm/etc/template.id"
+    typeset -a lastid=( 0 )
+    read_array lastid $savefile &>/dev/null
     
     # Template macro strings.
     typeset -a TEMPLATE_MACROS=(
@@ -151,7 +159,7 @@ function template() {
         m_filename          m_package_name
         m_owner             m_username
         m_date_full         m_date_year
-        m_organization_id   m_product_id
+        m_organization_id   m_template_id
     )
     m_shebang='\#\!\/bin\/zsh'
     m_template_ts='<#timestamp#>'
@@ -162,6 +170,7 @@ function template() {
     m_date_full=$( date +'%Y-%m-%d' )
     m_date_year=$( date +'%Y' )
     m_organization_id='com.maximpuchkov'
+    m_template_id=( $(( $lastid + 1 )) )
     
     export TEMPLATE_MACROS
     export TEMPLATES_DIR="$ZDOTDIR/templates"

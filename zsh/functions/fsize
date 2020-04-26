@@ -1,0 +1,21 @@
+#!/bin/zsh
+
+#  fsize
+#  Z-Function
+#
+#  Created by Maxim Puchkov on 2020-04-25.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Print file size in bytes
+function fsize() {
+    typeset -A result
+    for filename in "${@:-$PWD}"; do
+        local _type="$(stat -f '%HT' $filename)"
+        local _size="$(blue $(stat -f '%z' $filename)) bytes"
+        result+=( "${filename:t}:     " "$_type, $_size" )
+    done
+    
+    print -C 2 ${(k)result} ${(v)result}
+    return $?
+}

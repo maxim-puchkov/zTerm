@@ -8,7 +8,6 @@
 
 from Cryptodome.Util.number import getPrime, isPrime, inverse
 import random
-MOD_BASE = 1
 
 from cfin import *
 

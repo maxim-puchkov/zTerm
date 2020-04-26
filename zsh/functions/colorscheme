@@ -15,14 +15,29 @@ function colorscheme() {
     local bg_suffix='bg'
     local normal_bg=( ${^normal}$bg_suffix )
     local bright_bg=( ${^bright}$bg_suffix )
+    local i j k
     
     for i in {1..8}; do
         local f1=${normal[$i]}
         local f2=${bright[$i]}
         local b1=${normal_bg[$i]}
         local b2=${bright_bg[$i]}
-        printf '%d.  FG: %s  %s  |  BG: %s  %s\n' $i \
+        printf ${(l:3:)i}
+        printf '.  FG: %s  %s  |  BG: %s  %s\n' \
             "$($f1 'Normal')" "$($f2 'Bright')" \
             "$($b1 'Normal')" "$($b2 'Bright')"
     done
+    echo; print-line; echo
+    
+    for j in {${1:-30}..${2:-40}}; do
+        printf ${(l:3:)j}
+        printf ". 0: \e[0;%dm%s" $j "Normal"; tput sgr0
+        printf "  |  1: \e[1;%dm%s" $j "Bold"; tput sgr0
+        printf "  |  2: \e[2;%dm%s" $j "Dim"; tput sgr0
+        printf "  |  3: \e[3;%dm%s" $j "Italic"; tput sgr0
+        printf "  |  4: \e[4;%dm%s" $j "Uline"; tput sgr0
+        printf "  |  7: \e[7;%dm%s" $j "Rev"; tput sgr0
+        echo
+    done
+    echo; print-line; echo
 }

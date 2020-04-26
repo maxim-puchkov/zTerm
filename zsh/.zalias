@@ -38,7 +38,7 @@ alias gs='git status'
 alias gt='() { cdp "$zterm"; git status; }'
 
 # Command 'grep'.
-alias grep='grep --color'
+#alias grep='grep --color'
 alias mang='grepman'
 
 # Command 'open'.
@@ -54,10 +54,10 @@ alias scriptopen='open "/System/Applications/Utilities/Script Editor.app"'
 
 
 # Script 'dir'.
-alias dm='idir mod'
+#alias dm='idir mod'
 
 # Updated scripts.
-alias re='re_v2'
+#alias re='re_v2'
 
 # Python.
 alias python='python3'
@@ -65,7 +65,7 @@ alias pip='pip3'
 alias idle='idle3'
 
 alias rr='zsh "$DEV/bin/run.sh"'
-alias modf='echo "#   $RANDOM" >> $zfunc/test-ref'
+#alias modf='echo "#   $RANDOM" >> $zfunc/test-ref'
 
-alias p='python'
+#alias p='python'
 #alias openssl='/usr/local/Cellar/openssl@1.1/1.1.1f/bin/openssl'

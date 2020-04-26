@@ -6,34 +6,10 @@
 #  Created by Maxim Puchkov on 2020-04-25.
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
-echo 'Hello!'
-echo '------'
 
-echo "Program: <$0>"
-echo "Args: <$@>"
-
-
-echo "$0 -- $@" > /Users/admin/Desktop/launched.txt
-
-#autoload +Uz save_array
-autoload +Uz error
-
+#autoload +Uz error
 autoload +Uz read_array
-#
-#CONFIG="$DEV/Terminal/.config/crontab/system-appearance"
-#read_array settings $CONFIG
-#echo $settings
-#
-#
-#hash=("${(@)array1:^array2}")
 
-
-
-#SETTINGS=(enabled begin_time end_time)
-
-#while read setting; do
-#    echo "cron setting = $setting"
-#done < $SETTINGS
 source $ZDOTDIR/.zio
 
 typeset -A appearances
@@ -61,3 +37,4 @@ if [[ $current == $action ]]; then
 fi
 
 /usr/local/bin/dark-mode $action &> /dev/null
+echo $hour >> /Users/admin/Desktop/launched.txt

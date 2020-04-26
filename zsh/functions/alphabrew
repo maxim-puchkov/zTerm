@@ -16,7 +16,7 @@ function alphabrew() {
     
     local option=${2:-'-s'}
     brew desc $option "/^$letter.*/" |
-        grep -E "^${letter}\w+:"
+        grep --color -E "^${letter}\w+:"
     
     if [[ $? -ne 0 ]]; then
         return 1
