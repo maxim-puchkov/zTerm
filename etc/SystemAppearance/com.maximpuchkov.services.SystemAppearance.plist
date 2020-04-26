@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.maximpuchkov.services.SystemAppearance</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>zsh</string>
+		<string>-c</string>
+		<string>/usr/local/bin/system-appearance-service $PWD $USER $(printenv)</string>
+		<string>com.maximpuchkov.services.SystemAppearance</string>
+		<string>10</string>
+		<string>18</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StartInterval</key>
+	<string>10</string>
+	<key>WorkingDirectory</key>
+	<string>/Users/admin/Developer/Terminal/etc</string>
+</dict>
+</plist>

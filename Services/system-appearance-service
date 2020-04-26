@@ -7,22 +7,86 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-#autoload +Uz error
-autoload +Uz read_array
+#autoload +Uz read_array
 
-source $ZDOTDIR/.zio
+#typeset -A appearances
+typeset -A dark_appearance
+dark_appearance=( 'on'  'Dark'
+                  'off' 'Light' )
 
-typeset -A appearances
-CFG_DIR="$DEV/Terminal/etc/SystemAppearance"
-read_array appearances $CFG_DIR/appearances
+echo $@ > "/Users/admin/Desktop/debug$(date).txt"
+exit 0
+#CFG_DIR="$DEV/Terminal/etc/SystemAppearance"
+#read_array appearances $CFG_DIR/appearances
+touch /Users/admin/Desktop/debug.txt
+{
+service_id=$1
+begin_hour=$2
+end_hour=$3
+directory=$4
+user=$5
+env=($6)
 
-hour=${1:-$( date +'%H' )};
+#{ read begin_hour; read end_hour } < $service_time
+#current_hour=$(date -r $current_time -j +'%H')
+begin_time=$( date -v "${begin_hour}H" -j +'%s' )
+end_time=$( date -v "${end_hour}H" -j +'%s' )
 
-if [[ $hour -ge 8 ]] && [[ $hour -lt 20 ]]; then
+
+current_time=$(date -j +'%s')
+
+echo $service_id
+echo "Begin $begin_hour: $begin_time"
+echo "End $end_hour: $end_time"
+echo $current_time
+
+if [[ $current_time -gt $begin_time ]] && [[ $current_time -lt $end_time ]]; then
+    echo "OFF"
+else
+    echo "ON"
+fi
+
+echo ; echo ; echo
+
+
+echo "DIR: $directory"
+echo "USER: $user"
+
+echo ; echo ; echo
+echo ; echo ; echo
+echo $#env 
+echo $env
+} >> /Users/admin/Desktop/debug.txt
+exit 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#hour=${1:-$( date +'%H' )};
+
+if [[ $hour -ge 10 ]] && [[ $hour -lt 18 ]]; then
   action='off'
 else
   action='on'
 fi
+
+log_message="[$(date -j +'%b %d %T')] $(hostname -s) ${0}[$$]:  "
 
 echo $hour >> /Users/admin/Desktop/launched.txt
 echo $action >> /Users/admin/Desktop/launched.txt

@@ -2,7 +2,8 @@
 
 
 # Home
-export DEV="$HOME/Developer"
+#export DEV="$HOME/Developer"
+export DEV="/usr/local"
 export ICLOUD="$HOME/Library/Mobile Documents/com~apple~CloudDocs"
 
 export desk="$HOME/Desktop"
