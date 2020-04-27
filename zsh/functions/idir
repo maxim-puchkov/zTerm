@@ -11,7 +11,7 @@
 function idir() {
     # Test if directory is empty.
     function idir_isempty() {
-        local n_files=$( countf "$dirpath" )
+        local n_files=$( files count "$dirpath" )
         if [[ $n_files -gt 0 ]]; then
             printf 'Directory %s is not empty.\n' "'$dirpath'" >&2
             return 1

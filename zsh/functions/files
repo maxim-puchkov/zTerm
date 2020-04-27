@@ -1,0 +1,42 @@
+#!/bin/zsh
+
+#  files
+#  devx
+#
+#  Created by admin on 2020-03-10.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Count matching files in a directory.
+function files() {
+    #
+    function files_count() {
+        local in_dir="${${1:-.}:a}"
+        local filename="$2"
+        if [[ ! -e "$in_dir" ]]; then
+            echo "Directory not found: $in_dir."
+            return 1
+        fi
+        cd "$in_dir"
+        local regex="^\.\/${filename}[[:alnum:]_\.\-]*"
+        echo $( find . ! -name . -prune -print | grep -i -E "$regex" -c )
+        cd "$OLDPWD"
+    }
+    
+    # Match files by prefix.
+#    function () {
+#        echo $( __count__ "$in_dir" $regex )
+#    }
+    
+    if [[ $# -eq 0 ]]; then
+        fn print-commands 'files'
+        return 2
+    fi
+    
+    local cmd=$1
+    shift
+
+#    local command_type="${3:-prefix}"
+    ${0}_${cmd} "$@"
+    return 0
+}

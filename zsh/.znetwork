@@ -14,7 +14,7 @@ function csil-tmux() {
 #MARK: - SSHFS
 # Mount CSIL home directory (~/.ssh/config).
 function mount_csil() {
-    if ! $( sshfs $SFU_CSIL:/home/$SFU_USER "$SFU_MNT" ); then
+    if $( ! sshfs $SFU_CSIL:/home/$SFU_USER "$SFU_MNT" ); then
         printf 'Error: failed to mount %s.\n' "'$(Bad $SFU_MNT)'"
         return 1
     fi

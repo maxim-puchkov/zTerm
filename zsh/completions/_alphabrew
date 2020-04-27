@@ -2,4 +2,5 @@
 
 
 _arguments -C \
-  '1: :({a..z})'
+  '1: :({a..z})' &&
+  return 0

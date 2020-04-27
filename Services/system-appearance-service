@@ -7,61 +7,58 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-#autoload +Uz read_array
-
-#typeset -A appearances
 typeset -A dark_appearance
-dark_appearance=( 'on'  'Dark'
-                  'off' 'Light' )
+dark_appearance=($(< appearances))
 
-echo $@ > "/Users/admin/Desktop/debug$(date).txt"
-exit 0
-#CFG_DIR="$DEV/Terminal/etc/SystemAppearance"
-#read_array appearances $CFG_DIR/appearances
-touch /Users/admin/Desktop/debug.txt
-{
-service_id=$1
-begin_hour=$2
-end_hour=$3
-directory=$4
-user=$5
-env=($6)
 
-#{ read begin_hour; read end_hour } < $service_time
-#current_hour=$(date -r $current_time -j +'%H')
+{ read begin_hour; read end_hour } < interval
 begin_time=$( date -v "${begin_hour}H" -j +'%s' )
 end_time=$( date -v "${end_hour}H" -j +'%s' )
 
 
 current_time=$(date -j +'%s')
-
-echo $service_id
-echo "Begin $begin_hour: $begin_time"
-echo "End $end_hour: $end_time"
-echo $current_time
-
-if [[ $current_time -gt $begin_time ]] && [[ $current_time -lt $end_time ]]; then
-    echo "OFF"
+if [[ $current_time -ge $begin_time ]] &&
+    [[ $current_time -lt $end_time ]]; then
+    new_status="off"
 else
-    echo "ON"
+    new_status="on"
 fi
 
-echo ; echo ; echo
+
+log="$(date -r $current_time -j +'%b %d %T') $(hostname -s) ${0:t}[$$]:"
+
+current_status=$( /usr/local/bin/dark-mode status )
+if [[ $new_status == $current_status ]]; then
+    log="${log} [1] ${dark_appearance[$new_status]} is already set."
+    echo $log >&2
+    exit 1
+fi
+
+log="${log} [0] system appearance changed to ${dark_appearance[$new_status]}."
+echo $log
+/usr/usr/local/bin/dark-mode $new_status &> /dev/null
+exit 0
 
 
-echo "DIR: $directory"
-echo "USER: $user"
 
-echo ; echo ; echo
-echo ; echo ; echo
-echo $#env 
-echo $env
-} >> /Users/admin/Desktop/debug.txt
-exit 1
+#echo $@ > "/Users/admin/Desktop/debug$(date).txt"
+#exit 0
+##CFG_DIR="$DEV/Terminal/etc/SystemAppearance"
+##read_array appearances $CFG_DIR/appearances
+#touch /Users/admin/Desktop/debug.txt
+#{
+#service_id=$1
+#begin_hour=$2
+#end_hour=$3
+#directory=$4
+#user=$5
+#env=($6)
 
-
-
-
+#current_hour=$(date -r $current_time -j +'%H')
+#echo $service_id
+#echo "Begin $begin_hour: $begin_time"
+#echo "End $end_hour: $end_time"
+#echo $current_time
 
 
 

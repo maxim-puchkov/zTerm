@@ -21,6 +21,6 @@ function pack() {
     for f in $files; do
         echo $f
     done
-    yellow "dir=$(countf . $dir)"
-    yellow "sub=$(countf . $subdir)"
+    yellow "dir=$(files count . $dir)"
+    yellow "sub=$(files count . $subdir)"
 }

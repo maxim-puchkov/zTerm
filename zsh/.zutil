@@ -14,7 +14,10 @@ function term2() {
 function edit() {
     $EDITOR "$@"
 }
-
+# Calculate
+function calc() {
+    noglob expr "$@"
+}
 
 
 #MARK: - Oh-my-zsh Plugins

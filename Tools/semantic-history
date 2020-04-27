@@ -1,0 +1,20 @@
+#!/bin/zsh
+
+#  semantic_history
+#  Z-Function
+#
+#  Created by Maxim Puchkov on 2020-04-17.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+
+file="${1}"
+regular_file="${file%.}"
+
+if [[ -r "$regular_file" ]] &&
+    [[ -f "$regular_file" ]]; then
+    open -a Xcode -g "$regular_file"
+    return 0
+fi
+
+open "$file"

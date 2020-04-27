@@ -8,16 +8,22 @@
 	<array>
 		<string>zsh</string>
 		<string>-c</string>
-		<string>/usr/local/bin/system-appearance-service $PWD $USER $(printenv)</string>
-		<string>com.maximpuchkov.services.SystemAppearance</string>
-		<string>10</string>
-		<string>18</string>
+		<string>/usr/local/bin/system-appearance-service</string>
 	</array>
 	<key>RunAtLoad</key>
 	<true/>
-	<key>StartInterval</key>
-	<string>10</string>
+	<key>StartCalendarInterval</key>
+	<array>
+		<dict>
+			<key>Minute</key>
+			<string>00</string>
+		</dict>
+	</array>
 	<key>WorkingDirectory</key>
-	<string>/Users/admin/Developer/Terminal/etc</string>
+	<string>/usr/local/Terminal/etc/SystemAppearance</string>
+	<key>StandardOutPath</key>
+	<string>../../Logs/com.maximpuchkov.services.SystemAppearance.log</string>
+	<key>StandardErrorPath</key>
+	<string>../../Logs/com.maximpuchkov.services.SystemAppearance.log</string>
 </dict>
 </plist>

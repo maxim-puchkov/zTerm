@@ -23,6 +23,9 @@ alias ll='ls -lA'
 alias lsc='ls -lUTtr'
 alias recent='ls -ldGFT -- **(om[1,10])'
 
+alias lc='launchctl'
+function bd() {brew desc -s 'abc' | grep -e 'abc'}
+
 # Command 'echo'.
 alias e='builtin echo'
 alias E='b_redbg'
@@ -42,10 +45,10 @@ alias gt='() { cdp "$zterm"; git status; }'
 alias mang='grepman'
 
 # Command 'open'.
-alias xopen='open "/Applications/Xcode.app"'
-alias txtopen='open "/System/Applications/TextEdit.app"'
-alias webopen='open "/Applications/Safari.app"'
-alias scriptopen='open "/System/Applications/Utilities/Script Editor.app"'
+alias xopen='open -a Xcode'
+alias textopen='open -a TextEdit'
+alias webopen='open -a Safari'
+alias scriptopen='open -a "Script Editor"'
 
 # Command 'which'.
 #alias which='__which_alias'

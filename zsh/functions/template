@@ -22,8 +22,8 @@ function template() {
             return 1
         fi
             
-        # Count all files starting with the same 'base'.
-        local count=$( countf "$target_dir" "$base" prefix )
+        # Count all files starting with the same 'base' name.
+        local count=$( files count "$target_dir" "$base" )
         
         # If there exists a file with a similar name,
         # save new file with appended file number.
