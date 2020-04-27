@@ -8,26 +8,50 @@
 
 
 # Display a file or standard input in binary format.
+# Options:
+#   c       - colorize output [default: not set]
+#   g N     - group every N hex digits (4 bits) [default: 2]
+#   r N     - display N hex digits per row [default: 16]
 function bindump() {
+    # Delete files on exit
     function __cleanup() {
         rm -f $1
         return $?
     }
     
+    # Convert character in a group to binary.
+    # E.g., (arg1='F0', arg2=2) -> output=0000
+    function __tobin() {
+        local hexadecimal=${1[$2]}
+        local binary=${hexbin_map[$hexadecimal]}
+        if [[ $optlist[c] == 'true' ]]; then
+            binary=$( sed -e "s/0/$(grey 0)/g" \
+                -e "s/1/$(bold 1)/g" \
+                <<< $binary )
+        fi
+        printf '%s' $binary
+    }
+    
+    
+    
+    
     # Get bindump options
     typeset -A optlist
-    get_options optlist 'c' "$@"
+    get_options optlist 'cg:Gr:R' "$@"
     shift $optlist[length]
+    
+    local output=/dev/stdout
 
-    # If file is not provided, read input until Ctrl+D
+    # If file is not provided, read input until Ctrl+D and write it
+    # to a temporary file
     local filepath="$1"
-    printf "%s\n" "${filepath:-Standard Input (press Ctrl+D to end)}"
+    printf "%s\n" "${filepath:-'Standard Input (press Ctrl+D to end)'}"
     if [[ -z $filepath ]]; then
         read -d $'\x04' input
         filepath=$( tempfile )
         printf '%s' $input >> $filepath
-        echo
         trap "__cleanup $filepath" EXIT
+        echo
     fi
     echo
     
@@ -36,43 +60,54 @@ function bindump() {
         return 2
     fi
     
-    # Map hexadecimal 0-F digits to binary 0000-1111
+    
+    
+    
+    # Map single blank space and hexadecimal 0-F digits to
+    # 4 blank spaces and binary 0000-1111
     typeset -A hexbin_map
-    local hex_digits=( {0..9} {'A'..'F'} )
-    local bin_digits=( {0,1}{0,1}{0,1}{0,1} )
+    local hex_digits=( ' '    {0..9} {'A'..'F'} )
+    local bin_digits=( '    ' {0,1}{0,1}{0,1}{0,1} )
     hexbin_map=( ${hex_digits:^bin_digits} )
     
-    # Size of hexadecimal digit groups
-    local hexdump=$( printf '%s' $(xxd -p "$filepath") )
-    local hex_per_group=2
-    local hex_per_row=16
+    
+    # Hexdump of the file
+    local hexdump=${(U)$( printf '%s' $(xxd -p "$filepath") )}
+    local hex_per_group=${optlist[g]:-2}
+    local hex_per_row=${optlist[r]:-16}
+    local half_width=$(( $hex_per_row / $hex_per_group ))
+    
+    # Make hexdump length a multiple of hex_per_row
+    local blank_space_size=$(( 2 * ($hex_per_row - (${#hexdump} % $hex_per_row) / $hex_per_group) ))
+    local blank_space=$( printf '%*s' $blank_space_size '' )
+    hexdump="${hexdump}${blank_space}"
+    
+    
+    
+    
+    # Print each group of hexadecimal characters in binary
     local pos=0
-    # Print each group of hexadecimal characters
-    # in binary
-    local buffer=$( tempfile )
-    trap "__cleanup $buffer" EXIT
     while [[ $pos -lt ${#hexdump} ]]; do
         local group=${hexdump:$pos:$hex_per_group}
-        for i in {0..${#hex_per_group}}; do
-            local h=${(U)group[$(( i + 1 ))]}
-            local binary=${hexbin_map[$h]}
-            printf '%0*s' 4 $binary >> $buffer
+        for i in {1..${hex_per_group}}; do
+            local character=$i
+            local binary=$( __tobin $group $character )
+            printf '%s' $binary >> $output
         done
         pos=$(( $pos + $hex_per_group ))
         case $(( $pos % $hex_per_row )) in
-            0)  printf '\n' >> $buffer
+            0)  local end=$pos
+                local start=$(( $pos - $hex_per_row ))
+                local hex_row=$( printf "%s" ${hexdump:$start:$hex_per_row} |
+                                 sed "s/.\{$hex_per_group\}/& /g" )
+                printf "\t\t$(yellow %s)\n" $hex_row >> $output
                 ;;
-            *)  printf ' '  >> $buffer
+  $half_width)  printf '  ' >> $output
+                ;;
+            *)  printf ' '  >> $output
                 ;;
         esac
     done
-    echo
-    
-    if [[ $optlist[c] == 'true' ]]; then
-        sed -e "s/0/$(grey 0)/g" -e "s/1/$(bold 1)/g" $buffer
-    else
-        cat $buffer
-    fi
     
     return 0
 }
