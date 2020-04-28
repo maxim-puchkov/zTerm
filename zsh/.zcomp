@@ -20,55 +20,41 @@ autoload -U compinit
 compinit
 
 
-
-
 #MARK: - Completions
 # Aliases
-compdef _alias      find-alias
-compdef _alias      alias_value
+compdef _alias          find-alias
+compdef _alias          alias_value
 
 # Homebrew
-compdef _brew       bs
+compdef _brew_formula   brew_browse
 
 # Shell builtin commands help
-compdef _builtins   help
+compdef _builtin        help
 
 # Python Package Installer
-compctl -K _pip     pip  pip3  pip3.7  pip3.8
+compctl -K _pip         pip  pip3  pip3.7  pip3.8
 
 # Commands
-compdef _command    syntax  brief
+compdef _command        syntax  brief
 
 #
-compdef _command    hist
+compdef _command        hist
 
 # Processes
-compdef _pids       leaks
-compdef _pids       lskq
-compdef _pids       malloc_history
+compdef _pids           leaks
+compdef _pids           lskq
+compdef _pids           malloc_history
 
 # Symbolic linker
-compdef _sln        sln
+compdef _sln            sln
 
 #
-compdef _nothing    update.sh
-compdef _nothing    spectrum  color_scheme
+compdef _nothing        update.sh
+compdef _nothing        spectrum  color_scheme
 
 #
-compdef _vars       try  tryregex
-compdef _vars       typeof
+compdef _vars           try  tryregex
+compdef _vars           typeof
 
 # Navigation
-compdef _cd         cdp
-#compdef _desk       desk
-#compdef _dev        dev
-#compdef _lib        lib
-#compdef _testdir    testdir
-#compdef _temp       temp
-
-
-# Variables.
-#compdef _vared      vdebug
-#compdef _brew       brew_quick_list
-#compdef _brew       brew_quick_relink
-#compdef _command    which_which
+compdef _cd             cdp

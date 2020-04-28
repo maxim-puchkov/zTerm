@@ -29,8 +29,8 @@ cat <<-EOF
   | ---- | --------- | ----------------------------- | ---------- |
   |      |           |                               |            |
   |   1  |  $(H3 'zenv')     |   ~/.zshenv                   | zsh        |
-  |   2  |  $(H3 'zprof')    |   /etc/zprofile               | zsh        |
-  |   3  | · · · · · |   \$zdot/.zprofile             | zsh        |
+  |   2  | · · · · · |   /etc/zprofile               | zsh        |
+  |   3  |  $(H3 'zprofile') |   \$zdot/.zprofile             | zsh        |
   |   4  | · · · · · |   /etc/zshrc                  | zsh        |
   |   5  | · · · · · |   /etc/zshrc_Apple_Terminal   | zsh        |
   |   6  |  $(H3 'zrc')      |   \$zdot/.zshrc                | zsh        |

@@ -22,7 +22,7 @@ function fn() (
     }
     
     ## src: find function source file ##
-    local function fn_src() {
+    function fn_src() {
         local fsource=$functions_source[$fname]
         if [[ -z $fsource ]]; then
             error "Definition file not found: '$(Bad $fname)'."

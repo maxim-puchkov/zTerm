@@ -7,7 +7,7 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# <#Function description#>
+# View or edit local zsh functions.
 function zfc() {
     ## dir: go to z-functions directory [default] ##
     function zfc_dir() {

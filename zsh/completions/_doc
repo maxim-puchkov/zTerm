@@ -1,4 +1,4 @@
 #compdef doc
 
 
-_files -/ -W /Users/admin/Developer/Terminal/share/docs
+_files -/ -W $ZTERM/share/docs

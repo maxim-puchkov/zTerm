@@ -15,7 +15,7 @@ function colorscheme() {
     local bg_suffix='bg'
     local normal_bg=( ${^normal}$bg_suffix )
     local bright_bg=( ${^bright}$bg_suffix )
-    local i j k
+    local i j
     
     for i in {1..8}; do
         local f1=${normal[$i]}

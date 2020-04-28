@@ -1,37 +1,41 @@
 # User-specific profile for interactive zsh(1) shells.
 
 
+#MARK: - Global Aliases
 # Shell output.
 alias -g noerr='2> /dev/null'  # redirect stderr
 alias -g quiet='&> /dev/null'  # redirect stdout and stderr
 
 # If statement: if [[ ... ]] T.
-alias -g T='; \
-    then \
-        echo "-- $(green True) $(pass) --"; \
-        return 0; \
-    else \
-        echo "-- $(red False) $(fail) --"; \
-        return 1; \
-    fi;'
+alias -g T='; then echo "-- $(green True)  $(pass) --"; return 0; \
+              else echo "-- $(red False) $(fail) --"; return 1; \
+            fi;'
 
+
+
+#MARK: - Regular Aliases
 # Command 'ls'.
-alias ls='command ls -GFh'
+alias ls='command ls -FGHh'
 alias l='ls -l'
 alias la='ls -la'
 alias ll='ls -lA'
-alias lsc='ls -lUTtr'
-alias recent='ls -ldGFT -- **(om[1,10])'
+#alias lt='ls -lTUrt | grep -E "[0-9]{1,2} [A-Z][a-z]{2} [0-9\:]{8} [0-9]{4}"'
+#alias lf='ls -lO'
+alias recent='ls -ldFGT -- **(om[1,10])'
 
-alias lc='launchctl'
-function bd() {brew desc -s 'abc' | grep -e 'abc'}
+# Brew
+alias bb='brew_browse'
+alias bi='brew info'
 
-# Command 'echo'.
+# Builtin 'echo'.
 alias e='builtin echo'
 alias E='b_redbg'
 
-# Command 'history'.
+# History.
 alias h='() { n=100; n=${@:+$HISTCMD}; history -${n} | grep -E "${@:-''}" }'
+
+# Command 'launchctl'.
+alias lc='launchctl'
 
 # Command 'rm'.
 alias rm='command rm -i'
@@ -41,7 +45,6 @@ alias gs='git status'
 alias gt='() { cdp "$zterm"; git status; }'
 
 # Command 'grep'.
-#alias grep='grep --color'
 alias mang='grepman'
 
 # Command 'open'.
@@ -50,17 +53,9 @@ alias textopen='open -a TextEdit'
 alias webopen='open -a Safari'
 alias scriptopen='open -a "Script Editor"'
 
-# Command 'which'.
-#alias which='__which_alias'
-
-
-
-
-# Script 'dir'.
-#alias dm='idir mod'
-
-# Updated scripts.
-#alias re='re_v2'
+# Type.
+alias i='type -a'
+alias t='typeof'
 
 # Python.
 alias python='python3'

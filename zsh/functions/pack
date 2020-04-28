@@ -10,17 +10,58 @@
 # Create new empty subdirectory 'subdir'. Move all
 # files in the parent directory 'dir' to 'dir/subdir'.
 function pack() {
-    if [[ -z $1 || -z $2 ]]; then
+    typeset -A optlist=()
+    get_options optlist 'e:Eo:On:N' "$@"
+    shift $optlist[length]
+    
+    # -o
+    local only=''
+    if [[ -n $optlist[o] ]]; then
+        only=( '-and -name '${(z)^optlist[o]} )
+    fi
+    # -e
+    local except=''
+    if [[ -n $optlist[e] ]]; then
+        except=( '-and ! -name '${(z)^optlist[e]} )
+    fi
+    
+    # Find files
+    local dir="${1:-$PWD}"
+    local files=($( find $dir ! -name '.*' \
+                              ! -flags hidden \
+                              -mindepth 1 \
+                              -maxdepth 1 \
+                              ${(z)only} \
+                              ${(z)except} )) 2&>/dev/null
+    
+    if [[ ${#files} -eq 0 ]]; then
+        error 'No files.'
         return 1
     fi
     
-    local dir=${1:a}
-    local subdir=$dir/$2
-    local files=($dir/*)
-    mkdir -p $subdir
-    for f in $files; do
-        echo $f
-    done
-    yellow "dir=$(files count . $dir)"
-    yellow "sub=$(files count . $subdir)"
+    # Move files to the subdirectory
+    local packname="$dir/${2:-Pack-${#files}}"
+    mkdir -p "$packname"
+    
+    mv $files "$packname/"
+    
+    printf "Packed $(green '%s') files.\n" ${#files}
+    printf "%s" $packname
+    
 }
+
+#function pack() {
+#    if [[ -z $1 || -z $2 ]]; then
+#        return 1
+#    fi
+#
+#    local dir=${1:a}
+#    local subdir=$dir/$2
+#    local files=($dir/*)
+#    mkdir -p $subdir
+#    for f in $files; do
+#        echo $f
+#    done
+#    yellow "dir=$(files count . $dir)"
+#    yellow "sub=$(files count . $subdir)"
+#}

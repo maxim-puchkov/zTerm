@@ -7,7 +7,7 @@ function ztermx()   { open -a Xcode "$ztermxcodeproj" }
 # zshenv - zsh environment for all shells.
 function zenv()     { open -a Xcode "$ZSHENV" }
 # zprofile - profile for zsh shells.
-function zprof()    { open -a Xcode "$ZPROFILE" }
+function zprofile() { open -a Xcode "$ZPROFILE" }
 # zshrc - configuration file for zsh shells.
 function zrc()      { open -a Xcode "$ZSHRC" }
 function zload()    { open -a Xcode "$ZDOTDIR/.zload" }

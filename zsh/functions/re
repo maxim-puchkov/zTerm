@@ -11,5 +11,5 @@
 function re() {
     /usr/bin/clear
     echo "Interactive shell $SHELL($SHLVL) reloaded."
-    exec -l 'zsh'
+    builtin exec -l 'zsh'
 }

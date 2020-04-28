@@ -8,10 +8,10 @@ source "$ZEXPORT"
 path=( "/usr/local/sbin" $path  )
 path=( "/usr/local/opt/python@3/bin" $path)
 path=( "/usr/local/opt/llvm/bin" $path )
-path=( $path "$DEV/bin" )
+path=( $path "$HOME/Developer/bin" )
 path=( $path "$DEV/Terminal/.config/bin" )
 path=( $path "$DEV/Terminal/Python" )
-path=( $path "$SFU/bin" )
+#path=( $path "$SFU/bin" )
 
 
 # Function path
