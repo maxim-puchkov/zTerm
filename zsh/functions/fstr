@@ -1,0 +1,45 @@
+#!/bin/zsh
+
+#  fstr
+#  Z-Function (5)
+#
+#  Created by Maxim Puchkov on 2020-04-27.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Find strings (or patterns) in files
+function fstr() {
+    if [[ $# -eq 0 ]] return 2
+    
+    # String, directory, and depth
+    local string="$1"
+    local search_directory="${${2:-.}:a}"
+    local depth="${3:+-maxdepth $3}"
+    
+    # Files in the directory
+    typeset -a files=($( find "$search_directory" \
+                              -type f \
+                              ${(z)depth} ))
+    typeset -i n_files=${#files}
+    typeset -i n_matches=0
+    
+    # Find matching files
+    for f in $files; do
+        local match=$( command env GREP_COLOR='1;93' \
+                       command egrep \
+                                --color='always' \
+                                --ignore-case \
+                                --text \
+                                -E "$string" \
+                                -- "$f" )
+        if [[ -n "$match" ]]; then
+            n_matches=$(( $n_matches + 1 ))
+            printf "$(bluebg '[%d] %s')\n" $n_matches "$f"
+            printf '%s\n\n' "$match"
+        fi
+    done
+    
+    # Display number of matches and files
+    printf "$(blue '%d') out of $(blue '%d') files match.\n" $n_matches $n_files
+    return 0
+}

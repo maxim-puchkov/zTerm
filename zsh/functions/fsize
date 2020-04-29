@@ -9,13 +9,43 @@
 
 # Print file size in bytes
 function fsize() {
-    typeset -A result
-    for filename in "${@:-$PWD}"; do
-        local _type="$(stat -f '%HT' $filename)"
-        local _size="$(blue $(stat -f '%z' $filename)) bytes"
-        result+=( "${filename:t}:     " "$_type, $_size" )
-    done
+    # Supress error messages
+    local stdout=/dev/stdout
+    local stderr=/dev/stderr
+    if [[ "$1" == '-q' ]]; then
+        stderr=/dev/null
+        shift
+    fi
     
-    print -C 2 ${(k)result} ${(v)result}
-    return $?
+    case $# in
+        # No input
+        0)  error 'Specify at least one file.' &>$stderr
+            return 2
+            ;;
+        
+        # One file
+        1)  local filename="$1"
+            if [[ ! -r "$filename" ]]; then
+                error "Invalid file: $filename." &>$stderr
+                return 1
+            fi
+            print "$(stat -f '%z' $filename)" >$stdout
+            return $?
+            ;;
+        
+        # Multiple files
+        *)  typeset -A result
+            for filename in "${@:-$PWD}"; do
+                if [[ ! -r "$filename" ]]; then
+                    result+=( "${filename:t}:     " "$(red 'Invalid')" )
+                    continue
+                fi
+                local _type="$(stat -f '%HT' $filename)"
+                local _size="$(blue $(stat -f '%z' $filename)) bytes"
+                result+=( "${filename:t}:     " "$_type, $_size" )
+            done
+            print -C 2 ${(k)result} ${(v)result} >$stdout
+            return $?
+            ;;
+    esac
 }

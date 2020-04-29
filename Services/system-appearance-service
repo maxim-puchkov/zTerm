@@ -7,95 +7,47 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
+#MARK: - Configuration Files
+ROOT_DIR="${ZTERM:-/usr/local/Terminal}"
+# System dark appearance description
+typeset -r appearances_file="${ROOT_DIR}/etc/SystemAppearance/appearances"
 typeset -A dark_appearance
-dark_appearance=($(< appearances))
+dark_appearance=($(< $appearances_file))
+# Start and End hour of dark appearance
+typeset -r intervals_file="${ROOT_DIR}/etc/SystemAppearance/intervals"
+typeset -A time_intervals
+time_intervals=($(< $intervals_file))
 
 
-{ read begin_hour; read end_hour } < interval
-begin_time=$( date -v "${begin_hour}H" -j +'%s' )
-end_time=$( date -v "${end_hour}H" -j +'%s' )
-
-
+#MARK: - Time
+# Determine Start, End, and Current times
+begin_time=$( date -v "${time_intervals[begin]}H" -j +'%s' )
+end_time=$( date -v "${time_intervals[end]}H" -j +'%s' )
 current_time=$(date -j +'%s')
+# Compare the times time and set the New Status
 if [[ $current_time -ge $begin_time ]] &&
     [[ $current_time -lt $end_time ]]; then
-    new_status="off"
+    new_status='off'
 else
-    new_status="on"
+    new_status='on'
 fi
 
 
-log="$(date -r $current_time -j +'%b %d %T') $(hostname -s) ${0:t}[$$]:"
+#MARK: - Logging
+#
+log_prefix="$(date -r $current_time -j +'%b %d %T') $(hostname -s) ${0:t}[$$]:"
+log_info="${log_prefix} [0] system appearance changed to ${dark_appearance[$new_status]}."
+log_error="${log_prefix} [1] ${dark_appearance[$new_status]} appearance is already set."
 
+
+#MARK: -
+#
 current_status=$( /usr/local/bin/dark-mode status )
-if [[ $new_status == $current_status ]]; then
-    log="${log} [1] ${dark_appearance[$new_status]} is already set."
-    echo $log >&2
+if [[ "$new_status" == "$current_status" ]]; then
+    echo "$log_error" >&2
     exit 1
 fi
-
-log="${log} [0] system appearance changed to ${dark_appearance[$new_status]}."
-echo $log
-/usr/usr/local/bin/dark-mode $new_status &> /dev/null
+#
+echo "$log_info"
+/usr/local/bin/dark-mode "$new_status" &> /dev/null
 exit 0
-
-
-
-#echo $@ > "/Users/admin/Desktop/debug$(date).txt"
-#exit 0
-##CFG_DIR="$DEV/Terminal/etc/SystemAppearance"
-##read_array appearances $CFG_DIR/appearances
-#touch /Users/admin/Desktop/debug.txt
-#{
-#service_id=$1
-#begin_hour=$2
-#end_hour=$3
-#directory=$4
-#user=$5
-#env=($6)
-
-#current_hour=$(date -r $current_time -j +'%H')
-#echo $service_id
-#echo "Begin $begin_hour: $begin_time"
-#echo "End $end_hour: $end_time"
-#echo $current_time
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#hour=${1:-$( date +'%H' )};
-
-if [[ $hour -ge 10 ]] && [[ $hour -lt 18 ]]; then
-  action='off'
-else
-  action='on'
-fi
-
-log_message="[$(date -j +'%b %d %T')] $(hostname -s) ${0}[$$]:  "
-
-echo $hour >> /Users/admin/Desktop/launched.txt
-echo $action >> /Users/admin/Desktop/launched.txt
-echo "$(date)" >> /Users/admin/Desktop/launched.txt
-
-
-current=$( /usr/local/bin/dark-mode status )
-if [[ $current == $action ]]; then
-    echo 'service failed' >> /Users/admin/Desktop/launched.txt
-  printf '%s %s\n' "${appearances[$current]}" 'appearance is already enabled.' >&2
-  exit 1
-fi
-
-/usr/local/bin/dark-mode $action &> /dev/null
-echo $hour >> /Users/admin/Desktop/launched.txt
