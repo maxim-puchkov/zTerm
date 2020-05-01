@@ -21,11 +21,14 @@ alias la='ls -la'
 alias ll='ls -lA'
 #alias lt='ls -lTUrt | grep -E "[0-9]{1,2} [A-Z][a-z]{2} [0-9\:]{8} [0-9]{4}"'
 #alias lf='ls -lO'
-alias recent='ls -ldFGT -- **(om[1,10])'
+#alias recent='ls -ldFGT -- **(om[1,10])'
 
 # Brew
 alias bb='brew_browse'
 alias bi='brew info'
+
+# Command 'cp'.
+alias cp='command cp -i'
 
 # Builtin 'echo'.
 alias e='builtin echo'
@@ -37,12 +40,6 @@ alias h='() { n=100; n=${@:+$HISTCMD}; history -${n} | fgrep "${@:-''}" }'
 # Help.
 alias help='run-help'
 
-# Command 'launchctl'.
-alias lctl='launchctl'
-
-# Command 'rm'.
-alias rm='command rm -i'
-
 # Command 'git'.
 alias gs='git status'
 alias gt='() { cdp "$zterm"; git status; }'
@@ -51,11 +48,20 @@ alias gt='() { cdp "$zterm"; git status; }'
 alias grepa='egrep --color=always --text --regexp ".*"'
 alias mang='grepman'
 
+# Command 'launchctl'.
+alias lctl='command launchctl'
+
+# Command 'mv'
+alias mv='command mv -i'
+
 # Command 'open'.
 alias xopen='open -a Xcode'
 alias textopen='open -a TextEdit'
 alias webopen='open -a Safari'
 alias scriptopen='open -a "Script Editor"'
+
+# Command 'rm'.
+alias rm='command rm -i'
 
 # Type.
 alias i='type -a'
@@ -65,5 +71,8 @@ alias t='typeof'
 alias python='python3'
 alias pip='pip3'
 alias idle='idle3'
+
+
+
 
 alias rr='zsh "$DEV/bin/run.sh"'

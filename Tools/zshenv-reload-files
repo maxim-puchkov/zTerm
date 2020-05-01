@@ -7,15 +7,16 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-#export REF_ENV=( ${(L)$( awk -F '(="\\$ZDOTDIR\/|".*)' '/##: ref/ {print $2}' $ZSHENV )} )
+# Write all filepaths declared in zshenv with the tag
+#   ': ref' to 'source.zsh' configuration file.
 
-
-
+# If a file listed in 'source.zsh' is modified while
+#   zsh is active, it will be re-sourced.
 outfile="$ZTERM/etc/source.zsh"
 
 awk -F '(="\\$ZDOTDIR\/|".*)' \
-    '/##: ref/ {print "'$ZDOTDIR'/"$2}' \
-    $ZSHENV > $outfile
+        '/##: ref/  { print "'$ZDOTDIR'/"$2; }' \
+        $ZSHENV > $outfile
 code=$?
 
 if [[ $code -ne 0 ]]; then

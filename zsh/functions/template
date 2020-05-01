@@ -103,16 +103,16 @@ function template() {
         copy_template "$name" "$package" "$TEMPLATE_ORIG" "$new_template"
     }
     
-    #MARK: - Z-Shell Command Function
-    function template_zcmdfunction() {
-        target_dir="${target_dir:-${zfunc}}"
-        local name="${$( generate_filename $1 ):-${(U)0}}"
-        local package='Z-Function'
-        local new_template="${target_dir}/${name}"
-        local TEMPLATE_ORIG="$TEMPLATES_DIR/$0"
-        
-        copy_template "$name" "$package" "$TEMPLATE_ORIG" "$new_template"
-    }
+#    #MARK: - Z-Shell Command Function
+#    function template_zcmdfunction() {
+#        target_dir="${target_dir:-${zfunc}}"
+#        local name="${$( generate_filename $1 ):-${(U)0}}"
+#        local package='Z-Function'
+#        local new_template="${target_dir}/${name}"
+#        local TEMPLATE_ORIG="$TEMPLATES_DIR/$0"
+#        
+#        copy_template "$name" "$package" "$TEMPLATE_ORIG" "$new_template"
+#    }
     
     #MARK: - Python Script
     function template_python() {
@@ -141,6 +141,16 @@ function template() {
         rm -f "$TEMPLATE_ORIG"
     }
     
+    #MARK: - Z-Shell Tools
+    function template_ztool() {
+        target_dir="${target_dir:-${ZTERM}/Tools}"
+        local name="${$( generate_filename _${1:-${(U)0}} )}"
+        local package='Terminal'
+        local new_template="${target_dir}/${name}"
+        local TEMPLATE_ORIG="$TEMPLATES_DIR/$0"
+        
+        echo copy_template "$name" "$package" "$TEMPLATE_ORIG" "$new_template"
+    }
     
     
     

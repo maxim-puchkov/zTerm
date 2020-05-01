@@ -9,7 +9,7 @@
 
 # <#Function description#>
 function colorscheme() {
-    local normal=( black red   green   yellow   blue   magenta   cyan   grey  )
+    local normal=( black red   green   yellow   blue   magenta   cyan   lgrey )
     local bright=( dgrey b_red b_green b_yellow b_blue b_magenta b_cyan white )
     
     local bg_suffix='bg'
@@ -31,12 +31,12 @@ function colorscheme() {
     
     for j in {${1:-30}..${2:-40}}; do
         printf ${(l:3:)j}
-        printf ". 0: \e[0;%dm%s" $j "Normal"; tput sgr0
-        printf "  |  1: \e[1;%dm%s" $j "Bold"; tput sgr0
-        printf "  |  2: \e[2;%dm%s" $j "Dim"; tput sgr0
-        printf "  |  3: \e[3;%dm%s" $j "Italic"; tput sgr0
-        printf "  |  4: \e[4;%dm%s" $j "Uline"; tput sgr0
-        printf "  |  7: \e[7;%dm%s" $j "Rev"; tput sgr0
+        printf    ". 0: \e[0;%dm%s" $j "Normal";    tput sgr0
+        printf "  |  1: \e[1;%dm%s" $j "Bold";      tput sgr0
+        printf "  |  2: \e[2;%dm%s" $j "Dim";       tput sgr0
+        printf "  |  3: \e[3;%dm%s" $j "Italic";    tput sgr0
+        printf "  |  4: \e[4;%dm%s" $j "Uline";     tput sgr0
+        printf "  |  7: \e[7;%dm%s" $j "Rev";       tput sgr0
         echo
     done
     echo; print-line; echo

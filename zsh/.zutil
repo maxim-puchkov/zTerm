@@ -252,3 +252,6 @@ function lorem() {
 function datels() {
     date -j +'%d %b %R'
 }
+function statls() {
+    stat -t '%d %b %R' -f '%-Sp %+2l %-Su %+Sg %-4z %.12Sm %-SN %n' "$@"
+}

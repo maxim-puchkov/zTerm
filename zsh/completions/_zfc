@@ -3,8 +3,11 @@
 
 _arguments -C \
   '-h[display help]: :_nothing' \
-  '(-h):command:->command' \
-  '(-h): :zfunction' &&
+- s1 \
+    '(-h):command:->command' \
+    '*: :_zfunctions' \
+- s2 \
+    '(-h):command_0:->command_0' &&
     ret=0
 
 case $state in
@@ -32,6 +35,14 @@ case $state in
       open:"oooo"
     )
     _describe -t zfunctions zfunction zfunctions &&
+      ret=0
+  ;;
+  command_0)
+    declare -a commands_0
+    commands_0=(
+      abc:"oooo"
+    )
+    _describe -t commands_0 command_0 commands_0 &&
       ret=0
   ;;
 esac

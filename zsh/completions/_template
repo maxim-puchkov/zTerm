@@ -12,7 +12,7 @@ case $state in
     commands=(
       python:'python file'
       zcompletion:'zsh compdef template'
-      zcmdfunction:'autoloadable zsh command function template'
+      ztool:'non-autoloadable zsh command template'
       zfunction:'autoloadable zsh function template'
       zsh:'default zsh script template'
     )
@@ -20,3 +20,5 @@ case $state in
       ret=0
   ;;
 esac
+
+return $ret

@@ -15,13 +15,17 @@ function tempfile() {
     
     if [[ ! -v TMPDIR ]]; then
         error "Environment variable '$(Bad TMPDIR)' is not set."
+        return 2
+    fi
+    if [[ ! -r $TMPDIR ]]; then
+        error "Access denied."
         return 1
     fi
     
     # Create 'tempfiled' subdirectory in 'TMPDIR'
-    local subdir="${TMPDIR}/${subdirname}"
+    local subdir="${TMPPREFIX}/${subdirname}"
     if [[ ! -d "${subdir}" ]]; then
-        mkdir -- "${subdir}"
+        mkdir -p -- "${subdir}"
     fi
     
     # Create temporary file
