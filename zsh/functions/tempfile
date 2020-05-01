@@ -23,7 +23,7 @@ function tempfile() {
     fi
     
     # Create 'tempfiled' subdirectory in 'TMPDIR'
-    local subdir="${TMPPREFIX}/${subdirname}"
+    local subdir="${TMPDIR}/${subdirname}"
     if [[ ! -d "${subdir}" ]]; then
         mkdir -p -- "${subdir}"
     fi

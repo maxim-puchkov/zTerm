@@ -33,7 +33,8 @@ function pack() {
                                     -mindepth 1 \
                                     -maxdepth 1 \
                                     ${(z)only} \
-                                    ${(z)except} )"}) 2&>/dev/null
+                                    ${(z)except} )"}) \
+                                    2&>/dev/null
     
     if [[ ${#files} -eq 0 ]]; then
         error 'No files.'

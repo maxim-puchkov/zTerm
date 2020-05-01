@@ -9,8 +9,7 @@ compinit
 
 
 # Aliases
-compdef _alias          find-alias
-compdef _alias          alias_value
+compdef _alias          find-alias  alias_value
 
 # Homebrew
 compdef _brew_formula   brew_browse

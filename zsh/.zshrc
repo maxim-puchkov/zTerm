@@ -37,13 +37,14 @@ export PYTHONPATH="$DEV/Terminal/Python:$PYTHONPATH"
 
 
 #
-export REF_ENV=( ${(L)$( awk -F '(="\\$ZDOTDIR\/|".*)' '/##: ref/ {print $2}' $ZSHENV )} )
-
 export REF_UPDATE="${REF_UPDATE:-$(tempfile 'update.ref')}"
 touch $REF_UPDATE
 trap "rm -f \"$REF_UPDATE\"" EXIT
 precmd_functions+=( ref )
 
+
+#
+zmodload zsh/zprof
 
 #
 bindkey '^X\x7f' backward-kill-line
