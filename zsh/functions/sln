@@ -11,22 +11,30 @@
 function sln() {
     
     #
-    function make_symbolic_link() {
+    function make_symbolic_link() (
         local link_source="${1:A}"
         local link_name="${optlist[n]:-${link_source:t}}"
         
         local link_target_dir="${2:A}"
         local link_target="$link_target_dir/$link_name"
         
-        # v link_source link_target_dir link_name link_target
-        errif "-z '$link_source'"       "Source file is required."
-        errif "-z '$link_target_dir'"   "Target directory is required."
-        errif "! -e '$link_source'"     "Source not found: '$link_source'."
-        errif "-e '$link_target'"       "Link '$link_target' already exists."
         
-        ln -s "$link_source" "$link_target"
-        echo "Created symbolic link '$( green ${link_name} )' in $( green ${link_target_dir:t} )."
-    }
+        if [[ -z $link_source ]] || [[ -z $link_target_dir ]]; then
+            error "Link source and target directory are required."
+            return 2
+        fi
+        if [[ ! -e $link_source ]]; then
+            error "Link source file not found: '$(red $link_source)'."
+            return 1
+        fi
+        if [[ -e $link_target ]]; then
+            error "Link target '$(red $link_target)' already exists."
+            return 1
+        fi
+        
+        ln -s ${link_source} $link_target
+        echo "Created symbolic link '$(green $link_name)' in '$(green $link_target_dir)'."
+    )
     
     
     #MARK: - Commands
