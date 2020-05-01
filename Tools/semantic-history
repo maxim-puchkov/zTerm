@@ -1,14 +1,22 @@
 #!/bin/zsh
 
-#  semantic_history
-#  Z-Function
+#  semantic-history
+#  Terminal
 #
 #  Created by Maxim Puchkov on 2020-04-17.
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
-
-
+##stat -f '%HT'
+#
 file="${1}"
+#
+#
+#if [[ ! -f $file ]]; then
+#    open $file
+#    return 0
+#fi
+
+
 regular_file="${file%.}"
 
 if [[ -r "$regular_file" ]] &&

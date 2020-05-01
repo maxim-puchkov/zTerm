@@ -1,0 +1,27 @@
+#!/bin/zsh
+
+#  zshenv-reload-files
+#  Terminal
+#
+#  Created by Maxim Puchkov on 2020-04-30.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+#export REF_ENV=( ${(L)$( awk -F '(="\\$ZDOTDIR\/|".*)' '/##: ref/ {print $2}' $ZSHENV )} )
+
+
+
+outfile="$ZTERM/etc/source.zsh"
+
+awk -F '(="\\$ZDOTDIR\/|".*)' \
+    '/##: ref/ {print "'$ZDOTDIR'/"$2}' \
+    $ZSHENV > $outfile
+code=$?
+
+if [[ $code -ne 0 ]]; then
+    echo "${0}[$$]: error $code." >&2
+    exit $code
+fi
+
+echo "${0}[$$]: REF-tagged files written to $outfile."
+exit 0

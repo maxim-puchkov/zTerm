@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 #  system-appearance-service
-#  Services
+#  com.maximpuchkov.services.SystemAppearance
 #
 #  Created by Maxim Puchkov on 2020-04-25.
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
@@ -19,6 +19,8 @@ typeset -A time_intervals
 time_intervals=($(< $intervals_file))
 
 
+
+
 #MARK: - Time
 # Determine Start, End, and Current times
 begin_time=$( date -v "${time_intervals[begin]}H" -j +'%s' )
@@ -33,21 +35,25 @@ else
 fi
 
 
-#MARK: - Logging
-#
-log_prefix="$(date -r $current_time -j +'%b %d %T') $(hostname -s) ${0:t}[$$]:"
-log_info="${log_prefix} [0] system appearance changed to ${dark_appearance[$new_status]}."
-log_error="${log_prefix} [1] ${dark_appearance[$new_status]} appearance is already set."
 
 
-#MARK: -
-#
+#MARK: - Logs
+# Prepare log messages
+log_prefix="$(date -r $current_time -j +'%b %d %T') $(hostname -s) ${0:t}[$$]:\t"
+log_info="${log_prefix}[0] system appearance changed to ${dark_appearance[$new_status]}."
+log_error="${log_prefix}[1] ${dark_appearance[$new_status]} appearance is already set."
+
+
+
+
+#MARK: - System Appearance
+# Stop if the correct appearance is already set
 current_status=$( /usr/local/bin/dark-mode status )
 if [[ "$new_status" == "$current_status" ]]; then
     echo "$log_error" >&2
     exit 1
 fi
-#
+# Change the system appearance
 echo "$log_info"
 /usr/local/bin/dark-mode "$new_status" &> /dev/null
 exit 0
