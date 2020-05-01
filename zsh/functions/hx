@@ -35,7 +35,7 @@ function hx() {
                 if [[ $i -gt 1 ]]; then
                     print-line
                 fi
-                printf " $(grey '(%d/%d)')" $i $n_files
+                printf " $(lgrey '(%d/%d)')" $i $n_files
                 __hx_dump "$file"
                 exitcode=$(( $exitcode + $? ))
             done

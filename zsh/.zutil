@@ -20,6 +20,10 @@ function calc() {
 }
 
 
+
+
+
+
 #MARK: - Oh-my-zsh Plugins
 # Open oh-my-zsh root directory.
 function myzsh() {
@@ -126,23 +130,6 @@ function pygments-styles() {
 }
 
 
-
-# Go to Desktop.
-function desk()     { cdp "${(q)HOME}/Desktop/${(q)@}"; }
-# Go to Development root.
-function dev()      { cdp "${(q)DEV}/${@}"; }
-# Go to Library.
-function lib()      { cdp "${(q)lib}/${@}"; }
-# Go to Temporary Files.
-function temp()     { cdp "${(q)tempdir}/${@}"; }
-# Go to Test Files.
-function testdir()  { cdp "${(q)testdir}/${@}"; }
-# Go to local var.
-function var()      { cdp "${(q)HOME}/var/${(q)@}"; }
-
-function serv()     { cdp "${(q)HOME}/Library/LaunchAgents/${(q)@}"; }
-
-
 # Pass/Fail symbols.
 function pass() {
     printf '%s\n' "$(b_green '✔︎')"
@@ -152,7 +139,6 @@ function fail() {
     printf '%s\n' "$(b_bred '✘')"
     return 1
 }
-
 
 
 # Hex print.
@@ -167,7 +153,7 @@ function hexprline() {
 }
 
 
-# Upposecase.
+# Uppercase.
 function uc() {
     printf '%s' "${(U)@}"
 }
@@ -176,7 +162,7 @@ function nosp() {
     printf '%s' "${@// /}"
 }
 
-# Z-Cmd-Function
+# function
 # date
 function date_list_formats() {
     typeset -ag formats
@@ -195,8 +181,8 @@ function date_list_formats() {
 function date_formats_preview() {
     for format in $( date_list_formats ); do
         local full_command="\$( $(green "date -j +\'$format\'") )"
-        local preview="$(blue ${(qq)$( date -j +"$format" )})"
-        print -a -C2 "${format}\t ${full_command}\t" "${preview}"
+        local preview="$(b_byellow \'$( date -j +$format )\')"
+        print -a -C2 "${format}\t ${full_command}\t" "${(Q)preview}"
     done
 }
 
@@ -243,4 +229,26 @@ function letters() {
     {{ printf '  %s' $A; echo
         printf '%s ' $N; echo } |
         column -t }
+}
+
+
+# Lists every executable in PATH.
+function show-executables() {
+    print -l ${^path}/*(-*N)
+}
+
+
+function printf_formats() {
+    open 'https://www.linuxjournal.com/content/bashs-built-printf-function'
+}
+function zshrc_template() {
+    open 'https://dev.to/manan30/what-is-the-best-zshrc-config-you-have-seen-14id'
+}
+
+function lorem() {
+    printf "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse nec convallis neque, eget interdum diam. Donec sit amet arcu faucibus, lobortis lacus sed, molestie massa. Vestibulum eget cursus ligula. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Integer sit amet diam rutrum, dictum eros at, dignissim orci. Nullam pulvinar pellentesque mollis. Etiam ultrices fermentum augue, vitae imperdiet mi. Nullam nec lectus nec sem eleifend pharetra. Cras congue orci vel aliquam fermentum. Ut quis metus quis mauris dapibus cursus ac vitae leo.\n"
+}
+
+function datels() {
+    date -j +'%d %b %R'
 }

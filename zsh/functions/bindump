@@ -24,8 +24,8 @@ function bindump() {
     function __tobin() {
         local hexadecimal=${1[$2]}
         local binary=${hexbin_map[$hexadecimal]}
-        if [[ $optlist[c] == 'true' ]]; then
-            binary=$( sed -e "s/0/$(grey 0)/g" \
+        if [[ $colored_output ]]; then
+            binary=$( sed -e "s/0/$(lgrey 0)/g" \
                 -e "s/1/$(bold 1)/g" \
                 <<< $binary )
         fi
@@ -37,11 +37,15 @@ function bindump() {
     
     # Get bindump options
     typeset -A optlist
-    get_options optlist 'cg:Gr:R' "$@"
+    get_options optlist 'pcg:Gr:R' "$@"
     shift $optlist[length]
     
-    local output=/dev/stdout
-
+    local plaintext_output=$optlist[p]
+    local colored_output=$optlist[c]
+    local hex_per_group=${optlist[g]:-2}
+    local hex_per_row=${optlist[r]:-16}
+    
+    
     # If file is not provided, read input until Ctrl+D and write it
     # to a temporary file
     local filepath="$1"
@@ -73,19 +77,36 @@ function bindump() {
     
     # Hexdump of the file
     local hexdump=${(U)$( printf '%s' $(xxd -p "$filepath") )}
-    local hex_per_group=${optlist[g]:-2}
-    local hex_per_row=${optlist[r]:-16}
     local half_width=$(( $hex_per_row / $hex_per_group ))
     
     # Make hexdump length a multiple of hex_per_row
+    if [[ plaintext_output != 'true' ]]
     local blank_space_size=$(( 2 * ($hex_per_row - (${#hexdump} % $hex_per_row) / $hex_per_group) ))
     local blank_space=$( printf '%*s' $blank_space_size '' )
     hexdump="${hexdump}${blank_space}"
     
     
-    
+    function format_output() {
+        if [[ $plaintext_output ]]; then
+            return 0
+        fi
+        case $(( $pos % $hex_per_row )) in
+            0)  local end=$pos
+                local start=$(( $pos - $hex_per_row ))
+                local hex_row=$( printf "%s" ${hexdump:$start:$hex_per_row} |
+                                 sed "s/.\{$hex_per_group\}/& /g" )
+                printf "\t\t$(yellow %s)\n" $hex_row
+                ;;
+            $half_width)
+                printf '  '
+                ;;
+            *)  printf ' '
+                ;;
+        esac
+    }
     
     # Print each group of hexadecimal characters in binary
+    local output=/dev/stdout
     local pos=0
     while [[ $pos -lt ${#hexdump} ]]; do
         local group=${hexdump:$pos:$hex_per_group}
@@ -95,18 +116,7 @@ function bindump() {
             printf '%s' $binary >> $output
         done
         pos=$(( $pos + $hex_per_group ))
-        case $(( $pos % $hex_per_row )) in
-            0)  local end=$pos
-                local start=$(( $pos - $hex_per_row ))
-                local hex_row=$( printf "%s" ${hexdump:$start:$hex_per_row} |
-                                 sed "s/.\{$hex_per_group\}/& /g" )
-                printf "\t\t$(yellow %s)\n" $hex_row >> $output
-                ;;
-  $half_width)  printf '  ' >> $output
-                ;;
-            *)  printf ' '  >> $output
-                ;;
-        esac
+        format_output >> $output
     done
     
     return 0

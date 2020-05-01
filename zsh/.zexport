@@ -8,8 +8,16 @@ export ICLOUD="$HOME/Library/Mobile Documents/com~apple~CloudDocs"
 
 export desk="$HOME/Desktop"
 export testdir="$DEV/Test"
-export lib="$DEV/Library"
+export devlib="$DEV/Library"
 export tempdir="${TMPDIR}tempfiled"
+
+
+#export ZSHENV_FILES=($( perl -pe 's/export (.+)=\"\$ZDOTDIR\/(.*)/\1/ ; \
+#                                  s/(\#|export).*//' "$HOME/.zshenv" ))
+zshenv_vars=($( perl -pe 's/export (.+)=\"\$ZDOTDIR\/[^\.]*(.*)\"/\2/ ; \
+                         s/(\#|^export).*//' "$HOME/.zshenv" ))
+export ZSHENV_FILES=($( find $ZDOTDIR -maxdepth 1 | grep -E "^${(j:|:)zshenv_vars}$" ))
+
 
 
 # Projects

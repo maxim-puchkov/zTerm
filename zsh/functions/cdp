@@ -9,16 +9,61 @@
 
 # Change directory and print its path.
 function cdp() {
-    local dir=${${1:-$HOME}:a}
+    local program_name="$(b_bred $0)"
+    local dir arg n old new
+    
+    
+    case $# in
+        0)  dir="$HOME"
+            ;;
+        
+        1)  arg="$1"
+            if [[ ${arg[1]} =~ '^(\+|\-)' ]]; then
+                local stack_index
+                case ${arg[1]} in
+                    -)  n=${${arg:1}:-1}
+                        stack_index=$n
+                        ;;
+                    +)  n=${arg:1}
+                        stack_index=$(( ${#dirstack} - $n ))
+                        ;;
+                esac
+                dir=${dirstack[$stack_index]}
+                if [[ -z "$dir" ]]; then
+                    printf "%s: string $(red '%s') is not in dir stack.\n" "$program_name" "$old" "$PWD"
+                fi
+            else
+                dir="${arg:a}"
+            fi
+            ;;
+        
+        2)  old="$1"
+            new="$2"
+            if [[ ! "$PWD" =~ "$old" ]]; then
+                printf "%s: string $(red '%s') is not in $(red '%s').\n" "$program_name" "$old" "$PWD"
+                return 1
+            fi
+            dir=${PWD//$old/$new}
+            ;;
+        
+        *)  printf "%s: too many arguments.\n" "$program_name" >&2
+            return 2
+            ;;
+    esac
+    
     
     if [[ ! -e "$dir" ]]; then
-        echo "no such file or directory: $( red $dir )."
+        printf "%s: no such file or directory: $(red '%s').\n" "$program_name" "$dir" >&2
+        return 1
+    fi
+    if [[ ! -d "$dir" ]]; then
+        printf "%s: $(red '%s') is not a directory.\n" "$program_name" "${dir:t}" >&2
         return 1
     fi
     
-    if [[ "$dir" != "$PWD" ]] && cd "$dir"; then
-        echo "current directory changed to '$( green $PWD )'"
-    fi
     
+    if [[ "$dir" != "$PWD" ]] && cd "$dir"; then
+        printf "Current directory changed to $(green '%s').\n" "$PWD"
+    fi
     return 0
 }

@@ -12,5 +12,5 @@ function print-line() {
     local character="${1[1]:-*}"
     local width=${2:-$(tput cols)}
     tput sgr0
-    grey $( printf '%*s%s\n' $width '' | tr ' ' "$character" )
+    lgrey $( printf '%*s%s\n' $width '' | tr ' ' "$character" )
 }

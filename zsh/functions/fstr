@@ -14,12 +14,12 @@ function fstr() {
     # String, directory, and depth
     local string="$1"
     local search_directory="${${2:-.}:a}"
-    local depth="${3:+-maxdepth $3}"
+#    local depth="${3:+-maxdepth $3}"
     
     # Files in the directory
     typeset -a files=($( find "$search_directory" \
-                              -type f \
-                              ${(z)depth} ))
+                              -type f ))
+#                              ${(z)depth} ))
     typeset -i n_files=${#files}
     typeset -i n_matches=0
     

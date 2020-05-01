@@ -1,13 +1,13 @@
 #!/bin/zsh
 
-#  help
+#  builtin-help
 #  Dev X
 #
 #  Created by admin on 2020-03-12.
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-function help() {
+function builtin-help() {
     local querry=$1
     local help_command="help $1"
     { printf '%s' "$help_command" |

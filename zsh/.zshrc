@@ -1,7 +1,7 @@
 # User-specific z-shell shell configuration.
 
 
-# Path to oh-my-zsh.
+# Oh-my-zsh
 export ZSH="$ZDOTDIR/.oh-my-zsh"
 export ZSH_PLUGINS="$ZDOTDIR/plugins.oh-my-zsh"
 
@@ -9,26 +9,23 @@ if [[ -z $ZSH_THEME ]]; then
     ZSH_THEME="af-magic" #"theunraveler"
 fi
 
-#plugins=($(< $ZDOTDIR/oh-my-zsh.plugins))
 plugins=($(< "$ZSH_PLUGINS"))
-function plugins() {
-    $EDITOR "$ZSH_PLUGINS" #"$zterm/etc/plugins.oh-my-zsh"
-}
+function plugins() { $EDITOR "$ZSH_PLUGINS" }
 
 source "$ZSH/oh-my-zsh.sh"
 source "$ZDOTDIR/.zload"
 
 
-# GNU Privacy Guard.
+# GNU Privacy Guard
 GPG_TTY=$(tty)
 export GPG_TTY
 
 
-# Preferred editor for local and remote sessions.
+# Preferred editor for local and remote sessions
 export EDITOR=('/usr/local/bin/nano' '--mouse')
 
 
-# iTerm 2 shell integration.
+# iTerm 2 shell integration
 if [[ -e "$ZDOTDIR/.iterm2_shell_integration.zsh" ]]; then
     source "${ZDOTDIR}/.iterm2_shell_integration.zsh"
 fi
@@ -40,17 +37,46 @@ export PYTHONPATH="$DEV/Terminal/Python:$PYTHONPATH"
 
 
 #
-if [[ -f $SHELLSTARTUP ]]; then
-    touch $SHELLSTARTUP
-else
-    export SHELLSTARTUP=$(tempfile 'time')
-fi
-trap "rm -f \"$SHELLSTARTUP\"" EXIT
+export REF_ENV=( ${(L)$( awk -F '(="\\$ZDOTDIR\/|".*)' '/##: ref/ {print $2}' $ZSHENV )} )
+
+export REF_UPDATE="${REF_UPDATE:-$(tempfile 'update.ref')}"
+touch $REF_UPDATE
+trap "rm -f \"$REF_UPDATE\"" EXIT
+precmd_functions+=( ref )
 
 
-
+#
 bindkey '^X\x7f' backward-kill-line
 
 
 
-precmd_functions+=( ref )
+
+
+# Go to Desktop.
+function desk()     { cdp "$HOME/Desktop/$@"; }
+# Go to Development root.
+function dev()      { cdp "$DEV/$@"; }
+# Go to Developer Library.
+function devlib()   { cdp "$devlib/$@"; }
+# Go to Temporary Files.
+function temp()     { cdp "$tempdir/$@"; }
+# Go to Test Files.
+#function testdir()  { cdp "$testdir/$@"; }
+# Go to my var directory.
+function var()      { cdp "$HOME/var/$@"; }
+# Go to launchd services.
+function services() { cdp "$HOME/Library/LaunchAgents/$@"; }
+# Go to logs.
+function logs()     { cdp "$ZTERM/var/log/$@"; }
+
+
+
+
+function docsets() {
+    dsets=(${(@f)"$(find "$HOME/Library/ApplicationSupport/Dash" \
+                         -name '*.docset')"})
+    printf 'Found %d docsets:\n' ${#dsets}
+    printf "  $(yellow '%s')\n" ${(o)dsets:t}
+}
+
+

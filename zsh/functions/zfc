@@ -15,28 +15,44 @@ function zfc() {
         return 0
     }
     
-    ## find: find Z-Function definition file ##
-    function zfc_find() {
+    function __find() {
         local fdir="$1"
         local fname=$2
         if [[ -z $fdir ]] || [[ -z $fname ]]; then
-            echo "$(Info zfc_find): Function directory or function name is not defined."
+            echo "$(Info __find): Function directory or function name is not defined."
             return 1
         fi
         f=$( find "$fdir" -name "$fname" )
         if [[ -z "$f" ]]; then
-            echo "$(Info zfc_find): Function '$(Bad $fname)' not found."
+            echo "$(Info __find): Function '$(Bad $fname)' not found."
             return 1
         fi
         echo "$f"
         return 0
     }
     
+    
+    ## find: find Z-Function definition file ##
+    function zfc_find() {
+        local fname=$1
+        if [[ -z $fname ]]; then
+            return 2
+        fi
+        f=$( find "$zterm" -name "$fname" )
+        if [[ -z "$f" ]]; then
+            error "Function '$(Bad $fname)' not found."
+            return 1
+        fi
+        echo "$f"
+        return 0
+    }
+    
+    
     ## localfunction: make a Z-Function local ##
     function zfc_localfunction() {
         local fname=$1
         # Find disabled function
-        f=$( zfc_find "$zsitefunc" "$fname" )
+        f=$( __find "$zsitefunc" "$fname" )
         if [[ $? -ne 0 ]]; then
             echo "Function '$(Bad $fname)' is not a site function."
             return 1
@@ -51,7 +67,7 @@ function zfc() {
     function zfc_sitefunction() {
         local fname=$1
         # Find an enabled function
-        f=$( zfc_find "$zfunc" "$fname" )
+        f=$( __find "$zfunc" "$fname" )
         if [[ $? -ne 0 ]]; then
             echo "Function '$(Bad $fname)' is not a site function."
             return 1
@@ -66,7 +82,7 @@ function zfc() {
     function zfc_enable() {
         local fname=$1
         # Find disabled function
-        f=$( zfc_find "$zdisabled" "$fname" )
+        f=$( __find "$zdisabled" "$fname" )
         if [[ $? -ne 0 ]]; then
             echo "Function '$(Bad $fname)' is not disabled."
             return 1
@@ -81,7 +97,7 @@ function zfc() {
     function zfc_disable() {
         local fname=$1
         # Find an enabled function
-        f=$( zfc_find "$zfunc" "$fname" )
+        f=$( __find "$zfunc" "$fname" )
         if [[ $? -ne 0 ]]; then
             echo "Function '$(Bad $fname)' is not enabled."
             return 1
@@ -125,8 +141,15 @@ function zfc() {
         print -C 2 "Total:   " "$n_total"
     }
     
+    # Options
+    typeset -A optlist
+    get_options optlist 'h' "$@" 2>/dev/null
+    shift $optlist[length]
     
-    
+    if [[ -n $optlist[h] ]]; then
+        fn print-commands 'zfc'
+        return 0
+    fi
     
     local cmd=${1:-dir}
     shift ${+1}

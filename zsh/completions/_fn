@@ -1,23 +1,31 @@
 #compdef fn
 
+#  _fn
+#  Z-Function Completion (13)
+#
+#  Created by Maxim Puchkov on 2020-04-30.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
 
 _arguments -C \
-  '-h[display help]: :_nothing' \
-  '(-h):command:->command' \
-  '*:f:_functions' &&
-    return 0
+  '-h[display help]:file:_nothing' \
+  '(-h):command:->command' &&
+    ret=0
 
 case $state in
   command)
     declare -a commands
     commands=(
-      isdef:"check if a function is defined" \ 
-      commands:"list function commands" \ 
-      sub:"list functions defined within a function" \ 
-      src:"find function source file" \
-      def:"print function definition" \ 
+      isdef:"check if a function is defined"
+      commands:"list function commands"
+      print-commands:"format and list function commands"
+      sub:"list functions defined within a function"
+      src:"find function source file"
+      def:"print function definition"
     )
     _describe -t commands command commands &&
       ret=0
-  ;;
+    ;;
 esac
+
+return $ret

@@ -3,7 +3,8 @@
 
 _arguments -C \
   '-h[display help]: :_nothing' \
-  '(-h):command:->command' &&
+  '(-h):command:->command' \
+  '(-h): :zfunction' &&
     ret=0
 
 case $state in
@@ -23,6 +24,14 @@ case $state in
       statfull:"list all enabled and disabled Z-Functions"
     )
     _describe -t commands command commands &&
+      ret=0
+  ;;
+  zfunction)
+    declare -a zfunctions
+    zfunctions=(
+      open:"oooo"
+    )
+    _describe -t zfunctions zfunction zfunctions &&
       ret=0
   ;;
 esac

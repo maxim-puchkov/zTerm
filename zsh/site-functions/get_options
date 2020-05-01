@@ -31,7 +31,7 @@ function get_options() {
             result[$opt]=$OPTARG
             length=$(( $length + 2 ))
         else
-            result[$opt]='true'
+            result[$opt]='0'
             length=$(( $length + 1 ))
         fi
     done

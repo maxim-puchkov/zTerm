@@ -1,60 +1,42 @@
 # Z-Shell command completions.
 
 
-#MARK: - Load Completion Functions
-## Site functions.
-#for sfunc in $ZDOTDIR/site-functions/*; do
-#    autoload ${sfunc:t}
-#done
-#
-## Load completion functions.
-#for comp in $DEV/Terminal/zsh/completions/*; do
-#    autoload ${comp:t}
-#done
-#
-
-
-
 # Initialize the completion system.
 autoload -U compinit
 compinit
 
 
-#MARK: - Completions
+
+
 # Aliases
 compdef _alias          find-alias
 compdef _alias          alias_value
 
 # Homebrew
 compdef _brew_formula   brew_browse
-
 # Shell builtin commands help
-compdef _builtin        help
+compdef _builtin        builtin-help
+
+# Navigation
+compdef _cd             cdp
+# Commands
+compdef _command        syntax  brief  hist
+
+# Processes
+compdef _pids           leaks  lskq  malloc_history
 
 # Python Package Installer
 compctl -K _pip         pip  pip3  pip3.7  pip3.8
 
-# Commands
-compdef _command        syntax  brief
-
-#
-compdef _command        hist
-
-# Processes
-compdef _pids           leaks
-compdef _pids           lskq
-compdef _pids           malloc_history
+# Manual pages
+compdef _man            grepman
 
 # Symbolic linker
 compdef _sln            sln
 
-#
-compdef _nothing        update.sh
-compdef _nothing        spectrum  color_scheme
+# No completion
+compdef _nothing        update.sh  spectrum  color_scheme
 
-#
-compdef _vars           try  tryregex
-compdef _vars           typeof
+# Variables
+compdef _vars           try  tryregex  typeof
 
-# Navigation
-compdef _cd             cdp

@@ -1,7 +1,7 @@
 # Input/output styles.
 
 
-__COLOR_NAMES__=( 'RED' 'GREEN' 'YELLOW' 'BLUE' 'MAGENTA' 'CYAN' )
+local __COLOR_NAMES__=( 'RED' 'GREEN' 'YELLOW' 'BLUE' 'MAGENTA' 'CYAN' )
 
 function fg_color() {
     tput setaf ${1:?}
@@ -34,7 +34,7 @@ YELLOW="$( fg_color 3 )"
 BLUE="$( fg_color 4 )"
 MAGENTA="$( fg_color 5 )"
 CYAN="$( fg_color 6 )"
-GREY="$( fg_color 7 )"
+LGREY="$( fg_color 7 )"
 DGREY="$( fg_color 8 )"
 # Bright
 B_RED="$( fg_color 9 )"
@@ -52,7 +52,7 @@ BYELLOW="${BOLD}${YELLOW}"
 BBLUE="${BOLD}${BLUE}"
 BMAGENTA="${BOLD}${MAGENTA}"
 BCYAN="${BOLD}${CYAN}"
-BGREY="${BOLD}${GREY}"
+BLGREY="${BOLD}${LGREY}"
 BDGREY="${BOLD}${DGREY}"
 # Bold
 B_BRED="${BOLD}${B_RED}"
@@ -72,7 +72,7 @@ YELLOWBG="$( bg_color 3 )"
 BLUEBG="$( bg_color 4 )"
 MAGENTABG="$( bg_color 5 )"
 CYANBG="$( bg_color 6 )"
-GREYBG="$( bg_color 7 )"
+LGREYBG="$( bg_color 7 )"
 DGREYBG="$( bg_color 8 )"
 # Bright
 B_REDBG="$( bg_color 9 )"
@@ -97,40 +97,40 @@ function reverse() { __style_print "$REVERSE$*" }
 #MARK: Foreground
 # Default
 function black() { __style_print "$BLACK$*" }
-function white() { __style_print "$WHITE$*" }
 function red() { __style_print "$RED$*" }
 function green() { __style_print "$GREEN$*" }
 function yellow() { __style_print "$YELLOW$*" }
 function blue() { __style_print "$BLUE$*" }
 function magenta() { __style_print "$MAGENTA$*" }
 function cyan() { __style_print "$CYAN$*" }
-function grey() { __style_print "$GREY$*" }
-function dgrey() { __style_print "$DGREY$*" }
+function lgrey() { __style_print "$LGREY$*" }
 # Bright
+function dgrey() { __style_print "$DGREY$*" }
 function b_red() { __style_print "$B_RED$*" }
 function b_green() { __style_print "$B_GREEN$*" }
 function b_yellow() { __style_print "$B_YELLOW$*" }
 function b_blue() { __style_print "$B_BLUE$*" }
 function b_magenta() { __style_print "$B_MAGENTA$*" }
 function b_cyan() { __style_print "$B_CYAN$*" }
+function white() { __style_print "$WHITE$*" }
 # Bold
 function bblack() { __style_print "$BBLACK$*" }
-function bwhite() { __style_print "$BWHITE$*" }
 function bred() { __style_print "$BRED$*" }
 function bgreen() { __style_print "$BGREEN$*" }
 function byellow() { __style_print "$BYELLOW$*" }
 function bblue() { __style_print "$BBLUE$*" }
 function bmagenta() { __style_print "$BMAGENTA$*" }
 function bcyan() { __style_print "$BCYAN$*" }
-function bgrey() { __style_print "$BGREY$*" }
-function bdgrey() { __style_print "$BDGREY$*" }
+function blgrey() { __style_print "$BLGREY$*" }
 # Bright Bold
+function bdgrey() { __style_print "$BDGREY$*" }
 function b_bred() { __style_print "$B_BRED$*" }
 function b_bgreen() { __style_print "$B_BGREEN$*" }
 function b_byellow() { __style_print "$B_BYELLOW$*" }
 function b_bblue() { __style_print "$B_BBLUE$*" }
 function b_bmagenta() { __style_print "$B_BMAGENTA$*" }
 function b_bcyan() { __style_print "$B_BCYAN$*" }
+function bwhite() { __style_print "$BWHITE$*" }
 
 #MARK: Background
 # Default
@@ -142,7 +142,7 @@ function yellowbg() { __style_print "$YELLOWBG$*" }
 function bluebg() { __style_print "$BLUEBG$*" }
 function magentabg() { __style_print "$MAGENTABG$*" }
 function cyanbg() { __style_print "$CYANBG$*" }
-function greybg() { __style_print "$GREYBG$*" }
+function lgreybg() { __style_print "$LGREYBG$*" }
 function dgreybg() { __style_print "$DGREYBG$*" }
 # Bright
 function b_redbg() { __style_print "$B_REDBG$*" }
@@ -184,3 +184,13 @@ function group() {
     local text=$4
     echo "$($color $lt)${text}$($color $rt)"
 }
+
+
+function print_h1() {
+    printf '\e[1;107;30m  %s  \e[0m\n' "${(U)*}"
+}
+
+
+
+
+alias grey='lgrey'

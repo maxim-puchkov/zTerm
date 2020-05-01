@@ -1,0 +1,4 @@
+#compdef zfunctions
+
+
+_files -W $fpath

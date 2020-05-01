@@ -47,7 +47,9 @@ function fn() (
             return 1
         fi
         prefix="${prefix:-${fname%%_*}}"
-        list=($( grep -E -o "${prefix}_(\w)+\(\)" $srcfile ))
+        list=($( egrep --only-matching \
+                       --regexp "${prefix}_(\w|\-)+\(\)" \
+                       -- $srcfile ))
         for f in $list; do
             local subfname=${f%'()'} # ${${f#${prefix}}%'()'}
             if [[ ${+functions[$subfname]} ]]; then
@@ -65,7 +67,7 @@ function fn() (
         return 0
     }
     
-    ##
+    ## print-commands: format and list function commands ##
     function fn_print-commands() {
         prefix="${prefix:-${fname%%_*}}"
         printf 'Available commands:\n'
@@ -83,7 +85,7 @@ function fn() (
     
     # Function command
     local cmd=$1
-    if [[ $# -eq 0 ]] || [[ -z $cmd ]] || [[ ${optlist[h]} == 'true' ]]; then
+    if [[ $# -eq 0 ]] || [[ -z $cmd ]] || [[ ${optlist[h]} ]]; then
         fn print-commands 'fn'
         return 0
     fi

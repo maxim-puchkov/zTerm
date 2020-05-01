@@ -1,25 +1,14 @@
 # User-specific miscellaneous additions for interactive zsh(1) shells.
 
 
-# Lists every executable in PATH.
-function show-executables() {
-    print -l ${^path}/*(-*N)
-}
+#MARK: - Aliases
+# <#Insertion Point: addalias#>
 
 
-function printf_formats() {
-    open 'https://www.linuxjournal.com/content/bashs-built-printf-function'
-}
-function zshrc_template() {
-    open 'https://dev.to/manan30/what-is-the-best-zshrc-config-you-have-seen-14id'
-}
-
-function lorem() {
-    printf "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse nec convallis neque, eget interdum diam. Donec sit amet arcu faucibus, lobortis lacus sed, molestie massa. Vestibulum eget cursus ligula. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Integer sit amet diam rutrum, dictum eros at, dignissim orci. Nullam pulvinar pellentesque mollis. Etiam ultrices fermentum augue, vitae imperdiet mi. Nullam nec lectus nec sem eleifend pharetra. Cras congue orci vel aliquam fermentum. Ut quis metus quis mauris dapibus cursus ac vitae leo.\n"
-}
+#MARK: - Exported Variables
+# <#Insertion Point: addexp#>
 
 
+#MARK: - Functions
+# <#Insertion Point: addfunc#>
 
-
-#export src="$HOME/Developer/Projects/neovim/src/"
-#export fuzzdir="$HOME/Developer/Projects/neovim/src/nvim/viml/parser"

@@ -1,0 +1,4 @@
+#compdef foo
+
+
+_files -W ${(s/:/)PATH:h}

@@ -7,26 +7,37 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# Reload autoloaded functions
+# Reload autoloaded functions and shell files
 function ref() {
-    if [[ ! -f $SHELLSTARTUP ]]; then
-        touch $SHELLSTARTUP
+    if [[ ! -f $REF_UPDATE ]]; then
+        touch $REF_UPDATE
     fi
     
-    updated_files=($( find "$zfunc" -type f -mnewer $SHELLSTARTUP ))
-    if [[ ${#updated_files} -eq 0 ]]; then
-        return 1
-    fi
-    
-#    printf 'Functions updated:\n'
-    for fn in ${updated_files:t}; do {
-        builtin unfunction $fn
-        builtin autoload $fn
-#        printf "$(green $fn_name)"
-    }
+    # Check the list of shell source files
+    typeset -a updated_source
+    updated_source=($(< $ZTERM/etc/source.zsh))
+    for f in $updated_source; do
+        if [[ $f -nt $REF_UPDATE ]]; then
+            builtin source $f
+        fi
     done 2> /dev/null
     
-    touch $SHELLSTARTUP
+    
+    # Find updated functions
+    typeset -a updated_functions
+    updated_functions=($( find $zfunc -type f -mnewer $REF_UPDATE ))
+    
+    
+    # Reload functions
+    for f in ${updated_functions:t}; do
+        builtin unfunction -m "${f}_*"
+        builtin unfunction $f
+        builtin autoload $f
+    done 2> /dev/null
+    
+    
+    
+    touch $REF_UPDATE
     return 0
 }
 

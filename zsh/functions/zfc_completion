@@ -40,9 +40,15 @@ function zfc_completion() (
     cat <<- EOF
 #compdef $fn_name
 
+#  ___FILENAME___
+#  ___PACKAGE_NAME___ (___TEMPLATE_ID___)
+#
+#  Created by ___USERNAME___ on ___DATE_FULL___.
+#  Copyright © ___DATE_YEAR___ ___OWNER___. All rights reserved.
+
 
 _arguments -C \\
-  '-h[display help]:file:_files' \\
+  '-h[display help]:file:_nothing' \\
   '(-h):command:->command' &&
     ret=0
 
@@ -51,12 +57,14 @@ case \$state in
     declare -a commands
     commands=(
 $( for k v in ${(kv)reply}; do
-  printf "      %s:\"%s\" \\ \n" "$k" "$v" | colrm;
+  printf "      %s:\"%s\"\n" "$k" "$v" | colrm
 done )
     )
     _describe -t commands command commands &&
       ret=0
     ;;
 esac
+
+return \$ret
 EOF
 )

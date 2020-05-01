@@ -27,12 +27,13 @@ function pack() {
     
     # Find files
     local dir="${1:-$PWD}"
-    local files=($( find $dir ! -name '.*' \
-                              ! -flags hidden \
-                              -mindepth 1 \
-                              -maxdepth 1 \
-                              ${(z)only} \
-                              ${(z)except} )) 2&>/dev/null
+    typeset -a files=(${(@f)"$( find "$dir" \
+                                    ! -name '.*' \
+                                    ! -flags hidden \
+                                    -mindepth 1 \
+                                    -maxdepth 1 \
+                                    ${(z)only} \
+                                    ${(z)except} )"}) 2&>/dev/null
     
     if [[ ${#files} -eq 0 ]]; then
         error 'No files.'
@@ -41,27 +42,13 @@ function pack() {
     
     # Move files to the subdirectory
     local packname="$dir/${2:-Pack-${#files}}"
+    if [[ -d "$packname" ]]; then
+        error "Pack already exists: '$(red "$packname")'."
+        return 1
+    fi
     mkdir -p "$packname"
+    mv "${(@f)files}" "$packname/"
     
-    mv $files "$packname/"
-    
-    printf "Packed $(green '%s') files.\n" ${#files}
-    printf "%s" $packname
-    
+    printf "Packed $(green '%s') files: $(green '%s').\n" ${#files} $packname
+    return 0
 }
-
-#function pack() {
-#    if [[ -z $1 || -z $2 ]]; then
-#        return 1
-#    fi
-#
-#    local dir=${1:a}
-#    local subdir=$dir/$2
-#    local files=($dir/*)
-#    mkdir -p $subdir
-#    for f in $files; do
-#        echo $f
-#    done
-#    yellow "dir=$(files count . $dir)"
-#    yellow "sub=$(files count . $subdir)"
-#}

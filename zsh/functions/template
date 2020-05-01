@@ -132,7 +132,7 @@ function template() {
     function template_zcompletion() {
         target_dir="${target_dir:-${ZDOTDIR}/completions}"
         local name="${$( generate_filename _${1:-${(U)0}} )}"
-        local package="$2"
+        local package='Z-Function Completion'
         local new_template="${target_dir}/${name}"
         local TEMPLATE_ORIG=$( tempfile )
         
@@ -186,7 +186,7 @@ function template() {
     
     # Template output directory (-d).
     target_dir=${optlist[d]:a}
-    if [[ -n $target_dir ]] && [[ ! -d "$target_dir" ]]; then
+    if [[ -n "$target_dir" ]] && [[ ! -d "$target_dir" ]]; then
         error "Invalid directory: '$target_dir'"
         return 2
     fi

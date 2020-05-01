@@ -1,0 +1,47 @@
+#!/bin/zsh
+
+#  cpn
+#  Z-Function (7)
+#
+#  Created by Maxim Puchkov on 2020-04-29.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Copy a file n times.
+function cpn() {
+    if [[ $# -lt 2 ]]; then
+        return 2
+    fi
+    
+    # File to copy
+    local filepath="${1:a}"
+    local file="${filepath:t}"
+    local filename="${file}"
+    local fileext=''
+    if [[ "$file" =~ '\.' ]]; then
+        filename="${file%.*}"
+        fileext=".${file##*.}"
+    fi
+    
+    if [[ ! -r "${file}" ]]; then
+        error "Cannot read file: '${file}'."
+        return 1
+    fi
+    
+    
+    # Directory to save file copies
+    local dir="${filepath:h}/${filename}-copies"
+    if [[ -d "${dir}" ]]; then
+        find "${dir}" -regex "${dir}/${filename}\-.*${fileext}" -exec rm -f -- {} \;
+    fi
+    mkdir -p "${dir}"
+    
+    
+    # Copy n times
+    integer n=$2
+    for i in {1..$n}; do
+        cp -np "${filepath}" "${dir}/${filename}-${i}${fileext}"
+    done
+    printf "Done: %d copies saved to '$(green '%s')'.\n" $n "${(q)dir}"
+    return 0
+}
