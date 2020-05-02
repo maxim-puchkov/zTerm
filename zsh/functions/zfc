@@ -125,7 +125,10 @@ function zfc() {
     
     ## stat: display number of enabled and disabled Z-Functions ##
     function zfc_stat() {
-        local -R5 n_standard n_site n_disabled n_total
+        local -R5 n_standard \
+                  n_site \
+                  n_disabled \
+                  n_total
         n_standard=${#$( printf '%s\n' $zfunc/* )}
         n_site=${#$( printf '%s\n' $zsitefunc/* )}
         n_disabled=${#$( printf '%s\n' $zdisabled/* )}
@@ -137,6 +140,7 @@ function zfc() {
         print -C 2 'Total:    ' ${(r)n_total}
     }
     
+    ## open: open function source code in Xcode ##
     function zfc_open() {
         local fname=$1
         local files=($(find $ZTERM -name $fname -type f))
@@ -148,7 +152,7 @@ function zfc() {
                 ;;
         esac
         if [[ ${#files} -eq 1 ]]; then
-            open $files
+            open -a Xcode $files
         fi
         return 1
     }

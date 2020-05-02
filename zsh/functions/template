@@ -163,6 +163,13 @@ function template() {
     typeset -a lastid=( 0 )
     read_array lastid $savefile &>/dev/null
     
+    function getid() {
+        lastid=${${optlist[t]:+test-id$$}:-$(< $TEMPLATE_ID)}
+    }
+    function setid() {
+        
+    }
+    
     # Template macro strings.
     typeset -a TEMPLATE_MACROS=(
         m_shebang           m_template_ts

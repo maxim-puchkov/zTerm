@@ -41,7 +41,7 @@ function lf() {
 # List file [S]izes
 function lS() {
     print_h1 'File size'
-    __list-ls -lFGHSh "$@" | __list-grep --regexp '([1-9][\.0-9]*)[BKMG]'
+    __list-ls -lFGHShr "$@" | __list-grep --regexp '([1-9][\.0-9]*)[BKMG]'
 }
 
 

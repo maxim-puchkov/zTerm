@@ -9,36 +9,62 @@
 
 # Reload autoloaded functions and shell files
 function ref() {
-    if [[ ! -f $REF_UPDATE ]]; then
-        touch $REF_UPDATE
-    fi
-    if [[ ! -r $REF_UPDATE ]]; then
-        return 1
+#    if [[ ! -v REF_UPDATE ]]; then
+#        export REF_UPDATE=$(date -j +'%s')
+#        return 1
+#    fi
+#    
+    local updated_files=($( find $ZDOTDIR \
+                                 \( -name '.z*' \
+                                    -or \
+                                    -regex '.*/functions/.*' \) \
+                                 -and \
+                                 -newerma $ZSHRC |
+                            awk -F "/zsh/" '{ print $2; }' ))
+    
+    if [[ -v REF_ZDOT ]]; then
+        local updated_zdot=( ${updated_files:*REF_ZDOT} )
+        local zdot
+        for zdot in $updated_zdot; do
+            builtin source $ZDOTDIR/$zdot
+        done
     fi
     
+    local updated_func=( ${(M)updated_files:#functions/*} )
+    local func
+    for func in ${updated_func#functions/}; do
+        unfunction -m "${func}_*"
+        unfunction $func
+        autoload $func
+    done
+    
+    
+    if [[ ${#updated_func} -gt 0 ]] || [[ ${#updated_zdot} -gt 0 ]]; then
+        touch $ZSHRC
+    fi
     # Check the list of shell source files
-    typeset -a updated_source
-    updated_source=($(< $ZTERM/etc/source.zsh))
-    # Find updated functions
-    typeset -a updated_functions
-    updated_functions=($( find $zfunc -type f -mnewer $REF_UPDATE ))
+#    typeset -a updated_source
+#    updated_source=($(< $ZTERM/etc/source.zsh))
+#    # Find updated functions
+#    typeset -a updated_functions
+#    updated_functions=($( find $zfunc -type f -mnewer $REF_UPDATE ))
+#
+#    # Reload files
+#    local f
+#    for f in $updated_source; do
+#        if [[ $f -nt $REF_UPDATE ]]; then
+#            builtin source $f
+#        fi
+#    done 2> /dev/null
+#
+#    for f in ${updated_functions:t}; do
+#        builtin unfunction -m "${f}_*"
+#        builtin unfunction $f
+#        builtin autoload $f
+#    done 2> /dev/null
     
-    # Reload files
-    local f
-    for f in $updated_source; do
-        if [[ $f -nt $REF_UPDATE ]]; then
-            builtin source $f
-        fi
-    done 2> /dev/null
     
-    for f in ${updated_functions:t}; do
-        builtin unfunction -m "${f}_*"
-        builtin unfunction $f
-        builtin autoload $f
-    done 2> /dev/null
-    
-    
-    touch $REF_UPDATE
+#    touch $REF_UPDATE
     return 0
 }
 

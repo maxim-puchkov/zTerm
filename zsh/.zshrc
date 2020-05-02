@@ -37,10 +37,12 @@ export PYTHONPATH="$DEV/Terminal/Python:$PYTHONPATH"
 
 
 #
-export REF_UPDATE="${REF_UPDATE:-$(tempfile 'update.ref')}"
-touch $REF_UPDATE
-trap "rm -f \"$REF_UPDATE\"" EXIT
-precmd_functions+=( ref )
+#export REF_UPDATE="${REF_UPDATE:-$(tempfile 'update.ref')}"
+#export REF_UPDATE=$(date -j +'%s')
+export REF_ZDOT=($(< $ZTERM/etc/source.zsh))
+#touch $REF_UPDATE
+#trap "rm -f \"$REF_UPDATE\"" EXIT
+precmd_functions+=(ref)
 
 
 #

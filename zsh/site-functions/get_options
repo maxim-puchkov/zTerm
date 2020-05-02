@@ -12,7 +12,7 @@
 function get_options() {
     local identifier=$1
     local optstring="$2"
-    local arguments=(${@:3})
+    local arguments=${@:3}
     
     local SYNTAX="$0 identifier optstring arguments*"
     syntax_check "$SYNTAX" ||
@@ -21,13 +21,13 @@ function get_options() {
     typeset -A result
     local opt=''
     local length=0
-    while getopts "$optstring" opt $arguments; do
+    while getopts "$optstring" opt ${(z)arguments[@]}; do
         if [[ $opt == '?' ]]; then
             length=$(( $length + 1 ))
             continue;
         fi
         if [[ -n $OPTARG ]]; then
-            result[$opt]=$OPTARG
+            result[$opt]=${(Q)OPTARG}
             length=$(( $length + 2 ))
         else
             result[$opt]='0'
@@ -37,7 +37,7 @@ function get_options() {
     
     local arg_list=(${(z)arguments})
     result[length]=$length
-    result[command_arguments]=${(qq)${arg_list:$length}:-''}
+    result[command_arguments]=${${arg_list:$length}:-''}
     
     typeset -Ag $identifier
     set -A $identifier ${(kv)result}

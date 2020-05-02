@@ -25,7 +25,7 @@ function fsize() {
         
         # One file
         1)  local filename="$1"
-            if [[ ! -r "$filename" ]]; then
+            if [[ ! -e "$filename" ]]; then
                 error "Invalid file: $filename." &>$stderr
                 return 1
             fi
@@ -36,7 +36,7 @@ function fsize() {
         # Multiple files
         *)  typeset -A result
             for filename in "${@:-$PWD}"; do
-                if [[ ! -r "$filename" ]]; then
+                if [[ ! -e "$filename" ]]; then
                     result+=( "${filename:t}:     " "$(red 'Invalid')" )
                     continue
                 fi

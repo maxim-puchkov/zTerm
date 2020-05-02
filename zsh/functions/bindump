@@ -96,10 +96,12 @@ function bindump() {
                 local hex_row=$( printf "%s" ${hexdump:$start:$hex_per_row} |
                                  sed "s/.\{$hex_per_group\}/& /g" )
                 printf "\t\t$(yellow %s)\n" $hex_row
-                ;;
+            ;;
+            
             $half_width)
                 printf '  '
-                ;;
+            ;;
+            
             *)  printf ' '
                 ;;
         esac
