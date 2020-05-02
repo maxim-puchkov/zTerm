@@ -10,36 +10,44 @@
 # Create new empty subdirectory 'subdir'. Move all
 # files in the parent directory 'dir' to 'dir/subdir'.
 function pack() {
-    typeset -A optlist=()
-    get_options optlist 'e:Eo:On:N' "$@"
-    shift $optlist[length]
-    
-    # -o
+    # Options
+    typeset -Ag optlist=()
+    get_options optlist 'e:Eo:Ot:Tn:N' "$@"
+    shift ${optlist[length]}
+    # Only -o
     local only=''
-    if [[ -n $optlist[o] ]]; then
+    if [[ -n ${optlist[o]} ]]; then
         only=( '-and -name '${(z)^optlist[o]} )
     fi
-    # -e
+    # Except -e
     local except=''
-    if [[ -n $optlist[e] ]]; then
+    if [[ -n ${optlist[e]} ]]; then
         except=( '-and ! -name '${(z)^optlist[e]} )
     fi
+    # Type -t
+    local type=''
+    if [[ -n ${optlist[t]} ]]; then
+        type=( '-type' ${(j: -or -type :)${(z)^optlist[t]}} )
+    fi
+    
     
     # Find files
     local dir="${1:-$PWD}"
-    typeset -a files=(${(@f)"$( find "$dir" \
-                                    ! -name '.*' \
-                                    ! -flags hidden \
-                                    -mindepth 1 \
-                                    -maxdepth 1 \
-                                    ${(z)only} \
-                                    ${(z)except} )"}) \
-                                    2&>/dev/null
+    typeset -a files=(${(@f)"$( find $dir        \
+                                    ! -name '.*'     \
+                                    ! -flags hidden  \
+                                    -mindepth 1      \
+                                    -maxdepth 1      \
+                                    ${(z)only}       \
+                                    ${(z)except}   \
+                                    -and \( ${(z)type} \))"}) \
+                                2&>/dev/null
     
     if [[ ${#files} -eq 0 ]]; then
         error 'No files.'
         return 1
     fi
+    
     
     # Move files to the subdirectory
     local packname="$dir/${2:-Pack-${#files}}"

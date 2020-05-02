@@ -1,4 +1,4 @@
 #compdef _launch_agents
 
 
-_files -/ -W ~/Library/LaunchAgents
+_files -/ -W $HOME/Library/LaunchAgents

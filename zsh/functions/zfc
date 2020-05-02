@@ -38,7 +38,7 @@ function zfc() {
         if [[ -z $fname ]]; then
             return 2
         fi
-        f=$( find "$zterm" -name "$fname" )
+        f=$( find $ZTERM -name $fname )
         if [[ -z "$f" ]]; then
             error "Function '$(Bad $fname)' not found."
             return 1
@@ -54,7 +54,7 @@ function zfc() {
         # Find disabled function
         f=$( __find "$zsitefunc" "$fname" )
         if [[ $? -ne 0 ]]; then
-            echo "Function '$(Bad $fname)' is not a site function."
+            error "Function '$(Bad $fname)' is not a site function."
             return 1
         fi
         # Move function to an autoloaded directory
@@ -69,7 +69,7 @@ function zfc() {
         # Find an enabled function
         f=$( __find "$zfunc" "$fname" )
         if [[ $? -ne 0 ]]; then
-            echo "Function '$(Bad $fname)' is not a site function."
+            error "Function '$(Bad $fname)' is not a site function."
             return 1
         fi
         # Move function to 'zsh/function/disabled'
@@ -84,7 +84,7 @@ function zfc() {
         # Find disabled function
         f=$( __find "$zdisabled" "$fname" )
         if [[ $? -ne 0 ]]; then
-            echo "Function '$(Bad $fname)' is not disabled."
+            error "Function '$(Bad $fname)' is not disabled."
             return 1
         fi
         # Move function to an autoloaded directory
@@ -99,7 +99,7 @@ function zfc() {
         # Find an enabled function
         f=$( __find "$zfunc" "$fname" )
         if [[ $? -ne 0 ]]; then
-            echo "Function '$(Bad $fname)' is not enabled."
+            error "Function '$(Bad $fname)' is not enabled."
             return 1
         fi
         # Move function to 'zsh/function/disabled'
@@ -111,34 +111,46 @@ function zfc() {
     ## statfull: list all enabled and disabled Z-Functions ##
     function zfc_statfull() {
         # Display enabled functions
-        local fdirs=($( ls -d $zfunc ))
-        local enabled_list=()
-        for fdir in $fdirs; do
-            enabled_list+=($( ls -1G "$fdir" ))
-        done
-        b_greenbg 'ENABLED'
-        print -C 4 ${(o)enabled_list}
+        b_greenbg 'STANDARD'
+        print -C 4 ${$( find $zfunc -type f ):t}
         echo
-        
+        b_greenbg 'SITE'
+        print -C 4 ${$( find $zsitefunc -type f ):t}
+        echo
         # Display disabled functions.
-        local disabled_fdir="$zfunc/disabled"
-        local disabled_list=$( ls -1G "$disabled_fdir" )
         b_redbg 'DISABLED'
-        print -C 4 ${(o)disabled_list}
+        print -C 4 ${(o)$( find $zdisabled -type f ):t}
         echo
     }
     
     ## stat: display number of enabled and disabled Z-Functions ##
     function zfc_stat() {
-        local on=($( printf '%s\n' $zfunc/* ))
-        local off=($( printf '%s\n' $zdisabled/* ))
-        local n_on=${#on}
-        local n_off=${#off}
-        local n_total=$(( $n_on + $n_off ))
-        InfoSection 'Z-Functions'
-        print -C 2 "Enabled: " "$n_on"
-        print -C 2 "Disabled:" "$n_off"
-        print -C 2 "Total:   " "$n_total"
+        local -R5 n_standard n_site n_disabled n_total
+        n_standard=${#$( printf '%s\n' $zfunc/* )}
+        n_site=${#$( printf '%s\n' $zsitefunc/* )}
+        n_disabled=${#$( printf '%s\n' $zdisabled/* )}
+        n_total=$(( $n_standard + $n_disabled ))
+        print_h1   'Z-Functions'
+        print -C 2 'Standard: ' ${(r)n_standard}
+        print -C 2 'Site:     ' ${(r)n_site}
+        print -C 2 'Disabled: ' ${(r)n_disabled}
+        print -C 2 'Total:    ' ${(r)n_total}
+    }
+    
+    function zfc_open() {
+        local fname=$1
+        local files=($(find $ZTERM -name $fname -type f))
+        case ${#files} in
+            0)  error 'Not found.'
+                ;;
+            1)  ;;
+            *)  error 'Ambiguous search.'
+                ;;
+        esac
+        if [[ ${#files} -eq 1 ]]; then
+            open $files
+        fi
+        return 1
     }
     
     # Options
@@ -146,19 +158,19 @@ function zfc() {
     get_options optlist 'h' "$@" 2>/dev/null
     shift $optlist[length]
     
+    # Show help
     if [[ -n $optlist[h] ]]; then
         fn print-commands 'zfc'
         return 0
     fi
     
+    # Execute a command
     local cmd=${1:-dir}
     shift ${+1}
-    
     if ( ! fn isdef ${0}_${cmd} ); then
         error "Unknown command: '$(Bad $cmd)'."
         return 127
     fi
-    
     ${0}_${cmd} "$@"
     return $?
 }

@@ -38,4 +38,66 @@ compdef _nothing        update.sh  spectrum  color_scheme
 
 # Variables
 compdef _vars           try  tryregex  typeof
-
+#
+#
+#alias ca='test_cetion_arguments'
+#function test_cetion_arguments() {
+#    unfunction _c 2>/dev/null
+#    function _c {
+#        _arguments -C ${@}  "*::arg->args"
+#    }
+##    compdef _c compl
+#
+#    Info "Updated compl"
+##    echo _arguments -C "$@ \"*::arg->args\""
+#    echo
+#    return 0
+#}
+#
+#alias cc='test_cetion_arguments_auto'
+#function test_cetion_arguments_auto() {
+#     arr=(${@})
+#     len=({1..$#})
+##    echo ${arr:^len}
+##    echo ${arr:^^len}
+#    typeset -Ag res
+#    res=(${len:^arr})
+#
+#    local -a compl_args=()
+#    for k v in ${(kv)res}; do
+#        compl_args+="$k: :$v"
+#    done
+#    red ${(qqq)compl_args}
+#    test_cetion_arguments ${compl_args}
+#}
+###cc _alphabrew
+##
+##
+##try() {
+##
+##}
+#
+#
+#
+#
+#function _c {
+#    _arguments -C "1: :_alphabrew" "*::arg->args"
+#}
+##function cc() { unfunction _c; _c() { _arguments -C "${@}"  "*::arg->args" }; }
+#function ca() {
+#    unfunction _c;
+#    arr=(${@})
+#    len=({1..$#})
+#
+#    typeset -Ag res
+#    res=(${len:^arr})
+#
+#    typeset -ag compl_args=()
+#    for k v in ${(kv)res}; do
+#        compl_args+="$k: :$v"
+#    done
+#
+#    _c() { _arguments -C "${(@)compl_args}"  "*::arg->args" }
+#}
+#
+#compdef _c c

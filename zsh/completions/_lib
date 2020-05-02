@@ -1,4 +1,4 @@
 #compdef lib
 
 
-_files -/ -W /Users/admin/Developer/Library
+_files -/ -W $HOME/Developer/Library

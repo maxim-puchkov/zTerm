@@ -1,14 +1,15 @@
 #compdef zfc
 
+#  _zfc
+#  Z-Function Completion (15)
+#
+#  Created by Maxim Puchkov on 2020-05-01.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
 
 _arguments -C \
-  '-h[display help]: :_nothing' \
-- s1 \
-    '(-h):command:->command' \
-    '*: :_zfunctions' \
-- s2 \
-    '(-h):command_0:->command_0' &&
-    ret=0
+  ":command:->command" \
+  "*::arg:->arg"
 
 case $state in
   command)
@@ -18,31 +19,26 @@ case $state in
       enable:"enable a Z-Function"
       disable:"disable a Z-Function"
       dir:"go to z-functions directory [default]"
-      new:"print the name of last modified function"
-      find:"Find Z-Function definition file"
+      open:"''"
+      find:"find Z-Function definition file"
       localfunction:"make a Z-Function local"
-      sitefunction:"make a Z-Function global"
-      completion:"autogenerate function completion"
-      list:"list functions sorted by modification date"
+      sitefunction:"make a Z-Function accessible to all scripts"
       statfull:"list all enabled and disabled Z-Functions"
     )
-    _describe -t commands command commands &&
-      ret=0
+    _describe -t commands command commands
+    return
   ;;
-  zfunction)
-    declare -a zfunctions
-    zfunctions=(
-      open:"oooo"
-    )
-    _describe -t zfunctions zfunction zfunctions &&
-      ret=0
-  ;;
-  command_0)
-    declare -a commands_0
-    commands_0=(
-      abc:"oooo"
-    )
-    _describe -t commands_0 command_0 commands_0 &&
-      ret=0
+
+  arg)
+    case ${line[1]} in
+      dir)
+        _nothing
+      ;;
+      [^\s]*)
+        _zfc_command
+      ;;
+    esac
   ;;
 esac
+
+return 0

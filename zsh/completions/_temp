@@ -1,4 +1,4 @@
 #compdef temp
 
 
-_files -/ -W tempdir
+_files -/ -W $tempdir

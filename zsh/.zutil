@@ -238,6 +238,24 @@ function show-executables() {
 }
 
 
+function new-file() {
+    if
+    local dir
+    for dir in "$@"; do
+        if [[ ! -d $d ]]; then continue; fi
+        echo "$dir" > $dir/new-file
+    done
+}
+function f() {
+    red $#
+    local dir
+    for dir in $@/*(/); do
+        echo $dir
+    done
+}
+
+
+
 function printf_formats() {
     open 'https://www.linuxjournal.com/content/bashs-built-printf-function'
 }

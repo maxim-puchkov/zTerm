@@ -1,6 +1,8 @@
 colorize
 fd
 git
+git-prompt
+gitignore
 osx
 percol
 perl

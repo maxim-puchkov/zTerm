@@ -1,4 +1,4 @@
 #compdef desk
 
 
-_files -/ -W /Users/admin/Desktop
+_files -/ -W $HOME/Desktop
