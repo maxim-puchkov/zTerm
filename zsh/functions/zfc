@@ -158,8 +158,8 @@ function zfc() {
     }
     
     # Options
-    typeset -A optlist
-    get_options optlist 'h' "$@" 2>/dev/null
+    typeset -Ag optlist
+    get_options optlist 'h' "$@" # 2>/dev/null
     shift $optlist[length]
     
     # Show help
@@ -171,6 +171,7 @@ function zfc() {
     # Execute a command
     local cmd=${1:-dir}
     shift ${+1}
+    redbg $1; red $#; blue ${+1}
     if ( ! fn isdef ${0}_${cmd} ); then
         error "Unknown command: '$(Bad $cmd)'."
         return 127
