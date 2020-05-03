@@ -8,7 +8,7 @@ alias -g quiet='&> /dev/null'  # redirect stdout and stderr
 
 # If statement: if [[ ... ]] T.
 alias -g T='; then echo "-- $(green True)  $(pass) --"; return 0; \
-              else echo "-- $(red False) $(fail) --"; return 1; \
+              else echo "-- $(red False) $(fail) --";   return 1; \
             fi;'
 
 
@@ -60,19 +60,24 @@ alias textopen='open -a TextEdit'
 alias webopen='open -a Safari'
 alias scriptopen='open -a "Script Editor"'
 
-# Command 'rm'.
-alias rm='command rm -i'
-
-# Type.
-alias i='type -a'
-alias t='typeof'
-
-alias colorize='pygmentize -f "terminal16m" -O style="xcodedark" -l "zsh"'
-
 # Python.
 alias python='python3'
 alias pip='pip3'
 alias idle='idle3'
+
+# Command 'pygmentize'
+alias colorize='pygmentize -f "terminal16m" -O style="xcodedark" -l "zsh"'
+
+# Command 'rm'.
+alias rm='command rm -i'
+
+# Command 'strings'.
+alias str='strings'
+
+
+# Type.
+alias i='type -a'
+alias t='typeof'
 
 
 

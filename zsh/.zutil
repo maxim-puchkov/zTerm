@@ -247,14 +247,6 @@ function new-file() {
         echo "$dir" > $dir/new-file
     done
 }
-#function f() {
-#    red $#
-#    local dir
-#    for dir in $@/*(/); do
-#        echo $dir
-#    done
-#}
-
 
 
 function printf_formats() {
@@ -264,13 +256,24 @@ function zshrc_template() {
     open 'https://dev.to/manan30/what-is-the-best-zshrc-config-you-have-seen-14id'
 }
 
+# 
 function lorem() {
     printf "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse nec convallis neque, eget interdum diam. Donec sit amet arcu faucibus, lobortis lacus sed, molestie massa. Vestibulum eget cursus ligula. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Integer sit amet diam rutrum, dictum eros at, dignissim orci. Nullam pulvinar pellentesque mollis. Etiam ultrices fermentum augue, vitae imperdiet mi. Nullam nec lectus nec sem eleifend pharetra. Cras congue orci vel aliquam fermentum. Ut quis metus quis mauris dapibus cursus ac vitae leo.\n"
 }
 
+# ls format
 function datels() {
     date -j +'%d %b %R'
 }
 function statls() {
     stat -t '%d %b %R' -f '%-Sp %+2l %-Su %+Sg %-4z %.12Sm %-SN %n' "$@"
+}
+
+
+# Dash
+function docsets() {
+    dsets=(${(@f)"$(find "$HOME/Library/ApplicationSupport/Dash" \
+                         -name '*.docset')"})
+    printf 'Found %d docsets:\n' ${#dsets}
+    printf "  $(yellow '%s')\n" ${(o)dsets:t}
 }

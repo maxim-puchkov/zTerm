@@ -32,8 +32,8 @@ fi
 
 
 # Python
-export PYTHONSTARTUP="/Users/admin/Developer/Terminal/Python/.pyenv"
-export PYTHONPATH="$DEV/Terminal/Python:$PYTHONPATH"
+export PYTHONSTARTUP="$ZTERM/Python/.pyenv"
+export PYTHONPATH="$ZTERM/Python:$PYTHONPATH"
 
 
 #
@@ -67,15 +67,3 @@ function var()      { cdp "$HOME/var/$@"; }
 function services() { cdp "$HOME/Library/LaunchAgents/$@"; }
 # Go to logs.
 function logs()     { cdp "$ZTERM/var/log/$@"; }
-
-
-
-
-function docsets() {
-    dsets=(${(@f)"$(find "$HOME/Library/ApplicationSupport/Dash" \
-                         -name '*.docset')"})
-    printf 'Found %d docsets:\n' ${#dsets}
-    printf "  $(yellow '%s')\n" ${(o)dsets:t}
-}
-
-
