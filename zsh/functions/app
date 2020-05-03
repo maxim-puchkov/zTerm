@@ -13,16 +13,14 @@ function app() {
     local flags=('')
     
     ## finder: open Finder ##
-    function app_finder() {
-        open $flags -a Finder
-    }
+    function app_finder()       { open $flags -a 'Finder'; }
     ## safari: open Safari ##
-    function app_safari() {
-        open $flags -a Safari
-    }
+    function app_safari()       { open $flags -a 'Safari'; }
     ## xcode: open Xcode ##
-    function app_xcode() { open $flags -a Xcode; }
-    
+    function app_xcode()        { open $flags -a 'Xcode'; }
+    ## settings: open System Preferences ##s
+    function app_settings()     { open $flags -a 'System Preferences'; }
+
     # Execute the command
     local cmd=$1
     ${0}_${cmd} $fname

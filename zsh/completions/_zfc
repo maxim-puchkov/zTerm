@@ -19,7 +19,7 @@ case $state in
       enable:"enable a Z-Function"
       disable:"disable a Z-Function"
       dir:"go to z-functions directory [default]"
-      open:"''"
+      open:"open function source code in Xcode"
       find:"find Z-Function definition file"
       localfunction:"make a Z-Function local"
       sitefunction:"make a Z-Function accessible to all scripts"

@@ -17,15 +17,17 @@ local function __list-grep() {
 
 
 
+# List all creation/access/change/modfication times
+function ltA() {
+    lt  "$@";   echo;
+    lta "$@";   echo;
+    ltc "$@";   echo;
+    ltm "$@";   echo;
+}
 # List creation times
 function lt() {
     print_h1 'File creation time'
     __list-ls -lFGHTUhrt "$@" | __list-grep --regexp "[0-9]{1,2} [A-Z][a-z]{2} [0-9\:]{8} [0-9]{4}"
-}
-# List modification times
-function ltm() {
-    print_h1 'Modification time'
-    __list-ls -lFGHThrt "$@" | __list-grep --regexp "[0-9]{1,2} [A-Z][a-z]{2} [0-9\:]{8} [0-9]{4}"
 }
 # List access times
 function lta() {
@@ -37,6 +39,12 @@ function ltc() {
     print_h1 'File change time'
     __list-ls -lFGHTchrt "$@" | __list-grep --regexp "[0-9]{1,2} [A-Z][a-z]{2} [0-9\:]{8} [0-9]{4}"
 }
+# List modification times
+function ltm() {
+    print_h1 'Modification time'
+    __list-ls -lFGHThrt "$@" | __list-grep --regexp "[0-9]{1,2} [A-Z][a-z]{2} [0-9\:]{8} [0-9]{4}"
+}
+
 
 # List [f]lags
 function lf() {

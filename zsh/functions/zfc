@@ -133,11 +133,11 @@ function zfc() {
         n_site=${#$( printf '%s\n' $zsitefunc/* )}
         n_disabled=${#$( printf '%s\n' $zdisabled/* )}
         n_total=$(( $n_standard + $n_disabled ))
-        print_h1   'Z-Functions'
-        print -C 2 'Standard: ' ${(r)n_standard}
-        print -C 2 'Site:     ' ${(r)n_site}
-        print -C 2 'Disabled: ' ${(r)n_disabled}
-        print -C 2 'Total:    ' ${(r)n_total}
+        print_h1   ' Z-Functions '
+        print -C 2 'Standard: ' ${n_standard}
+        print -C 2 'Site:     ' ${n_site}
+        print -C 2 'Disabled: ' ${n_disabled}
+        print -C 2 'Total:    ' ${n_total}
     }
     
     ## open: open function source code in Xcode ##
@@ -171,7 +171,6 @@ function zfc() {
     # Execute a command
     local cmd=${1:-dir}
     shift ${+1}
-    redbg $1; red $#; blue ${+1}
     if ( ! fn isdef ${0}_${cmd} ); then
         error "Unknown command: '$(Bad $cmd)'."
         return 127

@@ -13,12 +13,12 @@ function fn() (
     ## def: print function definition ##
     function fn_def() {
         local fdef=$( functions $fname )
-        local highlight='pygmentize -l zsh'
+        local highlight=(pygmentize -f 'terminal16m' -O style='xcodedark' -l 'zsh')
         if [[ -z ${commands[pygmentize]} ]]; then
             printf 'Cannot find pygments.' >&2
             highlight='cat'
         fi
-        printf '%s\n' "$fdef" | ${(z)highlight}
+        printf '%s\n' "$fdef" | $highlight
     }
     
     ## src: find function source file ##
@@ -81,11 +81,12 @@ function fn() (
     get_options optlist 'p:Ph' "$@" 2>/dev/null
     shift $optlist[length]
     
-    prefix="${optlist[p]}"
+    local show_help="${optlist[h]}"
+    local prefix="${optlist[p]}"
     
     # Function command
     local cmd=$1
-    if [[ $# -eq 0 ]] || [[ -z $cmd ]] || [[ ${optlist[h]} ]]; then
+    if [[ $# -eq 0 ]] || [[ -z $cmd ]] || [[ $show_help ]]; then
         fn print-commands 'fn'
         return 0
     fi

@@ -67,6 +67,8 @@ alias rm='command rm -i'
 alias i='type -a'
 alias t='typeof'
 
+alias colorize='pygmentize -f "terminal16m" -O style="xcodedark" -l "zsh"'
+
 # Python.
 alias python='python3'
 alias pip='pip3'
