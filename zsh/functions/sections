@@ -1,0 +1,52 @@
+#!/bin/zsh
+
+#  sections
+#  Z-Function (8)
+#
+#  Created by Maxim Puchkov on 2020-04-29.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function sections() {
+###    local manpage_name manpage index
+    manpage_name=$1
+    manpage="$( man -w $manpage_name )"
+    index=$(( ${2:-1} + 1 ))
+    
+    () {
+###        local tmp sections
+        tmp="$1"
+#        title=$( grep -i -o -e '^\.TH.*$' -- "$tmp" )
+        sections=( ${(@f)"$( grep -o -i -e '^\.SH.*$' -- $tmp )"} )
+        
+        # Manual title and program name
+###        local head
+        head=( ${${(@f)"$(
+            awk "1;/${sections[2]}/{ exit; }" $tmp
+        )"}:0:-1} )
+        
+        # Selected section
+###        local body body_begin body_end
+        body_begin=${sections[$index]}
+        body_end=${sections[$(( $index + 1 ))]}
+        body=( ${${(@f)"$(
+            awk "/${body_begin}/, /${body_end}/" $tmp
+        )"}:0:-1} )
+    } =( /usr/bin/tbl $manpage )
+    
+    
+    printf '%s\n' $head $body |
+        /usr/bin/groff -Wall -mtty-char -Tascii -mandoc -c |
+            (colored /usr/bin/less || true)
+    
+    # Display titles and indicies of all sections
+###    local section_titles i
+    section_titles=( ${(QQQ)${(L)sections}#.sh } )
+    printf "$(underline $(bold '%s')):\n" "'${(C)manpage_name}' sections"
+    for i in {2..${#section_titles}}; do
+        printf '%3d.   %s\n' $(( $i - 1 )) "${(C)section_titles[$i]}"
+    done
+    
+    return 0
+}
