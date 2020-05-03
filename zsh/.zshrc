@@ -31,11 +31,6 @@ if [[ -e "$ZDOTDIR/.iterm2_shell_integration.zsh" ]]; then
 fi
 
 
-# Python
-export PYTHONSTARTUP="$ZTERM/Python/.pyenv"
-export PYTHONPATH="$ZTERM/Python:$PYTHONPATH"
-
-
 #
 export REF_ZDOT=($(< $ZTERM/etc/source.zsh))
 precmd_functions+=(ref)
@@ -46,9 +41,6 @@ zmodload zsh/zprof
 
 #
 bindkey '^X\x7f' backward-kill-line
-
-
-
 
 
 # Go to Desktop.
@@ -67,3 +59,11 @@ function var()      { cdp "$HOME/var/$@"; }
 function services() { cdp "$HOME/Library/LaunchAgents/$@"; }
 # Go to logs.
 function logs()     { cdp "$ZTERM/var/log/$@"; }
+
+
+
+
+#MARK: - Python Environment
+export PYTHONSTARTUP="$ZTERM/Python/.pyenv"
+export PYTHONPATH="$ZTERM/Python:$PYTHONPATH"
+
