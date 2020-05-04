@@ -44,6 +44,7 @@ alias help='run-help'
 
 # Command 'git'
 alias gs='git status'
+alias grs='git restore --staged'
 alias gt='() { cdp "$zterm"; git status; }'
 
 # Command 'grep'
