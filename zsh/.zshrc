@@ -33,7 +33,7 @@ fi
 
 #
 export REF_ZDOT=($(< $ZTERM/etc/source.zsh))
-precmd_functions+=(ref)
+preexec_functions+=(ref)
 
 
 #
