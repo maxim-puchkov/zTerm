@@ -31,11 +31,6 @@ if [[ -e "$ZDOTDIR/.iterm2_shell_integration.zsh" ]]; then
 fi
 
 
-# Python
-export PYTHONSTARTUP="/Users/admin/Developer/Terminal/Python/.pyenv"
-export PYTHONPATH="$DEV/Terminal/Python:$PYTHONPATH"
-
-
 #
 export REF_ZDOT=($(< $ZTERM/etc/source.zsh))
 precmd_functions+=(ref)
@@ -46,9 +41,6 @@ zmodload zsh/zprof
 
 #
 bindkey '^X\x7f' backward-kill-line
-
-
-
 
 
 # Go to Desktop.
@@ -71,11 +63,7 @@ function logs()     { cdp "$ZTERM/var/log/$@"; }
 
 
 
-function docsets() {
-    dsets=(${(@f)"$(find "$HOME/Library/ApplicationSupport/Dash" \
-                         -name '*.docset')"})
-    printf 'Found %d docsets:\n' ${#dsets}
-    printf "  $(yellow '%s')\n" ${(o)dsets:t}
-}
-
+#MARK: - Python Environment
+export PYTHONSTARTUP="$ZTERM/Python/.pyenv"
+export PYTHONPATH="$ZTERM/Python:$PYTHONPATH"
 

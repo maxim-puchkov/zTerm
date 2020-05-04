@@ -8,16 +8,16 @@ source "$ZEXPORT"
 path=( "/usr/local/sbin" $path  )
 path=( "/usr/local/opt/python@3/bin" $path)
 path=( "/usr/local/opt/llvm/bin" $path )
-path=( $path "$HOME/Developer/bin" )
-path=( $path "$DEV/Terminal/.config/bin" )
-path=( $path "$DEV/Terminal/Python" )
+path=( $path "$DEV/bin" )
+path=( $path "$XCDEV/Terminal/.config/bin" )
+path=( $path "$XCDEV/Terminal/Python" )
 #path=( $path "$SFU/bin" )
 
 
 # Function path
 fpath=( "/usr/local/share/zsh-completions" $fpath )
-fpath=( "$DEV/Terminal/zsh/functions" $fpath )
-fpath=( "$DEV/Terminal/zsh/completions" $fpath )
+fpath=( "$XCDEV/Terminal/zsh/functions" $fpath )
+fpath=( "$XCDEV/Terminal/zsh/completions" $fpath )
 
 
 autoload fload

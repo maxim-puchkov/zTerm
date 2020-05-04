@@ -9,5 +9,11 @@
 
 # colored-man-pages
 function man() {
-    colored $0 "$@"
+    case ${1#-} in
+        light) theme='light'
+               shift         ;;
+        dark)  shift         ;&
+        *)     theme='dark'  ;;
+    esac
+    colored -t $theme $0 "$@"
 }
