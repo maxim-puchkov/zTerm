@@ -1,0 +1,49 @@
+#!/bin/zsh
+
+#  get-options
+#  Z-Function
+#
+#  Created by admin on 2020-04-15.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+ 
+
+# Read all command options and store in an array with
+# the specified optlist_id.
+function get-options() {
+    zmodload zsh/zutil ||
+        return 1
+    
+    local stderr=/dev/null
+    if [[ $1 == '-v' ]]; then
+        stderr=/dev/stderr
+        shift
+    fi
+    
+  { local optlist_id=$1
+    local argv_id=$2
+    
+    local arguments=( ${(Pz)argv_id} )
+    local option_ids=( ${^${arguments:#[^-]*}/-}':' )
+    if [[ -z $option_ids ]]; then
+        return 1
+    fi
+    
+    typeset -A tmp
+    set -- $arguments
+    zparseopts -D -E -A tmp $option_ids 2>$stderr
+    
+    typeset -A result
+    local k v
+    for k v in ${(kv)tmp}; do
+        result+=( ${k//-} $v )
+    done
+    
+    typeset -Ag $optlist_id;
+    set -A $optlist_id ${(kv)result}
+    
+    typeset -ag $argv_id
+    set -A $argv_id ${arguments:${(kv)#result}}
+  } 2>$stderr
+    
+    return 0
+}

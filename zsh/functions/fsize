@@ -10,42 +10,47 @@
 # Print file size in bytes
 function fsize() {
     # Supress error messages
+    local quiet=0
     local stdout=/dev/stdout
     local stderr=/dev/stderr
     if [[ "$1" == '-q' ]]; then
+        quiet=1
         stderr=/dev/null
         shift
     fi
+
+    local name type sizeunit tmp
+    for file in ${${@:-*}:a}; do
+        float size=0
+        sizeunit='KB'
+        type=$(stat -f '%HT' $file)
+        printf '%s: ' "$file"
+        case $type in
+            'Regular File')
+                stat -f '%z %N' $file |
+                read -r {size,name}
+                convert --var size 'byte' 'kilobyte'
+            ;;
+            
+            'Directory')
+                du -k -d0 $file 2>/dev/null |
+                read -r {size,name}
+            ;;
+            
+            *)
+                continue
+            ;;
+        esac
+        
+        if [[ $size -ge 1048576 ]]; then
+            convert --var size 'kilobyte' 'gigabyte'
+            sizeunit="GB"
+        elif [[ $size -ge 1024 ]]; then
+            convert --var size 'kilobyte' 'megabyte'
+            sizeunit="MB"
+        fi
+        printf "${fg[blue]}%.2f %+2s${fg[default]}\n" "$size" "$sizeunit"
+    done
     
-    case $# in
-        # No input
-        0)  error 'Specify at least one file.' &>$stderr
-            return 2
-            ;;
-        
-        # One file
-        1)  local filename="$1"
-            if [[ ! -e "$filename" ]]; then
-                error "Invalid file: $filename." &>$stderr
-                return 1
-            fi
-            print "$(stat -f '%z' $filename)" >$stdout
-            return $?
-            ;;
-        
-        # Multiple files
-        *)  typeset -A result
-            for filename in "${@:-$PWD}"; do
-                if [[ ! -e "$filename" ]]; then
-                    result+=( "${filename:t}:     " "$(red 'Invalid')" )
-                    continue
-                fi
-                local _type="$(stat -f '%HT' $filename)"
-                local _size="$(blue $(stat -f '%z' $filename)) bytes"
-                result+=( "${filename:t}:     " "$_type, $_size" )
-            done
-            print -C 2 ${(k)result} ${(v)result} >$stdout
-            return $?
-            ;;
-    esac
+    return 0
 }

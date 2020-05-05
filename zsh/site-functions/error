@@ -1,33 +1,26 @@
 #!/bin/zsh
 
 #  error
-#  devx
+#
 #
 #  Created by admin on 2020-03-02.
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# Raise runtime function error:
-#   error [-c exit_code] description
+# Raise runtime error:
+#   error description
 function error() {
-    # Exit code.
-    typeset -A opts
-    get_options opts 'c:C' "$@" 2>/dev/null
-    local _exitcode=${opts[c]:-1}
-    shift $opts[length]
-    
     # Error title and description.
-    local _title="$( b_red 'Error.' )"
-    local _desc="${@:-no message.}"
-    
-    # Capitalize first letter and add trailing period.
+    local _title="%F{9}Error%f."
+    _desc="${(j:\n       :)@:-no message.}"
+    # Capitalize first letter of the description
+    # and add a trailing period.
     _desc="${(C)_desc[1]}${${_desc:1}}"
-    if [[ ! "${(q)_desc}" =~ $'\n' ]] &&
+    if  [[ ! "${(q)_desc}" =~ '\n' ]] &&
         [[ ! "${(q)_desc}" =~ '^.*\.$' ]]; then
         _desc="${_desc}."
     fi
-    
     # Print error and return.
-    printf '%s %s\n' "$_title" "$_desc" >&2
-    return _exitcode
+    print -P "$_title $_desc" >&2
+    return 1
 }

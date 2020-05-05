@@ -288,3 +288,31 @@ function docsets() {
     printf 'Found %d docsets:\n' ${#dsets}
     printf "  $(yellow '%s')\n" ${(o)dsets:t}
 }
+
+q() {
+    red "$0 input: <$argv>"
+#    typeset -Ag op
+#    get_options op 'v:V' argv
+#    q1 argv
+typeset -ag a
+    a=($@)
+    q1 a
+    green "$0 output: <$a>, <$argv>"
+}
+
+q1() {
+#    red "$0 input: <$argv>"
+    id=$1
+    blue $id
+    v=${(P)id}
+    blue $v
+    
+    $id='xxx'
+    red $id 
+#    set v 'bob'
+#id='bob'
+#typeset -ag $id
+#set $id 'bob'
+#export v
+#    green "$0 output: <$v>, <$argv>"
+}

@@ -18,9 +18,9 @@ echo "${log_prefix} Service started."
 #MARK: - Update
 (
     # Update Homebrew formulae
-    Info "Updating Homebrew..."
+    echo "Updating Homebrew..."
     brew update
-    Info "Upgrading Homebrew formulae..."
+    echo "Upgrading Homebrew formulae..."
     brew upgrade
 ) && (
     # Update tldr

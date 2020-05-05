@@ -1,0 +1,56 @@
+#!/bin/zsh
+
+#  print-array
+#  Z-Function
+#
+#  Created by Maxim Puchkov on 2020-04-17.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Print zsh arrays (-a) or associative arrays (-A). 
+function print-array() {
+    function __print-array-element() {
+        printf "  %s[$(cyan %+s)] %-3s $(bold '%+s')\n" "$var_id" "$1" '=' "$2"
+    }
+    
+    if [[ $# -eq 0 ]]; then
+        error 'Usage:\n  arr=( a b c 1 2 3 );\n  print-array arr'
+        return 2
+    fi
+    
+    local var_id var_type var_size
+    var_id=$1
+    var_type=${(Pt)var_id:-undefined}
+    var_size=${(P)#var_id}
+    
+    # Print array[key/index] = value
+    printf "$(b_bcyan '%s') (%s)\n" "$var_id" "$var_type"
+    print-line
+    
+    local i k v n
+    case $var_type in
+        *association*)
+            for k v in ${(Pkv)var_id}; do
+                __print-array-element $k $v
+            done
+        ;;
+        
+        *array*)
+            n=( {1..$var_size} )
+            for v i in ${(P)var_id:^n}; do
+                __print-array-element $i $v
+            done
+        ;;
+        
+        *)
+            error "Variable '$(Bad "$var_id")' (${var_type}) is not an array."
+            return 1
+        ;;
+    esac
+    
+    print-line
+    printf 'Printed %d elements\n' $var_size
+    
+    unfunction -m "__${0}-*"
+    return 0
+}

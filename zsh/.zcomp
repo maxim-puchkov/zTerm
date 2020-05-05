@@ -28,7 +28,7 @@ compdef _pids           leaks  lskq  malloc_history
 compctl -K _pip         pip  pip3  pip3.7  pip3.8
 
 # Manual pages
-compdef _man            grepman
+compdef _man            grepman  sections
 
 # Symbolic linker
 compdef _sln            sln
