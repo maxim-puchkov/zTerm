@@ -1,6 +1,7 @@
 .DS_Store
 .config/
 Profiles/
+etc/template.id
 **/__pycache__
 **/*.pyc
 **/*.xcodeproj/*

@@ -1,0 +1,43 @@
+#!/bin/zsh
+
+#  showsrc
+#  Z-Function (20)
+#
+#  Created by Maxim Puchkov on 2020-05-05.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function showsrc() {
+    local file=$1
+    if [[ -z $file ]]; then
+        error 'No input'
+        return 2
+    fi
+    
+    local highlight=( pygmentize -f 'terminal16m'
+                                 -O style='xcodedark'
+                                 -l 'zsh' )
+    if [[ -z ${commands[pygmentize]} ]]; then
+        error 'Cannot find pygments.'
+        highlight='cat'
+    fi
+    
+    if [[ ! -f $file ]]; then
+        file=$( whence -p $file )
+        if [[ $? -ne 0 ]]; then
+            return 1
+        fi
+    fi
+    
+#    local t types
+#    types=( files aliases commands )
+#    for t in $types; do
+#        path=$($t $name)
+#    done
+        
+        
+    
+    strings $file | $highlight
+    return 0
+}

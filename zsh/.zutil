@@ -103,27 +103,6 @@ function next-theme() {
 
 
 
-
-
-
-
-
-#MARK: - File Directories
-# Go to Z-Terminal root directory.
-function zterm() {
-    cdp "$zterm"
-}
-# Go to Z-Functions root directory.
-function zfuncdir() {
-    cdp "$zfunc"
-}
-
-# Go to SFU Spring 2020 directory.
-function sfudir() {
-    cdp "$SFU_TERM"
-}
-
-
 function pygments-styles() {
     local list=($( pygmentize -L 'styles' ))
     printf '%s' "$list" | grep -E '\* [[:alnum:]-]*' -o | sed -E 's/\* //g'
@@ -283,36 +262,60 @@ function statls() {
 
 # Dash
 function docsets() {
+    local dsets
     dsets=(${(@f)"$(find "$HOME/Library/ApplicationSupport/Dash" \
                          -name '*.docset')"})
     printf 'Found %d docsets:\n' ${#dsets}
     printf "  $(yellow '%s')\n" ${(o)dsets:t}
 }
 
-q() {
-    red "$0 input: <$argv>"
-#    typeset -Ag op
-#    get_options op 'v:V' argv
-#    q1 argv
-typeset -ag a
-    a=($@)
-    q1 a
-    green "$0 output: <$a>, <$argv>"
+function h() {
+    local n=100; n=${@:+$HISTCMD}
+    history -${n} | fgrep "${@:-''}"
 }
 
-q1() {
-#    red "$0 input: <$argv>"
-    id=$1
-    blue $id
-    v=${(P)id}
-    blue $v
-    
-    $id='xxx'
-    red $id 
-#    set v 'bob'
-#id='bob'
-#typeset -ag $id
-#set $id 'bob'
-#export v
-#    green "$0 output: <$v>, <$argv>"
+
+function fxml() {
+    cat << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+   com.maximpuchkov.services.___FILENAME___.plist
+   ___PACKAGE_NAME___
+
+   Created by ___USERNAME___ on ___DATE_FULL___.
+   Copyright (c) ___DATE_YEAR___ ___OWNER___. All rights reserved.
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>___PACKAGE_NAME___.___FILENAME___</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/zsh</string>
+        <string>-c</string>
+        <string>/usr/local/bin/___FILENAME___-service</string>
+    </array>
+    <key>RunAtLoad</key>
+    <false/>
+    <key>StartCalendarInterval</key>
+    <array>
+        <dict>
+            <key>Weekday</key>
+            <integer>1</integer>
+        </dict>
+    </array>
+    <key>WatchPaths</key>
+    <array>
+        <string>~/var/watchme</string>
+    </array>
+    <key>WorkingDirectory</key>
+    <string>/usr/local/Terminal</string>
+    <key>StandardOutPath</key>
+    <string>var/log/___PACKAGE_NAME___/___FILENAME___.log</string>
+    <key>StandardErrorPath</key>
+    <string>var/log/___PACKAGE_NAME___/___FILENAME___.log</string>
+</dict>
+</plist>
+EOF
 }

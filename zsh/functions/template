@@ -16,15 +16,13 @@ function template() {
     #   E.g.: file, file-2, ..., file-N.
     function generate_filename() {
         # Output file.
-        local name="$1"
+        name="$1"
         local base=${name:r:t}
         if [[ -z $name ]]; then
             return 1
         fi
-            
         # Count all files starting with the same 'base' name.
         local count=$( files count "$target_dir" "$base" )
-        
         # If there exists a file with a similar name,
         # save new file with appended file number.
         local suffix=''
@@ -32,13 +30,11 @@ function template() {
             local file_number=$(( $count + 1 ))
             suffix="-$file_number"
         fi
-        
         # Append file extension if necessary.
         local ext=''
         if [[ -n ${name:e} ]]; then
             ext=".${name:e}"
         fi
-        
         # Print generated name.
         local new_name="${base}${suffix}${ext}"
         echo $new_name
@@ -51,9 +47,10 @@ function template() {
             return 1
         fi
         shift
+        local macro macro_id macro_value
         for macro in "$@"; do
-            local macro_id="___${(U)macro#'m_'}___"
-            local macro_value=${(P)macro}
+            macro_id="___${(U)macro#'m_'}___"
+            macro_value=${(P)macro}
             sed -i '' "s/$macro_id/$macro_value/g" $file
         done
     }
@@ -61,96 +58,107 @@ function template() {
     # Copy template file to the target directory and
     # replace macro strings.
     function copy_template() {
-        local m_filename="$1"
-        local m_package_name="$2"
-        local original="$3"
-        local new_template="$4"
+#        local m_filename="$1"
+#        local m_package_name="$2"
+#        ="$1"
+#        template_new="$2"
         # Create new file from a copy of the original file.
-        if ( cp -n $original $new_template ); then
-            m_filename=$name
-            m_package_name=$package
-            # Substitute template macro strings.
-            substitute_macros "$new_template" $TEMPLATE_MACROS
-            echo "Generated template file: '$(OK $new_template)'."
-            save_array m_template_id $savefile
-            return 0
-        else
+        if ( ! cp -n $template_orig $template_new ); then
             error 'Fatal error.'
             return 1
-         fi
+        fi
+        
+#        m_filename=$name
+#        m_package_name=$package
+        # Substitute template macro strings.
+        substitute_macros "$template_new" $TEMPLATE_MACROS
+        echo "Generated template file: '$(OK $template_new)'."
+#        save_array m_template_id $savefile
+        echo $m_template_id > $savefile
+        return 0
     }
     
     
     #MARK: - Z-Shell Command Template
     function template_zsh() {
         target_dir="${target_dir:-${PWD}}"
-        local name="${$( generate_filename ${1:-${(U)0}} )}"
-        local package="$2"
-        local new_template="${target_dir}/${name}"
-        local TEMPLATE_ORIG="$TEMPLATES_DIR/$0"
+        name="${$( generate_filename ${1:-${(U)0}} )}"
+        m_filename=$name
+        m_package_name='zsh'
+        template_new="${target_dir}/${name}"
+        template_orig="$TEMPLATES_DIR/$0"
         
-        copy_template "$name" "$package" "$TEMPLATE_ORIG" "$new_template"
+        copy_template
     }
     
     #MARK: - Z-Shell Function
     function template_zfunction() {
         target_dir="${target_dir:-${zfunc}}"
-        local name="${$( generate_filename $1 ):-${(U)0}}"
-        local package='Z-Function'
-        local new_template="${target_dir}/${name}"
-        local TEMPLATE_ORIG="$TEMPLATES_DIR/$0"
+        name="${$( generate_filename $1 ):-${(U)0}}"
+        m_filename=$name
+        m_package_name='Z-Function'
+        template_new="${target_dir}/${name}"
+        template_orig="$TEMPLATES_DIR/$0"
         
-        copy_template "$name" "$package" "$TEMPLATE_ORIG" "$new_template"
+        copy_template
     }
     
 #    #MARK: - Z-Shell Command Function
 #    function template_zcmdfunction() {
 #        target_dir="${target_dir:-${zfunc}}"
-#        local name="${$( generate_filename $1 ):-${(U)0}}"
+#        name="${$( generate_filename $1 ):-${(U)0}}"
 #        local package='Z-Function'
-#        local new_template="${target_dir}/${name}"
-#        local TEMPLATE_ORIG="$TEMPLATES_DIR/$0"
+#        template_new="${target_dir}/${name}"
+#        template_orig="$TEMPLATES_DIR/$0"
 #        
-#        copy_template "$name" "$package" "$TEMPLATE_ORIG" "$new_template"
+#        copy_template
 #    }
     
     #MARK: - Python Script
     function template_python() {
         target_dir="${target_dir:-${PWD}}"
-        local name="${$( generate_filename ${1:-${(U)0}} )}"
-        local package="$2"
-        local new_template="${target_dir}/${name}"
-        local TEMPLATE_ORIG="$TEMPLATES_DIR/$0.py"
+        name="${$( generate_filename ${1:-${(U)0}} )}"
+        m_filename=$name
+        m_package_name='Python'
+        template_new="${target_dir}/${name}"
+        template_orig="$TEMPLATES_DIR/$0.py"
         m_shebang='\#\!\/usr\/bin\/env\ python3'
         
-        if (copy_template "$name" "$package" "$TEMPLATE_ORIG" "$new_template"); then
-            chmod a+x $new_template
+        if (copy_template); then
+            chmod a+x $template_new
         fi
     }
     
     #MARK: - Z-Shell Completion
     function template_zcompletion() {
         target_dir="${target_dir:-${ZDOTDIR}/completions}"
-        local name="${$( generate_filename _${1:-${(U)0}} )}"
-        local package='Z-Function Completion'
-        local new_template="${target_dir}/${name}"
-        local TEMPLATE_ORIG=$( tempfile )
+        name="${$( generate_filename _${1:-${(U)0}} )}"
+        m_filename=$name
+        m_package_name='zsh completion'
+        template_new="${target_dir}/${name}"
+        template_orig=$( tempfile )
         
-        zfc completion "$1" > "$TEMPLATE_ORIG"
-        copy_template "$name" "$package" "$TEMPLATE_ORIG" "$new_template"
-        rm -f "$TEMPLATE_ORIG"
+        zfc completion "$1" > "$template_orig"
+        copy_template
+        rm -f "$template_orig"
     }
     
     #MARK: - Z-Shell Tools
     function template_ztool() {
         target_dir="${target_dir:-${ZTERM}/Tools}"
-        local name="${$( generate_filename _${1:-${(U)0}} )}"
-        local package='Terminal'
-        local new_template="${target_dir}/${name}"
-        local TEMPLATE_ORIG="$TEMPLATES_DIR/$0"
+        name="${$( generate_filename _${1:-${(U)0}} )}"
+        m_filename=$name
+        m_package_name='Terminal'
+        template_new="${target_dir}/${name}"
+        template_orig="$TEMPLATES_DIR/$0"
         
-        echo copy_template "$name" "$package" "$TEMPLATE_ORIG" "$new_template"
+        echo copy_template
     }
+    
+#    #MARK: - launchd service
+#    function template_service() {
+#
+#    }
     
     
     
@@ -172,12 +180,11 @@ function template() {
     
     # Template macro strings.
     typeset -a TEMPLATE_MACROS=(
-        m_shebang           m_template_ts
-        m_filename          m_package_name
-        m_owner             m_username
-        m_date_full         m_date_year
-        m_organization_id   m_template_id
+        m_shebang   m_template_ts  m_filename   m_package_name     m_owner
+        m_username  m_date_full    m_date_year  m_organization_id  m_template_id
     )
+    local m_shebang   m_template_ts  m_filename   m_package_name     m_owner \
+          m_username  m_date_full    m_date_year  m_organization_id  m_template_id
     m_shebang='\#\!\/bin\/zsh'
     m_template_ts='<#timestamp#>'
     m_filename="<#name#>"
@@ -198,8 +205,11 @@ function template() {
     shift $optlist[length]
     
     # Source and compound commands.
+    local src cmd
     src=$( basename $0 )
     cmd=$1
+    
+    local name template_new template_orig target_dir
     
     # Template output directory (-d).
     target_dir=${optlist[d]:a}

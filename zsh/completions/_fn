@@ -8,9 +8,9 @@
 
 
 _arguments -C \
-  '-h[display help]:file:_nothing' \
-  '(-h):command:->command' &&
-    ret=0
+  "-h[display help]: :_nothing" \
+  ":command:->command" \
+  "*::arg:->arg"
 
 case $state in
   command)
@@ -23,9 +23,17 @@ case $state in
       src:"find function source file"
       def:"print function definition"
     )
-    _describe -t commands command commands &&
-      ret=0
-    ;;
+    _describe -t commands command commands
+    return
+  ;;
+  
+  arg)
+    case ${line[1]} in
+      *)
+        _functions
+      ;;
+    esac
+  ;;
 esac
 
-return $ret
+return 0

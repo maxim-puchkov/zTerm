@@ -7,8 +7,8 @@ alias -g noerr='2> /dev/null'  # redirect stderr
 alias -g quiet='&> /dev/null'  # redirect stdout and stderr
 
 # If statement: if [[ ... ]] T
-alias -g T='; then echo "-- $(green True)  $(pass) --"; return 0; \
-              else echo "-- $(red False) $(fail) --";   return 1; \
+alias -g T='; then echo "-- $(green True)  $(pass) --";  return 0; \
+              else echo "-- $(red   False) $(fail) --";  return 1; \
             fi;'
 
 
@@ -29,15 +29,15 @@ alias bi='brew info'
 # Command 'cp'
 alias cp='command cp -i'
 
+# Command 'cd'
+alias cfd='cd -- "$pfd"'
+
 # List of commands
 alias cmdlist='printf "%s\n" ${commands:t}'
 
 # Builtin 'echo'
 alias e='builtin echo'
 alias E='b_redbg'
-
-# History
-alias h='() { n=100; n=${@:+$HISTCMD}; history -${n} | fgrep "${@:-''}" }'
 
 # Help
 alias help='run-help'

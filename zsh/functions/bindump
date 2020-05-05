@@ -97,13 +97,11 @@ function bindump() {
                                  sed "s/.\{$hex_per_group\}/& /g" )
                 printf "\t\t$(yellow %s)\n" $hex_row
             ;;
-            
             $half_width)
                 printf '  '
             ;;
-            
             *)  printf ' '
-                ;;
+            ;;
         esac
     }
     

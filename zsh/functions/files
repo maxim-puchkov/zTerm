@@ -14,7 +14,7 @@ function files() {
         local in_dir="${${1:-.}:a}"
         local filename="$2"
         if [[ ! -e "$in_dir" ]]; then
-            echo "Directory not found: $in_dir."
+            error "Directory not found: $in_dir."
             return 1
         fi
         cd "$in_dir"
@@ -23,20 +23,34 @@ function files() {
         cd "$OLDPWD"
     }
     
-    # Match files by prefix.
-#    function () {
-#        echo $( __count__ "$in_dir" $regex )
-#    }
+    # 
+    function files_find() {
+        local filename=$1
+        local found=$( find . \
+            -iname $filename  \
+            -mindepth 1       \
+            -maxdepth 1       \
+            -and \( -type f -or -type l \) \
+            2>/dev/null )
+        if [[ -z $found ]]; then
+            return 1
+        fi
+        printf '%s\n' "$found"
+        return 0
+    }
     
     if [[ $# -eq 0 ]]; then
-        fn print-commands 'files'
+        fn print-commands $0
         return 2
+    fi
+    
+    if [[ $# -eq 1 ]] && ( ! fn isdef ${0}_${1} ); then
+        files find $1
+        return $?
     fi
     
     local cmd=$1
     shift
-
-#    local command_type="${3:-prefix}"
     ${0}_${cmd} "$@"
-    return 0
+    return $?
 }

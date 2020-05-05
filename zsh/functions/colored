@@ -13,12 +13,9 @@ function colored() {
     typeset -A optlist
     get_options optlist 't:T' "$@" 2>/dev/null
     shift $optlist[length]
-    
     # Color Theme
     local default_theme='dark'
     local color_theme=${optlist[t]:-$default_theme}
-    
-    
     case $color_theme in
         # Display on dark background.
         dark)
@@ -50,6 +47,5 @@ function colored() {
                     "$@"
             ;;
     esac
-    
     return 0
 }

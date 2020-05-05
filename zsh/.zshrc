@@ -43,6 +43,11 @@ zmodload zsh/zprof
 bindkey '^X\x7f' backward-kill-line
 
 
+#MARK: - File Directories
+# Go to Z-Terminal directory.
+function zterm()    { cdp "$ZTERM/$@" }
+# Go to SFU directory.
+function sfudir()   { cdp "$SFU/$@" }
 # Go to Desktop.
 function desk()     { cdp "$HOME/Desktop/$@"; }
 # Go to Development root.
@@ -51,15 +56,14 @@ function dev()      { cdp "$DEV/$@"; }
 function devlib()   { cdp "$devlib/$@"; }
 # Go to Temporary Files.
 function temp()     { cdp "$tempdir/$@"; }
-# Go to Test Files.
-#function testdir()  { cdp "$testdir/$@"; }
 # Go to my var directory.
 function var()      { cdp "$HOME/var/$@"; }
 # Go to launchd services.
 function services() { cdp "$HOME/Library/LaunchAgents/$@"; }
 # Go to logs.
 function logs()     { cdp "$ZTERM/var/log/$@"; }
-
+# Go to Test Files.
+#function testdir()  { cdp "$testdir/$@"; }
 
 
 
