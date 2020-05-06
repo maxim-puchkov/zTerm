@@ -8,39 +8,40 @@
 
 
 log_prefix="$(date -j +'%b %d %T') $(hostname -s) ${0:t}[$$]:\t"
+echo "${log_prefix} Service started."
+
 
 # Before update
 brew_before=${#$( brew outdated --quiet )}
 tldr_before=${#$( tldr --list )}
+error=0
 
 
-echo "${log_prefix} Service started."
 #MARK: - Update
-(
-    # Update Homebrew formulae
-    echo "Updating Homebrew..."
-    brew update
-    echo "Upgrading Homebrew formulae..."
-    brew upgrade
+( # Update Homebrew formulae
+  echo "Updating Homebrew..."
+  brew update
+  echo "Upgrading Homebrew formulae..."
+  brew upgrade
 ) && (
-    # Update tldr
-    Info "Updating TLDR..."
-    tldr --update
+  # Update tldr
+  Info "Updating TLDR..."
+  tldr --update
 ) || error=$?
 
 
 if [[ $error -eq 0 ]]; then
-    # After update
-    brew_after=${#$( brew outdated --quiet )}
-    tldr_after=${#$( tldr --list )}
-    # Difference
-    brew_diff=$(( $brew_before - $brew_after ))
-    tldr_diff=$(( $tldr_after - $tldr_before ))
-    # Log the number of updated formulae/commands
-    echo "${log_prefix}[0] Updated ${brew_diff} Homebrew formulae and added ${tldr_diff} TLDR commands."
+  # After update
+  brew_after=${#$( brew outdated --quiet )}
+  tldr_after=${#$( tldr --list )}
+  # Difference
+  brew_diff=$(( $brew_before - $brew_after ))
+  tldr_diff=$(( $tldr_after - $tldr_before ))
+  # Log the number of updated formulae/commands
+  echo "${log_prefix}[0] Updated ${brew_diff} Homebrew formulae and added ${tldr_diff} TLDR commands."
 else
-    # Log error
-    echo "${log_prefix}[${error}] Update failed." >&2
+  # Log error
+  echo "${log_prefix}[${error}] Update failed." >&2
 fi
 
 

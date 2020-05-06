@@ -17,21 +17,70 @@ dark_appearance=($(< $appearances_file))
 typeset -r intervals_file="${ROOT_DIR}/etc/SystemAppearance/intervals"
 typeset -A time_intervals
 time_intervals=($(< $intervals_file))
-
-
-
-
-#MARK: - Time
-# Determine Start, End, and Current times
-begin_time=$( date -v "${time_intervals[begin]}H" -j +'%s' )
-end_time=$( date -v "${time_intervals[end]}H" -j +'%s' )
+# Current time
+typeset current_time
 current_time=$(date -j +'%s')
+
+
+
+
+#MARK: - Service Test
+# Overwrite intervals
+if [[ $1 == '--test' ]] && [[ $# -eq 4 ]]; then
+  time_intervals[begin]=$2
+  time_intervals[end]=$3
+  current_time=$(date -v "${4}H" -v "0M" -v "0S" -j +'%s')
+  test_log_name="Test ${4}@${2}-${3}"
+fi
+# Print test logs
+function TestSystemAppearanceService() {
+  print "Begin <${0:t}>"
+  c=$current_time; dc=$(date -r $c)
+  b=$begin_time;   db=$(date -r $b)
+  e=$end_time;     de=$(date -r $e)
+  print -- '---------------'
+  print "Interval[begin]: ${time_intervals[begin]}"
+  print "Interval[end]:   ${time_intervals[end]}"
+  print -- '---------------'
+  print "c=$c;  b=$b;  e=$e"
+  print -- '---------------'
+  if [[ $c -ge $b ]];
+    then print "c >= b ($dc >= $db)"
+    else print "c <  b ($dc <  $db)"
+  fi
+  if [[ $c -lt $e ]];
+    then print "c <  e ($dc <  $de)"
+    else print "c >= e ($dc >= $de)"
+  fi
+  print -- '---------------'
+  print "Current:    $dc"
+  print "Begin:      $db"
+  print "End:        $de"
+  print -- '---------------'
+  print "Current status: $current_status"
+  print "New status:     $new_status"
+  print -- '---------------'
+  print "End <${0:t}>"
+} &> $ROOT_DIR/var/log/tests/SystemAppearance/${test_log_name:-recent}.log
+
+
+
+
+#MARK: - Time and Status
+# Determine Start and End times
+typeset begin_time end_time
+begin_time=$(date -v "${time_intervals[begin]}H" -v "0M" -v "0S" -j +'%s')
+end_time=$(date -v "${time_intervals[end]}H" -v "0M" -v "0S" -j +'%s')
+
+typeset current_status new_status
+current_status=$( /usr/local/bin/dark-mode status )
 # Compare the times time and set the New Status
-if [[ $current_time -ge $begin_time ]] &&
-    [[ $current_time -lt $end_time ]]; then
-    new_status='off'
+if [[ $current_time -lt $begin_time && $current_time -lt $end_time ]] ||
+   [[ $current_time -ge $begin_time && $current_time -gt $end_time ]] ||
+   then
+  new_status='on'
 else
-    new_status='on'
+  new_status='off'
 fi
 
 
@@ -42,16 +91,20 @@ fi
 log_prefix="$(date -r $current_time -j +'%b %d %T') $(hostname -s) ${0:t}[$$]:\t"
 log_info="${log_prefix}[0] system appearance changed to ${dark_appearance[$new_status]}."
 log_error="${log_prefix}[1] ${dark_appearance[$new_status]} appearance is already set."
+# Print test logs
+TestSystemAppearanceService
+if [[ $1 == '--test' ]]; then
+  exit 2
+fi
 
 
 
 
 #MARK: - System Appearance
 # Stop if the correct appearance is already set
-current_status=$( /usr/local/bin/dark-mode status )
 if [[ "$new_status" == "$current_status" ]]; then
-    echo "$log_error" >&2
-    exit 1
+  echo "$log_error" >&2
+  exit 1
 fi
 # Change the system appearance
 echo "$log_info"
