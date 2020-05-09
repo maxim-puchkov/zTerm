@@ -17,10 +17,10 @@ function files() {
             error "Directory not found: $in_dir."
             return 1
         fi
-        cd "$in_dir"
+        cd -q "$in_dir"
         local regex="^\.\/${filename}[[:alnum:]_\.\-]*"
         echo $( find . ! -name . -prune -print | grep -i -E "$regex" -c )
-        cd "$OLDPWD"
+        cd -q "$OLDPWD"
     }
     
     # 
@@ -38,6 +38,20 @@ function files() {
         printf '%s\n' "$found"
         return 0
     }
+    
+    #
+    function files_list() {
+        local dir=${1:-$PWD}
+        typeset -ag filelist=(${(@f)"$(find $dir -mindepth 1 -maxdepth 1)"})
+    }
+    
+    function files_images() {
+        typeset -a extensions=('jpg' 'png' 'gif' 'webp' 'svg'
+                               'psd' 'raw' 'bmp' 'tiff' 'ai')
+        local ext_regex="(${(j:|:)extensions})"
+        find -E . -iregex ".*\.${ext_regex}" 2>/dev/null
+    }
+    
     
     if [[ $# -eq 0 ]]; then
         fn print-commands $0

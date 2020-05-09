@@ -7,7 +7,7 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# Convert from one unit to another.
+# Convert a value from one unit to another.
 function convert() {
     if [[ $# -lt 3 ]]; then
         error 'Not enough arguments.\nUsage:' \
@@ -15,30 +15,34 @@ function convert() {
               '2) myVar=42;  convert --var myVar km cm.'
         return 2
     fi
+    # Options
     typeset -A optlist
     typeset -a args
     args=( $argv )
     get-options optlist args
-    
-    local ov cv from_unit to_unit
+    # Original value
+    local ov
     case $optlist[var] in
+        # Constant argument
         '') ov=$1
             out=(printf '%s\n')
         ;;
-         *) ov=${(P)optlist[var]:-1}
+        # Variable (--var) argument
+        *)  ov=${(P)optlist[var]:-1}
             out=(set -A $optlist[var])
             shift
         ;;
     esac
-    
+    # Units and converted value
+    local from_unit to_unit cv
     if [[ $ov -gt 0 ]]; then
         from_unit=$2
         to_unit=$3
-        cv=($( units -- "$ov $from_unit" "$to_unit" ))
+        cv=(${$( units -- "$ov $from_unit" "$to_unit" )[2]})
     else
         cv=0
     fi
-    
-    $out $cv[2]
+    # Output converted value
+    $out $cv
     return 0
 }

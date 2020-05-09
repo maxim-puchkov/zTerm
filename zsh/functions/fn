@@ -70,8 +70,8 @@ function fn() (
     ## print-commands: format and list function commands ##
     function fn_print-commands() {
         prefix="${prefix:-${fname%%_*}}"
-        printf 'Available commands:\n'
-        printf "  $(cyan %s)\n" $( fn -p $prefix commands $fname )
+        print -P '%B%UCommands%u%b:'
+        print -Pl "%F{14}$( fn -p $prefix commands $fname )%f"
         return 0
     }
     
@@ -87,7 +87,7 @@ function fn() (
     # Function command
     local cmd=$1
     if [[ $# -eq 0 ]] || [[ -z $cmd ]] || [[ $show_help ]]; then
-        fn print-commands 'fn'
+        fn print-commands $0
         return 0
     fi
     shift

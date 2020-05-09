@@ -47,9 +47,11 @@ bindkey '^X\x7f' backward-kill-line
 # Go to Z-Terminal directory.
 function zterm()    { cdp "$ZTERM/$@" }
 # Go to SFU directory.
-function sfudir()   { cdp "$SFU/$@" }
+function sfu()      { cdp "$SFU/$@" }
 # Go to Desktop.
 function desk()     { cdp "$HOME/Desktop/$@"; }
+# Go to Library.
+function lib()      { cdp "$HOME/Library/$@"; }
 # Go to Development root.
 function dev()      { cdp "$DEV/$@"; }
 # Go to Developer Library.
@@ -62,6 +64,7 @@ function var()      { cdp "$HOME/var/$@"; }
 function services() { cdp "$HOME/Library/LaunchAgents/$@"; }
 # Go to logs.
 function logs()     { cdp "$ZTERM/var/log/$@"; }
+
 # Go to Test Files.
 #function testdir()  { cdp "$testdir/$@"; }
 

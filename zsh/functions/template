@@ -73,8 +73,9 @@ function template() {
         # Substitute template macro strings.
         substitute_macros "$template_new" $TEMPLATE_MACROS
         echo "Generated template file: '$(OK $template_new)'."
-#        save_array m_template_id $savefile
-        echo $m_template_id > $savefile
+        if [[ ! $optlist[t] ]]; then
+            echo $m_template_id > $savefile
+        fi
         return 0
     }
     
@@ -122,8 +123,7 @@ function template() {
         m_package_name='Python'
         template_new="${target_dir}/${name}"
         template_orig="$TEMPLATES_DIR/$0.py"
-        m_shebang='\#\!\/usr\/bin\/env\ python3'
-        
+        m_shebang='#!\/usr\/bin\/env\ python3'
         if (copy_template); then
             chmod a+x $template_new
         fi
@@ -146,19 +146,30 @@ function template() {
     #MARK: - Z-Shell Tools
     function template_ztool() {
         target_dir="${target_dir:-${ZTERM}/Tools}"
-        name="${$( generate_filename _${1:-${(U)0}} )}"
+        name="${$( generate_filename ${1:-${(U)0}} )}"
         m_filename=$name
         m_package_name='Terminal'
         template_new="${target_dir}/${name}"
         template_orig="$TEMPLATES_DIR/$0"
-        
-        echo copy_template
+        if (copy_template); then
+            chmod a+x $template_new
+        fi
     }
     
-#    #MARK: - launchd service
-#    function template_service() {
-#
-#    }
+    #MARK: - launchd service
+    function template_launchd() {
+        target_dir="${target_dir:-${ZTERM}/etc/$1}"
+        mkdir $target_dir
+        name="${$( generate_filename ${m_organization_id}.services.${1:-${(U)0}} )}.plist"
+        m_filename=$name
+        m_package_name='Services'
+        template_new="${target_dir}/${name}"
+        template_orig="$TEMPLATES_DIR/$0"
+        copy_template
+        
+        template -d $ZTERM/Services ztool $1
+        ln -s $ZTERM/Services/$1 /usr/local/bin/$1
+    }
     
     
     
@@ -168,8 +179,9 @@ function template() {
     fi
     
     local savefile="$zterm/etc/template.id"
-    typeset -a lastid=( 0 )
-    read_array lastid $savefile &>/dev/null
+    local lastid=0
+#    read_array lastid $savefile &>/dev/null
+    lastid=$(< $savefile)
     
     function getid() {
         lastid=${${optlist[t]:+test-id$$}:-$(< $TEMPLATE_ID)}
@@ -185,7 +197,7 @@ function template() {
     )
     local m_shebang   m_template_ts  m_filename   m_package_name     m_owner \
           m_username  m_date_full    m_date_year  m_organization_id  m_template_id
-    m_shebang='\#\!\/bin\/zsh'
+    m_shebang='#!\/bin\/zsh'
     m_template_ts='<#timestamp#>'
     m_filename="<#name#>"
     m_package_name="<#package#>"
@@ -201,7 +213,7 @@ function template() {
     
     # Function options.
     typeset -A optlist
-    get_options optlist 'd:D' "$@"
+    get_options optlist 'd:Dt' "$@"
     shift $optlist[length]
     
     # Source and compound commands.
@@ -216,6 +228,9 @@ function template() {
     if [[ -n "$target_dir" ]] && [[ ! -d "$target_dir" ]]; then
         error "Invalid directory: '$target_dir'"
         return 2
+    fi
+    if [[ $optlist[t] ]]; then
+        m_template_id='No ID'
     fi
     
     # Compound command.

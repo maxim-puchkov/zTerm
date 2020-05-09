@@ -11,14 +11,16 @@
 # subdirectory of 'devx/functions':
 #   'devx/functions/z[directory]/[function]'
 function fload() {
+    trap 'unfunction -m "__fload*"' EXIT
     
-    declare -a fzdir
-    fzdir=( $zfunc $zsitefunc )
-    fpath=( $fpath $fzdir )
+    declare -a fdir fsubdir
+    fdir=( $zfunc $zsitefunc )
+    fpath=( $fpath $fdir )
     
+    local func
     # Quiet autoload.
     function __fload() {
-        for fsubdir in $fzdir; do
+        for fsubdir in $fdir; do
             local d=( $fsubdir/* )
             for func in $d; do
                 autoload -Uz ${func:t}
@@ -28,7 +30,7 @@ function fload() {
     # Verbose: print number of autoloaded functions
     # in each 'z' subdirectory.
     function __fload_verbose() {
-        for fsubdir in $fzdir; do
+        for fsubdir in $fdir; do
             local count=0
             local d=( $fsubdir/* )
             for func in $d; do
@@ -42,8 +44,8 @@ function fload() {
     }
     
     
-    local VERBOSE=$FALSE
-    if [[ $VERBOSE == $SETOPT ]]; then
+    local VERBOSE=$1
+    if [[ $VERBOSE == 'TRUE' ]]; then
         print "${BOLD}Autoload...${NORMAL}"
         __fload_verbose
         print "${BOLD}Done${NORMAL}."

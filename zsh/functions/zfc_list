@@ -29,7 +29,7 @@ function zfc_list() (
     local show_lines=${#list:2}
     local sort_options='--key 2n'
     if [[ $# -gt 0 ]]; then
-        local count=$1
+        local count=${1:-0}
         if [[ $count -gt 0 ]]; then
             sort_options='--key 2nr'
         else

@@ -7,50 +7,48 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# Print file size in bytes
+# Display sizes of files or directories.
 function fsize() {
-    # Supress error messages
-    local quiet=0
-    local stdout=/dev/stdout
-    local stderr=/dev/stderr
-    if [[ "$1" == '-q' ]]; then
-        quiet=1
-        stderr=/dev/null
-        shift
-    fi
-
-    local name type sizeunit tmp
+    trap 'unfunction -m "fsize_*"' EXIT
+    # Reduce large KB sizes to MB or GB
+    function fsize_simplify-kb() {
+        local filesize=$1
+        local unit='KB'
+        if [[ $filesize -ge 1048576 ]]; then
+            convert --var filesize 'kilobyte' 'gigabyte'
+            unit='GB'
+        elif [[ $filesize -ge 1024 ]]; then
+            convert --var filesize 'kilobyte' 'megabyte'
+            unit='MB'
+        fi
+        printf '%.2f %s' $filesize "$unit"
+    }
+    #
+    local name type unit
+    float -F 2 total_size size
+    total_size=0
     for file in ${${@:-*}:a}; do
-        float size=0
-        sizeunit='KB'
+        size=0
+        unit='KB'
         type=$(stat -f '%HT' $file)
         printf '%s: ' "$file"
         case $type in
-            'Regular File')
-                stat -f '%z %N' $file |
-                read -r {size,name}
-                convert --var size 'byte' 'kilobyte'
-            ;;
-            
             'Directory')
                 du -k -d0 $file 2>/dev/null |
                 read -r {size,name}
             ;;
-            
             *)
-                continue
+                stat -f '%z %N' $file |
+                read -r {size,name}
+                convert --var size 'byte' 'kilobyte'
             ;;
         esac
-        
-        if [[ $size -ge 1048576 ]]; then
-            convert --var size 'kilobyte' 'gigabyte'
-            sizeunit="GB"
-        elif [[ $size -ge 1024 ]]; then
-            convert --var size 'kilobyte' 'megabyte'
-            sizeunit="MB"
-        fi
-        printf "${fg[blue]}%.2f %+2s${fg[default]}\n" "$size" "$sizeunit"
+        total_size=$(( $total_size + $size ))
+        print -P "%F{4}$(fsize_simplify-kb $size)%f"
     done
-    
+    # Print total size when given more than one argument.
+    if [[ $# -ne 1 ]]; then
+        print -P "\n%BTotal size: %F{12}$(fsize_simplify-kb $total_size)%f%b"
+    fi
     return 0
 }

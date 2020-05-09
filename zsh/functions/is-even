@@ -1,0 +1,16 @@
+#!/bin/zsh
+
+#  is-even
+#  Z-Function (26)
+#
+#  Created by Maxim Puchkov on 2020-05-06.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function is-even() {
+    local arg=($@)
+    if [[ $#arg == 1 ]] arg=$arg[1];
+    if [[ ! $arg =~ '^[0-9]+$' ]] arg=${#arg};
+    return $(( $arg % 2 ))
+}

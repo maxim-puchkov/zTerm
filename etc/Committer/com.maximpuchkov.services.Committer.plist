@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>Services.com.maximpuchkov.services.Committer.plist</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/bin/zsh</string>
+		<string>-c</string>
+		<string>/usr/local/bin/Committer</string>
+	</array>
+	<key>RunAtLoad</key>
+	<false/>
+	<key>StartCalendarInterval</key>
+	<array>
+		<dict>
+			<key>Hour</key>
+			<string>0</string>
+		</dict>
+		<dict>
+			<key>Hour</key>
+			<integer>12</integer>
+		</dict>
+	</array>
+	<key>WorkingDirectory</key>
+	<string>/usr/local/Terminal</string>
+	<key>StandardOutPath</key>
+	<string>var/log/Services/com.maximpuchkov.services.Committer.plist.log</string>
+	<key>StandardErrorPath</key>
+	<string>var/log/Services/com.maximpuchkov.services.Committer.plist.log</string>
+</dict>
+</plist>

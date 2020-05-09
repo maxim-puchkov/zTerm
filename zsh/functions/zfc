@@ -9,12 +9,6 @@
 
 # View or edit local zsh functions.
 function zfc() {
-    ## dir: go to z-functions directory [default] ##
-    function zfc_dir() {
-        cdp $zfunc
-        return 0
-    }
-    
     function __find() {
         local fdir="$1"
         local fname=$2
@@ -32,6 +26,12 @@ function zfc() {
     }
     
     
+    ## dir: go to z-functions directory [default] ##
+    function zfc_dir() {
+        cdp $zfunc
+        return 0
+    }
+    
     ## find: find Z-Function definition file ##
     function zfc_find() {
         local fname=$1
@@ -46,7 +46,6 @@ function zfc() {
         echo "$f"
         return 0
     }
-    
     
     ## localfunction: make a Z-Function local ##
     function zfc_localfunction() {
@@ -125,10 +124,7 @@ function zfc() {
     
     ## stat: display number of enabled and disabled Z-Functions ##
     function zfc_stat() {
-        local -R5 n_standard \
-                  n_site \
-                  n_disabled \
-                  n_total
+        local -R5 n_standard n_site n_disabled n_total
         n_standard=${#$( printf '%s\n' $zfunc/* )}
         n_site=${#$( printf '%s\n' $zsitefunc/* )}
         n_disabled=${#$( printf '%s\n' $zdisabled/* )}
@@ -143,18 +139,15 @@ function zfc() {
     ## open: open function source code in Xcode ##
     function zfc_open() {
         local fname=$1
-        local files=($(find $ZTERM -name $fname -type f))
-        case ${#files} in
-            0)  error 'Not found.'
-                ;;
-            1)  ;;
-            *)  error 'Ambiguous search.'
-                ;;
-        esac
-        if [[ ${#files} -eq 1 ]]; then
-            open -a Xcode $files
+        local files=(${(@f)"$(
+            find $ZTERM -name $fname -type f
+        )"})
+        if [[ ${#files} -ne 1 ]]; then
+            error "Found ${#files} matching functions."
+            return 1
         fi
-        return 1
+        open -a Xcode $files
+        return $?
     }
     
     # Options
@@ -164,13 +157,22 @@ function zfc() {
     
     # Show help
     if [[ -n $optlist[h] ]]; then
-        fn print-commands 'zfc'
+        fn print-commands $0
         return 0
     fi
     
-    # Execute a command
-    local cmd=${1:-dir}
-    shift ${+1}
+    local cmd=$1
+    case $# in
+        0)  cmd='dir' ;;
+        1)  if ( ! fn isdef ${0}_${1} ); then
+                cmd='open'
+            else
+                shift
+            fi ;;
+        *)  shift ;;
+    esac
+    
+    # Execute a zfc command
     if ( ! fn isdef ${0}_${cmd} ); then
         error "Unknown command: '$(Bad $cmd)'."
         return 127

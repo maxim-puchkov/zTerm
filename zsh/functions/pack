@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 #  pack
-#  devx
+#  
 #
 #  Created by mpuchkov on 2020-03-04.
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
@@ -12,8 +12,19 @@
 function pack() {
     # Options
     typeset -Ag optlist=()
-    get_options optlist 'e:Eo:Ot:Tn:N' "$@"
+    get_options optlist 'e:Eo:Ot:Tn:N' "${(q)@}"
     shift ${optlist[length]}
+    
+    
+    local dir="${1:-$PWD}"
+    # Name -n
+    local packname="$dir/${optlist[n]:-Pack-${#files}}"
+    if [[ -d "$packname" ]]; then
+        error "Pack already exists: '$(red "$packname")'."
+        return 1
+    fi
+    
+    
     # Only -o
     local only=''
     if [[ -n ${optlist[o]} ]]; then
@@ -25,23 +36,24 @@ function pack() {
         except=( '-and ! -name '${(z)^optlist[e]} )
     fi
     # Type -t
-    local type=''
+    local type='-true'
     if [[ -n ${optlist[t]} ]]; then
         type=( '-type' ${(j: -or -type :)${(z)^optlist[t]}} )
     fi
     
     
     # Find files
-    local dir="${1:-$PWD}"
-    typeset -a files=(${(@f)"$( find $dir        \
-                                    ! -name '.*'     \
-                                    ! -flags hidden  \
-                                    -mindepth 1      \
-                                    -maxdepth 1      \
-                                    ${(z)only}       \
-                                    ${(z)except}   \
-                                    -and \( ${(z)type} \))"}) \
-                                2&>/dev/null
+    typeset -a files
+    files=(${(@f)"$(
+        find $dir        \
+             ! -name '.*'     \
+             ! -flags hidden  \
+             -mindepth 1      \
+             -maxdepth 1      \
+             ${(z)only}       \
+             ${(z)except}   \
+             -and \( ${(z)type} \)
+        )"}) 2&>/dev/null
     
     if [[ ${#files} -eq 0 ]]; then
         error 'No files.'
@@ -50,14 +62,8 @@ function pack() {
     
     
     # Move files to the subdirectory
-    local packname="$dir/${2:-Pack-${#files}}"
-    if [[ -d "$packname" ]]; then
-        error "Pack already exists: '$(red "$packname")'."
-        return 1
-    fi
     mkdir -p "$packname"
     mv "${(@f)files}" "$packname/"
-    
     printf "Packed $(green '%s') files: $(green '%s').\n" ${#files} $packname
     return 0
 }

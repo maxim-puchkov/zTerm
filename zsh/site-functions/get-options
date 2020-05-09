@@ -14,28 +14,56 @@ function get-options() {
         return 1
     
     local stderr=/dev/null
-    if [[ $1 == '-v' ]]; then
-        stderr=/dev/stderr
+#    if [[ $1 == '-v' ]]; then
+#        stderr=/dev/stderr
+#        shift
+#    fi
+    
+    flag_names=()
+    if [[ $1 == '-f' ]]; then
         shift
+        while [[ $# -ne 2 ]] && [[ $1 =~ '^[^\-]' ]]; do
+            flag_names+=($1)
+            shift
+        done
     fi
+    
+#    while [[ -n $1 ]] && [[ $1 =~ '^\-' ]]; do
+#        case $1 in
+#        esac
+#        shift
+#    done
+    
     
   { local optlist_id=$1
     local argv_id=$2
     
-    local arguments=( ${(Pz)argv_id} )
-    local option_ids=( ${^${arguments:#[^-]*}/-}':' )
-    if [[ -z $option_ids ]]; then
+    typeset -a arguments oid fid oflist
+    arguments=( ${(Pz)argv_id} )
+    oid=( ${arguments:#[^-]*} )
+    fid=()
+    for flag in $flag_names; do
+        fid+=( ${oid[(R)*$flag]} )
+    done
+    oid=( ${oid:|fid} )
+    oid=( ${^oid}':' )
+    oflist=( ${^oid/-} ${^fid/-} )
+    
+#    option_ids=( ${^${arguments:#[^-]*}/-}':' )
+    if [[ -z $oflist ]]; then
         return 1
     fi
     
-    typeset -A tmp
     set -- $arguments
-    zparseopts -D -E -A tmp $option_ids 2>$stderr
+    typeset -A tmp
+    zparseopts -D -E -A tmp $oflist #2>$stderr
     
     typeset -A result
     local k v
     for k v in ${(kv)tmp}; do
-        result+=( ${k//-} $v )
+        k=$( awk -F '^\-+' '{ print $2; }' <<< $k )
+        v=${v:-'true'}
+        result+=( $k $v )
     done
     
     typeset -Ag $optlist_id;

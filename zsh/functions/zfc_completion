@@ -48,9 +48,9 @@ function zfc_completion() (
 #  Copyright © ___DATE_YEAR___ ___OWNER___. All rights reserved.
 
 
-_arguments -C \
-":command:->command" \
-"*::arg:->arg"
+_arguments -C \\
+  ":command:->command" \\
+  "*::arg:->arg"
 
 function ___FILENAME____command {
     _arguments "1: :<#Command Completion#>"

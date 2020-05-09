@@ -1,0 +1,39 @@
+#!/bin/zsh
+
+#  i
+#  Z-Function (30)
+#
+#  Created by Maxim Puchkov on 2020-05-07.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+function i() {
+    typeset -A optlist
+    typeset -a args=($argv)
+    get-options $optlist $args 
+    name="$*"
+    info=(${(@f)"$(whence -av $name)"})
+    for desc in $info; do
+        case $desc in
+            *'alias'*)
+                print -P "%F{13}${desc#*alias for }%f"
+            ;;
+            *'autoload'*'function'*)
+                fn def $name # print -P "Function %F{6}${name}%f"
+            ;;
+            *'function'*)
+                fn def $name # print -P "Function %F{4}${name}%f"
+            ;;
+            *'not found'*)
+                print -P "%F{9}${name} not found%f"
+            ;;
+            *'builtin'*)
+                print -P "%F{4}shell builtin%f"
+            ;;
+            *'/'$name)
+                print -P "%F{2}${desc#*$name is }%f"
+            ;;
+        esac
+    done
+#    print -l $info
+}

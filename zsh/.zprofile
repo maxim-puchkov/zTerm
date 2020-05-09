@@ -55,6 +55,8 @@ typeset -A A1
 for i in {1..26}; do
     A1[$i]=${(U)l3[$i]}
 done
+unset i
+
 typeset -A A2
 A2=( key1 val1 key2 val2 X-key3 val3 key4 X-val4 )
 

@@ -1,0 +1,74 @@
+#!/bin/zsh
+
+#  Committer
+#  Terminal (33)
+#
+#  Created by Maxim Puchkov on 2020-05-09.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Options
+typeset -a opts
+opts=()
+if [[ $1 == '-d' ]]; then
+  opts+='--dry-run'
+  shift
+fi
+
+# Commit ID
+typeset id_file=etc/commit.id
+if [[ ! -r $id_file ]]; then
+  exit 1
+fi
+typeset -i -Z3 commit_id
+commit_id=$(( $(< $id_file) + 1 ))
+
+# User signoff
+typeset user_name user_email
+user_name=$(git config --get user.name)
+user_email=$(git config --get user.email)
+if [[ -z $user_name ]]; then
+  echo 'Property user.name is not configured'
+  exit 1
+fi
+if [[ -z $user_email ]]; then
+  echo 'Property user.email is not configured'
+  exit 1
+fi
+typeset commit_signoff
+commit_signoff="$user_name <$user_email>"
+
+# Changes
+git add .
+typeset -a commit_diff
+commit_diff=($(git diff --shortstat --cached))
+if [[ -z $commit_diff ]]; then
+  exit 1
+fi
+
+# MMDD date
+typeset commit_date
+commit_date=$(date -j +'%m%d')
+
+# Full commit message
+typeset commit_message
+commit_message="[CS${commit_id}-${commit_date}] ${commit_diff}."
+
+# Commit and push 
+git commit --message="$commit_message" --signoff $opts
+git push $opts
+
+# Save ID
+#echo $(( $commit_id + 1 )) > $id_file
+
+
+echo $commit_message
+
+#
+#log_prefix="$(date -r $current_time -j +'%b %d %T') $(hostname -s) ${0:t}[$$]:\t"
+
+#echo "${log_prefix} [0] OK."
+#echo "${log_prefix} [1] Error." >&2
+
+
+exit 0

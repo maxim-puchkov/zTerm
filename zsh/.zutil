@@ -275,47 +275,54 @@ function h() {
 }
 
 
-function fxml() {
-    cat << EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<!--
-   com.maximpuchkov.services.___FILENAME___.plist
-   ___PACKAGE_NAME___
+function irand() {
+    integer max=$1
+    integer rand=$(( $RANDOM % $max ))
+    printf '%d' $rand
+    red $rand >&2
+}
+function airand() {
+    integer max=$1
+    integer count=$2
+    typeset -ag rand=()
+    integer i=1
+    for i in {1..$count}; do
+        blue $RANDOM
+        rand+=$(irand $max)
+    done
+}
 
-   Created by ___USERNAME___ on ___DATE_FULL___.
-   Copyright (c) ___DATE_YEAR___ ___OWNER___. All rights reserved.
--->
-<plist version="1.0">
-<dict>
-    <key>Label</key>
-    <string>___PACKAGE_NAME___.___FILENAME___</string>
-    <key>ProgramArguments</key>
-    <array>
-        <string>/bin/zsh</string>
-        <string>-c</string>
-        <string>/usr/local/bin/___FILENAME___-service</string>
-    </array>
-    <key>RunAtLoad</key>
-    <false/>
-    <key>StartCalendarInterval</key>
-    <array>
-        <dict>
-            <key>Weekday</key>
-            <integer>1</integer>
-        </dict>
-    </array>
-    <key>WatchPaths</key>
-    <array>
-        <string>~/var/watchme</string>
-    </array>
-    <key>WorkingDirectory</key>
-    <string>/usr/local/Terminal</string>
-    <key>StandardOutPath</key>
-    <string>var/log/___PACKAGE_NAME___/___FILENAME___.log</string>
-    <key>StandardErrorPath</key>
-    <string>var/log/___PACKAGE_NAME___/___FILENAME___.log</string>
-</dict>
-</plist>
-EOF
+function i2() {
+    name=$1
+    info=(${(@f)"$(whence -av $name)"})
+    for desc in $info; do
+        case $desc in
+            *'alias'*)
+                print -P "%F{14}${desc#*alias for }%f" ;;
+            *'autoload'*'function')
+                fn def $name ;; # print -P "Function %F{6}${name}%f"
+            *'function'*)
+                fn def $name ;; # print -P "Function %F{4}${name}%f"
+            *'not found'*)
+                print -P "%F{9}${name} not found%f" ;;
+            *'builtin'*)
+                print -P "%F{4}shell builtin%f" ;;
+            *'/'$name)
+                print -P "%F{2}${desc#*$name is }%f" ;;
+        esac
+    done
+#    print -l $info
+}
+
+function write-lines() {
+    local line_count bytes_per_line
+    line_count=${1:-1}
+    text_length=${2}
+    local line pad length
+    for line in {1..$line_count}; do
+        pad=$(( ${#line_count} + 1 ))
+        length=${text_length:-$line}
+        text=$(printf '%s' $(dd if=/dev/random bs=1 count=$length 2>/dev/null | xxd -p))
+        print ":${(r:$pad:)line}   ${text:0:$length}   ${(l:$pad:)line}:"
+    done
 }
