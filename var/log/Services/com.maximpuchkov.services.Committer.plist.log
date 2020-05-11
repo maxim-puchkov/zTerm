@@ -2887,3 +2887,8 @@ To csil-git1.cs.surrey.sfu.ca:mpuchkov/terminal.git
  2 files changed, 5 insertions(+), 1 deletion(-)
 To csil-git1.cs.surrey.sfu.ca:mpuchkov/terminal.git
    c10b30b..0e1fcc6  master -> master
+[master e8355f0] [CS444-0510] 2 files changed, 5 insertions(+), 1 deletion(-).
+ 2 files changed, 5 insertions(+), 1 deletion(-)
+client_loop: send disconnect: Broken pipe
+fatal: the remote end hung up unexpectedly
+fatal: the remote end hung up unexpectedly
