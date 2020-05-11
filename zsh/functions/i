@@ -20,10 +20,11 @@ function i() {
         shift
     fi
     
-    local name info desc
+    local name info
     name="$args"
     info=(${(@f)"$(whence -av $name)"})
     
+    local desc
     for desc in $info; do
         case $desc in
             *'alias'*)
@@ -46,5 +47,4 @@ function i() {
             ;;
         esac
     done
-#    print -l $info
 }
