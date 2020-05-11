@@ -8,21 +8,32 @@
 
 
 function i() {
-    typeset -A optlist
-    typeset -a args=($argv)
-    get-options $optlist $args 
-    name="$*"
+    typeset -Ag optlist
+    optlist=()
+    typeset -ag args=($argv)
+    get-options -f 'v' optlist args
+    local print_autoload_function='print -P %F{6}Function ${name}%f'
+    local print_function='print -P %F{4}Function ${name}%f'
+    if [[ -n $optlist[v] ]]; then
+        print_autoload_function="fn def $name"
+        print_function="fn def $name"
+        shift
+    fi
+    
+#    local name info desc
+    name="$args"
     info=(${(@f)"$(whence -av $name)"})
+    
     for desc in $info; do
         case $desc in
             *'alias'*)
                 print -P "%F{13}${desc#*alias for }%f"
             ;;
             *'autoload'*'function'*)
-                fn def $name # print -P "Function %F{6}${name}%f"
+                ${=print_autoload_function}
             ;;
             *'function'*)
-                fn def $name # print -P "Function %F{4}${name}%f"
+                ${=print_function}
             ;;
             *'not found'*)
                 print -P "%F{9}${name} not found%f"

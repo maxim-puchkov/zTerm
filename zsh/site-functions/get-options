@@ -49,7 +49,6 @@ function get-options() {
     oid=( ${^oid}':' )
     oflist=( ${^oid/-} ${^fid/-} )
     
-#    option_ids=( ${^${arguments:#[^-]*}/-}':' )
     if [[ -z $oflist ]]; then
         return 1
     fi
@@ -69,8 +68,9 @@ function get-options() {
     typeset -Ag $optlist_id;
     set -A $optlist_id ${(kv)result}
     
+    local argv_shift=$(( ${#fid} + (${#oid} * 2) ))
     typeset -ag $argv_id
-    set -A $argv_id ${arguments:${(kv)#result}}
+    set -A $argv_id ${arguments:$argv_shift}
   } 2>$stderr
     
     return 0

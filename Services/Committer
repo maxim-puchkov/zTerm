@@ -23,21 +23,6 @@ fi
 typeset -i -Z3 commit_id
 commit_id=$(( $(< $id_file) + 1 ))
 
-# User signoff
-typeset user_name user_email
-user_name=$(git config --get user.name)
-user_email=$(git config --get user.email)
-if [[ -z $user_name ]]; then
-  echo 'Property user.name is not configured'
-  exit 1
-fi
-if [[ -z $user_email ]]; then
-  echo 'Property user.email is not configured'
-  exit 1
-fi
-typeset commit_signoff
-commit_signoff="$user_name <$user_email>"
-
 # Changes
 git add .
 typeset -a commit_diff
@@ -54,21 +39,20 @@ commit_date=$(date -j +'%m%d')
 typeset commit_message
 commit_message="[CS${commit_id}-${commit_date}] ${commit_diff}."
 
-# Commit and push 
-git commit --message="$commit_message" --signoff $opts
+# Commit and push
+git commit --message="$commit_message" --signoff --no-gpg-sign $opts
 git push $opts
 
 # Save ID
-#echo $(( $commit_id + 1 )) > $id_file
+echo $(( $commit_id + 1 )) > $id_file
 
 
-echo $commit_message
+#echo $commit_message
 
 #
 #log_prefix="$(date -r $current_time -j +'%b %d %T') $(hostname -s) ${0:t}[$$]:\t"
 
 #echo "${log_prefix} [0] OK."
-#echo "${log_prefix} [1] Error." >&2
 
 
 exit 0
