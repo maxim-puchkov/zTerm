@@ -8,10 +8,10 @@
 
 
 function i() {
-    typeset -Ag optlist
-    optlist=()
-    typeset -ag args=($argv)
+    typeset -A optlist
+    typeset -a args=($argv)
     get-options -f 'v' optlist args
+    
     local print_autoload_function='print -P %F{6}Function ${name}%f'
     local print_function='print -P %F{4}Function ${name}%f'
     if [[ -n $optlist[v] ]]; then
@@ -20,7 +20,7 @@ function i() {
         shift
     fi
     
-#    local name info desc
+    local name info desc
     name="$args"
     info=(${(@f)"$(whence -av $name)"})
     
