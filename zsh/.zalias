@@ -91,3 +91,8 @@ alias t='typeof'
 
 
 alias rr='zsh "$DEV/bin/run.sh"'
+
+
+# Unalias
+
+unalias g
