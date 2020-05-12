@@ -13,6 +13,7 @@ function airand() {
     count=${2:-5}
     typeset -ag rand=()
     for i in {1..$count}; do
+        printf '%d' $RANDOM &>/dev/null
         rand+=$(irand $max)
     done
 }
