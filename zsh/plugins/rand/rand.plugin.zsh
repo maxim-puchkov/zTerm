@@ -24,6 +24,6 @@ function randstr() {
     if [[ $length -le 0 ]]; then
         length=5
     fi
-    rand="$( dd if=/dev/random bs=1 count=$length NIL | xxd -p | cut -c-$length )"
-    print -N "$rand"
+    print -N "$( dd if=/dev/random bs=1 count=$length NIL | xxd -p | cut -c-$length )"
+#    print -N "$rand"
 }
