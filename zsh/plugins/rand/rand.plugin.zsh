@@ -9,8 +9,8 @@ function irand() {
 
 function airand() {
     typeset -i max count i
-    max=$1
-    count=$2
+    max=${1:-100}
+    count=${2:-5}
     typeset -ag rand=()
     for i in {1..$count}; do
         rand+=$(irand $max)
