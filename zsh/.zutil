@@ -285,8 +285,8 @@ function write-lines() {
     for line in {1..$line_count}; do
         pad=$(( ${#line_count} + 1 ))
         length=${text_length:-$line}
-        text=$( printf '%s' $(dd if=/dev/random bs=1 count=$length 2>/dev/null
-            | xxd -p) )
+        text=$( printf '%s' $(dd if=/dev/random bs=1 count=$length 2>/dev/null |
+            xxd -p) )
         print ":${(r:$pad:)line}   ${text:0:$length}   ${(l:$pad:)line}:"
     done
 }
