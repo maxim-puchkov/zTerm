@@ -19,7 +19,10 @@ function airand() {
 
 function randstr() {
     typeset -g rand
-    typeset -i length=${1:-5}
-    rand=$( dd if=/dev/random bs=1 count=10 NIL | xxd -p | cut -c-$length )
+    typeset -i length=$1
+    if [[ $length -le 0 ]]; then
+        length=5
+    fi
+    rand=$( dd if=/dev/random bs=1 count=$length NIL | xxd -p | cut -c-$length )
     print $rand
 }
