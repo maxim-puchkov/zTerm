@@ -17,18 +17,10 @@
 		<dict>
 			<key>Hour</key>
 			<string>0</string>
-			<key>Minute</key>
-			<string>0</string>
-			<key>Second</key>
-			<string>0</string>
 		</dict>
 		<dict>
 			<key>Hour</key>
 			<integer>12</integer>
-			<key>Minute</key>
-			<string>0</string>
-			<key>Second</key>
-			<string>0</string>
 		</dict>
 	</array>
 	<key>WorkingDirectory</key>
