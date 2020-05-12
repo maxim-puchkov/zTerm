@@ -46,7 +46,7 @@ function fsize() {
         total_size=$(( $total_size + $size ))
         print -P "%F{4}$(fsize_simplify-kb $size)%f"
     done
-    # Print total size when given more than one argument.
+    # Print total size when given more than one argument
     if [[ $# -ne 1 ]]; then
         print -P "\n%BTotal size: %F{12}$(fsize_simplify-kb $total_size)%f%b"
     fi

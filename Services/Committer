@@ -50,7 +50,7 @@ git commit --message="$commit_message" --signoff --no-gpg-sign $opts
 git push $opts
 
 # Save ID
-echo $(( $commit_id + 1 )) > $id_file
+echo "$commit_id" > $id_file
 
 
 #echo $commit_message
