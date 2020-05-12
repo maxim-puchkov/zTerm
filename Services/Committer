@@ -8,7 +8,7 @@
 
 
 log_prefix="$(date -r $current_time -j +'%b %d %T') $(hostname -s) ${0:t}[$$]:\t"
-echo "${log_prefix} Start."
+echo "${log_prefix} Service started."
 
 # Options
 typeset -a opts
@@ -56,5 +56,5 @@ echo $(( $commit_id + 1 )) > $id_file
 
 #echo "${log_prefix} [0] OK."
 
-
+echo "${log_prefix} Service exited."
 exit 0
