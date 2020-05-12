@@ -4,6 +4,7 @@
 #MARK: - Global Aliases
 # Shell output
 alias -g noerr='2> /dev/null'  # redirect stderr
+alias -g 2NIL='2> /dev/null'
 alias -g quiet='&> /dev/null'  # redirect stdout and stderr
 
 # If statement: if [[ ... ]] T
