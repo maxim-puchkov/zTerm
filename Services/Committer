@@ -7,7 +7,7 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-log_prefix="$(date -r $current_time -j +'%b %d %T') $(hostname -s) ${0:t}[$$]:\t"
+log_prefix="$(date -j +'%b %d %T') $(hostname -s) ${0:t}[$$]:\t"
 echo "${log_prefix} Service started."
 
 # Options
