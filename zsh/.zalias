@@ -31,7 +31,7 @@ alias bi='brew info'
 alias cp='command cp -i'
 
 # Builtin 'cd'
-alias cfd='builtin cdp -- "$pfd"'
+alias cfd='cdp -- "$pfd"'
 
 # List of commands
 alias cmdlist='printf "%s\n" ${commands:t}'
