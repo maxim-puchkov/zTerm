@@ -8,17 +8,17 @@ function irand() {
 }
 
 function airand() {
-    typeset -i max=$1
-    integer count=$2
+    typeset -i max count i
+    max=$1
+    count=$2
     typeset -ag rand=()
-    
-    integer i=1
     for i in {1..$count}; do
         rand+=$(irand $max)
     done
 }
 
 function randstr() {
-    typeset -g
-    dd if=/dev/random bs=1 count=10 NIL | xxd -
+    typeset -g rand
+    rand=$( dd if=/dev/random bs=1 count=10 NIL | xxd -p )
+    print $rand 
 }
