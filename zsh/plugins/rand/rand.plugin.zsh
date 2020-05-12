@@ -4,7 +4,7 @@
 function irand() {
     integer max=${1:-100}
     integer -g rand=$(( $RANDOM % $max ))
-    print -N "$rand"
+    print "$rand"
 }
 
 function airand() {
