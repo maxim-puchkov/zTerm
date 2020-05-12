@@ -12,6 +12,9 @@ function cdp() {
     local program_name="$(b_bred $0)"
     local dir arg n old new
     
+    if [[ $1 == '--' ]]; then
+        shift
+    fi
     
     case $# in
         0)  dir="$HOME"
