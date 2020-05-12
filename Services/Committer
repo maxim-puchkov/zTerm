@@ -21,6 +21,7 @@ fi
 # Commit ID
 typeset id_file=etc/commit.id
 if [[ ! -r $id_file ]]; then
+  echo "${log_prefix} ID file missing." >&2
   exit 1
 fi
 typeset -i -Z3 commit_id
@@ -31,6 +32,7 @@ git add .
 typeset -a commit_diff
 commit_diff=($(git diff --shortstat --cached))
 if [[ -z $commit_diff ]]; then
+  echo "${log_prefix} Diff error." >&2
   exit 1
 fi
 
