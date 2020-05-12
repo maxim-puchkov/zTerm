@@ -2,13 +2,13 @@
 
 
 function irand() {
-    integer max=${1:-100}
-    integer -g rand=$(( $RANDOM % $max ))
+    typeset -i max=${1:-100}
+    typeset -gi rand=$(( $RANDOM % $max ))
     print "$rand"
 }
 
 function airand() {
-    integer max=$1
+    typeset -i max=$1
     integer count=$2
     typeset -ag rand=()
     
@@ -19,5 +19,6 @@ function airand() {
 }
 
 function randstr() {
-
+    typeset -g
+    dd if=/dev/random bs=1 count=10 NIL | xxd -
 }
