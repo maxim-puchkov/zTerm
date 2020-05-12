@@ -2,8 +2,8 @@
 
 
 function irand() {
-    integer max=$1
-    integer rand=$(( $RANDOM % $max ))
+    integer max=${1:-100}
+    integer -g rand=$(( $RANDOM % $max ))
     print -N "$rand"
 }
 
