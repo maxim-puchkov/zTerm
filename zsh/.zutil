@@ -292,28 +292,6 @@ function airand() {
     done
 }
 
-#function i2() {
-#    name=$1
-#    info=(${(@f)"$(whence -av $name)"})
-#    for desc in $info; do
-#        case $desc in
-#            *'alias'*)
-#                print -P "%F{14}${desc#*alias for }%f" ;;
-#            *'autoload'*'function')
-#                fn def $name ;; # print -P "Function %F{6}${name}%f"
-#            *'function'*)
-#                fn def $name ;; # print -P "Function %F{4}${name}%f"
-#            *'not found'*)
-#                print -P "%F{9}${name} not found%f" ;;
-#            *'builtin'*)
-#                print -P "%F{4}shell builtin%f" ;;
-#            *'/'$name)
-#                print -P "%F{2}${desc#*$name is }%f" ;;
-#        esac
-#    done
-##    print -l $info
-#}
-
 function write-lines() {
     local line_count bytes_per_line
     line_count=${1:-1}
