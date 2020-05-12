@@ -42,7 +42,7 @@ alias E='b_redbg'
 
 # Builtin 'exit'
 alias q='exit'
-alias q!='killall "${SHELL:t}"'
+#alias q!='killall "${SHELL:t}"'
 
 # Help
 alias help='run-help'
