@@ -63,6 +63,7 @@ alias lctl='command launchctl'
 alias mv='command mv -i'
 
 # Command 'open'
+alias o='open "$PWD"'
 alias xopen='open -a Xcode'
 alias textopen='open -a TextEdit'
 alias webopen='open -a Safari'
