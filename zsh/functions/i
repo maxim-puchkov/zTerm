@@ -38,11 +38,14 @@ function i() {
             *'function'*)
                 ${=print_function}
             ;;
-            *'not found'*)
-                print -P "%F{9}${name} not found%f"
-            ;;
             *'builtin'*)
                 print -P "%F{4}shell builtin%f"
+            ;;
+            *'reserved word'*)
+                print -P "%F{5}${name} is a reserved word%f"
+            ;;
+            *'not found'*)
+                print -P "%F{9}${name} not found%f"
             ;;
             *'/'$name)
                 print -P "%F{2}${desc#*$name is }%f"
