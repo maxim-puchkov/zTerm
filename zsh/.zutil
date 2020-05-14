@@ -290,3 +290,22 @@ function write-lines() {
         print ":${(r:$pad:)line}   ${text:0:$length}   ${(l:$pad:)line}:"
     done
 }
+
+function ndo() {
+    local n cmd i
+    n=${1:-1}
+    shift
+    cmd=$@
+    for i in {1..$n}; do
+        ${=cmd}
+    done
+}
+
+function icmv() {
+    local filepath=$1
+    local directory=$ICLOUD/MovedFiles
+    mkdir -p $directory
+#    mvp $filepath $directory
+    mv $filepath $directory
+    print -P "Moved %B%U${filepath:t}%u%b to %F{10}${directory}%f."
+}

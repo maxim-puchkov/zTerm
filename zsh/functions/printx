@@ -26,6 +26,6 @@ function printx() {
         return 1
     fi
     
-    printf '%s\n' "$hex"
+    printf '%s' "$hex"
     return 0
 }

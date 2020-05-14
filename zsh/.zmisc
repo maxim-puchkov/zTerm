@@ -6,6 +6,9 @@
 
 
 #MARK: - Exported Variables
+
+export enckey1="f978c11e9a04fbda0ad2bbcd20ca8274ec2daa6f776b2192b8e20a060b765492"    # enckey1: 13 May 22:00
+export enciv1="be87368daada310f928cbbc33591a125"    # enciv1: 13 May 22:00
 # <#Insertion Point: addexp#>
 
 
