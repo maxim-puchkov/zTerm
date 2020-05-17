@@ -34,7 +34,8 @@ if [[ $1 == '--test' ]] && [[ $# -eq 4 ]]; then
 fi
 # Print test logs
 function TestSystemAppearanceService() {
-  print "Begin <${0:t}>"
+  typeset c dc  b db  e de
+  print "Begin <${0:t}> ${?}"
   c=$current_time; dc=$(date -r $c)
   b=$begin_time;   db=$(date -r $b)
   e=$end_time;     de=$(date -r $e)
@@ -60,7 +61,7 @@ function TestSystemAppearanceService() {
   print "Current status: $current_status"
   print "New status:     $new_status"
   print -- '---------------'
-  print "End <${0:t}>"
+  print "End <${0:t}> ${?}"
 } &> $ROOT_DIR/var/log/tests/SystemAppearance/${test_log_name:-recent}.log
 
 
@@ -77,7 +78,7 @@ current_status=$( /usr/local/bin/dark-mode status )
 # Compare the times time and set the New Status
 if [[ $current_time -lt $begin_time && $current_time -lt $end_time ]] ||
    [[ $current_time -ge $begin_time && $current_time -gt $end_time ]] ||
-   then
+  then
   new_status='on'
 else
   new_status='off'
@@ -88,6 +89,7 @@ fi
 
 #MARK: - Logs
 # Prepare log messages
+typeset log_prefix log_info log_error
 log_prefix="$(date -r $current_time -j +'%b %d %T') $(hostname -s) ${0:t}[$$]:\t"
 log_info="${log_prefix}[0] system appearance changed to ${dark_appearance[$new_status]}."
 log_error="${log_prefix}[1] ${dark_appearance[$new_status]} appearance is already set."

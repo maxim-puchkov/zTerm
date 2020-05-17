@@ -1,0 +1,20 @@
+#!/bin/zsh
+
+#  lnp
+#  Z-Function (34)
+#
+#  Created by Maxim Puchkov on 2020-05-16.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function lnp() {
+    local source_file=$argv[-2]
+    local target_file=$argv[-1]
+    print -P "Source file: %B%F{14}$source_file%f%b; Target file: %B%F{14}$target_file%f%b."
+    if $(ln $argv); then
+        print -P -- "Link created: ${source_file} -> %F{13}${target_file}%f%b" # %F{10}%f%b"
+    else
+        print -P -- "error"
+    fi
+}
