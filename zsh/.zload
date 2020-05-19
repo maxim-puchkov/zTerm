@@ -5,13 +5,22 @@ source "$ZEXPORT"
 
 
 # PATH
-path=( "/usr/local/sbin" $path  )
-path=( "/usr/local/opt/python@3/bin" $path)
-path=( "/usr/local/opt/llvm/bin" $path )
-path=( $path "$DEV/bin" )
-path=( $path "$XCDEV/Terminal/.config/bin" )
-path=( $path "$XCDEV/Terminal/Python" )
+#path=( "/usr/local/sbin" $path  )
+#path=( "/usr/local/opt/python@3/bin" $path)
+#path=( "/usr/local/opt/llvm/bin" $path )
+#path=( $path "$DEV/bin" )
+#path=( $path "$XCDEV/Terminal/.config/bin" )
+#path=( $path "$XCDEV/Terminal/Python" )
 #path=( $path "$SFU/bin" )
+path=(
+    '/usr/local/sbin'
+    '/usr/local/opt/python@3/bin'
+    '/usr/local/opt/llvm/bin'
+    $path
+    "$DEV/bin"
+    "$XCDEV/Terminal/.config/bin"
+    "$XCDEV/Terminal/Python"
+)
 
 
 # Function path
