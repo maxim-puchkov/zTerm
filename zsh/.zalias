@@ -90,9 +90,10 @@ alias t='typeof'
 
 
 
+#MARK: - Extended commands
+alias cd='cdp'
+alias ln='lnp'
+
+
 
 alias rr='zsh "$DEV/bin/run.sh"'
-
-
-#MARK: - Unalias
-unalias g

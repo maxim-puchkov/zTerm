@@ -309,3 +309,34 @@ function icmv() {
     mv $filepath $directory
     print -P "Moved %B%U${filepath:t}%u%b to %F{10}${directory}%f."
 }
+
+
+function compress3 {
+    local file=$1
+    local filename=${file:r}
+    local fileext=${file:e}
+    
+    if [[ -z $file ]]; then
+        error 'No file to compress'
+        return 2
+    fi
+    
+    if [[ $file != $filename ]]; then
+        mv -- $file $filename
+    fi
+    
+    local tools=(
+        "zip -1 ${filename:r}.zip1 $filename"
+        "zip -9 ${filename:r}.zip9 $filename"
+        "gzip -1 -k ${filename:t}"
+        
+    )
+    
+    for t in $tools; do
+        echo $t
+    done
+    
+    if [[ $file != $filename ]]; then
+        mv -- $filename $file
+    fi
+}

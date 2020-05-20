@@ -1,0 +1,15 @@
+#!/bin/zsh
+
+#  commands
+#  Z-Function (36)
+#
+#  Created by Maxim Puchkov on 2020-05-19.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function commands() {
+    local pattern=${1}
+    print -l ${commands:t} |
+    colorize_grep 'b_green' fgrep --color='always' "$pattern"
+}
