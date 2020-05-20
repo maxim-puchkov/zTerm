@@ -34,7 +34,7 @@ function ___FILENAME___() {
     case $cmd in
         '')
             ___FILENAME____help
-            ;;
+        ;;
         *)
             shift
             ${src}_${cmd} "$@"
@@ -42,7 +42,7 @@ function ___FILENAME___() {
             if [[ $ecode = 127 ]]; then
                 printf 'Unknown command: %s (Exit code: %u).\n' "$(Bad $cmd)" "$ecode" >&2
             fi
-            ;;
+        ;;
     esac
     
     return $ecode

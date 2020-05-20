@@ -9,15 +9,15 @@ ___SHEBANG___
 
 # <#Function description#>
 function ___FILENAME___() {
-    printf 'Template z-function: %s.\n' $(blue "$0")
+    print -P "Template z-function: %F{4}$0%f."
     
     # Print to stderr
     local def=$(fn src $0)
     if [[ $? -ne 0 ]]; then
-        printf 'Definition not found.\n' >&2
+        print 'Definition not found.' >&2
         return 1
     fi
     
-    printf 'Defined in: %s.\n' $(blue "$def")
+    print -P "Defined in: %F{4}$def%f."
     return 0
 }
