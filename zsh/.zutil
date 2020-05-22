@@ -320,7 +320,6 @@ function compress3 {
         error 'No file to compress'
         return 2
     fi
-    
     if [[ $file != $filename ]]; then
         mv -- $file $filename
     fi
@@ -331,7 +330,6 @@ function compress3 {
         "gzip -1 -k ${filename:t}"
         
     )
-    
     for t in $tools; do
         echo $t
     done

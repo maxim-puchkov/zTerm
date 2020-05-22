@@ -1,0 +1,40 @@
+#compdef _cal
+
+#  _cal
+#  zsh completion (37)
+#
+#  Created by Maxim Puchkov on 2020-05-21.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+_arguments -C \
+  ":command:->command" \
+  "*::arg:->arg"
+
+function _cal_command {
+    _arguments "1: :<#Command Completion#>"
+}
+
+case $state in
+  command)
+    declare -a commands
+    commands=(
+
+    )
+    _describe -t commands command commands
+    return
+  ;;
+
+  arg)
+    case ${line[1]} in
+      noargs)
+        _nothing
+      ;;
+      [^\s]*)
+        _cal_command
+      ;;
+    esac
+  ;;
+esac
+
+return 0
