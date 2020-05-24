@@ -338,3 +338,17 @@ function compress3 {
         mv -- $filename $file
     fi
 }
+
+function filename() {
+    name="${1:-New File}"
+    files 
+}
+
+function txt() {
+    name=${1:t}
+#    p='-test.'
+    files list .
+    if [[ -n ${(M)files:#*/$name.*} ]]; then
+        echo "there are ${(M)#files:#*/$name-?*.*} files named '$name'"
+    fi
+}

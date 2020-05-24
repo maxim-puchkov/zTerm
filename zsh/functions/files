@@ -9,6 +9,7 @@
 
 # Count matching files in a directory.
 function files() {
+    typeset -ag files
     #
     function files_count() {
         local in_dir="${${1:-.}:a}"
@@ -38,11 +39,22 @@ function files() {
         printf '%s\n' "$found"
         return 0
     }
+    function files_f() (
+        files list $1
+        echo $files
+        echo $files[(r)*/$f]
+        
+    )
     
     #
     function files_list() {
-        local dir=${1:-$PWD}
-        typeset -ag filelist=(${(@f)"$(find $dir -mindepth 1 -maxdepth 1)"})
+        local dir=${${1:a}:-$PWD}
+        local var_id=${2:-files}
+        files=(${(@f)"$(find $dir -mindepth 1 -maxdepth 1)"})
+#        typeset -ag $var_id=(${(@f)"$(find $dir -mindepth 1 -maxdepth 1)"})
+#typeset -a $var_id
+#        set +A $var_id=(${(@f)"$(find $dir -mindepth 1 -maxdepth 1)"})
+
     }
     
     function files_images() {

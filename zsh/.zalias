@@ -40,6 +40,9 @@ alias cmdlist='printf "%s\n" ${commands:t}'
 alias e='builtin echo'
 alias E='b_redbg'
 
+# Command 'find'
+alias find='find -L'
+
 # Builtin 'exit'
 alias q='exit'
 #alias q!='killall "${SHELL:t}"'
@@ -68,6 +71,8 @@ alias xopen='open -a Xcode'
 alias textopen='open -a TextEdit'
 alias webopen='open -a Safari'
 alias scriptopen='open -a "Script Editor"'
+
+alias sha256='openssl sha256'
 
 # Python
 alias python='python3'
