@@ -39,6 +39,7 @@ function files() {
         printf '%s\n' "$found"
         return 0
     }
+    
     function files_f() (
         files list $1
         echo $files
@@ -62,6 +63,26 @@ function files() {
                                'psd' 'raw' 'bmp' 'tiff' 'ai')
         local ext_regex="(${(j:|:)extensions})"
         find -E . -iregex ".*\.${ext_regex}" 2>/dev/null
+    }
+    
+    function files_0() {
+        typeset -i n_bytes=${1:-1}
+        for i in {1..$n_bytes}; do
+            printf '%b' '\x00'
+        done
+    }
+    
+    function files_wb() {
+        buffer="${*// }"
+        current_byte=0
+        while [[ $(( $current_byte + 2 )) -le $#buffer ]]; do
+            byte=${buffer:$current_byte:2}
+            printf "\x$byte"
+            current_byte=$(( $current_byte + 2 ))
+        done
+#        for byte in $@; do
+#
+#        done
     }
     
     

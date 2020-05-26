@@ -341,7 +341,7 @@ function compress3 {
 
 function filename() {
     name="${1:-New File}"
-    files 
+#    files
 }
 
 function txt() {

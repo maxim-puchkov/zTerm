@@ -41,7 +41,7 @@ alias e='builtin echo'
 alias E='b_redbg'
 
 # Command 'find'
-alias find='find -L'
+alias ffind='/usr/bin/find -L'
 
 # Builtin 'exit'
 alias q='exit'
