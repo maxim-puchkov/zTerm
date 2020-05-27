@@ -9,14 +9,36 @@
 
 # Print type of variables.
 function typeof() {
-    local results=()
-    for var_id in "$@"; do
-        local var_type="$(Bad 'undefined')"
-        if [[ -n ${(P)var_id} ]]; then
-            var_type="$(Info ${(t)${(P)var_id}})"
+#    local results=()
+#    for var_id in "$@"; do
+#        local var_type="$(Bad 'undefined')"
+#        if [[ -n ${(P)var_id} ]]; then
+#            var_type="$(Info ${(t)${(P)var_id}})"
+#        fi
+#        results+=( "typeof $var_id:" "$var_type" )
+#    done
+    
+    typeset -a result
+    result=()
+    for var_id in $argv; do
+#        local var_type="$(Bad 'undefined')"
+        var_type='%F{1}undefined%f'
+        var_value=${(P)var_id}
+        if [[ -n $var_value ]]; then
+#            var_type="$(Info ${(t)${(P)var_id}})"
+            var_type="%F{6}${(t)var_value}%f"
         fi
-        results+=( "typeof $var_id:" "$var_type" )
+        result+=( "typeof $var_id:" "$var_type" )
     done
     
-    print -a -C 2 $results
+    
+ 
+#    case $1 in
+#        -v|--var)
+#        ;;
+#        -s|--shell)
+#        ;;
+#    esac
+    
+    print -a -C2 -P -- $result
 }

@@ -18,10 +18,10 @@ function files() {
             error "Directory not found: $in_dir."
             return 1
         fi
-        cd -q "$in_dir"
+        builtin cd -q "$in_dir"
         local regex="^\.\/${filename}[[:alnum:]_\.\-]*"
         echo $( find . ! -name . -prune -print | grep -i -E "$regex" -c )
-        cd -q "$OLDPWD"
+        builtin cd -q "$OLDPWD"
     }
     
     # 

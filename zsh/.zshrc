@@ -1,17 +1,20 @@
 # User-specific z-shell shell configuration.
 
 
-# Oh-my-zsh
+#MARK: - Oh-my-zsh
 export ZSH="$ZDOTDIR/.oh-my-zsh"
-export ZSH_PLUGINS="$ZDOTDIR/plugins.oh-my-zsh"
-
+# Theme
+export ZSH_THEMES="$ZDOTDIR/themes.oh-my-zsh"
 if [[ -z $ZSH_THEME ]]; then
-    ZSH_THEME="af-magic" #"theunraveler"
+    ZSH_THEME=${$(< $ZSH_THEMES)[1]:-robbyrussell}
 fi
-
-plugins=($(< "$ZSH_PLUGINS"))
-function plugins() { $EDITOR "$ZSH_PLUGINS" }
-
+# Plugins
+export ZSH_PLUGINS="$ZDOTDIR/plugins.oh-my-zsh"
+plugins=($(< $ZSH_PLUGINS))
+function plugins() {
+    ${=EDITOR} $ZSH_PLUGINS
+}
+# Source files
 source "$ZSH/oh-my-zsh.sh"
 source "$ZDOTDIR/.zload"
 
@@ -25,22 +28,28 @@ export GPG_TTY
 export EDITOR=('/usr/local/bin/nano' '--mouse')
 
 
-# iTerm 2 shell integration
-if [[ -e "$ZDOTDIR/.iterm2_shell_integration.zsh" ]]; then
-    source "${ZDOTDIR}/.iterm2_shell_integration.zsh"
-fi
-
-
 #
 export REF_ZDOT=($(< $ZTERM/etc/source.zsh))
 preexec_functions+=(ref)
+
+typeset -T argc arr=($ARGC)
 
 
 #
 zmodload zsh/zprof
 
-#
-bindkey '^X\x7f' backward-kill-line
+
+
+
+#MARK: - iTerm 2
+# Shell integration
+if [[ -e "$ZDOTDIR/.iterm2_shell_integration.zsh" ]]; then
+    source "$ZDOTDIR/.iterm2_shell_integration.zsh"
+fi
+# Key bindings
+bindkey '^X\x7f' backward-kill-line  # Command-Delete
+
+
 
 
 #MARK: - File Directories
@@ -70,7 +79,7 @@ function logs()     { cdp "$ZTERM/var/log/$@"; }
 
 
 
+
 #MARK: - Python Environment
 export PYTHONSTARTUP="$ZTERM/Python/.pyenv"
 export PYTHONPATH="$ZTERM/Python:$PYTHONPATH"
-

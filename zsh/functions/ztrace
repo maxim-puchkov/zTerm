@@ -18,10 +18,18 @@ function ztrace() {
         printf "$(magenta %s)\n\n" 'Trace complete.'
     }
     
+    ## trace: print all commands
+    function ztrace_trace() {
+        echo $0
+        print -P "%BTracing %U%F{5}${@}%f%u%b..."
+    }
+    trap "unfunction -m '${0}_*'" EXIT
+    
+    
     if [[ $# -eq 0 ]]; then
         return 1
     fi
     
-    __ztrace "$@"
+    ztrace_trace "$@"
     return 0
 }
