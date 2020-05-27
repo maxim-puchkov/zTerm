@@ -9,17 +9,61 @@
 
 # Change directory and print its path.
 function cdp() {
-    local program_name="$(b_bred $0)"
-    local dir arg n old new
+    trap "unfunction -m \"__${0}_*\"" EXIT
     
-    if [[ $1 == '--' ]]; then
+    # Print error message
+    function __cdp_error() (
+        typeset program_label error_text
+        program_label="%B%F{9}${program_name}%f%b"
+        error_text="$@"
+        print -P -- "${program_label}: ${error_text}"
+    ) >&2
+    
+    
+    function __cdp_debug() (
+        vars=(program_name optlist argv dir arg old new)
+        for v in $vars; do
+            print -P -- "Variable %B${v}%b = ${(P)v}"
+        done
+    )
+    
+    
+    
+    #    local program_name="$(b_bred $0)"
+    typeset program_name=$0
+#    local dir arg old new
+#    __cdp_error "string %F{1}${old}%f is not in dir stack"
+    
+    # Program options
+    typeset -a optlist
+    optlist=()
+    while [[ $1 =~ '^-' ]]; do
+        blue $1
+        case $1 in
+            -[qsLP])
+                optlist+=($1)
+            ;;
+            -[0-9])
+                break
+            ;;
+            --)
+                shift
+                break
+            ;;
+        esac
         shift
-    fi
+    done
+    
+    red "Opts=$optlist"
+    green "Args=$@"
+    
+    
     
     case $# in
+        # No arguments: 'cd'
         0)  dir="$HOME"
-            ;;
-        
+        ;;
+        # One argument: 'cd DIR'
         1)  arg="$1"
             if [[ ${arg[1]} =~ '^(\+|\-)' ]]; then
                 local stack_index
@@ -33,29 +77,32 @@ function cdp() {
                 esac
                 dir=${dirstack[$stack_index]}
                 if [[ -z "$dir" ]]; then
-                    printf "%s: string $(red '%s') is not in dir stack.\n" \
-                        "$program_name" "$old" "$PWD"
+#                    printf "%s: string $(red '%s') is not in dir stack.\n" "$program_name" "$old" "$PWD"
+                    __cdp_error "no such entry in dir stack."
                 fi
             else
                 dir="${arg:a}"
             fi
-            ;;
-        
+        ;;
+        # Two arguments: 'cd OLD NEW'
         2)  old="$1"
             new="$2"
             if [[ ! "$PWD" =~ "$old" ]]; then
-                printf "%s: string $(red '%s') is not in $(red '%s').\n" \
-                    "$program_name" "$old" "$PWD"
+#                printf "%s: string $(red '%s') is not in $(red '%s').\n" "$program_name" "$old" "$PWD"
+#                print -P -- "${program_name}: string %F{1}${old}%f is not in %F{1}${PWD}%f."
                 return 1
             fi
             dir=${PWD//$old/$new}
             ;;
-        
+        # More than two arguments
         *)  printf "%s: too many arguments.\n" "$program_name" >&2
+            __cdp_error 'too many arguments.'
             return 2
             ;;
     esac
-    
+    __cdp_debug
+    return 10
+
     
     if [[ ! -e "$dir" ]]; then
         printf "%s: no such file or directory: $(red '%s').\n" \

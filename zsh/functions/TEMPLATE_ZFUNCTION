@@ -1,0 +1,23 @@
+#!/bin/zsh
+
+#  TEMPLATE_ZFUNCTION
+#  Z-Function (40)
+#
+#  Created by Maxim Puchkov on 2020-05-26.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function TEMPLATE_ZFUNCTION() {
+    print -P "Template z-function: %F{4}$0%f."
+    
+    # Print to stderr
+    local def=$(fn src $0)
+    if [[ $? -ne 0 ]]; then
+        print 'Definition not found.' >&2
+        return 1
+    fi
+    
+    print -P "Defined in: %F{4}$def%f."
+    return 0
+}

@@ -2,10 +2,10 @@
 #  Services
 #
 #  Created by Maxim Puchkov on 2020-04-06.
-#  Copyright Â© 2020 Maxim Puchkov. All rights reserved.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-property NTF_TITLE : "Finder â€“ close background windows"
+property NTF_TITLE : "Finder Ð close background windows"
 property NTF_SUBTITLE : "Success"
 
 
@@ -19,7 +19,7 @@ on run
 		
 		# Check number of openned windows. If none or only one window is open, then
 		# 	ERROR(1): display an error and terminate script.
-		if n_windows â‰¤ 1 then
+		if n_windows ² 1 then
 			set exit_code to 1
 			set ntf_custom_subtitle to "Error (code " & exit_code & ")"
 			set ntf_text to "All background Finder windows are already closed."

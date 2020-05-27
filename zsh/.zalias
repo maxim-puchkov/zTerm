@@ -74,6 +74,8 @@ alias scriptopen='open -a "Script Editor"'
 
 alias sha256='openssl sha256'
 
+alias my-phone='print -P "%F{14}+1 %B(778) 512-7614‬%b%f"'
+
 # Python
 alias python='python3'
 alias pip='pip3'
