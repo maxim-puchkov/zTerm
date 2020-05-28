@@ -186,10 +186,13 @@ function group() {
 }
 
 
-function print_h1() {
-    printf '\e[1;107;30m  %s  \e[0m\n' "${(U)*}"
-}
+#function print_h1() {
+#    printf '\e[1;107;30m  %s  \e[0m\n' "${(U)*}"
+#}
 
+function print_h1() {
+    print -P -- "%B%K{11}%F{16} ${(U)@} %f%k%b"
+}
 
 
 

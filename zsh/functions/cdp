@@ -9,40 +9,29 @@
 
 # Change directory and print its path.
 function cdp() {
-    trap "unfunction -m '__${0}_*'" EXIT
+    trap "unfunction -m '${0}_*'" EXIT
     
     # Print error message
-    function __cdp_error() (
+    function cdp_error() (
         typeset program_label error_text
         program_label="%B%F{9}${program_name}%f%b"
         error_text="$@"
         print -P -- "${program_label}: ${error_text}"
     ) >&2
     
-    #
-    function __cdp_debug() (
-        vars=(program_name optlist argv dir arg old new)
-        for v in $vars; do
-            print -P -- "Variable %B${v}%b = ${(P)v}"
-        done
-    )
-    
-    
-    
     
     # Program data
     typeset program_name=$0
-    typeset dir arg old new
-    typeset -a optlist
+    typeset -A optlist
     
     # Program options
     optlist=()
     while [[ $1 =~ '^-' ]]; do
         case $1 in
             -[qsLP])
-                optlist+=($1)
+                optlist+=($1 'on')
             ;;
-            -[0-9])
+            -[0-9]*)
                 break
             ;;
             --)
@@ -54,6 +43,7 @@ function cdp() {
     done
     
     # Program arguments
+    typeset dir arg old new
     case $# in
         # No arguments: 'cd'
         0)  dir="$HOME"
@@ -61,7 +51,7 @@ function cdp() {
         # One argument: 'cd DIR'
         1)  arg="$1"
             if [[ ${arg[1]} =~ '^(\+|\-)' ]]; then
-                local stack_index
+                local n stack_index
                 case ${arg[1]} in
                     -)  n=${${arg:1}:-1}
                         stack_index=$n
@@ -70,9 +60,10 @@ function cdp() {
                         stack_index=$(( ${#dirstack} - $n ))
                     ;;
                 esac
-                dir=${dirstack[$stack_index]}
+                dir="${dirstack[$stack_index]}"
                 if [[ -z "$dir" ]]; then
-                    __cdp_error "no such entry in dir stack."
+                    cdp_error "no such entry in dir stack."
+                    return 1
                 fi
             else
                 dir="${arg:a}"
@@ -82,27 +73,41 @@ function cdp() {
         2)  old="$1"
             new="$2"
             if [[ ! "$PWD" =~ "$old" ]]; then
-                __cdp_error "string %F{1}${old}%f is not in %F{1}${PWD}%f."
+                cdp_error "string %F{1}$old%f is not in %F{1}$PWD%f."
                 return 1
             fi
-            dir=${PWD//$old/$new}
+            dir="${PWD//$old/$new}"
         ;;
         # More than two arguments
-        *)  __cdp_error 'too many arguments.'
+        *)  cdp_error 'too many arguments.'
             return 2
         ;;
     esac
     
+    
+    # Already in the directory
+    if [[ "$dir" == "$PWD" ]]; then
+        return 0
+    fi
+    # Directory does not exist
     if [[ ! -e "$dir" ]]; then
-        __cdp_error "no such file or directory: ${dir:t}."
+        cdp_error "no such file or directory: %F{1}${dir:t}%f."
         return 1
     fi
+    # File exists but not a directory
     if [[ ! -d "$dir" ]]; then
-        __cdp_error "${dir:t} is not a directory."
+        cdp_error "%F{1}${dir:t}%f is not a directory."
         return 1
     fi
     
-    if [[ "$dir" != "$PWD" ]] && cd ${=optlist} "$dir"; then
+    
+    #
+    builtin cd ${(k)=optlist} "$dir" 2>/dev/null
+    if [[ "$dir" != "$PWD" ]]; then
+        cdp_error "cannot change directory to %F{1}${dir:t}%f."
+        return 1
+    fi
+    if [[ -z ${optlist[-q]} ]]; then
         print -P "Directory changed to %F{2}$PWD%f."
     fi
     return 0

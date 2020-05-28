@@ -9,18 +9,16 @@
 
 # Information about shell functions.
 function fn() (
-    
     ## def: print function definition ##
     function fn_def() {
         local fdef=$( functions $fname )
         local highlight=(pygmentize -f 'terminal16m' -O style='xcodedark' -l 'zsh')
         if [[ -z ${commands[pygmentize]} ]]; then
-            printf 'Cannot find pygments.' >&2
+            error 'Cannot find pygments.'
             highlight='cat'
         fi
         printf '%s\n' "$fdef" | $highlight
     }
-    
     ## src: find function source file ##
     function fn_src() {
         local fsource=$functions_source[$fname]
@@ -31,7 +29,6 @@ function fn() (
         echo "$fsource"
         return 0
     }
-    
     ## isdef: check if a function is defined ##
     function fn_isdef() {
         if [[ ${+functions[$fname]} -ne 1 ]]; then
@@ -39,73 +36,81 @@ function fn() (
         fi
         return 0
     }
-    
     ## sub: list functions defined within a function ##
     function fn_sub() {
-        local srcfile
+        name_prefix="${name_prefix:-${fname%%_*}}"
+        typeset srcfile
         if ! srcfile=$( fn src $fname ); then
             return 1
         fi
-        prefix="${prefix:-${fname%%_*}}"
+        typeset -a list
         list=($( egrep --only-matching \
-                       --regexp "${prefix}_(\w|\-)+\(\)" \
-                       -- $srcfile ))
+                       --ignore-case \
+                       --regexp "${name_prefix}_(\w|\-)+\(\s*\)" -- \
+                       $srcfile ))
+        typeset f
         for f in $list; do
-            local subfname=${f%'()'} # ${${f#${prefix}}%'()'}
+            typeset subfname=${f%'('*')'}
             if [[ ${+functions[$subfname]} ]]; then
                 printf '%s\n' "$subfname"
             fi
         done
         return 0
     }
-    
     ## commands: list function commands ##
     function fn_commands() {
-        prefix="${prefix:-${fname%%_*}}"
-        local fcommands=(${$( fn -p $prefix sub $fname )//${prefix}_/})
+        name_prefix="${name_prefix:-${fname%%_*}}"
+        local fcommands=(${$( fn -p $name_prefix sub $fname )//${name_prefix}_/})
         printf '%s\n' $fcommands
         return 0
     }
-    
     ## print-commands: format and list function commands ##
     function fn_print-commands() {
-        prefix="${prefix:-${fname%%_*}}"
-        print -P '%B%UCommands%u%b:'
-        print -Pl "%F{14}$( fn -p $prefix commands $fname )%f"
+        name_prefix="${name_prefix:-${fname%%_*}}"
+#        print -P    '%B%UCommands%u%b:'
+        print_h1 'Commands:'
+        print -P -l "%F{14}$( fn -p $name_prefix commands $fname )%f"
         return 0
     }
     
     
     # Options
     typeset -A optlist
-    get_options optlist 'p:Ph' "$@" 2>/dev/null
+    get_options optlist 'hp:P' "$@" 2>/dev/null
     shift $optlist[length]
     
-    local show_help="${optlist[h]}"
-    local prefix="${optlist[p]}"
+    typeset show_help name_prefix
+    show_help=${optlist[h]}     # -h
+    name_prefix=${optlist[p]}   # -p <prefix>
     
-    # Function command
-    local cmd=$1
-    if [[ $# -eq 0 ]] || [[ -z $cmd ]] || [[ $show_help ]]; then
+    if [[ -n $show_help ]]; then
         fn print-commands $0
+        zfc list --short
         return 0
     fi
-    shift
     
-    # Check command name
-    if ( ! functions | grep -w -e "fn_$cmd" &> /dev/null ); then
-        error "Unknown command: '$(Bad $cmd)'."
-        return 127;
+    case $# in
+        0) fn print-commands $0
+           return 2 ;;
+        1) error 'Function name is not specified.'
+           return 2 ;;
+    esac
+
+    # Function command
+    typeset cmd=$1
+    shift
+    if ! ( functions | grep -w -e "fn_$cmd" &>/dev/null ); then
+        error "Unknown command: %F{1}$cmd%f."
+        return 127
     fi
     
     # Command argument
-    fname="${@:1}"
-    if [[ $# -eq 0 ]]; then
-        error 'Function name not specified'
-        return 2
-    fi
+#    if [[ $# -eq 0 ]]; then
+#        error 'Function name is not specified.'
+#        return 2
+#    fi
     
-    
+    typeset fname="$@"
     if [[ $cmd == 'isdef' ]]; then
         ${0}_${cmd} $fname
         return $?
@@ -113,7 +118,7 @@ function fn() (
     
     # Return if function is not defined
     if [[ ${+functions[$fname]} -eq 0 ]]; then
-        error "Function '$(Bad $fname)' is not defined."
+        error "Function %F{1}$fname%f is not defined."
         return 1
     fi
     

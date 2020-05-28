@@ -285,7 +285,7 @@ function h() {
 
 
 function write-lines() {
-    local line_count bytes_per_line
+    local line_count text_length
     line_count=${1:-1}
     text_length=${2}
     local line pad length
@@ -358,4 +358,36 @@ function txt() {
     if [[ -n ${(M)files:#*/$name.*} ]]; then
         echo "there are ${(M)#files:#*/$name-?*.*} files named '$name'"
     fi
+}
+
+
+function debug() {
+    if [[ $# -eq 0 ]]; then
+        error 'Function name not specified.'
+        return 2
+    fi
+    
+    typeset fname fsrc
+    fname=$1
+    shift
+    fsrc=$(fn src $fname)
+    if [[ -z $fsrc ]]; then
+        error "Function not found: %F{1}$fname%f."
+        return 1
+    fi
+    
+    typeset -a fargs
+    fargs=($@)
+    
+#    typeset -ag lines
+#    lines=( "${(@f)$(< $fsrc)}" )}
+#    lines=( ${(@f)"$(
+#        awk '/^\s*[^#]/  { print $0; }' $fsrc
+#    )"} )
+    
+#    typeset -ag fvars
+#    fvars=( $lines )
+    
+    $fname $fargs
+    
 }

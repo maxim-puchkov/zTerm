@@ -28,8 +28,8 @@ function zfc() {
     
     ## dir: go to z-functions directory [default] ##
     function zfc_dir() {
-        cdp $zfunc
-        return 0
+        cdp -- $zfunc
+        return $?
     }
     
     ## find: find Z-Function definition file ##
@@ -150,8 +150,9 @@ function zfc() {
         return $?
     }
     
+    
     # Options
-    typeset -Ag optlist
+    typeset -A optlist
     get_options optlist 'h' "$@" # 2>/dev/null
     shift $optlist[length]
     
@@ -173,8 +174,8 @@ function zfc() {
     esac
     
     # Execute a zfc command
-    if ( ! fn isdef ${0}_${cmd} ); then
-        error "Unknown command: '$(Bad $cmd)'."
+    if ! ( fn isdef ${0}_${cmd} ); then
+        error "Unknown command: %F{1}$cmd%f."
         return 127
     fi
     ${0}_${cmd} "$@"

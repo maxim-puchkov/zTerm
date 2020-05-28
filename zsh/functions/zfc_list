@@ -9,98 +9,107 @@
 
 ## list: list functions sorted by modification date ##
 function zfc_list() (
+    trap "unfunction -m '${0}_*'" EXIT
     
-    # Format the date
-    function format_date() {
-        printf '%s\n' "$( date -r $1 -j +'%b-%d-%Y %R' )"
+    # Short listing
+    function zfc_list_short() {
+        typeset -a list
+        list=( $zfunc/* )
+        print_h1 "zsh-function list"
+        print -C4 ${list:t}
+        return 0
     }
     
-    #MARK: Preprocess files
-    # Process files in the functions' directory
-    local -a list=()
-    local dir="$zfunc"
-    for file in $dir/*; do
-        local mod_date="$(stat -f '%m' $file)"
-        list+=( "${(q)file##*'/'}" "${(q)mod_date}" )
-    done
-    
-    # MARK: Options
-    # Determine output format
-    local show_lines=${#list:2}
-    local sort_options='--key 2n'
-    if [[ $# -gt 0 ]]; then
-        local count=${1:-0}
-        if [[ $count -gt 0 ]]; then
-            sort_options='--key 2nr'
-        else
-            count=$(( $count * -1 ))
+    # Long listing
+    function zfc_list_long() {
+        # Date output format
+        function format_date() {
+            printf '%s\n' "$( date -r $1 -j +'%b-%d-%Y %R' )"
+        }
+        
+        #MARK: Preprocess files
+        # Process files in the functions' directory
+        typeset -a list=()
+        typeset dir file
+        dir="$zfunc"
+        for file in $dir/*; do
+            local mod_date="$(stat -f '%m' $file)"
+            list+=( "${(q)file##*'/'}" "${(q)mod_date}" )
+        done
+        
+        # MARK: Options
+        # Determine output format
+        local show_lines=${#list:2}
+        local sort_options='--key 2n'
+        if [[ $# -gt 0 ]]; then
+            local count=${1:-0}
+            if [[ $count -gt 0 ]]; then
+                sort_options='--key 2nr'
+            else
+                count=$(( $count * -1 ))
+            fi
+            show_lines=$count
         fi
-        show_lines=$count
-    fi
-    
-    
-    #MARK: Table Data
-    # Table
-    local -a table_header=()
-    local table_div=''
-    local div_length=0
-    local -a table_body=()
-    local div_length=''
-    
-    
-    # Header
-    local column1_header='FUNCTION'
-    local column2_header='DATE MODIFIED'
-    table_header=(
-        "$( printf '%s\t\t%s' "$column1_header" "$column2_header" |
-                expand -t 8 )"
-    )
-    
-    # Divider line
-    longest_row=(
-        $( printf '%s %s\n' $list |
-            awk '{print length, $1, $2}' |
-            sort |
-            tail -1 )
-    )
-    div_length=$(
-        printf '%s %s\n' $longest_row[2] $(format_date $longest_row[3]) |
-            column -t |
-            wc -c
-    )
-    table_div=$(
-        printf '%-*s\n' ${div_length} '' |
-            tr ' ' '-'
-    )
-    
-    # Table body
-    local recent=$(
-        printf '%s %s\n' $list |
-            sort -k2n |
-            tail -1 |
+        
+        
+        #MARK: Table Data
+        # Header
+        typeset column1_header column2_header
+        column1_header='FUNCTION'
+        column2_header='DATE MODIFIED'
+        typeset -a table_header
+        table_header=(
+            "$( printf '%s\t\t%s' "$column1_header" "$column2_header" |
+                    expand -t 8 )"
+        )
+        
+        # Divider line
+        typeset longest_row table_div_length table_div
+        longest_row=(
+            $( printf '%s %s\n' $list |
+                awk '{print length, $1, $2}' |
+                sort | tail -1 )
+        )
+        table_div_length=$(
+            printf '%s %s\n' $longest_row[2] $(format_date $longest_row[3]) |
+                column -t | wc -c
+        )
+        table_div=$( printf '%-*s\n' ${table_div_length} '' | tr ' ' '-' )
+        
+        # Table body
+        typeset recent
+        recent=$( printf '%s %s\n' $list |
+            sort -k2n | tail -1 |
             awk '{print $1}'
-    )
-    table_body=$(
-        printf '%s %s\n' ${(@)list} |
-            sort ${(z)sort_options} |
-            while read fn_name fn_mod_date; do
-                local formatted_name="$(blue $fn_name)"
-                local formatted_date="$(date -r $fn_mod_date -j +'%b-%d-%Y %R')"
-                printf '%s %s' $formatted_name $formatted_date
-
-                if [[ "$fn_name" == "$recent" ]]; then
-                    printf '\t (%s)' "$(green 'most recent')"
-                fi
-                printf '\n'
-            done |
-        column -t |
-        head -n $show_lines
-    )
+        )
+        typeset -a table_body
+        table_body=$(
+            printf '%s %s\n' ${(@)list} |
+                sort ${(z)sort_options} |
+                while read fn_name fn_mod_date; do
+                    local formatted_name="$(blue $fn_name)"
+                    local formatted_date="$(date -r $fn_mod_date -j +'%b-%d-%Y %R')"
+                    printf '%s %s' $formatted_name $formatted_date
+                    if [[ "$fn_name" == "$recent" ]]; then
+                        printf '\t (%s)' "$(green 'most recent')"
+                    fi
+                    printf '\n'
+                done |
+            column -t | head -n $show_lines
+        )
+        
+        # Print the table
+        printf '%s\n' "$table_header"
+        printf '%s\n' "$table_div"
+        printf '%s\n' "$table_body"
+        return 0
+    }
     
     
-    # Print the table
-    printf '%s\n' "$table_header"
-    printf '%s\n' "$table_div"
-    printf '%s\n'   "$table_body"
-    return 0
+    case $1 in
+        -l|--long)  zfc_list_long  ;;
+        -s|--short) zfc_list_short ;;
+        *)          zfc_list_short ;;
+    esac
+    return $?
 )
