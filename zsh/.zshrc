@@ -3,17 +3,14 @@
 
 #MARK: - Oh-my-zsh
 export ZSH="$ZDOTDIR/.oh-my-zsh"
-# Theme
+# Themes
 export ZSH_THEMES="$ZDOTDIR/themes.oh-my-zsh"
 if [[ -z $ZSH_THEME ]]; then
     ZSH_THEME=${$(< $ZSH_THEMES)[1]:-robbyrussell}
 fi
 # Plugins
 export ZSH_PLUGINS="$ZDOTDIR/plugins.oh-my-zsh"
-plugins=($(< $ZSH_PLUGINS))
-function plugins() {
-    ${=EDITOR} $ZSH_PLUGINS
-}
+export plugins=($(< $ZSH_PLUGINS))
 # Source files
 source "$ZSH/oh-my-zsh.sh"
 source "$ZDOTDIR/.zload"
@@ -31,8 +28,6 @@ export EDITOR=('/usr/local/bin/nano' '--mouse')
 #
 export REF_ZDOT=($(< $ZTERM/etc/source.zsh))
 preexec_functions+=(ref)
-
-typeset -T argc arr=($ARGC)
 
 
 #

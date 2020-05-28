@@ -7,12 +7,33 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
+# Data
+#typeset identity_ssh_file
+#identity_ssh_file='etc/identity.ssh'
 #
-log_prefix="$(date -r $current_time -j +'%b %d %T') $(hostname -s) ${0:t}[$$]:\t"
+#typeset default_status current_status
+#default_status=0
+#current_status=$(< $identity_ssh_file)
+#
+#typeset log_prefix
+#log_prefix="$(date -j +'%b %d %T') $(hostname -s) ${0:t}[$$]:\t"
 
-echo "${log_prefix} [0] OK."
-echo "${log_prefix} [1] Error." >&2
+
+# Data
+typeset identity_ssh_file='etc/identity.ssh'
+typeset default_status=0
+typeset current_status=$(< $identity_ssh_file)
+typeset log_prefix="$(date -j +'%b %d %T') $(hostname -s) ${0:t}[$$]:\t"
 
 
+# Cancel if 
+if [[ $current_status == $default_status ]]; then
+    echo "${log_prefix} [1] Status is already set to $default_status. No change." >&2
+    exit 1
+fi
 
+
+#
+echo $default_status > $identity_ssh_file
+echo "${log_prefix} [0] Status changed from $current_status to $default_status."
 exit 0

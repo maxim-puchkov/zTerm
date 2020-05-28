@@ -12,14 +12,21 @@ function term2() {
 
 # Open in editor.
 function edit() {
-    $EDITOR "$@"
+    ${=EDITOR} "$@"
 }
 # Calculate
 function calc() {
     noglob expr "$@"
 }
 
-
+#
+function themes() {
+    ${=EDITOR} $ZSH_THEMES
+}
+#
+function plugins() {
+    ${=EDITOR} $ZSH_PLUGINS
+}
 
 
 

@@ -9,22 +9,16 @@
 
 # Trace a command.
 function ztrace() {
-    function __ztrace() {
-        printf "\n$(magenta %s) $(bmagenta %s)...\n" 'Tracing' "${*}"
-        setopt xtrace
-        local trace=$( "$@" 2>&1 )
-        printf "$(Info %s)\n" "${trace:-<No output>}"
-        setopt noxtrace
-        printf "$(magenta %s)\n\n" 'Trace complete.'
-    }
-    
-    ## trace: print all commands
-    function ztrace_trace() {
-        echo $0
-        print -P "%BTracing %U%F{5}${@}%f%u%b..."
-    }
     trap "unfunction -m '${0}_*'" EXIT
     
+    ## trace: print all commands ##
+    function ztrace_trace() {
+        print -P "%BTracing %U%F{5}${@}%f%u%b: %B%F{7}{%f%b"
+        local trace=$( setopt xtrace; $@ 2>&1; setopt noxtrace; )
+        print -P -- "%F{6}${trace:-<No output>}%f"
+        print -P "%B%F{7}}%f%b"
+        print -P "%BTrace of %U%F{5}${@}%f%u completed.%b"
+    }
     
     if [[ $# -eq 0 ]]; then
         return 1

@@ -9,7 +9,7 @@
 
 # Change directory and print its path.
 function cdp() {
-    trap "unfunction -m \"__${0}_*\"" EXIT
+    trap "unfunction -m '__${0}_*'" EXIT
     
     # Print error message
     function __cdp_error() (
@@ -19,7 +19,7 @@ function cdp() {
         print -P -- "${program_label}: ${error_text}"
     ) >&2
     
-    
+    #
     function __cdp_debug() (
         vars=(program_name optlist argv dir arg old new)
         for v in $vars; do
@@ -29,16 +29,15 @@ function cdp() {
     
     
     
-    #    local program_name="$(b_bred $0)"
+    
+    # Program data
     typeset program_name=$0
-#    local dir arg old new
-#    __cdp_error "string %F{1}${old}%f is not in dir stack"
+    typeset dir arg old new
+    typeset -a optlist
     
     # Program options
-    typeset -a optlist
     optlist=()
     while [[ $1 =~ '^-' ]]; do
-        blue $1
         case $1 in
             -[qsLP])
                 optlist+=($1)
@@ -54,11 +53,7 @@ function cdp() {
         shift
     done
     
-    red "Opts=$optlist"
-    green "Args=$@"
-    
-    
-    
+    # Program arguments
     case $# in
         # No arguments: 'cd'
         0)  dir="$HOME"
@@ -70,14 +65,13 @@ function cdp() {
                 case ${arg[1]} in
                     -)  n=${${arg:1}:-1}
                         stack_index=$n
-                        ;;
+                    ;;
                     +)  n=${arg:1}
                         stack_index=$(( ${#dirstack} - $n ))
-                        ;;
+                    ;;
                 esac
                 dir=${dirstack[$stack_index]}
                 if [[ -z "$dir" ]]; then
-#                    printf "%s: string $(red '%s') is not in dir stack.\n" "$program_name" "$old" "$PWD"
                     __cdp_error "no such entry in dir stack."
                 fi
             else
@@ -88,36 +82,28 @@ function cdp() {
         2)  old="$1"
             new="$2"
             if [[ ! "$PWD" =~ "$old" ]]; then
-#                printf "%s: string $(red '%s') is not in $(red '%s').\n" "$program_name" "$old" "$PWD"
-#                print -P -- "${program_name}: string %F{1}${old}%f is not in %F{1}${PWD}%f."
+                __cdp_error "string %F{1}${old}%f is not in %F{1}${PWD}%f."
                 return 1
             fi
             dir=${PWD//$old/$new}
-            ;;
+        ;;
         # More than two arguments
-        *)  printf "%s: too many arguments.\n" "$program_name" >&2
-            __cdp_error 'too many arguments.'
+        *)  __cdp_error 'too many arguments.'
             return 2
-            ;;
+        ;;
     esac
-    __cdp_debug
-    return 10
-
     
     if [[ ! -e "$dir" ]]; then
-        printf "%s: no such file or directory: $(red '%s').\n" \
-            "$program_name" "$dir" >&2
+        __cdp_error "no such file or directory: ${dir:t}."
         return 1
     fi
     if [[ ! -d "$dir" ]]; then
-        printf "%s: $(red '%s') is not a directory.\n" \
-            "$program_name" "${dir:t}" >&2
+        __cdp_error "${dir:t} is not a directory."
         return 1
     fi
     
-    
-    if [[ "$dir" != "$PWD" ]] && cd "$dir"; then
-        printf "Current directory changed to $(green '%s').\n" "$PWD"
+    if [[ "$dir" != "$PWD" ]] && cd ${=optlist} "$dir"; then
+        print -P "Directory changed to %F{2}$PWD%f."
     fi
     return 0
 }

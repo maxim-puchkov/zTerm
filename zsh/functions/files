@@ -44,7 +44,6 @@ function files() {
         files list $1
         echo $files
         echo $files[(r)*/$f]
-        
     )
     
     #
@@ -52,10 +51,6 @@ function files() {
         local dir=${${1:a}:-$PWD}
         local var_id=${2:-files}
         files=(${(@f)"$(find $dir -mindepth 1 -maxdepth 1)"})
-#        typeset -ag $var_id=(${(@f)"$(find $dir -mindepth 1 -maxdepth 1)"})
-#typeset -a $var_id
-#        set +A $var_id=(${(@f)"$(find $dir -mindepth 1 -maxdepth 1)"})
-
     }
     
     function files_images() {
@@ -72,18 +67,16 @@ function files() {
         done
     }
     
-    function files_wb() {
+    function files_wb() (
+        typeset buffer current_byte byte
         buffer="${*// }"
         current_byte=0
-        while [[ $(( $current_byte + 2 )) -le $#buffer ]]; do
+        while [[ $(( $current_byte + 2 )) -le ${#buffer} ]]; do
             byte=${buffer:$current_byte:2}
             printf "\x$byte"
             current_byte=$(( $current_byte + 2 ))
         done
-#        for byte in $@; do
-#
-#        done
-    }
+    )
     
     
     if [[ $# -eq 0 ]]; then

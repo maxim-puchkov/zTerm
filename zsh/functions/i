@@ -32,10 +32,10 @@ function i() {
             *'alias'*)
                 print -P "%F{13}${desc#*alias for }%f"
             ;;
-            *'autoload'*'function'*)
+            *'autoload shell function'*)
                 ${=print_autoload_function}
             ;;
-            *'function'*)
+            *'shell function'*)
                 ${=print_function}
             ;;
             *'builtin'*)

@@ -9,7 +9,7 @@
 
 # <#Function description#>
 function commands() {
-    local pattern=${1}
-    print -l ${commands:t} |
-    colorize_grep 'b_green' fgrep --color='always' "$pattern"
+    typeset pattern=$1
+    print -l ${commands:t} | colorize_grep 'b_green' \
+        fgrep --color='always' "$pattern"
 }

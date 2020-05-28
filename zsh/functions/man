@@ -9,11 +9,15 @@
 
 # colored-man-pages
 function man() {
-    case ${1#-} in
-        light) theme='light'
-               shift         ;;
-        dark)  shift         ;&
-        *)     theme='dark'  ;;
-    esac
+    # List of color themes
+    typeset -a themes=('dark' 'light')
+    typeset theme='dark'
+    typeset -i10 index
+    # Find color theme in the list
+    index=${themes[(I)$1]}
+    if [[ $index -ne 0 ]]; then
+        theme=${themes[$index]}
+        shift
+    fi
     colored -t $theme $0 "$@"
 }
