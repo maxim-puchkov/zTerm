@@ -12,9 +12,8 @@ function man() {
     # List of color themes
     typeset -a themes=('dark' 'light')
     typeset theme='dark'
-    typeset -i10 index
     # Find color theme in the list
-    index=${themes[(I)$1]}
+    typeset -i10 index=${themes[(I)$1]}
     if [[ $index -ne 0 ]]; then
         theme=${themes[$index]}
         shift

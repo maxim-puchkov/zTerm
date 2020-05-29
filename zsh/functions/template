@@ -58,24 +58,26 @@ function template() {
     # Copy template file to the target directory and
     # replace macro strings.
     function copy_template() {
-#        local m_filename="$1"
-#        local m_package_name="$2"
-#        ="$1"
-#        template_new="$2"
-        # Create new file from a copy of the original file.
-        if ( ! cp -n $template_orig $template_new ); then
+        # If test run is enabled, then only
+        # print the filenames of
+        typeset test_run=${optlist[t]}
+        if [[ -n $test_run ]]; then
+            print -P -- "TestRun $0 [$$]: "\
+                        "orig[$template_orig] --> "\
+                        "New[%F{2}$template_new%f]."
+            return 0
+        fi
+        
+        # Copy the original template file.
+        if ! ( cp -n $template_orig $template_new ); then
             error 'Fatal error.'
             return 1
         fi
-        
-#        m_filename=$name
-#        m_package_name=$package
         # Substitute template macro strings.
         substitute_macros "$template_new" $TEMPLATE_MACROS
-        echo "Generated template file: '$(OK $template_new)'."
-        if [[ ! $optlist[t] ]]; then
-            echo $m_template_id > $savefile
-        fi
+        print -P -- "Generated template file: %F{2}$template_new%f."
+        print -P -- ""
+        echo $m_template_id > $savefile
         return 0
     }
     
@@ -168,8 +170,8 @@ function template() {
         copy_template
         
         template -d $ZTERM/Services ztool $1
-        ln -s $ZTERM/etc/$1/$name $HOME/Library/LaunchAgents/$name
-        ln -s $ZTERM/Services/$1 /usr/local/bin/$1
+        ln -s  $ZTERM/etc/$1/$name  $HOME/Library/LaunchAgents/$name
+        ln -s  $ZTERM/Services/$1   /usr/local/bin/$1
     }
     
     

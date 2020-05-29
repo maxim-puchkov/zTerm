@@ -9,9 +9,10 @@
 
 # Display sizes of files or directories.
 function fsize() {
-    trap "unfunction -m 'fsize_*'" EXIT
+    trap "unfunction -m 'fsize-*'" EXIT
+    
     # Reduce large KB sizes to MB or GB
-    function fsize_simplify-kb() {
+    function fsize-simplify-kb() {
         local filesize=$1
         local unit='KB'
         if [[ $filesize -ge 1048576 ]]; then
@@ -23,8 +24,9 @@ function fsize() {
         fi
         printf '%.2f %s' $filesize "$unit"
     }
+    
     # Reduce large byte sizes to KB, MB, or GB
-    function fsize_simplify-b() {
+    function fsize-simplify-b() {
         typeset -F2 filesize=$1
         typeset -L2 unit
         typeset -i color
@@ -46,6 +48,7 @@ function fsize() {
         fi
         printf '\e[%dm%.2f %s\e[0m' $color $filesize "$unit"
     }
+    
     #
     typeset name type
     typeset -F2  total_size size
@@ -65,11 +68,12 @@ function fsize() {
             ;;
         esac
         total_size=$(( $total_size + $size ))
-        print -P "%F{4}$(fsize_simplify-b $size)%f"
+        print -P "%F{4}$(fsize-simplify-b $size)%f"
     done
+    
     # Print total size when given more than one argument
     if [[ $# -ne 1 ]]; then
-        print -P "\n%BTotal size: %F{12}$(fsize_simplify-b $total_size)%f%b"
+        print -P "\n%BTotal size: %F{12}$(fsize-simplify-b $total_size)%f%b"
     fi
     return 0
 }

@@ -7,22 +7,21 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# Find strings (or patterns) in files
+# Find strings (or patterns) in files.
 function fstr() {
     if [[ $# -eq 0 ]] return 2
     
     # String, directory, and depth
     local search_directory="${${1:-.}:a}"
     local string="$2"
-#    local depth="${3:+-maxdepth $3}"
     
     # Files in the directory
     typeset -a files=(${(@f)"$(
         find $search_directory -type f
     )"})
-#                              ${(z)depth} ))
-    typeset -i n_files=${#files}
-    typeset -i n_matches=0
+    typeset -i10 n_files n_matches
+    n_files=${#files}
+    n_matches=0
     
     # Find matching files
     local file match
@@ -31,17 +30,16 @@ function fstr() {
             egrep --color='always'       \
                   --ignore-case          \
                   --text                 \
-                  --regexp "$string"     \
-                  -- $file )
+                  --regexp "$string" --  \
+                  $file )
         if [[ -n "$match" ]]; then
             n_matches=$(( $n_matches + 1 ))
-#            printf "$(bluebg '[%d] %s')\n" $n_matches "$file"
-            print -P "%B%K{11}%F{16} [$n_matches]  $file %f%k%b"
-            printf '%s\n\n' "$match"
+            print -P -- "%B%K{11}%F{16} [$n_matches]  $file %f%k%b"
+            print "$match\n"
         fi
     done
     
     # Display number of matches and files
-    printf "$(blue '%d') out of $(blue '%d') files match.\n" $n_matches $n_files
+    print -P -- "$n_matches out of $n_files files match."
     return 0
 }
