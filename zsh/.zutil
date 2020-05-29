@@ -353,7 +353,6 @@ function filename() {
 
 function txt() {
     name=${1:t}
-#    p='-test.'
     files list .
     if [[ -n ${(M)files:#*/$name.*} ]]; then
         echo "there are ${(M)#files:#*/$name-?*.*} files named '$name'"
@@ -362,32 +361,49 @@ function txt() {
 
 
 function debug() {
+    # Check argument count
     if [[ $# -eq 0 ]]; then
         error 'Function name not specified.'
         return 2
     fi
     
-    typeset fname fsrc
-    fname=$1
+    # Function name and arguments
+    typeset fname=$1
     shift
-    fsrc=$(fn src $fname)
+    typeset -a fargs
+    fargs=($@)
+    
+    # Function source file
+    typeset fsrc=$(fn src $fname)
     if [[ -z $fsrc ]]; then
         error "Function not found: %F{1}$fname%f."
         return 1
     fi
-    
-    typeset -a fargs
-    fargs=($@)
-    
-#    typeset -ag lines
-#    lines=( "${(@f)$(< $fsrc)}" )}
-#    lines=( ${(@f)"$(
-#        awk '/^\s*[^#]/  { print $0; }' $fsrc
-#    )"} )
-    
-#    typeset -ag fvars
-#    fvars=( $lines )
-    
     $fname $fargs
+}
+
+function envt_test() {
+    typeset -a envt_arr
+    envt_arr=(arr1 arr2 arr3)
+    
+    typeset -i10 envt_int
+    envt_int=12345
+}
+function envt() {
+    envt_test
+}
+
+function env-change() {
+    typeset cmd
+    cmd=($@)
+    
+    vars_begin
+    fns_begin=$(typeset -f)
+    
+    
+    typeset env_begin env_end
+    env_begin=$(env)
+    empty-env
+    $cmd
     
 }

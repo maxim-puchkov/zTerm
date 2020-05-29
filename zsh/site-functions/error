@@ -10,17 +10,30 @@
 # Raise runtime error:
 #   error description
 function error() {
+    # Error exit code.
+    typeset -i10 exit_code=1
+    if [[ $1 =~ '-[0-9]+' ]]; then
+        exit_code=${1#-}
+        shift
+    fi
+    
+    # Return after this function exits.
+    trap "return $exit_code" EXIT
+    
     # Error title and description.
-    local _title="%F{9}Error%f."
-    _desc="${(j:\n       :)@:-no message.}"
+    typeset error_title error_desc
+    error_title="%F{9}Error%f."
+    error_desc="${(j:\n       :)@:-no message.}"
+    
     # Capitalize first letter of the description
     # and add a trailing period.
-    _desc="${(C)_desc[1]}${${_desc:1}}"
-    if  [[ ! "${(q)_desc}" =~ '\n' ]] &&
-        [[ ! "${(q)_desc}" =~ '^.*\.$' ]]; then
-        _desc="${_desc}."
+    error_desc="${(C)error_desc[1]}${${error_desc:1}}"
+    if  [[ ! "${(q)error_desc}" =~ '\n' ]] &&
+        [[ ! "${(q)error_desc}" =~ '^.*\.$' ]]; then
+        error_desc="${error_desc}."
     fi
+    
     # Print error and return.
-    print -P "$_title $_desc" >&2
-    return 1
+    print -P "$error_title $error_desc" >&2
+    return $exit_code
 }
