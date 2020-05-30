@@ -16,8 +16,6 @@ compdef _brew_formula   brew_browse
 # Shell builtin commands help
 compdef _builtin        builtin-help
 
-# Navigation
-compdef _cd             cdp
 # Commands
 compdef _command        syntax  brief  hist
 

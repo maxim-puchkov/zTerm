@@ -14,7 +14,7 @@ function fn() (
         local fdef=$( functions $fname )
         local highlight=(pygmentize -f 'terminal16m' -O style='xcodedark' -l 'zsh')
         if [[ -z ${commands[pygmentize]} ]]; then
-            error 'Cannot find pygments.'
+            error -0 'Cannot find pygments.'
             highlight='cat'
         fi
         printf '%s\n' "$fdef" | $highlight
@@ -23,7 +23,7 @@ function fn() (
     function fn_src() {
         local fsource=$functions_source[$fname]
         if [[ -z $fsource ]]; then
-            error "Definition file not found: '$(Bad $fname)'."
+            error "Definition file not found: %F{1}$fname%f."
             return 1
         fi
         echo "$fsource"
@@ -67,7 +67,6 @@ function fn() (
     ## print-commands: format and list function commands ##
     function fn_print-commands() {
         name_prefix="${name_prefix:-${fname%%_*}}"
-#        print -P    '%B%UCommands%u%b:'
         print_h1 'Commands:'
         print -P -l "%F{14}$( fn -p $name_prefix commands $fname )%f"
         return 0
@@ -92,14 +91,15 @@ function fn() (
     case $# in
         0) fn print-commands $0
            return 2 ;;
-        1) error 'Function name is not specified.'
+        1) error '?/ Function name is not specified.'
            return 2 ;;
     esac
 
     # Function command
     typeset cmd=$1
     shift
-    if ! ( functions | grep -w -e "fn_$cmd" &>/dev/null ); then
+#    if ! ( functions | grep -w -e "fn[-_]$cmd" &>/dev/null ); then
+    if ! ( whence -
         error "Unknown command: %F{1}$cmd%f."
         return 127
     fi

@@ -1,0 +1,68 @@
+#!/bin/zsh
+
+#  isdef
+#  Z-Function (41)
+#
+#  Created by Maxim Puchkov on 2020-05-29.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function isdef() (
+    if [[ $# -eq 0 ]]; then
+        error 'No arguments.'
+        return 2
+    fi
+    
+#    typeset -i10 isdef_status=0
+    
+    typeset -a result=()
+    typeset cmd cmd_status
+    for cmd in $@; do
+        ${=cmd} &>/dev/null
+        cmd_status=$?
+        if [[ $cmd_status -eq 127 ]]; then
+            result+=("Not found: %B$cmd%b.")
+        fi
+    done &>/dev/null
+    
+    print -P -- "$result"
+
+    if [[ $# -gt 1 ]]; then
+#        print $result
+#        print -P -- "%F{3}Warning%f: ${#result} of ${#} commands not found."
+#        warning 
+#    else
+        
+    fi
+    
+    read
+    
+    #>/dev/null
+    red "$result -- $#result"
+    echo $isdef_status
+    
+#    typeset cmd=${(j:[-_]:)@}
+#    red "command id = <$cmd>"
+#
+#    whence -m $cmd
+#    red "'whence -m $cmd' status: <$?>"
+    
+#    blue $@
+#    cyan $cmd
+#    whence -m $cmd &>/dev/null
+#    red $?
+#    b_bgreen 'BEGIN'
+#    typeset cmd="$1"
+#    shift
+#    typeset command_args="$@"
+#
+##    red $cmd
+##    redbg $command_args
+#    $cmd ${=command_args}
+#
+#    typeset -ag arr=($argv)
+#    print-array arr
+#    b_bred 'END'
+#    echo; echo
+)

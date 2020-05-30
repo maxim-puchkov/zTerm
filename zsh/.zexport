@@ -3,8 +3,7 @@
 
 # Home
 export DEV="$HOME/Developer"
-export XCDEV="$DEV/Projects"
-#export DEV="/usr/local"
+export PROJ="$DEV/Projects"
 export ICLOUD="$HOME/Library/Mobile Documents/com~apple~CloudDocs"
 
 export desk="$HOME/Desktop"
@@ -14,7 +13,7 @@ export tempdir="${TMPDIR}tempfiled"
 
 
 # Projects
-export zterm="$XCDEV/Terminal"
+export zterm="/usr/local/Terminal" # "$PROJ/Terminal"
 export zsitefunc="$ZDOTDIR/site-functions"
 export zdisabled="$ZDOTDIR/disabled"
 export ztermxcodeproj="$zterm/Terminal.xcodeproj"

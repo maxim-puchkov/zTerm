@@ -14,10 +14,24 @@ function alphabrew() {
         return 2
     fi
     
-    local option=${2:-'-s'}
-    brew desc $option "/^$letter.*/" |
-        grep --color -E "^${letter}\w+:"
+#    local option=${2:-'-s'}
+#    brew desc $option "/^$letter.*/" |
+#        grep --color -E "^${letter}\w+:"
     
+#    cmd=("config --load $ZTERM/etc/nu-config.toml | brew desc zzz")
+#    nu -c ${=cmd}
+    
+#nu << EOF
+#    echo 'hello'
+#    echo 'bye' > /dev/stdout
+#    config --load $ZTERM/etc/nu-config.toml
+#    echo
+#EOF
+    # | \
+#        brew desc $option "/^$letter.*/" | \
+#        grep --color -E "^${letter}\w+:" | \
+#        parse "{foo}:{bar}"
+#EOF
     if [[ $? -ne 0 ]]; then
         return 1
     fi

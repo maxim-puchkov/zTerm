@@ -11,8 +11,8 @@ path=(
   /usr/local/opt/llvm/bin
   $path
   $DEV/bin
-  $XCDEV/Terminal/.config/bin
-  $XCDEV/Terminal/Python
+  $PROJ/Terminal/.config/bin
+  $PROJ/Terminal/Python
   # $SFU/bin
 )
 
@@ -20,8 +20,8 @@ path=(
 # FPATH
 fpath=(
   /usr/local/share/zsh-completions
-  $XCDEV/Terminal/zsh/functions
-  $XCDEV/Terminal/zsh/completions
+  $PROJ/Terminal/zsh/functions
+  $PROJ/Terminal/zsh/completions
   $fpath
 )
 autoload fload

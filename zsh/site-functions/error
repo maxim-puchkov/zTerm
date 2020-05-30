@@ -7,33 +7,94 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# Raise runtime error:
-#   error description
+# Print an error/warning and its description.
+#   * Error - the caller will terminate at an error
+#     and return the error code (default code: 1).
+#       error -1   'Fatal error'
+#       error -127 'Command not found'
+#
+#   * Warning - the caller will not terminate at a warning
+#     and continue without returning any value.
+#       warning  'description...'
+#       error -0 'description...'
 function error() {
-    # Error exit code.
-    typeset -i10 exit_code=1
-    if [[ $1 =~ '-[0-9]+' ]]; then
-        exit_code=${1#-}
-        shift
-    fi
+#    trap 'echo ${0}-*' EXIT
+#    echo "${0}-*"
     
-    # Return after this function exits.
-    trap "return $exit_code" EXIT
-    
-    # Error title and description.
-    typeset error_title error_desc
-    error_title="%F{9}Error%f."
-    error_desc="${(j:\n       :)@:-no message.}"
-    
+    # MARK: - Functions
     # Capitalize first letter of the description
-    # and add a trailing period.
-    error_desc="${(C)error_desc[1]}${${error_desc:1}}"
-    if  [[ ! "${(q)error_desc}" =~ '\n' ]] &&
-        [[ ! "${(q)error_desc}" =~ '^.*\.$' ]]; then
-        error_desc="${error_desc}."
-    fi
+    # and add a trailing period
+    function error-format-description() {
+        message_desc="${message_desc:-No description.}"
+        message_desc="${(C)message_desc[1]}${${message_desc:1}}"
+        if [[ ! "${(q)message_desc}" =~ '\n' ]] &&
+           [[ ! "${(q)message_desc}" =~ '^.*\.$' ]]; then
+            message_desc="${message_desc}."
+        fi
+    }
+    __XXX__PATTERN='[0=9]
+    # Parse function options
+    function error-parse-options() {
+        set -- $@
+        while [[ $1 =~ '^-' ]] &&
+              [[ $1 != '--' ]]; do
+            case $1 in
+                # Display the exit code for errors
+                -p|--print-code)
+                    exit_code_label=" %F{7}[$exit_code]%f"
+                ;;
+                # Do not format description
+                -n|--no-format)
+                    unfunction error-format-description
+                    function error-format-description() {
+                        return 0
+                    }
+                ;;
+                # Silence output
+                -0|--null)
+                    output_device=/dev/null
+                ;;
+                # Set the error return code
+                *)  if [[ $1 =~ '-[0-9]+' ]]; then
+                        exit_code=${1#-}
+                    else
+                        break
+                    fi
+                ;;
+                -<0-255>)
+                    
+                *)  break
+                ;;
+            esac
+            shift
+        done
+    }
     
-    # Print error and return.
-    print -P "$error_title $error_desc" >&2
-    return $exit_code
+    
+    #MARK: - Data
+    # Exit code
+    typeset -i exit_code=1
+    typeset exit_code_label=''
+    # Output
+    typeset output_device=/dev/stderr
+    
+    error-parse-options
+    
+    # Title text
+    typeset message_title
+    if [[ $exit_code -gt 0 ]]; then
+        trap "return $exit_code" EXIT
+        message_title="%F{1}Error%f"
+    else
+        message_title="%F{3}Warning%f"
+    fi
+    # Description text
+    typeset message_desc="${(j:\n       :)@}"
+    error-format-description
+    
+    # Print the error/warning message to stderr
+    print -P -- "%U$message_title%u$exit_code_label: $message_desc" >&2
+    
+    unfunction -m "${0}-*"
+    return 0
 }
