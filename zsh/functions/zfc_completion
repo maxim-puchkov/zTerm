@@ -58,14 +58,14 @@ function ___FILENAME____command {
 
 case \$state in
   command)
-    declare -a commands
+    typeset -a commands
     commands=(
 $( for k v in ${(kv)reply}; do
   printf "      %s:\"%s\"\n" "$k" "$v" | colrm
 done )
     )
     _describe -t commands command commands
-    return
+    return 0
   ;;
 
   arg)

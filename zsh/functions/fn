@@ -64,7 +64,7 @@ function fn() (
         printf '%s\n' $fcommands
         return 0
     }
-    ## print-commands: format and list function commands ##
+    ## print-commands: format and list function commands ## [Function]
     function fn_print-commands() {
         name_prefix="${name_prefix:-${fname%%_*}}"
         print_h1 'Commands:'
@@ -72,17 +72,40 @@ function fn() (
         return 0
     }
     
-    function fn_named() {
-        if ! ( functions | grep -w -e "$fn_name[-_]$cmd" &>/dev/null ); then
-            error "Unknown command: %F{1}$cmd%f."
-            return 127
-        fi
+#    function fn_
+    
+    function fn_completion() {
+        # Find files starting with the specified 'fn_name'
+        typeset -A reply
+        typeset -a fn_files=()
+        typeset -a fn_commands=()
+        
+        # Parse each file and generate associative array 'reply[command]=description'
+        typeset fn_dir f cmd
+        fn_dir="${$(fn src $fname):h}"
+        for f in ${fn_dir}/${fname}*; do
+            autoload +X ${f:t}
+            fn_commands=($( fn -p ${f:t} commands ${f:t} ))
+            for cmd in $fn_commands; do
+                local pattern="## ${cmd}: .+ ##.*function ${fname}[\-\_]${cmd}[\s]*\(\)"
+                local description=$(
+                    greps '-o' "$pattern" "$f" |
+                        head -n 1 |
+                        sed -e "s/## ${cmd}: //g" -e "s/ ##.*//g"
+                )
+                
+                reply[$cmd]="${description:-''}"
+            done
+        done
+        for k v in ${(kv)reply}; do
+          printf '  %s:"%s"\n' "$k" "$v" | colrm
+        done
+        
     }
     
-    function fn_list() {
-        typeset -a list
-        list=( ${(k)functions} )
-        
+    ## flag  ##
+    function fn_arguments() {
+        red $0
     }
     
     
@@ -100,15 +123,14 @@ function fn() (
         zfc list --short
         return 0
     fi
-    
-    
+
     case $# in
         0) fn print-commands $0
            return 2 ;;
         1) error 'Function name is not specified.'
            return 2 ;;
     esac
-
+    
     # fn command argument
     typeset cmd=$1
     shift

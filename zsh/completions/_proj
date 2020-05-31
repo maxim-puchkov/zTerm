@@ -1,0 +1,4 @@
+#compdef proj
+
+
+_files -/ -W $HOME/Developer/Projects

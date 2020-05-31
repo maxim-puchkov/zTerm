@@ -1,6 +1,22 @@
 #compdef foo
 
-_file
+
+
+_arguments -C \
+  '(-h --help)'{-h,--help}'[display help text]' \
+  "-bob[display help]:->_nothing" \
+  ":command:->command" \
+  "*::arg:->arg"
+
+
+# _arguments -C \
+    # {-h,--help}:"[bob]:->_files"
+    
+    # "-h[display help]: :_nothing"
+    # {-h,--help}:"[Show help]"
+    
+    
+
 return 0
 
 

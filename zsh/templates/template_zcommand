@@ -1,0 +1,48 @@
+___SHEBANG___
+
+#  ___FILENAME___
+#  ___PACKAGE_NAME___
+#
+#  Created by ___USERNAME___ on ___DATE_FULL___.
+#  Copyright © ___DATE_YEAR___ ___OWNER___. All rights reserved.
+
+
+# <#Command description#>
+function ___FILENAME___() {
+    
+    ## help: print command help ##
+    function ___FILENAME____help() {
+        print $0
+    }
+    
+    function ___FILENAME____foo() {
+        printf 'Template function: %s\n' "$0"
+    }
+    
+    
+    typeset cmd=$1
+    if ! (whence ${0}_${cmd}); then
+        error -127 '
+    fi
+    
+    src=$( basename $0 )
+    get_options opts "$@"
+    shift $opts[shift_distance]
+    cmd=$1
+    
+    case $cmd in
+        '')
+            ___FILENAME____help
+        ;;
+        *)
+            shift
+            ${src}_${cmd} "$@"
+            ecode=$?
+            if [[ $ecode = 127 ]]; then
+                printf 'Unknown command: %s (Exit code: %u).\n' "$(Bad $cmd)" "$ecode" >&2
+            fi
+        ;;
+    esac
+    
+    return $ecode
+}
