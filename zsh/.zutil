@@ -190,7 +190,8 @@ function magnetize() {
 #    done
 }
 
-function letters() {
+
+function letters~old() {
     
     if [[ $# -gt 2 ]]; then
         local ordered=( ${(o)@} )
@@ -276,7 +277,7 @@ function docsets() {
     printf "  $(yellow '%s')\n" ${(o)dsets:t}
 }
 
-function h() {
+function h~old() {
     local n=100; n=${@:+$HISTCMD}
     history -${n} | fgrep "${@:-''}"
 }

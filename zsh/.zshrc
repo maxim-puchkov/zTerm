@@ -1,6 +1,8 @@
 # User-specific z-shell shell configuration.
 
 
+echo
+
 #MARK: - Oh-my-zsh
 export ZSH="$ZDOTDIR/.oh-my-zsh"
 # Themes

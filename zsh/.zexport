@@ -13,12 +13,14 @@ export tempdir="${TMPDIR}tempfiled"
 
 
 # Projects
-export zterm="/usr/local/Terminal" # "$PROJ/Terminal"
+export zterm="/usr/local/Terminal"   # "$PROJ/Terminal"
+export ztermxcodeproj="$zterm/Terminal.xcodeproj"
+
+export zfunc="$ZDOTDIR/functions"
 export zsitefunc="$ZDOTDIR/site-functions"
 export zdisabled="$ZDOTDIR/disabled"
-export ztermxcodeproj="$zterm/Terminal.xcodeproj"
-export zfunc="$zterm/zsh/functions"
-export zcompdir="$zterm/zsh/completions"
+export zcompdir="$ZDOTDIR/completions"
+
 
 
 # Package Managers

@@ -39,6 +39,8 @@ alias cmdlist='printf "%s\n" ${commands:t}'
 # Builtin 'echo'
 alias e='builtin echo'
 alias E='b_redbg'
+alias p='builtin print -P'
+
 
 # Command 'find'
 alias ffind='/usr/bin/find -L'
@@ -48,7 +50,7 @@ alias q='exit'
 #alias q!='killall "${SHELL:t}"'
 
 # Help
-alias help='run-help'
+alias {h,help}='run-help'
 
 # Command 'git'
 alias gs='git status'
@@ -95,12 +97,13 @@ alias str='strings'
 #alias i='type -a'
 alias t='typeof'
 
+alias wh='whence'
 
 
-#MARK: - Extended commands
+#MARK: - Extended Commands
 alias cd='cdp'
 alias ln='lnp'
 
 
-
+alias rre='open -a Xcode "$DEV/bin/run.sh"'
 alias rr='zsh "$DEV/bin/run.sh"'

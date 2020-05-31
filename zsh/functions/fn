@@ -72,6 +72,19 @@ function fn() (
         return 0
     }
     
+    function fn_named() {
+        if ! ( functions | grep -w -e "$fn_name[-_]$cmd" &>/dev/null ); then
+            error "Unknown command: %F{1}$cmd%f."
+            return 127
+        fi
+    }
+    
+    function fn_list() {
+        typeset -a list
+        list=( ${(k)functions} )
+        
+    }
+    
     
     # Options
     typeset -A optlist
@@ -88,27 +101,21 @@ function fn() (
         return 0
     fi
     
+    
     case $# in
         0) fn print-commands $0
            return 2 ;;
-        1) error '?/ Function name is not specified.'
+        1) error 'Function name is not specified.'
            return 2 ;;
     esac
 
-    # Function command
+    # fn command argument
     typeset cmd=$1
     shift
-#    if ! ( functions | grep -w -e "fn[-_]$cmd" &>/dev/null ); then
-    if ! ( whence -
+    if ! ( functions | grep -w -e "fn[-_]$cmd" &>/dev/null ); then
         error "Unknown command: %F{1}$cmd%f."
         return 127
     fi
-    
-    # Command argument
-#    if [[ $# -eq 0 ]]; then
-#        error 'Function name is not specified.'
-#        return 2
-#    fi
     
     typeset fname="$@"
     if [[ $cmd == 'isdef' ]]; then

@@ -1,0 +1,24 @@
+#!/bin/zsh
+
+#  mkarray
+#  Z-Function (45)
+#
+#  Created by Maxim Puchkov on 2020-05-30.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function mkarray() {
+    set -- $@
+    typeset array_id=$1
+    shift
+
+    typeset shell_command="$@"
+    typeset -a array
+    array=(${(@f)"$(
+        ${=shell_command}
+    )"})
+
+    set -A $array_id $array
+    return $?
+}

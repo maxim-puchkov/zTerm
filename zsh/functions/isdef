@@ -10,37 +10,51 @@
 # <#Function description#>
 function isdef() (
     if [[ $# -eq 0 ]]; then
-        error 'No arguments.'
-        return 2
+        error -2 'No arguments.'
     fi
+    
+    # Try to execute the command
+    typeset cmd="$@"
+    () (
+        ${=cmd}
+        return $?
+    ) &>/dev/null
+    
+    #
+    typeset -i exit_code=$?
+    case $exit_code in
+        127) print -P -- "Not found: %F{1}$cmd%f" >&2
+             return 1 ;;
+        *)   return 0 ;;
+    esac
     
 #    typeset -i10 isdef_status=0
     
-    typeset -a result=()
-    typeset cmd cmd_status
-    for cmd in $@; do
-        ${=cmd} &>/dev/null
-        cmd_status=$?
-        if [[ $cmd_status -eq 127 ]]; then
-            result+=("Not found: %B$cmd%b.")
-        fi
-    done &>/dev/null
-    
-    print -P -- "$result"
-
-    if [[ $# -gt 1 ]]; then
-#        print $result
-#        print -P -- "%F{3}Warning%f: ${#result} of ${#} commands not found."
-#        warning 
-#    else
-        
-    fi
-    
-    read
-    
+#    typeset -a result=()
+#    typeset cmd cmd_status
+#    for cmd in $@; do
+#        ${=cmd} &>/dev/null
+#        cmd_status=$?
+#        if [[ $cmd_status -eq 127 ]]; then
+#            result+=("Not found: %B$cmd%b.")
+#        fi
+#    done &>/dev/null
+#
+#    print -P -- "$result"
+#
+#    if [[ $# -gt 1 ]]; then
+##        print $result
+##        print -P -- "%F{3}Warning%f: ${#result} of ${#} commands not found."
+##        warning
+##    else
+#
+#    fi
+#
+#    read
+#
     #>/dev/null
-    red "$result -- $#result"
-    echo $isdef_status
+#    red "$result -- $#result"
+#    echo $isdef_status
     
 #    typeset cmd=${(j:[-_]:)@}
 #    red "command id = <$cmd>"
