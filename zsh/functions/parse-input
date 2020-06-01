@@ -8,9 +8,59 @@
  
 
 #
+#TODO:  parse-input -o opt1 opt2 opt3 -f flag1 flag2 flag3 optstring
 function parse-input() {
-    typeset -a 
+
+    function print-args() {
+        print -P -- "%Bargc%b:  '%F{2}$#%f'"
+        print -P -- "%Bargv%b:  '%F{2}$@%f'"
+#        echo $funcstack
+    }
     
+    
+    
+    echo ${@[(i)-o|--options]}
+    red "$@"
+    typeset -ag a=($@)
+    
+    
+    return 1
+    
+#    typeset -a
+    
+    
+#    while [[ $1 =~ '^-' ]]; do
+#        red "While: arg=<$1>"
+#        case $1 in
+#            *) blue "Case star"
+#            ;;
+#        esac
+#        shift
+#        red "Shifting <$#>"
+#        echo
+#    done
+
+    print-args "$@"
+    
+    
+    while [[ $1 =~ '^-' ]]; do
+        red "Arg<$1>"
+        case $1 in
+            -o|--options)
+                shift
+                index=$(( ${@[(i)-*]} - 1 ))
+                echo "All: <$@>; index: <$index>"
+                red "${@:1:$index}"
+                shift $index
+            ;;
+        esac
+        shift
+    done
+    
+    magenta "End while"
+    echo;echo;
+    
+    print-args "$@"
     
     
     

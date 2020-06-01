@@ -13,6 +13,7 @@ compdef _alias          find-alias  alias_value
 
 # Homebrew
 compdef _brew_formula   brew_browse
+
 # Shell builtin commands help
 compdef _builtin        builtin-help
 

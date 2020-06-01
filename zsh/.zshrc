@@ -1,8 +1,6 @@
 # User-specific z-shell shell configuration.
 
 
-echo
-
 #MARK: - Oh-my-zsh
 export ZSH="$ZDOTDIR/.oh-my-zsh"
 # Themes
@@ -24,7 +22,7 @@ export GPG_TTY
 
 
 # Preferred editor for local and remote sessions
-export EDITOR=('/usr/local/bin/nano' '--mouse')
+export EDITOR='/usr/local/bin/nano --mouse'
 
 
 #
@@ -80,3 +78,123 @@ function logs()     { cdp "$ZTERM/var/log/$@"; }
 #MARK: - Python Environment
 export PYTHONSTARTUP="$ZTERM/Python/.pyenv"
 export PYTHONPATH="$ZTERM/Python:$PYTHONPATH"
+
+
+function get-option-names() {
+    index=$(( ${@[(i)-*]} - 1 ))
+    set -- ${@:1:$index}
+    print -- "short $1"
+    print -- "long  ${2:-''}"
+}
+
+
+function get-arguments() {
+    optstring=${@[-1]}
+    set -- ${@:1:-1}
+    
+    greenbg "OptIDs    <$@>"
+    redbg   "Optstring <$optstring>"
+    
+    typeset -Ag opts
+    typeset -Ag opts_long
+    
+    while [[ $1 =~ '^-' ]]; do
+        case $1 in
+            -o|--option)
+                typeset -A option_names
+                set -A option_names $(get-option-names ${(q)@:2})
+                shift ${#option_names}
+                blue $option_names
+                opts[$option_names[short]]="hello short"
+                opts_long[$option_names[long]]="hello long"
+            ;;
+            -f)
+            
+            ;;
+#            -f|--flag)
+#                option_short=$2
+#                option_long=$3
+#                if [[ ! $option_long =~ '^-' ]]; then
+#                    yellow $option_long
+#                fi
+#                cyan "Option short[$option_short], long[$option_long]"
+#                red "opt = $2"
+#                blue "longopt = $3"
+#            ;;
+        esac
+        shift
+    done
+    echo
+    
+    
+    bblue "Remaining <$@> ($#)"
+    blue  "next \$1 = <$1>"
+    
+#    arr=($@)/
+}
+
+
+
+
+
+
+
+
+function _parse-input() {
+    
+    optstring=${@[-1]}
+#    red $optstring
+    set -- ${@:1:-1}
+    
+    greenbg "OptIDs    <$@>"
+    redbg   "Optstring <$optstring>"
+#    red $@ $#
+    
+#    blue $1
+#    typeset -a
+    while [[ $1 =~ '^-' ]]; do
+#        cyan "  -- \$1 = <$1>"
+        case $1 in
+            -o|--option)
+                typeset -A option_names
+#                blue "$(get-option-name ${(q)@:2})"
+                set -A option_names $(get-option-names ${(q)@:2})
+#                set -A option_name $(_getopt ${@:2})
+#                echo "OA="$option_id
+                shift ${#option_names}
+                
+#                red "OK"; echo; echo
+            ;;
+            -f)
+            
+            ;;
+#            -f|--flag)
+#                option_short=$2
+#                option_long=$3
+#                if [[ ! $option_long =~ '^-' ]]; then
+#                    yellow $option_long
+#                fi
+#                cyan "Option short[$option_short], long[$option_long]"
+#                red "opt = $2"
+#                blue "longopt = $3"
+#            ;;
+        esac
+        shift
+    done
+    echo
+    blue "Remaining <$@> ($#), next \$1 = <$1>"
+    
+    arr=($@)
+}
+
+
+function tests() {
+#    default_input="runtest -opt1 val1 -opt2 val2 -flag1 OTHER ARGS"
+#    input="${@:-$default_input}"
+#    _parse-input -o opt1 opt2 -f flag1 "$input"
+    
+    default_input="-x 100 -y 200 -z 300 my_graph.png"
+    input="${@:-$default_input}"
+    get-arguments -o x xpos  -o y ypos  -o z  -f "$input"
+#    parse-input -o OPT1 OPT2 -f FLAG1 "
+}
