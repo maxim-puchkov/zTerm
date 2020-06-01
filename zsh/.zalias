@@ -107,3 +107,7 @@ alias ln='lnp'
 
 alias rre='open -a Xcode "$DEV/bin/run.sh"'
 alias rr='zsh "$DEV/bin/run.sh"'
+
+alias rte='open -a Xcode $DEV/bin/run-tests.zsh'
+alias rt='zsh "$DEV/bin/run-tests.zsh"'
+#zsh "$DEV/bin/run-tests.zsh" "$@"

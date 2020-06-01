@@ -7,28 +7,27 @@ ___SHEBANG___
 #  Copyright © ___DATE_YEAR___ ___OWNER___. All rights reserved.
 
 
-# <#Command description#>
+# <#Brief description...#>
 function ___FILENAME___() {
-    
     ## help: print command help ##
-    function ___FILENAME____help() {
-        print $0
-    }
-    
-    function ___FILENAME____foo() {
-        printf 'Template function: %s\n' "$0"
+    function ___FILENAME___-help() {
+        print -- "$0"
+        return 0 
     }
     
     
+    
+    
+    # Command
     typeset cmd=$1
-    if ! (whence ${0}_${cmd}); then
-        error -127 '
+    shift 
+    if ! (whence ${0}-${cmd}); then
+        error -127 "Invalid command: %F{1}$cmd%f."
     fi
     
-    src=$( basename $0 )
-    get_options opts "$@"
-    shift $opts[shift_distance]
-    cmd=$1
+    ${0}_${cmd} "$@"
+    return $?
+    
     
     case $cmd in
         '')

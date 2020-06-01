@@ -80,7 +80,7 @@ export PYTHONSTARTUP="$ZTERM/Python/.pyenv"
 export PYTHONPATH="$ZTERM/Python:$PYTHONPATH"
 
 
-function get-option-names() {
+function _get-option-names() {
     index=$(( ${@[(i)-*]} - 1 ))
     set -- ${@:1:$index}
     print -- "short $1"
@@ -88,7 +88,7 @@ function get-option-names() {
 }
 
 
-function get-arguments() {
+function _get-arguments() {
     optstring=${@[-1]}
     set -- ${@:1:-1}
     
