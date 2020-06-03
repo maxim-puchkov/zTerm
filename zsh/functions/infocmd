@@ -8,125 +8,66 @@
 
 
 function infocmd() {
-#    typeset -A optlist
-#    typeset -a args=($argv)
-#    get-options -f 'v' optlist args
-    
-#    local name info
-#    name="$args"
-#    info=(${(@f)"$(whence -av $name)"})
-    
-#    local print_autoload_function='print -P %F{6}Function ${name}%f'
-#    local print_function='print -P %F{4}Function ${name}%f'
-#    if [[ -n $optlist[v] ]]; then
-
-#        print_autoload_function='fn def $name'
-#        print_function='fn def $name'
-
-#        shift
-#    fi
-
- 
-#    mkarray() {
-#        typeset array_id=$1
-##        shift
-##        print_h1 $@
-#        typeset shell_command="$@"
-#        blue "${@:1}"
-#        red "${@:1}"
-#        green ${@:1}
-#        typeset -ag array
-#        array=(${(@f)"$(
-#            ${=shell_command}
-#        )"})
-#        return $?
-#    }
-    
-#    mkarray "$@"
-#    red $array
-#    name=$1
-#
-#    mkarray "whence -av $name"
-#    yellow $array
-#
-    
-#    name=$1
-    
     typeset -a kinds
     kinds=('alias' 'built-in command' 'external command'
            'shell function' 'hashed command' 'reserved word' )
     
-    
-    
-    infocmd-highlight() {
+    function infocmd-highlight() {
         typeset -a command_info
         mkarray command_info "whence -av $name"
-        typeset line new_line \
-                find replace
-        
-
+        typeset line new_line find replace
         () {
-            kinds=(alias)
-            for k in $kinds; do
-                set -- ${@//$k/"%B$k%b"}
-            done
-            cat "$@"
-        }=( typeset line new_line find replace
+            cat $1
+        } =(
             for line in $command_info; do
-                find="$(awk -F 'is (an? )?'  '{ print $2; }' <<< $line)"
-                replace="%F{6}$find%f"
-                new_line="${line//$find/$replace}"
+                new_line="$line"
+                # Bold name
+                name="${line[(w)1]}"
+                replace_name="%B%U${name}%u%b"
+                new_line="${new_line/$name/%F\{6\}$replace_name%f}"
+                if [[ $new_line =~ 'not found' ]]; then
+                    new_line="%F{1}${replace_name} not found%f"
+                else
+                    # Colored description
+                    find="$(awk -F 'is (an? )?'  '{ print $2; }' <<< $line)"
+                    replace="${find}"
+                    new_line="${new_line//$find/%F\{6\}$replace%f}"
+                fi
                 print -P -- "$new_line"
             done
         )
-        
-        
-        for k in $kinds; do
-            
-        done
-        
-#        typeset str find replace
-#        for i in {1..$#a1}; do
-#        for string find in ${a1:^a2}; do
-#            replace="%F{5}$find%f"
-#            print -P -- ${string//$find/$replace}
-#        done
     }
     
     for name in $@; do
         infocmd-highlight $name
-        
     done
-    
-    
-    
-    return 0
-    
-    
-    local desc
-    for desc in $info; do
-        case $desc in
-            *'alias'*)
-                print -P "%F{13}${desc#*alias for }%f"
-            ;;
-            *'autoload shell function'*)
-                ${=print_autoload_function}
-            ;;
-            *'shell function'*)
-                ${=print_function}
-            ;;
-            *'builtin'*)
-                print -P "%F{4}shell builtin%f"
-            ;;
-            *'reserved word'*)
-                print -P "%F{5}${name} is a reserved word%f"
-            ;;
-            *'not found'*)
-                print -P "%F{9}${name} not found%f"
-            ;;
-            *'/'$name)
-                print -P "%F{2}${desc#*$name is }%f"
-            ;;
-        esac
-    done
+    return $?
 }
+    
+#    local desc
+#    for desc in $info; do
+#        case $desc in
+#            *'alias'*)
+#                print -P "%F{13}${desc#*alias for }%f"
+#            ;;
+#            *'autoload shell function'*)
+#                ${=print_autoload_function}
+#            ;;
+#            *'shell function'*)
+#                ${=print_function}
+#            ;;
+#            *'builtin'*)
+#                print -P "%F{4}shell builtin%f"
+#            ;;
+#            *'reserved word'*)
+#                print -P "%F{5}${name} is a reserved word%f"
+#            ;;
+#            *'not found'*)
+#                print -P "%F{9}${name} not found%f"
+#            ;;
+#            *'/'$name)
+#                print -P "%F{2}${desc#*$name is }%f"
+#            ;;
+#        esac
+#    done
+#}

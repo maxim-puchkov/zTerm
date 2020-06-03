@@ -30,6 +30,14 @@ function error() {
     # Output
     typeset output_device
     
+    function error-plain-title() {
+        unfunction error-format-title
+        function error-format-title() { return 0; }
+    }
+    function error-plain-description() {
+        unfunction error-format-description
+        function error-format-description() { return 0; }
+    }
     
     #MARK: - Functions
     # Parse function options and flags
@@ -49,12 +57,16 @@ function error() {
                 ;;
                 # Do not format description
                 -p|--plain-description)
-                    unfunction error-format-description
-                    function error-format-description() { return 0 }
+                    error-plain-description
                 ;;
                 # Silence output
                 -n|--null)
                     output_device=/dev/null
+                ;;
+                -u|--usage)
+                    message_title='%F{4}Usage%f'
+                    error-plain-title
+                    error-plain-description
                 ;;
                 # Stop parsing options
                 --) shift ;&
@@ -69,9 +81,9 @@ function error() {
     # Title - text, color, and exit code
     function error-format-title() {
         if [[ $exit_code -gt 0 ]]; then
-            message_title="%F{1}Error%f"
+            message_title='%F{1}Error%f'
         else
-            message_title="%F{3}Warning%f"
+            message_title='%F{3}Warning%f'
         fi
         return 0
     }
@@ -79,7 +91,7 @@ function error() {
     function error-format-description() {
         message_desc="${message_desc:-No description.}"
         message_desc="${(C)message_desc[1]}${${message_desc:1}}"
-        if [[ ! "${(q)message_desc}" =~ '\n' ]] &&
+        if [[ ! "${(q)message_desc}" =~ $'\n' ]] &&
            [[ ! "${(q)message_desc}" =~ '^.*\.$' ]]; then
             message_desc="${message_desc}."
         fi
@@ -109,6 +121,6 @@ function error() {
     error-print
     
     unfunction -m "${0}-*"
-    trap 'return $exit_code' EXIT
+    trap "return $exit_code" EXIT
     return $exit_code
 }

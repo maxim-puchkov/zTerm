@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<!--
-   com.maximpuchkov.services.Commiter.plist
-   Services
-
-   Created by Maxim Puchkov on 2020-05-09.
-   Copyright (c) 2020 Maxim Puchkov. All rights reserved.
--->
 <plist version="1.0">
 <dict>
 	<key>Label</key>
@@ -22,20 +15,12 @@
 	<key>StartCalendarInterval</key>
 	<array>
 		<dict>
-			<key>Hour</key>
-			<integer>0</integer>
-			<key>Minute</key>
-			<integer>0</integer>
-			<key>Second</key>
+			<key>Weekday</key>
 			<integer>0</integer>
 		</dict>
 		<dict>
-			<key>Hour</key>
-			<integer>12</integer>
-			<key>Minute</key>
-			<integer>0</integer>
-			<key>Second</key>
-			<integer>0</integer>
+			<key>Weekday</key>
+			<integer>3</integer>
 		</dict>
 	</array>
 	<key>WorkingDirectory</key>

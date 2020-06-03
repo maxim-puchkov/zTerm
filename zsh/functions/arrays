@@ -9,7 +9,7 @@
 
 # <#Function description#>
 function arrays() {
-    
+    #
     function arrays-only() {
         typeset filter="$1"
         typeset -a matching=(${(M)array_data:#$~filter})
@@ -17,13 +17,14 @@ function arrays() {
         print -P -- "%F{2}${match_size}%f of ${array_size} elements %F{2}match%f pattern %U$filter%u."
         print -P -l -- ${matching:-'No matches'}
     }
-    
+
     function arrays-except() {
         typeset filter="$1"
         typeset -a matching=(${(M)array_data:#$~filter})
         typeset -i match_size=${#matching}
         if [[ $match_size -eq 0 ]]; then
             print 'No matches.'
+#        fi 
         print -P -- "%F{2}${match_size}%f of ${array_size} elements %F{1}do not match%f pattern %U$filter%u."
         print -P -l -- ${matching:-'No matches'}
     }

@@ -9,19 +9,48 @@
 
 # <#Function description#>
 function showsrc() {
+    if [[ $# -eq 0 ]]; then
+        error -2 'No input.'
+    fi
+    
+    # Find the source file
+    typeset name file
+    name="$@"
+    if [[ -e $name ]]; then
+        file=${name:a}
+    else
+        file=$(whence -p $name)
+    fi
+    if [[ -z $file ]]; then
+        error -1 "Cannot find %F{1}${name}%f."
+    fi
+    print -P -- "%USource file%u: %F{4}${file}%f\n"
+    
+    
+    # Highlight contents of non-executable files or
+    # highlight all strings in executable files
+    if [[ ! -x $file ]]; then
+        highlight $file
+    else
+        strings $file | highlight
+    fi
+    return $?
+    
+    
     local file=$1
     if [[ -z $file ]]; then
-        error 'No input'
-        return 2
+        error -2 'No input'
     fi
     
     local highlight=( pygmentize -f 'terminal16m'
                                  -O style='xcodedark'
                                  -l 'zsh' )
     if [[ -z ${commands[pygmentize]} ]]; then
-        error 'Cannot find pygments.'
+        warning 'Cannot find pygments.'
         highlight='cat'
     fi
+    
+    
     
     if [[ ! -f $file ]]; then
         file=$( whence -p $file )

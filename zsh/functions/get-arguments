@@ -1,0 +1,105 @@
+#!/bin/zsh
+
+#  get-arguments
+#  Z-Function (46)
+#
+#  Created by Maxim Puchkov on 2020-06-01.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function get-arguments() {
+    # Get short and long names
+    function get-argument-name() {
+        typeset str="$@"
+        typeset split_index=${str[(I)[,]]}
+        if [[ $split_index -eq 0 ]]; then
+            short_name=$str
+            long_name=''
+        else
+            short_name=${str[1,$(( $split_index - 1 ))]}
+            long_name=${str[$(( $split_index + 1 )),${#str}]}
+        fi
+    }
+    
+    # Set short and long option/flag name
+    function set-value() {
+        if [[ -n $short_name ]]; then
+            optlist[$short_name]="$@"
+        fi
+        if [[ -n $long_name ]]; then
+            optlist[$long_name]="$@"
+        fi
+    }
+    # Set option value
+    function set-option() {
+        set -- ${=optstring}
+        typeset index_short=${@[(I)-$short_name]}
+        typeset optval=''
+        if [[ $index_short -ne 0 ]]; then
+            optval=${@[(w)$(( $index_short + 1 ))]}
+            set-value $optval
+            shift_distance=$(( $shift_distance + 2 ))
+        else
+            typeset index_long=${@[(I)--$long_name]}
+            if [[ $index_long -ne 0 ]]; then
+                optval=${@[(w)$(( $index_long + 1 ))]}
+                set-value $optval
+                shift_distance=$(( $shift_distance + 2 ))
+            fi
+        fi
+    }
+    # Set flag value
+    function set-flag() {
+        set -- ${=optstring}
+        typeset index_short=${@[(I)-$short_name]}
+        typeset index_long=${@[(I)--$long_name]}
+        if [[ $index_short -ne 0 ]] ||
+           [[ $index_long -ne 0 ]]; then
+            set-value 'on'
+            shift_distance=$(( $shift_distance + 1 ))
+        fi
+    }
+    
+    
+    optstring=${=@[-1]}
+    
+#    shift_distance=0
+#    trap "echo shift $shift_distance" EXIT
+    
+#    echo "Optstring= $optstring"
+#    last=${optstring[(Rw)-*]}
+    
+    
+    
+#    print -- $last
+#    i=${optstring[(wi)-*]}
+#    printf '%s' ${optstring[(w)$i]}
+    
+#    return 0
+
+    
+    set -- ${=@:1:-1}
+    
+    
+    typeset -Ag optlist
+    optlist=()
+    while [[ $1 =~ '^-' ]]; do
+        case $1 in
+            -o|--option)
+                get-argument-name $2
+                set-option
+                shift
+            ;;
+            -f|--flag)
+                get-argument-name $2
+                set-flag
+                shift
+            ;;
+            --) shift
+                break
+            ;;
+        esac
+        shift
+    done
+}

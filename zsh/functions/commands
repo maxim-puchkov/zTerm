@@ -10,6 +10,9 @@
 # <#Function description#>
 function commands() {
     typeset pattern=$1
-    print -l ${commands:t} | colorize_grep 'b_green' \
-        fgrep --color='always' "$pattern"
+    () (
+        PCREGREP_COLOUR='01;96'
+        print -l ${commands:t} |
+            pcre2grep --color='always' --regexp "$pattern"
+    )
 }

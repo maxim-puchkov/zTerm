@@ -100,14 +100,17 @@ function fn() (
         for k v in ${(kv)reply}; do
           printf '  %s:"%s"\n' "$k" "$v" | colrm
         done
-        
     }
     
-    ## flag  ##
-    function fn_arguments() {
-        red $0
+    function fn_trace() {
+        functions -t 
     }
     
+#    ## flag  ##
+#    function fn_arguments() {
+#        red $0
+#    }
+#
     
     # Options
     typeset -A optlist

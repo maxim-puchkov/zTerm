@@ -1,0 +1,49 @@
+#!/bin/zsh
+
+#  highlight
+#  Z-Function (50)
+#
+#  Created by Maxim Puchkov on 2020-06-01.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Highlight code syntax
+function highlight() {
+    trap "unfunction -m '${0}-*'" EXIT
+    
+    # Syntax highlighting
+    function highlight-syntax() {
+        ${=cmd} -f 'terminal16m' \
+                -O style='xcodedark' \
+                -l 'zsh' \
+                "$@"
+        return $?
+    }
+    
+    
+    #
+    typeset cmd='pygmentize'
+    typeset input_file=${${@:a}:-/dev/stdin}
+    
+    
+    # Check input
+    if [[ $# -eq 0 ]] && [[ ! -p /dev/stdin ]]; then
+        error -2 'No input.'
+    fi
+    # Check 'pygmentize' command
+    if [[ -z ${commands[$cmd]} ]]; then
+        error -1 "Command not found: %F{1}${cmd}%f."
+    fi
+    # Check input file
+    if [[ ! -e $input_file ]]; then
+        error -1 "File not found: %F{1}${input_file}%f."
+    fi
+    if [[ ! -r $input_file ]]; then
+        error -1 "Cannot read from %F{1}${input_file}%f."
+    fi
+    
+    
+    #
+    highlight-syntax $input_file
+    return $?
+}

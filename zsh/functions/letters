@@ -1,0 +1,46 @@
+#!/bin/zsh
+
+#  letters
+#  Z-Function (52)
+#
+#  Created by Maxim Puchkov on 2020-06-02.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function letters() {
+    if [[ $# -gt 2 ]]; then
+        local ordered=(${(ou)@})
+        print -P -- "Ordered: %F{10}${(j:%f, %F\{10\}:)ordered}%f."
+        print -P -- "First: %B${ordered[1]}%b, last: %B${ordered[-1]}%b."
+        return 0
+    fi
+    
+    typeset -a A=({A..Z})
+    typeset -a N=({1..26})
+    
+    typeset letter=${(U)1[1]:-L}
+    typeset compare_to=${(U)2[1]}
+    
+    typeset index=${A[(wi)$letter]}
+    if [[ $index -gt ${#A} ]]; then
+        return 1
+    fi
+    A[$index]="%B%F{9}$A[$index]%f%b"
+    N[$index]="%B%F{9}$N[$index]%f%b"
+    
+    typeset index2=${A[(wi)$compare_to]}
+    A[$index2]="%B%F{4}$A[$index2]%f%b"
+    N[$index2]="%B%F{4}$N[$index2]%f%b"
+    
+    
+    {
+        print -P -- ${A:0:13}
+        print -P -- ${N:0:13}
+    } | column -t
+    {
+        print -P -- ${A:13:13}
+        print -P -- ${N:13:13}
+        echo
+    }  | column -t
+}

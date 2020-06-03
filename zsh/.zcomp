@@ -19,6 +19,7 @@ compdef _builtin        builtin-help
 
 # Commands
 compdef _command        syntax  brief  hist
+compdef _command_names  infocmd
 
 # Processes
 compdef _pids           leaks  lskq  malloc_history

@@ -361,27 +361,7 @@ function txt() {
 }
 
 
-function debug() {
-    # Check argument count
-    if [[ $# -eq 0 ]]; then
-        error 'Function name not specified.'
-        return 2
-    fi
-    
-    # Function name and arguments
-    typeset fname=$1
-    shift
-    typeset -a fargs
-    fargs=($@)
-    
-    # Function source file
-    typeset fsrc=$(fn src $fname)
-    if [[ -z $fsrc ]]; then
-        error "Function not found: %F{1}$fname%f."
-        return 1
-    fi
-    $fname $fargs
-}
+
 
 function envt_test() {
     typeset -a envt_arr
@@ -407,4 +387,94 @@ function env-change() {
     empty-env
     $cmd
     
+}
+
+
+function pp() {
+    while [[ -n $1 ]] ; do
+        v=${(P)1}
+        echo $1
+        red $v
+        shift
+    done
+}
+
+
+function df() {
+    typeset variable
+    variable='value'
+    echo $variable
+}
+
+function debug() {
+    # Check argument count
+    if [[ $# -eq 0 ]]; then
+        error 'Function name not specified.'
+        return 2
+    fi
+    
+    # Function name and arguments
+    typeset fname=$1
+    shift
+    typeset -a fargs
+    fargs=($@)
+    
+    # Function source file
+    typeset fsrc=$(fn src $fname)
+    if [[ -z $fsrc ]]; then
+        error "Function not found: %F{1}$fname%f."
+        return 1
+    fi
+    () (
+    functions -t $fname
+    $fname $fargs
+    )
+}
+
+# Print terminal file descriptors
+function fds() {
+    typeset -a fds=( 0 1 2 )
+    if [[ $# -ne 0 ]]; then
+        fds=($@)
+    fi
+    typeset -a result
+    result=()
+    # Test if $fd is a file descriptor
+    typeset -i fd
+    for fd in $fds; do
+        case $fd in
+            0) name="stdin ($fd)"  ;;
+            1) name="stdout ($fd)" ;;
+            2) name="stderr ($fd)" ;;
+            *) name="$fd"          ;;
+        esac
+        if [[ -t $fd ]]; then
+            result+=("%B%F{2}${name}%f%b")
+        else
+            result+=("%F{1}${name}%f")
+        fi
+    done
+    # Print result
+    print -P -- '%UFile Descriptors%u:'
+    print -P -- "${(j:, :)result}"
+}
+
+
+
+
+function functions-list() {
+    echo $GREP_COLOR
+    
+#    functions +
+}
+
+
+alias linux='open https://docstore.mik.ua/orelly/linux/lnut/index.htm'
+
+function te() {
+    a='11 22'
+    b=(a b)
+    c='z z z'
+    echo $a $b "$c" | highlight
+    highlight $a $b "$c" 
 }

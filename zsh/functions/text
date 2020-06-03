@@ -1,0 +1,21 @@
+#!/bin/zsh
+
+#  text
+#  Z-Function (51)
+#
+#  Created by Maxim Puchkov on 2020-06-02.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function text() {
+    if [[ $# -eq 0 ]]; then
+        error -2 'No input'
+    fi
+    typeset file='test.txt'
+    printf '%b\n' "$@" > $file
+    printf '%s/%s' "$PWD" "$file"
+    printf ' (%d bytes)\n' $(stat -f '%z' $file)
+    open -a Xcode -g $file
+#    printf '%d lines, %d words, %d characters\n' $(wc -lwm < $file)
+}

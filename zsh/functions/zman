@@ -1,0 +1,18 @@
+#!/bin/zsh
+
+#  zman
+#  Z-Function (47)
+#
+#  Created by Maxim Puchkov on 2020-06-01.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function zman() {
+    man_zsh=( ${(u)$(man -aw 'zsh*'):t:r} )
+    print -l $man_zsh
+    if [[ $# -eq 0 ]]; then
+        
+        return 0
+    fi
+}

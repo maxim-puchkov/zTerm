@@ -9,11 +9,15 @@
 
 # Find strings (or patterns) in files.
 function fstr() {
-    if [[ $# -eq 0 ]] return 2
+#    if [[ $# -eq 0 ]] return 2
+    
+    if [[ $# -eq 0 ]]; then
+        error -2 'No input.\nUsage: %B%Ufstr%u <directory> <string>%b.'
+    fi
     
     # String, directory, and depth
     local search_directory="${${1:-.}:a}"
-    local string="$2"
+    local string="${2:-.}"
     
     # Files in the directory
     typeset -a files=(${(@f)"$(
@@ -26,7 +30,7 @@ function fstr() {
     # Find matching files
     local file match
     for file in $files; do
-        match=$( colorize_grep 'byellow' \
+        match=$( colorize_grep 'b_byellow' \
             egrep --color='always'       \
                   --ignore-case          \
                   --text                 \
@@ -35,7 +39,7 @@ function fstr() {
         if [[ -n "$match" ]]; then
             n_matches=$(( $n_matches + 1 ))
             print -P -- "%B%K{11}%F{16} [$n_matches]  $file %f%k%b"
-            print "$match\n"
+            print    -- "$match\n"
         fi
     done
     
