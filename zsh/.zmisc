@@ -9,9 +9,52 @@
 
 export enckey1="f978c11e9a04fbda0ad2bbcd20ca8274ec2daa6f776b2192b8e20a060b765492"    # enckey1: 13 May 22:00
 export enciv1="be87368daada310f928cbbc33591a125"    # enciv1: 13 May 22:00
+export var="My new variable"    # var: 04 Jun 15:49
 # <#Insertion Point: addexp#>
 
 
 #MARK: - Functions
 # <#Insertion Point: addfunc#>
+#typeset -a arr
+#function print-var() {
+#    typeset var_id=$1
+#    typeset join='%u, %U'
+#    typeset name_format="%S%B${var_id}[${(P)#var_id}]%b%s"
+#    typeset value_format="%S%B{%b%s %U${(@Ppj:$join:)var_id}%u %S%B}%b%s"
+#    print -P -- "${name_format}=${value_format}"
+#    
+#    
+#    trap 'print -P -- "${name_format}=${value_format}"' EXIT
+#}
+#function pv() {
+#    trap 'print-var '$1 EXIT
+#}
+#
+#
+#function print-v() {
+#    typeset var_id=$1
+#    typeset join='%u, %U'
+#    
+#    typeset name_format="%S%B${var_id}[${(P)#var_id}]%b%s"
+#    typeset value_format="%S%B{%b%s %U${(@Ppj:$join:)var_id:0}%u %S%B}%b%s"
+#    
+#    
+#    name=${var_id}[${(P)#var_id}]
+#    value=${(@Ppj:$join:)var_id:0}
+#    
+#    
+#    if [[ $var_id == 'argv' ]]; then
+#        redbg "Trapping $var_id"
+#        trap 'print -- $argv' EXIT
+##        trap 'print -P -- "${name_format}=${value_format}"' EXIT
+#    else
+#        print -P -- "${name_format}=${value_format}"
+#    fi
+#    
+#}
 
+function f() {
+    print -P -- "%F{3}To Standard Input%f"   >&0
+    print -P -- "%F{2}To Standard Output%f"  >&1
+    print -P -- "%F{1}To Standard Error%f"   >&2
+}

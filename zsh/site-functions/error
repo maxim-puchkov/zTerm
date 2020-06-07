@@ -29,17 +29,29 @@ function error() {
     typeset exit_code_label
     # Output
     typeset output_device
+    # Output options
+    typeset autocapitalize='true'
+    typeset remove_trailing_space='true'
+    typeset trailing_period='true'
+    typeset highlight_variables='true'
     
-    function error-plain-title() {
-        unfunction error-format-title
-        function error-format-title() { return 0; }
-    }
-    function error-plain-description() {
-        unfunction error-format-description
-        function error-format-description() { return 0; }
-    }
+    
+    
     
     #MARK: - Functions
+    # Highlight all shell '$variables' in description
+    function error-replace-variables() {
+        # Placeholder label
+        typeset undefined_var_label
+        undefined_var_label='%F{3}undefined%f'
+        # Find and replace variables
+        typeset find replace
+        find='[$]([{])?(([A-Za-z_\(][^ ]*)?[A-Za-z0-9!@#$%^&*=?_\)])([}])?'
+        replace="%F{${error_color:-1}}\${\${\2}:-${(%)undefined_var_label}}%f"
+        # Highlight variables in description
+        message_desc=$(sed -E "s/$find/$replace/g" <<< "$argv")
+    }
+    
     # Parse function options and flags
     function error-parse-options() {
         set -- $@
@@ -49,25 +61,45 @@ function error() {
             shift
         fi
         # Other options
-        while [[ $1 =~ '^-' ]]; do
+        while [[ $1 =~ '^[-+]' ]]; do
             case $1 in
                 # Display the exit code for errors
                 -c|--code)
-                    exit_code_label=" %F{7}[$exit_code]%f"
+                    exit_code_label="%f [$exit_code]"
                 ;;
                 # Do not format description
-                -p|--plain-description)
+                -D|--plain-description)
                     error-plain-description
                 ;;
                 # Silence output
                 -n|--null)
                     output_device=/dev/null
                 ;;
+                # Set title to 'Usage'
                 -u|--usage)
-                    message_title='%F{4}Usage%f'
                     error-plain-title
                     error-plain-description
+                    message_title='%F{4}Usage%f'
                 ;;
+                # Set custom title
+                -t|--title)
+                    if [[ -n $2 ]]; then
+                        error-plain-title
+                        message_title="%B%F{9}${2}%f%b"
+                        shift
+                    else
+                        break
+                    fi
+                ;;
+                # Autocapitalize description
+                -a|--autocapitalize)    autocapitalize='true'    ;;
+                +a|--no-autocapitalize) autocapitalize='false'   ;;
+                # Add a trailing period
+                -p|--trailing-period)    trailing_period='true'  ;;
+                +p|--no-trailing-period) trailing_period='false' ;;
+                # Highlight variables
+                -h|--highlight)    highlight_variables='true'    ;;
+                +h|--no-highlight) highlight_variables='false'   ;;
                 # Stop parsing options
                 --) shift ;&
                 *)  break ;;
@@ -78,24 +110,47 @@ function error() {
         message_desc="$@"
         return 0
     }
+    
     # Title - text, color, and exit code
     function error-format-title() {
         if [[ $exit_code -gt 0 ]]; then
             message_title='%F{1}Error%f'
+            exit_trap="return $exit_code"
         else
             message_title='%F{3}Warning%f'
+            exit_trap='-'
         fi
         return 0
     }
-    # Description - capitalization, trailing period
+    function error-plain-title() {
+        unfunction error-format-title
+        function error-format-title() { return 0; }
+    }
+    # Description - capitalization, trailing period, highlight
     function error-format-description() {
         message_desc="${message_desc:-No description.}"
-        message_desc="${(C)message_desc[1]}${${message_desc:1}}"
-        if [[ ! "${(q)message_desc}" =~ $'\n' ]] &&
-           [[ ! "${(q)message_desc}" =~ '^.*\.$' ]]; then
-            message_desc="${message_desc}."
+        if [[ $autocapitalize == 'true' ]]; then
+            message_desc="${(C)message_desc[1]}${${message_desc:1}}"
+        fi
+        if [[ $remove_trailing_space == 'true' ]]; then
+            if [[ $message_desc[-1] == ' ' ]]; then
+                message_desc="${message_desc% *}"
+            fi
+        fi
+        if [[ $trailing_period == 'true' ]]; then
+            if [[ ! "${(q)message_desc}" =~ $'\n' ]] &&
+               [[ ! "${(q)message_desc}" =~ '^.*\.$' ]]; then
+                message_desc="${message_desc}."
+            fi
+        fi
+        if [[ $highlight_variables == 'true' ]]; then
+            error-replace-variables $message_desc
         fi
         return 0
+    }
+    function error-plain-description() {
+        unfunction error-format-description
+        function error-format-description() { return 0; }
     }
     # Message - title, description, and return status
     function error-format-message() {
@@ -109,6 +164,7 @@ function error() {
         fi
         return 0
     }
+    
     # Format and print the error/warning message
     function error-print() {
         error-format-message
@@ -117,10 +173,14 @@ function error() {
     }
     
     
-    error-parse-options "$@"
-    error-print
     
+    
+    # Parse options and print the error
+    {
+        error-parse-options "$@" &&
+            error-print &&
+            trap "$exit_trap" EXIT
+    }
     unfunction -m "${0}-*"
-    trap "return $exit_code" EXIT
     return $exit_code
 }

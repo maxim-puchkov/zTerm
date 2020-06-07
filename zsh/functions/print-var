@@ -1,0 +1,45 @@
+#!/bin/zsh
+
+#  print-var
+#  Z-Function (57)
+#
+#  Created by Maxim Puchkov on 2020-06-06.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function print-var() {
+    if [[ $# -eq 0 ]]; then
+        error -2 'Enter variable name.'
+    fi
+    
+    if [[ $1 == '@' ]]; then
+        1='argv'
+    fi
+    
+    trap '(
+        typeset null undefined join_value
+        null="%F{1}null%f"
+        undefined="%F{1}undefined%f"
+        join_value="%u, %U"
+
+        typeset var_id
+        var_id='$1'
+        if [[ ! -v $var_id ]]; then
+            print -P -- "Variable %F{9}$var_id%f is not set."
+            return 1
+        fi
+
+        typeset type length description value
+        type=${(Pt)var_id}
+        length=${(P)#var_id}
+        description="[type=${type:-$undefined}, length=${length:-0}]"
+        value="${(@Ppj:$join_value:)var_id}"
+
+        typeset desc_format value_format
+        desc_format="%F{2}%B${var_id}%b%f${description}"
+        value_format="%F{2}%B{%b%f %U${value:-$null}%u %F{2}%B}%b%f"
+        print -P -- "%B%U${0}%u%b: ${desc_format} = ${value_format}"
+    )' EXIT
+    return 0
+}

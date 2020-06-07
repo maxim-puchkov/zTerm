@@ -13,7 +13,7 @@ export tempdir="${TMPDIR}tempfiled"
 
 
 # Projects
-export zterm="/usr/local/Terminal"   # "$PROJ/Terminal"
+export zterm='/usr/local/Terminal'   # "$PROJ/Terminal"
 export ztermxcodeproj="$zterm/Terminal.xcodeproj"
 
 export zfunc="$ZDOTDIR/functions"
@@ -24,8 +24,8 @@ export zcompdir="$ZDOTDIR/completions"
 
 
 # Package Managers
-export HOMEBREW="/usr/local/Homebrew"
-export ZSHLIB="/usr/local/Cellar/zsh/5.8/share/zsh"
+export HOMEBREW='/usr/local/Homebrew'
+export ZSHLIB='/usr/local/Cellar/zsh/5.8/share/zsh'
 
 
 # SFU Files
@@ -40,7 +40,7 @@ export A310="$SFU_TERM/PHIL 310/assignments"
 
 
 # Command variables
-export GREP_COLOR="00;95"
+export GREP_COLOR='00;95'
 export PCREGREP_COLOUR="$GREP_COLOR"
 
 
@@ -48,5 +48,18 @@ export PCREGREP_COLOUR="$GREP_COLOR"
 export SETOPT='set'
 export FALSE=1
 export TRUE=0
-export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"
-export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include"
+
+export LDFLAGS='-L/usr/local/opt/openssl@1.1/lib'
+export CPPFLAGS='-I/usr/local/opt/openssl@1.1/include'
+
+
+export error_color=9
+
+#export lb='%B%F{1}{%f%b'
+#export rb='%B%F{1}}%f%b'
+#lb=${(%)lb}
+#rb=${(%)rb}
+
+
+export lb='\e[1;31m'{'\e[0m'
+export rb='\e[1;31m'}'\e[0m'

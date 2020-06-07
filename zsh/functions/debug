@@ -1,0 +1,38 @@
+#!/bin/zsh
+
+#  debug
+#  Z-Function (56)
+#
+#  Created by Maxim Puchkov on 2020-06-05.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function debug() {
+    typeset -A optlist
+    get-arguments -A optlist --options 'A,a,s' -- $argv
+    echo $optlist
+    
+    # Check argument count
+    if [[ $# -eq 0 ]]; then
+        error 'Function name not specified.'
+        return 2
+    fi
+    
+    # Function name and arguments
+    typeset fname=$1
+    shift
+    typeset -a fargs
+    fargs=($@)
+    
+    # Function source file
+    typeset fsrc=$(fn src $fname)
+    if [[ -z $fsrc ]]; then
+        error "Function not found: %F{1}$fname%f."
+        return 1
+    fi
+    () (
+        functions -t $fname
+        $fname $=fargs
+    )
+}

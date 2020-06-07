@@ -9,6 +9,19 @@ function csil() {
 function csil-tmux() {
     ssh -p '24' -l 'mpuchkov' $SFU_CSIL -t tmux a
 }
+function vm() {
+    typeset username=${1:-mininet}
+    ssh -Y -l "$username" mininet
+}
+
+function from-vm() {
+    typeset username='mininet'
+    typeset server='mininet'
+    typeset remote_path=$1
+    typeset local_path=${2:-$HOME/Documents/${username}@${server}/$remote_path}
+    mkdir -p $local_path
+    scp mininet@mininet:$remote_path $local_path
+}
 
 
 #MARK: - SSHFS

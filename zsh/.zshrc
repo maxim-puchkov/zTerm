@@ -188,13 +188,93 @@ function _parse-input() {
 }
 
 
-function tests() {
-#    default_input="runtest -opt1 val1 -opt2 val2 -flag1 OTHER ARGS"
+#function tests() {
+##    default_input="runtest -opt1 val1 -opt2 val2 -flag1 OTHER ARGS"
+##    input="${@:-$default_input}"
+##    _parse-input -o opt1 opt2 -f flag1 "$input"
+#    
+#    default_input="-x 100 -y 200 -z 300 my_graph.png"
 #    input="${@:-$default_input}"
-#    _parse-input -o opt1 opt2 -f flag1 "$input"
-    
-    default_input="-x 100 -y 200 -z 300 my_graph.png"
-    input="${@:-$default_input}"
-    get-arguments -o x xpos  -o y ypos  -o z  -f "$input"
-#    parse-input -o OPT1 OPT2 -f FLAG1 "
+#    get-arguments -o x xpos  -o y ypos  -o z  -f "$input"
+##    parse-input -o OPT1 OPT2 -f FLAG1 "
+#}
+#
+
+function print-quotes() {
+    typeset arg=$1
+    printf "%-4s: ${lb}%s${rb}\n"  "q"    "${(q)arg}"
+    printf "%-4s: ${lb}%s${rb}\n"  "qq"   "${(qq)arg}"
+    printf "%-4s: ${lb}%s${rb}\n"  "qqq"  "${(qqq)arg}"
+    printf "%-4s: ${lb}%s${rb}\n"  "qqqq" "${(qqqq)arg}"
 }
+
+
+#function pwd() {
+#    typeset -Ag optlist
+#    optlist=()
+#    get-arguments -A optlist -f 'D,L,P,r' -- $argv
+#    
+#    typeset -a flags
+#    flags=()
+#    
+#    if [[ $optlist[-D] ]]; then
+#        noglob unset optlist[-D]
+#        flags+=('-D')
+#    fi
+#    case $# in
+#        0)
+#            builtin pwd
+#        ;;
+#        *)
+#        
+#        
+#        for optname optval in ${(kv)optlist}; do
+#            echo "builtin $0 $=optname"
+#            print $=flags -- "$(builtin $0 $=optname)"
+#        done
+#    
+#    ;;
+#    esac
+#    return 0
+#    
+##    if [[ $#optlist -le 1 ]]; then
+##        builtin $0 ${(k)=optlist}
+##    fi
+##
+##    case $1 in
+##
+##    esac
+#    
+#    function __pwd() {
+#        case $1 in
+#            -[LPr]) echo "lpr{$1}"
+#                builtin pwd $1
+#            ;;
+#            -[D])
+#                flags='-D'
+##                builtin pwd
+#                if [[ $optlist[-L] ]]; then
+#                    echo 'L IS'
+#                fi
+#            ;;
+#            *)  echo 'err'
+#            ;;
+#        esac
+##        builtin pwd $1
+##        builtin
+#    }
+#    
+#    for optname optval in ${(kv)optlist}; do
+#        echo "builtin $0 $=optname"
+#        __pwd $=optname
+##        print -- "$optname={$optval}"
+#    done
+#    
+#    
+#    
+##    get-arguments '-f L -f P -f D'
+##    print -- "--- --- ---"
+##    echo ${(k)optlist}
+##    echo ${(v)optlist}
+#}
+#functions -t pwd

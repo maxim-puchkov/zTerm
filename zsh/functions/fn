@@ -23,7 +23,7 @@ function fn() (
     function fn_src() {
         local fsource=$functions_source[$fname]
         if [[ -z $fsource ]]; then
-            error "Definition file not found: %F{1}$fname%f."
+            error "Definition file not found: %F{1}${fname}%f."
             return 1
         fi
         echo "$fsource"
@@ -60,26 +60,24 @@ function fn() (
     ## commands: list function commands ##
     function fn_commands() {
         name_prefix="${name_prefix:-${fname%%_*}}"
-        local fcommands=(${$( fn -p $name_prefix sub $fname )//${name_prefix}_/})
+        typeset -a fcommands=(${$( fn -p $name_prefix sub $fname )//${name_prefix}_/})
         printf '%s\n' $fcommands
         return 0
     }
     ## print-commands: format and list function commands ## [Function]
     function fn_print-commands() {
         name_prefix="${name_prefix:-${fname%%_*}}"
-        print_h1 'Commands:'
+        print_h1 "%U${fname}%u commands:"
         print -P -l "%F{14}$( fn -p $name_prefix commands $fname )%f"
         return 0
     }
     
-#    function fn_
-    
+    ## completion: generate function command completion ##
     function fn_completion() {
         # Find files starting with the specified 'fn_name'
         typeset -A reply
         typeset -a fn_files=()
         typeset -a fn_commands=()
-        
         # Parse each file and generate associative array 'reply[command]=description'
         typeset fn_dir f cmd
         fn_dir="${$(fn src $fname):h}"
@@ -93,24 +91,13 @@ function fn() (
                         head -n 1 |
                         sed -e "s/## ${cmd}: //g" -e "s/ ##.*//g"
                 )
-                
                 reply[$cmd]="${description:-''}"
             done
         done
         for k v in ${(kv)reply}; do
-          printf '  %s:"%s"\n' "$k" "$v" | colrm
+            printf '  %s:"%s"\n' "$k" "$v" | colrm
         done
     }
-    
-    function fn_trace() {
-        functions -t 
-    }
-    
-#    ## flag  ##
-#    function fn_arguments() {
-#        red $0
-#    }
-#
     
     # Options
     typeset -A optlist

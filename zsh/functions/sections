@@ -84,13 +84,15 @@ function sections() {
     
     
     
-    function {
+    () {
         local tmp="$1"
         # Read section headers
-        local sections=( ${(@f)"$(
+        typeset -a sections=( ${(@f)"$(
             grep --only-matching --ignore-case --text \
                  --regexp '^\.SH.*$' -- $tmp
         )"} )
+        sections=(${sections/\//\\/})
+        # Option -l: list sections only
         if [[ $optlist[l] ]]; then
             sections-titles
             return 0

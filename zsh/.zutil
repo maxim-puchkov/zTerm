@@ -156,19 +156,19 @@ function date_list_formats() {
     man strftime |
         colcrt - |
         fgrep -- '%' |
-        awk '{ print $1 }' |
+        awk '{ print $1; }' |
         while read fmt; do
             if [[ $fmt[1] == '%' ]]; then
                 formats+=($fmt);
             fi
         done
-    print -a -C 8 ${formats}
+    builtin print -a -C8 -- ${formats}
 }
 function date_formats_preview() {
     for format in $( date_list_formats ); do
         local full_command="\$( $(green "date -j +\'$format\'") )"
         local preview="$(b_byellow \'$( date -j +$format )\')"
-        print -a -C2 "${format}\t ${full_command}\t" "${(Q)preview}"
+        builtin print -a -C2 -- "${format}\t ${full_command}\t" "${(Q)preview}"
     done
 }
 
@@ -363,74 +363,6 @@ function txt() {
 
 
 
-function envt_test() {
-    typeset -a envt_arr
-    envt_arr=(arr1 arr2 arr3)
-    
-    typeset -i10 envt_int
-    envt_int=12345
-}
-function envt() {
-    envt_test
-}
-
-function env-change() {
-    typeset cmd
-    cmd=($@)
-    
-    vars_begin
-    fns_begin=$(typeset -f)
-    
-    
-    typeset env_begin env_end
-    env_begin=$(env)
-    empty-env
-    $cmd
-    
-}
-
-
-function pp() {
-    while [[ -n $1 ]] ; do
-        v=${(P)1}
-        echo $1
-        red $v
-        shift
-    done
-}
-
-
-function df() {
-    typeset variable
-    variable='value'
-    echo $variable
-}
-
-function debug() {
-    # Check argument count
-    if [[ $# -eq 0 ]]; then
-        error 'Function name not specified.'
-        return 2
-    fi
-    
-    # Function name and arguments
-    typeset fname=$1
-    shift
-    typeset -a fargs
-    fargs=($@)
-    
-    # Function source file
-    typeset fsrc=$(fn src $fname)
-    if [[ -z $fsrc ]]; then
-        error "Function not found: %F{1}$fname%f."
-        return 1
-    fi
-    () (
-    functions -t $fname
-    $fname $fargs
-    )
-}
-
 # Print terminal file descriptors
 function fds() {
     typeset -a fds=( 0 1 2 )
@@ -455,18 +387,15 @@ function fds() {
         fi
     done
     # Print result
-    print -P -- '%UFile Descriptors%u:'
-    print -P -- "${(j:, :)result}"
-}
-
-
-
-
-function functions-list() {
-    echo $GREP_COLOR
     
-#    functions +
+    print -P -- '%UFile Descriptors%u:' > ~/var/tmp
+    print -P -- "${(j:, :)result}" >> ~/var/tmp
+    cat ~/var/tmp
 }
+
+
+
+
 
 
 alias linux='open https://docstore.mik.ua/orelly/linux/lnut/index.htm'
@@ -477,4 +406,23 @@ function te() {
     c='z z z'
     echo $a $b "$c" | highlight
     highlight $a $b "$c" 
+}
+
+function test-cdp() {
+    dir=$PWD
+    cmd=$1
+    
+    ${=cmd} ~/Developer/Projects
+    ${=cmd} ~/Documents
+    ${=cmd} ~/var
+    ${=cmd} ~/Public/Drop\ Box
+    ${=cmd} ~/Library/DES
+    
+    print-line
+    for i in {1..15}; do
+        ${=cmd} +3
+    done
+    print-line
+    
+    \cd $dir
 }

@@ -12,7 +12,6 @@ function commands() {
     typeset pattern=$1
     () (
         PCREGREP_COLOUR='01;96'
-        print -l ${commands:t} |
-            pcre2grep --color='always' --regexp "$pattern"
-    )
+        pcre2grep --color='always' --regexp "$pattern" $1
+    ) =( print -l ${commands:t} )
 }

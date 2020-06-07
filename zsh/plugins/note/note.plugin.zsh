@@ -4,6 +4,8 @@
 
 
 function note() {
-    env
+    mkdir -p ~/etc
+    touch ~/etc/note
+    
 }
 

@@ -6,23 +6,28 @@
 #  Created by Maxim Puchkov on 2020-04-17.
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
-##stat -f '%HT'
-#
-file="${1}"
-#
-#
-#if [[ ! -f $file ]]; then
-#    open $file
-#    return 0
-#fi
 
+# Path to file
+typeset file=$1
+() {
+    if [[ ! -r $1 ]] && [[ -r $2 ]]; then
+        file=$2
+    fi
+} ${file} ${file%.}
 
-regular_file="${file%.}"
-
-if [[ -r "$regular_file" ]] &&
-    [[ -f "$regular_file" ]]; then
-    open -a Xcode -g "$regular_file"
-    return 0
+# Open regular files in Xcode
+if [[ -f $file ]]; then
+    open -a Xcode $file
+else
+    open $file
 fi
 
-open "$file"
+# Check exit code
+typeset exit_code=$?
+if [[ $exit_code -ne 0 ]]; then
+    typeset title="Error ($exit_code)"
+    typeset subtitle="${0:t}"
+    typeset message="Cannot open '$file'"
+    zsh "$ZTERM/Tools/do-applescript" Notify $message $title $subtitle
+fi
+return 0

@@ -10,7 +10,7 @@
 # Print zsh arrays (-a) or associative arrays (-A). 
 function print-array() {
     function __print-array-element() {
-        printf "  %s[$(cyan %+s)] %-3s $(bold '%+s')\n" "$var_id" "$1" '=' "$2"
+        printf "  %s[$(cyan %+s)] %-3s '$(bold '%+s')'\n" "$var_id" "$1" '=' "$2"
     }
     
     if [[ $# -eq 0 ]]; then

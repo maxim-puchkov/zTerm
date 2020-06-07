@@ -13,13 +13,14 @@ function doc() {
     doc_links=($(< $doc_links_file))
     
     
-    while [[ $1 =~ '^-' ]]; do
+    while [[ $1 =~ '^[-]' ]]; do
         case $1 in
             -l|--list)
                 print -l -- "%F{4}"${(ok)doc_links}"%f"
                 return 0
             ;;
-            --) shift; break
+            --) shift
+                break
             ;;
         esac
         shift

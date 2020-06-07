@@ -9,106 +9,95 @@
 
 # Change directory and print its path.
 function cdp() {
-    trap "unfunction -m '${0}_*'" EXIT
-    
+    #MARK: - Functions
+    trap "unfunction -m '${0}-*'" EXIT
     # Print error message
-    function cdp_error() (
-        typeset program_label error_text
-        program_label="%B%F{9}${program_name}%f%b"
-        error_text="$@"
-        print -P -- "${program_label}: ${error_text}"
-    ) >&2
+    function ${0}-error() {
+        typeset program_name=${0%%-*}
+        typeset code=1
+        if [[ $# -gt 1 ]]; then
+            code=$1
+            shift
+        fi
+        error -$code --title "$program_name" \
+              --no-autocapitalize --highlight "$@"
+        return $?
+    }
     
-    
-    # Program data
-    typeset program_name=$0
+        
+    #MARK: - Options
     typeset -A optlist
+    get-arguments -A optlist -f 'q,s,L,P' -- $argv
     
-    # Program options
-    optlist=()
-    while [[ $1 =~ '^-' ]]; do
-        case $1 in
-            -[qsLP])
-                optlist+=($1 'on')
-            ;;
-            -[0-9]*)
-                break
-            ;;
-            --)
-                shift
-                break
-            ;;
-        esac
-        shift
-    done
     
-    # Program arguments
-    typeset dir arg old new
+    #MARK: - Arguments
+    typeset dir arg
     case $# in
-        # No arguments: 'cd'
-        0)  dir="$HOME"
+        # No arguments (cd)
+        0)  dir=$HOME
         ;;
-        # One argument: 'cd DIR'
-        1)  arg="$1"
-            if [[ ${arg[1]} =~ '^(\+|\-)' ]]; then
-                local n stack_index
+        # One argument (cd DIR)
+        1)  arg=$1
+            if [[ $arg == '-' ]]; then
+                arg='-1'
+            fi
+            if [[ $arg =~ '^[-+][0-9]+' ]]; then
+                typeset stack_index
                 case ${arg[1]} in
-                    -)  n=${${arg:1}:-1}
-                        stack_index=$n
-                    ;;
-                    +)  n=${arg:1}
-                        stack_index=$(( ${#dirstack} - $n ))
-                    ;;
+                    -) stack_index=${arg:1}                        ;;
+                    +) stack_index=$(( ${#dirstack} - ${arg:1} ))  ;;
                 esac
-                dir="${dirstack[$stack_index]}"
-                if [[ -z "$dir" ]]; then
-                    cdp_error "no such entry in dir stack."
+                dir=${dirstack[$stack_index]}
+                if [[ -z $dir ]]; then
+                    cdp-error 1 'no such entry in dir stack.'
                     return 1
                 fi
             else
                 dir="${arg:a}"
             fi
         ;;
-        # Two arguments: 'cd OLD NEW'
-        2)  old="$1"
-            new="$2"
-            if [[ ! "$PWD" =~ "$old" ]]; then
-                cdp_error "string %F{1}$old%f is not in %F{1}$PWD%f."
+        # Two arguments (cd OLD NEW)
+        2)  typeset old new
+            old=$1
+            new=$2
+            if [[ ! $PWD =~ $old ]]; then
+                cdp-error 1 'string $old in not in $PWD.'
                 return 1
             fi
             dir="${PWD//$old/$new}"
         ;;
         # More than two arguments
-        *)  cdp_error 'too many arguments.'
+        *)  cdp-error 2 'too many arguments.'
             return 2
         ;;
     esac
     
     
+    #MARK: - Test Errors
     # Already in the directory
-    if [[ "$dir" == "$PWD" ]]; then
+    if [[ $dir == $PWD ]]; then
         return 0
     fi
     # Directory does not exist
-    if [[ ! -e "$dir" ]]; then
-        cdp_error "no such file or directory: %F{1}${dir:t}%f."
+    if [[ ! -e $dir ]]; then
+        cdp-error 1 'no such file or directory: $dir.'
         return 1
     fi
-    # File exists but not a directory
-    if [[ ! -d "$dir" ]]; then
-        cdp_error "%F{1}${dir:t}%f is not a directory."
+    # File exists but is not a directory
+    if [[ ! -d $dir ]]; then
+        cdp-error '$dir is not a directory.'
         return 1
     fi
     
     
-    #
-    builtin cd ${(k)=optlist} "$dir" 2>/dev/null
-    if [[ "$dir" != "$PWD" ]]; then
-        cdp_error "cannot change directory to %F{1}${dir:t}%f."
+    #MARK: - Change Directory
+    builtin cd ${(k)=optlist} $dir &>/dev/null
+    if [[ $? -ne 0 ]]; then
+        cdp-error 'cannot change directory to $dir.'
         return 1
     fi
     if [[ -z ${optlist[-q]} ]]; then
-        print -P "Directory changed to %F{2}$PWD%f."
+        print -P "Directory changed to %F{2}${PWD}%f."
     fi
     return 0
 }
