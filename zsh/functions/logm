@@ -1,0 +1,63 @@
+#!/bin/zsh
+
+#  logm
+#  Z-Function (61)
+#
+#  Created by Maxim Puchkov on 2020-06-09.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function logm() {
+    typeset -i last_status=$status
+    typeset -a flags=(-P -X2)
+    
+    # Options
+    typeset -A optlist
+    get-arguments -o 'c' -f '-short' -- $argv
+    
+## -c: log a status code different from last command's ##
+    if [[ -n $optlist[-c] ]]; then
+        last_status=$optlist[-c]
+    fi
+    
+    # Log message prefix and description
+    typeset prefix description
+    if [[ -z $argv ]]; then
+        case $last_status in
+            0) description='Success' ;;
+            *) description='Error'   ;;
+        esac
+    else
+        description="${argv%.}"
+    fi
+    
+    # Message prefix components
+    typeset date host program
+    date='%D{%b-%d-%Y %T}'
+    host='%n@%m'
+    program='${0:t}'
+    
+    #
+    if [[ $optlist[--short] ]]; then
+    
+    fi
+    
+    
+    # Additional formatting when outputting to
+    # terminal file descriptor
+    if [[ -t 1 ]]; then
+        description="%F{4}${description}%f"
+        host="%B${host}%b"
+        program="%U${program}%u"
+    fi
+    
+    # Format log message
+    prefix="[${date}]\t${host} ${program}-\$\$ [${last_status}]"
+    description="${description}."
+        
+    # Print the log message in the environment of
+    # the parent process
+    typeset log="${prefix}:\t${description}"
+    trap "builtin print ${flags} -- \"${log}\";" EXIT
+}

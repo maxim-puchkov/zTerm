@@ -52,15 +52,13 @@ function typeof() {
 #
     typeset -a result=()
     for var_id in $@; do
-#        local var_type="$(Bad 'undefined')"
         var_type='%F{1}undefined%f'
         var_value=${(P)var_id}
         var_length=${#var_value}
         if [[ -n $var_value ]]; then
-#            var_type="$(Info ${(t)${(P)var_id}})"
             var_type="%F{6}${(Pt)var_id}%f"
         fi
-        result+=( "typeof %U$var_id%u:" "$var_type (${(P)#var_id})" )
+        result+=( "typeof %U${var_id}%u:" "${var_type} (${(P)#var_id})" )
     done
     
     

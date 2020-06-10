@@ -37,7 +37,6 @@ function error() {
     
     
     
-    
     #MARK: - Functions
     # Highlight all shell '$variables' in description
     function error-replace-variables() {
@@ -111,6 +110,8 @@ function error() {
         return 0
     }
     
+    
+    #MARK: Format
     # Title - text, color, and exit code
     function error-format-title() {
         if [[ $exit_code -gt 0 ]]; then
@@ -122,10 +123,12 @@ function error() {
         fi
         return 0
     }
+    
     function error-plain-title() {
         unfunction error-format-title
         function error-format-title() { return 0; }
     }
+    
     # Description - capitalization, trailing period, highlight
     function error-format-description() {
         message_desc="${message_desc:-No description.}"
@@ -148,10 +151,12 @@ function error() {
         fi
         return 0
     }
+    
     function error-plain-description() {
         unfunction error-format-description
         function error-format-description() { return 0; }
     }
+    
     # Message - title, description, and return status
     function error-format-message() {
         error-format-title
@@ -174,13 +179,12 @@ function error() {
     
     
     
-    
     # Parse options and print the error
     {
         error-parse-options "$@" &&
-            error-print &&
-            trap "$exit_trap" EXIT
+        error-print &&
+        trap "$exit_trap" EXIT
     }
-    unfunction -m "${0}-*"
+#    unfunction -m "${0}-*"
     return $exit_code
 }

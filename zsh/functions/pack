@@ -11,7 +11,7 @@
 # files in the parent directory 'dir' to 'dir/subdir'.
 function pack() {
     # Options
-    typeset -Ag optlist=()
+    typeset -A optlist=()
     get_options optlist 'e:Eo:Ot:Tn:N' "${(q)@}"
     shift ${optlist[length]}
     

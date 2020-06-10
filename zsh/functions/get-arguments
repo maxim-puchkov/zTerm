@@ -76,6 +76,7 @@ function get-arguments() {
     typeset array_id array_type
     array_id='optlist'
     array_type='-A'
+    
     # Parse flag and option names
     while [[ $1 =~ '^[-]' ]]; do
         case $1 in
@@ -118,6 +119,8 @@ function get-arguments() {
             *)  break ;;
         esac
     done
+    unfunction -m "${0}-*"
+    
     # Check argument names
     if [[ -z $flag_names ]] && [[ -z $option_names ]]; then
         error -1 'Missing argument descriptions.'
@@ -138,13 +141,18 @@ function get-arguments() {
     # Set 'specs' for the zparseopts builtin
     typeset -a specs
     specs=(${^flag_names}'=flags' ${^option_names}':=opts')
+    
     # Parse and store recognized flags and options
     builtin zparseopts -D -E -- $=specs &>/dev/null
     if [[ $? -ne 0 ]]; then
         error -1 'Failed to parse options.'
     fi
-    trap 'builtin set -- "'${argv}'"' EXIT
-#    trap "bluebg $argv; builtin set -- \"${argv}\";" EXIT
+#    if [[ $1 =~ '^[-]{1,2}$' ]]; then
+    if [[ $1 == '--' ]]; then 
+        shift
+    fi
+    trap "builtin set -- ${argv}" EXIT
+    
     # Append each flag to 'opts' as an option
     # with value 'flag is set'
     typeset flag
@@ -159,7 +167,5 @@ function get-arguments() {
     typeset $=array_type -g $array_id
     set -A $array_id ${(kv)opts}
     
-    
-    unfunction -m "${0}-*"
     return 0
 }

@@ -9,7 +9,7 @@
 
 # <#Function description#>
 function list() {
-    trap "unfunction -m '${0}[_-]*'" EXIT
+    trap "unfunction -m '${0}_*'" EXIT
     
     function list-ls() {
         typeset flags=$1

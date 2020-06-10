@@ -11,29 +11,45 @@ log_prefix="$(date -j +'%b %d %T') $(hostname -s) ${0:t}[$$]:\t"
 echo "${log_prefix} Service started."
 
 
+function test_command() {
+    command_name="$1"
+    if ! whence ${(P)command_name} &>/dev/null; then
+        echo "${log_prefix} [127] Command not found: ${command_name:l}." >&2
+        exit 127
+    fi
+    return 0
+}
+
+
+# Input
+BREW=$1
+test_command BREW
+TLDR=$2
+test_command TLDR
+
 # Before update
-brew_before=${#$( brew outdated --quiet )}
-tldr_before=${#$( tldr --list )}
+brew_before=${#$( $BREW outdated --quiet )}
+tldr_before=${#$( $TLDR --list )}
 error=0
 
 
 #MARK: - Update
 ( # Update Homebrew formulae
   echo "Updating Homebrew..."
-  brew update
+  $BREW update
   echo "Upgrading Homebrew formulae..."
-  brew upgrade
+  $BREW upgrade
 ) && (
   # Update tldr
-  Info "Updating TLDR..."
-  tldr --update
+  echo "Updating TLDR..."
+  $TLDR --update
 ) || error=$?
 
 
 if [[ $error -eq 0 ]]; then
   # After update
-  brew_after=${#$( brew outdated --quiet )}
-  tldr_after=${#$( tldr --list )}
+  brew_after=${#$( $BREW outdated --quiet )}
+  tldr_after=${#$( $TLDR --list )}
   # Difference
   brew_diff=$(( $brew_before - $brew_after ))
   tldr_diff=$(( $tldr_after - $tldr_before ))

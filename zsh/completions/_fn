@@ -1,38 +1,40 @@
 #compdef fn
 
-#  _fn
-#  Z-Function Completion (13)
+# _fn
+# ~/Developer/Projects/Terminal/zsh/functions/fn
 #
-#  Created by Maxim Puchkov on 2020-04-30.
-#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+# zsh function completion
+# Updated on 2020-06-08 at 03:24 pm
 
 
 _arguments -C \
-  "-h[display help]: :_nothing" \
+  -y"[do Y]" \
+  {-x,--xong}"[do X]" \
+  {-h,--help}"[show help]" \
   ":command:->command" \
   "*::arg:->arg"
 
 case $state in
-  command)
-    declare -a commands
+  (command)
+    typeset -a commands
     commands=(
       isdef:"check if a function is defined"
+      options:"''"
       commands:"list function commands"
       print-commands:"format and list function commands"
       sub:"list functions defined within a function"
+      completion:"generate function command completion"
       src:"find function source file"
       def:"print function definition"
     )
     _describe -t commands command commands
-    return
   ;;
-  
-  arg)
-    case ${line[1]} in
-      *)
-        _functions
-      ;;
-    esac
+  (arg)
+    typeset -a args
+    args=(
+      # Completion for commands' arguments
+    )
+    _describe -t args arg args
   ;;
 esac
 

@@ -9,8 +9,6 @@
 
 # <#Function description#>
 function lnp() {
-    trap "unfunction -m '${0}-*'" EXIT
-    
     # Print error message
     function ${0}-error() {
         typeset program_name=${0%%-*}
@@ -33,12 +31,12 @@ function lnp() {
     function lnp-link() {
         ln_source=${argv:1:-1}
         ln_target=${argv[-1]}
-        /bin/ln $=optlist -- $ln_source $ln_target
+        /bin/ln ${(k)=optlist} -- $ln_source $ln_target
         typeset exit_code=$?
         if [[ -d $ln_target ]]; then
             local l
             for l in ${=ln_source}; do
-                lnp-message "$l" "${(D)ln_target}/$l"
+                lnp-message "${(D)l}" "${(D)ln_target}/${l:t}"
             done
         else
             lnp-message "${(D)ln_source}" "${(D)ln_target}"
@@ -112,6 +110,7 @@ function lnp() {
             fi
         ;;
     esac
-    
+
+    unfunction -m "${0}-*"
     return $?
 }

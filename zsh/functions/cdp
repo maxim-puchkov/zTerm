@@ -10,7 +10,6 @@
 # Change directory and print its path.
 function cdp() {
     #MARK: - Functions
-    trap "unfunction -m '${0}-*'" EXIT
     # Print error message
     function ${0}-error() {
         typeset program_name=${0%%-*}
@@ -99,5 +98,7 @@ function cdp() {
     if [[ -z ${optlist[-q]} ]]; then
         print -P "Directory changed to %F{2}${PWD}%f."
     fi
+    
+    unfunction -m "${0}-*"
     return 0
 }

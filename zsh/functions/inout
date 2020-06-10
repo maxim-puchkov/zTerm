@@ -1,0 +1,37 @@
+#!/bin/zsh
+
+#  inout
+#  Z-Function (59)
+#
+#  Created by Maxim Puchkov on 2020-06-08.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function inout() {
+    # Determine input source
+    typeset input_source
+    if [[ -p /dev/stdin ]];             then input_source='pipe';       fi
+    if [[ -t 0 ]];                      then input_source='terminal';   fi
+    if [[ ! -t 0 && ! -p /dev/stdin ]]; then input_source='redirected'; fi
+    
+    # Read /dev/stdin
+    typeset -a std{in,out,err}
+    local arg
+    while read -t arg; do stdin+=($arg); done
+    # Add positional arguments to input
+    stdin+=($argv)
+    set -- $stdin
+    
+    # Process input and output
+    print -P -- "\t%BInput/Output%b:"
+    print -P -- "\t%F{2}Standard input%f  [${#stdin}] = {${(j:, :)stdin}}"
+    print -P -- "\t%F{3}Standard output%f [${#stdout}] = {${(j:, :)stdout}}"
+    print -P -- "\t%F{1}Standard error%f  [${#stderr}] = {${(j:, :)stderr}}" >/dev/stderr
+    
+    # File descriptors
+    print -P -- "\t%BFile Descriptors%b:"
+    fds
+    
+    echo;echo;
+}

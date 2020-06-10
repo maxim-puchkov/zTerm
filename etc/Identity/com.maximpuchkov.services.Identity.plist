@@ -1,29 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<!--
-   com.maximpuchkov.services.Identity.plist
-   Services
-
-   Created by Maxim Puchkov on 2020-05-26.
-   Copyright (c) 2020 Maxim Puchkov. All rights reserved.
--->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>Label</key>
-    <string>Services.com.maximpuchkov.services.Identity.plist</string>
-    <key>ProgramArguments</key>
-    <array>
-        <string>/bin/zsh</string>
-        <string>-c</string>
-        <string>/usr/local/bin/Identity</string>
-    </array>
-    <key>RunAtLoad</key>
-    <true/>
-    <key>WorkingDirectory</key>
-    <string>/usr/local/Terminal</string>
-    <key>StandardOutPath</key>
-    <string>var/log/Services/com.maximpuchkov.services.Identity.plist.log</string>
-    <key>StandardErrorPath</key>
-    <string>var/log/Services/com.maximpuchkov.services.Identity.plist.log</string>
+	<key>Label</key>
+	<string>com.maximpuchkov.services.Identity</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/usr/local/bin/Identity</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>WorkingDirectory</key>
+	<string>/usr/local/Terminal</string>
+	<key>StandardOutPath</key>
+	<string>var/log/Services/com.maximpuchkov.services.Identity.log</string>
+	<key>StandardErrorPath</key>
+	<string>var/log/Services/com.maximpuchkov.services.Identity.log</string>
 </dict>
 </plist>

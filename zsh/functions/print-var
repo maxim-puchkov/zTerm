@@ -13,33 +13,58 @@ function print-var() {
         error -2 'Enter variable name.'
     fi
     
-    if [[ $1 == '@' ]]; then
-        1='argv'
-    fi
-    
-    trap '(
-        typeset null undefined join_value
-        null="%F{1}null%f"
-        undefined="%F{1}undefined%f"
-        join_value="%u, %U"
-
-        typeset var_id
-        var_id='$1'
-        if [[ ! -v $var_id ]]; then
-            print -P -- "Variable %F{9}$var_id%f is not set."
-            return 1
+    while [[ -n $1 ]]; do
+        if [[ $1 == '@' ]]; then
+            1='argv'
         fi
+        
+        trap '(
+            typeset null undefined join_value
+            null="%F{1}null%f"
+            undefined="%F{1}undefined%f"
+            join_value="%u, %U"
 
-        typeset type length description value
-        type=${(Pt)var_id}
-        length=${(P)#var_id}
-        description="[type=${type:-$undefined}, length=${length:-0}]"
-        value="${(@Ppj:$join_value:)var_id}"
+            typeset var_id
+            var_id='$1'
+            if [[ ! -v $var_id ]]; then
+                print -P -- "Variable %F{9}$var_id%f is not set."
+                return 1
+            fi
 
-        typeset desc_format value_format
-        desc_format="%F{2}%B${var_id}%b%f${description}"
-        value_format="%F{2}%B{%b%f %U${value:-$null}%u %F{2}%B}%b%f"
-        print -P -- "%B%U${0}%u%b: ${desc_format} = ${value_format}"
-    )' EXIT
+            typeset type length description value
+            type=${(Pt)var_id}
+            length=${(P)#var_id}
+            description="(type=${type:-$undefined}, length=${length:-0})"
+#            value="${(@Ppj:$join_value:)var_id}"
+            
+            
+            
+            typeset desc_format value_format
+            desc_format="%F{2}${var_id}%f${description}"
+            
+            case $type in
+                *association*)
+                    value="${(@Ppkvj:$join_value:)var_id}"
+                    value_format="{%U${value}%u}"
+                ;;
+                *array*)
+                    value="${(@Ppj:$join_value:)var_id}"
+                    value_format="{%U${value}%u}"
+                ;;
+                *integer*)
+                    value="${(@P)var_id}"
+                    value_format="%U${value}%u"
+                ;;
+                *)
+                    value="\"${(@P)var_id}\""
+                    value_format="%U${value}%u"
+                ;;
+            esac
+            
+    #        value_format="{%U${value}%u}"
+            print -P -- "%B${0}%b: ${desc_format}=${value_format:-$null}"
+        )' EXIT
+        shift
+    done
     return 0
 }

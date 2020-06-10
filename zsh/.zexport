@@ -13,9 +13,11 @@ export tempdir="${TMPDIR}tempfiled"
 
 
 # Projects
-export zterm='/usr/local/Terminal'   # "$PROJ/Terminal"
+export zterm='/usr/local/Terminal'
 export ztermxcodeproj="$zterm/Terminal.xcodeproj"
 
+export zdot="$ZDOTDIR"
+export zplug="$ZDOTDIR/.oh-my-zsh/custom/plugins"
 export zfunc="$ZDOTDIR/functions"
 export zsitefunc="$ZDOTDIR/site-functions"
 export zdisabled="$ZDOTDIR/disabled"
@@ -26,7 +28,7 @@ export zcompdir="$ZDOTDIR/completions"
 # Package Managers
 export HOMEBREW='/usr/local/Homebrew'
 export ZSHLIB='/usr/local/Cellar/zsh/5.8/share/zsh'
-
+export CELLAR="$HOMEBREW/Cellar"
 
 # SFU Files
 export SFU="$ICLOUD/SFU"
@@ -52,14 +54,7 @@ export TRUE=0
 export LDFLAGS='-L/usr/local/opt/openssl@1.1/lib'
 export CPPFLAGS='-I/usr/local/opt/openssl@1.1/include'
 
-
 export error_color=9
 
-#export lb='%B%F{1}{%f%b'
-#export rb='%B%F{1}}%f%b'
-#lb=${(%)lb}
-#rb=${(%)rb}
-
-
-export lb='\e[1;31m'{'\e[0m'
-export rb='\e[1;31m'}'\e[0m'
+export LB='\e[1;31m'{'\e[0m'
+export RB='\e[1;31m'}'\e[0m'

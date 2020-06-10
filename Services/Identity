@@ -7,23 +7,102 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# Data
-#typeset identity_ssh_file
-#identity_ssh_file='etc/identity.ssh'
-#
-#typeset default_status current_status
-#default_status=0
-#current_status=$(< $identity_ssh_file)
-#
-#typeset log_prefix
-#log_prefix="$(date -j +'%b %d %T') $(hostname -s) ${0:t}[$$]:\t"
+#function log() {
+#    typeset
+#    typeset log_prefix="$(date -j +'%b %d %T') $(hostname -s) ${0:t}[${$}]:\t"
+#}
+
+fpath=(/usr/local/Terminal/zsh/functions $fpath)
+autoload -Uz logm
+logm "Hello, logs"
+logm "I'm here!"
+
+exit 12345
 
 
+typeset log_prefix="$(date -j +'%b %d %T') $(hostname -s) ${0:t}[${$}]:\t"
+echo "${log_prefix} Service started."
+
+# Key file
+typeset key=~/.ssh/id_rsa
+if ! ssh-add -T -- $key &>/dev/null; then
+    echo "${log_prefix} Adding private key ${key}."
+    ssh-add -- $key
+fi
+
+# Check status
+typeset -i return_code=$?
+if [[ $return_code -eq 0 ]]; then
+    echo "${log_prefix} Private key ${key} added successfully."
+else
+    echo "${log_prefix} [${return_code}] Failed to add key ${key}." >&2
+fi
+
+
+echo "${log_prefix} Service stopped."
+return $return_code
+
+#fgrep -f <(ssh-keygen -lf ~/.ssh/id_rsa) <(ssh-add -l)
+#if [[ $? -ne 0 ]]; then
+#    ssh-add
+#fi
+#
+
+return 0;
+
+
+#typeset fingerprint=$(ssh-keygen -l -f $public_key)
+alias p='() { print -P "%S${argv}%s"; }'
+
+# () { print-var argv; grep -f $1 $2; C } =(ssh-keygen -lf $pk) =(ssh-add -l)
+
+
+#() {
+#    fgrep -f $1 < $2
+#} <(ssh-keygen -lf $public_key) \
+#  <(ssh-add -l)
+
+
+() {
+    print-var argv
+    if fgrep -f $1 < $2; then
+        p 'grep returns true'
+#        p "{$(<$1)}"
+    fi
+    return $?
+} <(ssh-keygen -lf $public_key) =(ssh-add -l)
+
+
+return 0
+
+
+#ssh-keygen -lf $public_key
+if [[ $fingerprint =~ "$(ssh-add -l)" ]]; then
+    echo 'OK O KO K  OS OS O S OSO SO O'
+fi
+ssh-add -l
+
+
+return 0
+
+case $(() {
+    ssh-add -l | fgrep -f $1
+} =(ssh-keygen -l -f $public_key)) in
+#
+0) p '%S~~ 0'
+;;
+1) p '~~ 1'
+;;
+*) p
+
+;;
+esac
+
+return $?
 # Data
-typeset identity_ssh_file='etc/identity.ssh'
-typeset default_status=0
-typeset current_status=$(< $identity_ssh_file)
-typeset log_prefix="$(date -j +'%b %d %T') $(hostname -s) ${0:t}[$$]:\t"
+#typeset identity_ssh_file='etc/identity.ssh'
+#typeset default_status=0
+#typeset current_status=$(<$identity_ssh_file)
 
 
 # Cancel if 
@@ -37,3 +116,4 @@ fi
 echo $default_status > $identity_ssh_file
 echo "${log_prefix} [0] Status changed from $current_status to $default_status."
 exit 0
+

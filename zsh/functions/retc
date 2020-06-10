@@ -1,0 +1,46 @@
+#!/bin/zsh
+
+#  retc
+#  Z-Function (62)
+#
+#  Created by Maxim Puchkov on 2020-06-09.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Print return code(s) of the last command or pipe.
+function retc() {
+    # Last status codes
+    typeset -a last_pipestatus=(${pipestatus})
+    local length index value
+    length=${#last_pipestatus}
+    
+    # Set color of status code 0 to green; status
+    # codes greater than 0 - to red
+    index=1
+    while [[ $index -le $length ]]; do
+        value=${last_pipestatus[$index]}
+        value="%F{%(${value}?:2:1)}${value}%f"
+        # Underline the very last status code
+        if [[ $index -eq $length ]]; then
+            value="%U${value}%u"
+        fi
+        last_pipestatus[$index]=${(%)value}
+        index=$(( $index + 1 ))
+    done
+    
+    # Set message label and description
+    typeset label description
+    if [[ $length -eq 1 ]]; then
+        label='Status code'
+    else
+        label='Pipe status'
+    fi
+    description=${(j:, :)last_pipestatus}
+    
+    # Additional formatting when outputting to terminal
+    if [[ -t 1 ]]; then
+        label="%B${label}%b"
+    fi
+    
+    builtin print -P -- "${label}: ${description}."
+}

@@ -67,7 +67,7 @@ function template() {
         fi
         
         # Copy the original template file to new location
-        if ! ( cp -n $template_orig $template_new ); then
+        if ! ( command cp -n $template_orig $template_new ); then
             error 'Fatal error.'
             return 1
         fi
@@ -82,7 +82,8 @@ function template() {
     }
     
     
-    #MARK: - Z-Shell Command Template
+    #MARK: - Z-Shell command template
+    ## zsh: zsh script ##
     function template_zsh() {
         target_dir="${target_dir:-${PWD}}"
         name="${$( generate_filename ${1:-${(U)0}} )}"
@@ -94,7 +95,8 @@ function template() {
         copy_template
     }
     
-    #MARK: - Z-Shell Function
+    #MARK: - Z-Shell function
+    ## zfunction: zsh autoload function
     function template_zfunction() {
         target_dir="${target_dir:-${zfunc}}"
         name="${$( generate_filename $1 ):-${(U)0}}"
@@ -117,7 +119,8 @@ function template() {
 #        copy_template
 #    }
     
-    #MARK: - Python Script
+    #MARK: - Python script
+    ## python: python3 script ##
     function template_python() {
         target_dir="${target_dir:-${PWD}}"
         name="${$( generate_filename ${1:-${(U)0}} )}"
@@ -131,7 +134,8 @@ function template() {
         fi
     }
     
-    #MARK: - Z-Shell Completion
+    #MARK: - Z-Shell completion function
+    ## zcompletion: zsh function completion ##
     function template_zcompletion() {
         target_dir="${target_dir:-${ZDOTDIR}/completions}"
         name="${$( generate_filename _${1:-${(U)0}} )}"
@@ -142,10 +146,11 @@ function template() {
         
         zfc completion "$1" > "$template_orig"
         copy_template
-        rm -f "$template_orig"
+        command rm -f "$template_orig"
     }
     
-    #MARK: - Z-Shell Tools
+    #MARK: - Z-Shell tool
+    ## ztool: standalone zsh script ##
     function template_ztool() {
         target_dir="${target_dir:-${ZTERM}/Tools}"
         name="${$( generate_filename ${1:-${(U)0}} )}"
@@ -158,10 +163,10 @@ function template() {
         fi
     }
     
-    #MARK: - launchd service
+    #MARK: - Launchd service
     function template_launchd() {
         target_dir="${target_dir:-${ZTERM}/etc/$1}"
-        mkdir $target_dir
+        command mkdir -p -- $target_dir
         name="${$( generate_filename ${m_organization_id}.services.${1:-${(U)0}} )}.plist"
         m_filename=$name
         m_package_name='Services'
@@ -170,8 +175,30 @@ function template() {
         copy_template
         
         template -d $ZTERM/Services ztool $1
-        ln -s  $ZTERM/etc/$1/$name  $HOME/Library/LaunchAgents/$name
-        ln -s  $ZTERM/Services/$1   /usr/local/bin/$1
+        command ln -s -- $target_dir/$name  $HOME/Library/LaunchAgents/$name
+        command ln -s -- $ZTERM/Services/$1 /usr/local/bin/$1
+    }
+    
+    #MARK: - Oh-my-zsh custom plugin
+    function template_plugin() {
+        target_dir="${target_dir:-${ZDOTDIR/plugins/$1}}"
+        mkdir -p -- $target_dir
+        name="${$( generate_filename $1 ):-${(U)0}}.plugin.zsh"
+        m_filename=$name
+        m_package_name='Oh-my-zsh plugin'
+        template_new="${target_dir}/${name}"
+        template_orig="$templates_dir/$0"
+        copy_template
+        
+        command mkdir -p -- $target_dir
+        command ln -s -- $target_dir/$name $ZDOTDIR/.oh-my-zsh/plugins/custom/$1/$name
+        
+    }
+    
+    
+    function template_null() {
+        print -P "Called $0"
+        print-fstack
     }
     
     
@@ -227,12 +254,14 @@ function template() {
     
     # Subcommand
     typeset cmd=$1
-    shift
     if ! (whence ${0}_${cmd} &>/dev/null); then
-        error "Function command not found: %F{1}$cmd%f."
-        return 127
+        error -127 'Function command not found: $cmd.'
     fi
-    
+    shift
     ${0}_${cmd} "$@"
-    return $?
+    typeset -i exit_code=$?
+    
+#    builtin print -P -- "${0}: done."
+    logm "Done"
+    return $exit_code
 }

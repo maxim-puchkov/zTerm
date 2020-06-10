@@ -8,39 +8,61 @@
 
 
 # Information about shell functions.
+
+# Options:
+## -h,--help: show help ##
 function fn() (
     ## def: print function definition ##
     function fn_def() {
-        local fdef=$( functions $fname )
-        local highlight=(pygmentize -f 'terminal16m' -O style='xcodedark' -l 'zsh')
-        if [[ -z ${commands[pygmentize]} ]]; then
-            error -0 'Cannot find pygments.'
-            highlight='cat'
-        fi
-        printf '%s\n' "$fdef" | $highlight
+        print -P -N -- "%Ufunction%u "
+        functions $fn_name | highlight
+        return $?
     }
     ## src: find function source file ##
     function fn_src() {
-        local fsource=$functions_source[$fname]
+        local fsource=$functions_source[$fn_name]
         if [[ -z $fsource ]]; then
-            error "Definition file not found: %F{1}${fname}%f."
+            error -1 'Function definition file for $fn_name was not found.'
             return 1
         fi
-        echo "$fsource"
+        # Abbreviate directories
+        local -a output_flags=('-P')
+        if [[ -t 1 ]]; then
+            output_flags+=('-D')
+        fi
+        builtin print $=output_flags -- $fsource
         return 0
     }
+    ## show: display function definition and source file ##
+    function fn_show() {
+        local code=$(fn def $fn_name)
+        local file=$(fn src $fn_name)
+        printf '%s\n\n' "$code"
+        print -Pf '%s\n' "%U${(D)file}%u"
+        return 0
+    }
+    ## open: open function source file ##
+    function fn_open() {
+        local file=$(fn src $fn_name 2>/dev/null)
+        if [[ ! -r $file ]]; then
+            error -1 'Cannot read source file for function $fn_name.'
+        fi
+        open -a Xcode $file
+        return 0
+    }
+    
     ## isdef: check if a function is defined ##
     function fn_isdef() {
-        if [[ ${+functions[$fname]} -ne 1 ]]; then
+        if [[ ${+functions[$fn_name]} -ne 1 ]]; then
             return 1
         fi
         return 0
     }
     ## sub: list functions defined within a function ##
     function fn_sub() {
-        name_prefix="${name_prefix:-${fname%%_*}}"
+        name_prefix="${name_prefix:-${fn_name%%_*}}"
         typeset srcfile
-        if ! srcfile=$( fn src $fname ); then
+        if ! srcfile=$( fn src $fn_name ); then
             return 1
         fi
         typeset -a list
@@ -50,53 +72,192 @@ function fn() (
                        $srcfile ))
         typeset f
         for f in $list; do
-            typeset subfname=${f%'('*')'}
-            if [[ ${+functions[$subfname]} ]]; then
-                printf '%s\n' "$subfname"
+            typeset subfn_name=${f%'('*')'}
+            if [[ ${+functions[$subfn_name]} ]]; then
+                printf '%s\n' "$subfn_name"
             fi
         done
         return 0
     }
     ## commands: list function commands ##
     function fn_commands() {
-        name_prefix="${name_prefix:-${fname%%_*}}"
-        typeset -a fcommands=(${$( fn -p $name_prefix sub $fname )//${name_prefix}_/})
+        name_prefix="${name_prefix:-${fn_name%%_*}}"
+        typeset -a fcommands=(${$( fn -p $name_prefix sub $fn_name )//${name_prefix}_/})
         printf '%s\n' $fcommands
         return 0
     }
     ## print-commands: format and list function commands ## [Function]
     function fn_print-commands() {
-        name_prefix="${name_prefix:-${fname%%_*}}"
-        print_h1 "%U${fname}%u commands:"
-        print -P -l "%F{14}$( fn -p $name_prefix commands $fname )%f"
+        name_prefix="${name_prefix:-${fn_name%%_*}}"
+        print_h1 "%U${fn_name}%u commands:"
+        print -P -l -- "%F{14}$( fn -p $name_prefix commands $fn_name )%f"
         return 0
     }
+    ## options: list function flags and options ##
+    function fn_options() {
+        typeset grep_pattern='^[ ]*##[ ]*-[^ ]+: .* ##[ ]*$'
+        typeset sed_pattern='s/## ([-].*): (.*) ##/\1: \2/p'
+        typeset -A reply
+        reply=("${(@f)$(grep -E $grep_pattern $srcfile |
+            sed -n -E $sed_pattern |
+            awk -F ': ' '{print $1; print $2;}' )}")
+        # Print completion for arguments
+        local k v
+        for k v in ${(kv)reply}; do
+            if [[ $k =~ '[,]' ]]; then
+                k="{$k}"
+            fi
+            printf '\t%s"[%s]" \\\\\n' "$k" "$v"
+        done
+    }
+#    function fn_options() {
+#        name_prefix="${name_prefix:-${fn_name%%_*}}"
+#        typeset srcfile
+#        if ! srcfile=$( fn src $fn_name ); then
+#            return 1
+#        fi
+##        typeset -a list
+##        list=($( egrep --only-matching \
+##                       --ignore-case \
+##                       --regexp "^[ ]*## -[^ ,]+(,[^ ,]+)? ##" -- \
+##                       $srcfile ))
+##        typeset -A reply
+#        typeset grep_pattern='^[ ]*##[ ]*-[^ ]+: .* ##[ ]*$'
+#        typeset sed_pattern='s/## ([-].*): (.*) ##/\1 "\2"/p'
+#        typeset -a reply
+#        reply=("${(@f)$(grep -E $grep_pattern $srcfile |
+#            sed -n -E $sed_pattern)}")
+##        grep -E $grep_pattern $zfunc/fn |
+##            sed -n -E $sed_pattern
+#
+##        print-var list
+##        awk -F '## | ##|: ' '/## -.*: .* ##/ { print "2={"$2"}"; }' $srcfile
+##        typeset f
+##        for f in $list; do
+##            typeset subfn_name=${f%'('*')'}
+##            if [[ ${+functions[$subfn_name]} ]]; then
+##                printf '%s\n' "$subfn_name"
+##            fi
+##        done
+#        return 0
+#    }
+#
     
+    
+    
+    # Completion for commands
+    function fn_commands_completion() {
+        if
+        typeset -A reply
+        typeset file=$1
+        typeset -a fn_commands=($(fn -p ${file:t} commands ${file:t}))
+        # Parse commands
+        for cmd in $fn_commands; do
+            local pattern="## ${cmd}: .+ ##.*function ${fn_name}[\-\_]${cmd}[\s]*\(\)"
+            local description=$(
+                greps '-o' "$pattern" "$file" |
+                    head -n 1 |
+                    sed -e "s/## ${cmd}: //g" -e "s/ ##.*//g"
+            )
+            reply[$cmd]="${description:-''}"
+        done
+        # Print command completion
+        for k v in ${(kv)reply}; do
+            printf '\t%s:"%s"\n' "$k" "$v" | colrm
+        done
+    }
+    
+    
+    
+    
+    #MARK: - Z-Shell Function Completion
     ## completion: generate function command completion ##
     function fn_completion() {
-        # Find files starting with the specified 'fn_name'
-        typeset -A reply
-        typeset -a fn_files=()
-        typeset -a fn_commands=()
-        # Parse each file and generate associative array 'reply[command]=description'
-        typeset fn_dir f cmd
-        fn_dir="${$(fn src $fname):h}"
-        for f in ${fn_dir}/${fname}*; do
-            autoload +X ${f:t}
-            fn_commands=($( fn -p ${f:t} commands ${f:t} ))
+        # Completion for flags and options
+        function completion_arguments() {
+            typeset grep_pattern='^[ ]*##[ ]*-[^ ]+: .* ##[ ]*$'
+            typeset sed_pattern='s/## ([-].*): (.*) ##/\1: \2/p'
+            typeset -A reply
+            reply=("${(@f)$(grep -E $grep_pattern $zfunc/fn |
+                sed -n -E $sed_pattern |
+                awk -F ': ' '{print $1; print $2;}' )}")
+            # Print completion for arguments
+            local k v
+            for k v in ${(kv)reply}; do
+                if [[ $k =~ '[,]' ]]; then
+                    k="{$k}"
+                fi
+                printf '\t%s"[%s]" \\\\\n' "$k" "$v"
+            done
+        }
+        # Completion for commands
+        function completion_commands() {
+            typeset -A reply
+            typeset file=$1
+            typeset -a fn_commands=($(fn -p ${file:t} commands ${file:t}))
+            # Parse commands
             for cmd in $fn_commands; do
-                local pattern="## ${cmd}: .+ ##.*function ${fname}[\-\_]${cmd}[\s]*\(\)"
+                local pattern="## ${cmd}: .+ ##.*function ${fn_name}[\-\_]${cmd}[\s]*\(\)"
                 local description=$(
-                    greps '-o' "$pattern" "$f" |
+                    greps '-o' "$pattern" "$file" |
                         head -n 1 |
                         sed -e "s/## ${cmd}: //g" -e "s/ ##.*//g"
                 )
                 reply[$cmd]="${description:-''}"
             done
+            # Print command completion
+            for k v in ${(kv)reply}; do
+                printf '\t%s:"%s"\n' "$k" "$v" | colrm
+            done
+        }
+        # Find files starting with the specified 'fn_name'
+        typeset -a cmd_completion=()
+        typeset -a arg_completion=()
+        # Parse each file and generate argument/command completion
+        typeset fn_dir file cmd
+        fn_dir="${$( fn src $fn_name ):h}"
+        for file in ${fn_dir}/${fn_name}*; do
+            autoload +X ${file:t}
+            arg_completion=(${(@f)"$(completion_arguments $file)"})
+            cmd_completion=(${(@f)"$(completion_commands $file)"})
         done
-        for k v in ${(kv)reply}; do
-            printf '  %s:"%s"\n' "$k" "$v" | colrm
-        done
+        
+cat <<EOF
+#compdef ${fn_name}
+
+# _${fn_name}
+# ${(D)fn_dir}/${fn_name}
+#
+# zsh function completion
+# $(date -j +'Updated on %F at %I:%M %p')
+
+
+_arguments -C \\
+$( print -x2 -l -- ${arg_completion} )
+  ":command:->command" \\
+  "*::arg:->arg"
+
+case \$state in
+  (command)
+    typeset -a commands
+    commands=(
+$( print -x6 -l -- ${cmd_completion} )
+    )
+    _describe -t commands command commands
+  ;;
+  (arg)
+    typeset -a args
+    args=(
+      # Completion for commands' arguments
+    )
+    _describe -t args arg args
+  ;;
+esac
+
+return 0
+EOF
+        
+        return 0
     }
     
     # Options
@@ -124,25 +285,29 @@ function fn() (
     # fn command argument
     typeset cmd=$1
     shift
-    if ! ( functions | grep -w -e "fn[-_]$cmd" &>/dev/null ); then
+    if ! ( functions + | grep -w -e "fn[-_]$cmd" &>/dev/null ); then
         error "Unknown command: %F{1}$cmd%f."
         return 127
     fi
     
-    typeset fname="$@"
+    typeset fn_name="$@"
     if [[ $cmd == 'isdef' ]]; then
-        ${0}_${cmd} $fname
+        ${0}_${cmd} $fn_name
         return $?
     fi
     
     # Return if function is not defined
-    if [[ ${+functions[$fname]} -eq 0 ]]; then
-        error "Function %F{1}$fname%f is not defined."
+    if [[ ${+functions[$fn_name]} -eq 0 ]]; then
+        error "Function %F{1}$fn_name%f is not defined."
         return 1
     fi
     
     # Execute the command
-    autoload +X $fname
-    ${0}_${cmd} $fname
-    return $?
+    autoload +X $fn_name
+    ${0}_${cmd} $fn_name
+    if [[ $? -ne 0 ]]; then
+        local cmd_text="$0 $cmd $fn_name"
+        error -1 'Command error: $cmd_text.'
+    fi
+    return 0
 )

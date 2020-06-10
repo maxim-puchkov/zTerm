@@ -8,8 +8,8 @@ alias -g quiet='&> /dev/null'  # redirect stdout and stderr
 alias -g 2NIL='2> /dev/null'
 alias -g NIL='&> /dev/null'
 # If statement: if [[ ... ]] T
-alias -g T='; then echo "-- $(green True)  $(pass) --";  return 0; \
-              else echo "-- $(red   False) $(fail) --";  return 1; \
+alias -g T='; then echo "-- $(green True)  $(pass) --"; \
+              else echo "-- $(red   False) $(fail) --"; \
             fi;'
 
 
@@ -38,7 +38,7 @@ alias bi='brew info'
 alias cp='command cp -i'
 
 # Builtin 'cd'
-alias cfd='cd -- "$pfd"'
+alias cfd='cd -- "$(pfd)"'
 
 # List of commands
 alias cmdlist='printf "%s\n" ${commands:t}'
@@ -47,38 +47,50 @@ alias cmdlist='printf "%s\n" ${commands:t}'
 alias e='builtin echo'
 alias E='b_redbg'
 
+# Builtin 'functions'
+alias fns='functions'
+
 # Builtin 'print'
 #alias print='builtin print -P'
 alias printp='builtin print -P'
 alias printl='builtin print -l'
 alias printn='builtin print -n'
 alias p='print'
+alias pp='printp'
 alias pl='printl'
 alias pn='printn'
+alias pdir='builtin print -P -D'
+#alias pc='builtin print -P "%F{1}"'
 
 
-function k() {
-    print -P -- "%U$argv keys%u:   %B%F{4}${(Pkj:%f%b, %B%F\{4\}:)argv}%f%b"
+pc() {
+    color=$1
+    shift
+    print -P "%F{$color}${argv}%f"
+    print -P "%F{2}${argv:1}%f"
+print -P '%F{3}' ${argv:1} '%f'
+
+
 }
-function v() {
-    print -P -- "%U$argv values%u: %B%F{6}${(Pvj:%f%b, %B%F\{6\}:)argv}%f%b";
-}
-#alias k='() { print -P -- "%UKeys%u: %B%F{4}${(Pkj:%f%b, %F\{4\}:)argv}"; }'
-#alias v='() { }'
 
+# Print variables
+alias pv='print-var'
+alias pv@='print-var @'
+alias pfs='print-fstack'
 
 # Builtin 'exit'
-alias q='exit'
+alias q='builtin exit'
 
 # Command 'find'
-alias ffind='/usr/bin/find -L'
+alias ffind='command find -L'
 
 # Command 'git'
 alias gs='git status'
 alias grs='git restore --staged'
-alias gt='() { cdp "$zterm"; git status; }'
+alias gt='() { cd "$zterm"; git status; }'
 
 # Command 'grep'
+alias gr='grep'
 alias grepa='egrep --color=always --text --regexp ".*"'
 alias mang='grepman'
 
@@ -92,6 +104,7 @@ alias lctl='command launchctl'
 alias mv='command mv -i'
 
 # Command 'open'
+alias open='command open -a Xcode'
 alias o='open "$PWD"'
 alias xopen='open -a Xcode'
 alias textopen='open -a TextEdit'
@@ -99,28 +112,25 @@ alias webopen='open -a Safari'
 alias scriptopen='open -a "Script Editor"'
 alias vb='open -a VirtualBox'
 
-#
+# Command 'openssl'
 alias sha256='openssl sha256'
 
 # Builtin 'set'
-alias set3='set -- -a -b -c'
-alias set6='set -- -a -b -c -d D -e E -f F'
-alias set+='set -- -a -b -c -d D -e E -f F --long LONG args "hello world"'
+alias set1='set -- -a -b -c'
+alias set2='set -- -a -b -c -d D -e E -f F'
+alias set3='set -- -a -b -c -d D -e E -f F --long LONG args "hello world"'
 
 # Python
-alias python='python3'
-alias pip='pip3'
-alias idle='idle3'
-
-# Command 'pygmentize'
-#alias highlight='pygmentize -f "terminal16m" -O style="xcodedark" -l "zsh"'
+alias python='command python3'
+alias pip='command pip3'
+alias idle='command idle3'
 
 # Command 'rm'
 alias rm='command rm -i'
 
 # Command 'strings'
-alias str='strings'
-
+alias str='command strings'
+alias ss='showsrc'
 
 # Type
 alias i='infocmd'
@@ -128,8 +138,8 @@ alias t='typeof'
 alias wh='builtin whence -av'
 
 # Files
-alias lock='chflags uchg'
-alias unlock='chglags nouchg'
+alias lock='command chflags uchg'
+alias unlock='command chflags nouchg'
 
 
 #MARK: - Extended Commands
@@ -147,5 +157,9 @@ alias rr='zsh "$DEV/bin/run.sh"'
 alias rte='open -a Xcode $DEV/bin/run-tests.zsh'
 alias rt='zsh "$DEV/bin/run-tests.zsh"'
 
+
 alias my-phone='print -P "%F{14}+1 %B(778) 512-7614‬%b%f"'
 alias my-postal='print -P "%F{14}V3T 2S5%f"'
+
+
+alias C='retc'

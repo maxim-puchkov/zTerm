@@ -3,11 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>Label</key>
-	<string>Services.com.maximpuchkov.services.Committer.plist</string>
+	<string>com.maximpuchkov.services.Committer</string>
 	<key>ProgramArguments</key>
 	<array>
-		<string>/bin/zsh</string>
-		<string>-c</string>
 		<string>/usr/local/bin/Committer</string>
 	</array>
 	<key>RunAtLoad</key>
@@ -26,8 +24,8 @@
 	<key>WorkingDirectory</key>
 	<string>/usr/local/Terminal</string>
 	<key>StandardOutPath</key>
-	<string>var/log/Services/com.maximpuchkov.services.Committer.plist.log</string>
+	<string>var/log/Services/com.maximpuchkov.services.Committer.log</string>
 	<key>StandardErrorPath</key>
-	<string>var/log/Services/com.maximpuchkov.services.Committer.plist.log</string>
+	<string>var/log/Services/com.maximpuchkov.services.Committer.log</string>
 </dict>
 </plist>

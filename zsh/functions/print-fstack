@@ -1,0 +1,17 @@
+#!/bin/zsh
+
+#  print-fstack
+#  Z-Function (60)
+#
+#  Created by Maxim Puchkov on 2020-06-08.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Print function stack
+function print-fstack() {
+    typeset -a array
+    array=('%F{2}'${(aO)^funcstack}'%f')
+    typeset arrow='%F{7}->%f'
+    print -P -- ${(pj:$arrow:)array}
+    return 0
+}

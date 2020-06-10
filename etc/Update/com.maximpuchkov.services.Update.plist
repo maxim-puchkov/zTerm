@@ -1,21 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<!--
-   com.maximpuchkov.services.Update.plist
-   Services
-
-   Created by Maxim Puchkov on 2020-04-30.
-   Copyright (c) 2020 Maxim Puchkov. All rights reserved.
--->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
 	<key>Label</key>
 	<string>com.maximpuchkov.services.Update</string>
 	<key>ProgramArguments</key>
 	<array>
-		<string>zsh</string>
-		<string>-c</string>
 		<string>/usr/local/bin/update-service</string>
+		<string>/usr/local/bin/brew</string>
+		<string>/usr/local/bin/tldr</string>
 	</array>
 	<key>RunAtLoad</key>
 	<false/>

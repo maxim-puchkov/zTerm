@@ -3,11 +3,11 @@
 
 # Open default macOS Terminal.
 function term1() {
-    open -g '/System/Applications/Utilities/Terminal.app'
+    open -a '/System/Applications/Utilities/Terminal.app' -g -n
 }
 # Open iTerm2.
 function term2() {
-    open -g '/Applications/iTerm.app'
+    open -a '/Applications/iTerm.app' -g -n
 }
 
 # Open in editor.
@@ -363,35 +363,7 @@ function txt() {
 
 
 
-# Print terminal file descriptors
-function fds() {
-    typeset -a fds=( 0 1 2 )
-    if [[ $# -ne 0 ]]; then
-        fds=($@)
-    fi
-    typeset -a result
-    result=()
-    # Test if $fd is a file descriptor
-    typeset -i fd
-    for fd in $fds; do
-        case $fd in
-            0) name="stdin ($fd)"  ;;
-            1) name="stdout ($fd)" ;;
-            2) name="stderr ($fd)" ;;
-            *) name="$fd"          ;;
-        esac
-        if [[ -t $fd ]]; then
-            result+=("%B%F{2}${name}%f%b")
-        else
-            result+=("%F{1}${name}%f")
-        fi
-    done
-    # Print result
-    
-    print -P -- '%UFile Descriptors%u:' > ~/var/tmp
-    print -P -- "${(j:, :)result}" >> ~/var/tmp
-    cat ~/var/tmp
-}
+
 
 
 
@@ -425,4 +397,92 @@ function test-cdp() {
     print-line
     
     \cd $dir
+}
+
+
+# Associative arrays
+function k() {
+    print -P -- "%U$argv keys%u:   %B%F{4}${(Pkj:%f%b, %B%F\{4\}:)argv}%f%b"
+}
+function v() {
+    print -P -- "%U$argv values%u: %B%F{6}${(Pvj:%f%b, %B%F\{6\}:)argv}%f%b";
+}
+function kv() {
+    print -C2 -P -- "${(Pkv)argv}"
+}
+
+function env0() {
+    /usr/bin/env -i "${(@f)$(< ~/etc/env0)}" \
+    /usr/local/bin/zsh -f "$@"
+}
+function env1() {
+    /usr/bin/env -i "${(@f)$(< ~/etc/env1)}" \
+    /usr/local/bin/zsh  -f "$@"
+}
+
+
+
+
+function fdw() {
+#    typeset filepath=/tmp/$0.txt
+    typeset file="$0_$$_$(date -j +'%H:%M').txt"
+    exec 3<>/tmp/$file
+    
+    print -- "$0" >&3
+    print -P -- "Arguments[$#]: {$argv}" >&3
+    print -P -- "fds 0..10:" >&3
+    fds {0..10} >&3
+    
+    exec 3>&-
+    return $?
+}
+
+
+fdc_foo() {
+    count=$1
+    repeat $count; do
+        local delay=$(( $RANDOM % 10 ))
+        if [[ $delay -gt 2 ]]; then
+            print -P "Error: sleep delay is too long: i=%F{3}${delay}%f" >&2
+        else
+            print -P "OK: sleeping for i=%F{3}${delay}%f seconds..." >&1
+            sleep ${delay:-0}
+        fi
+    done
+}
+
+function fdc() {
+    exec 3<&0
+    exec 4>&1
+    exec 5>&2
+    count=${1:-1}
+    result=$( { time (fdc_foo $count 1>&4 2>&5); } 2>&1 )
+    
+    read -t -u0 args0;
+    red "FD0: $args0"
+    echo
+    read -t -u3 args3;
+    blue "FD3: $args3"
+    echo
+    
+#    cat <&3
+#    cat <&4
+#    cat <&5
+    
+    exec 3>&- 4>&- 5>&-
+    redbg "Result = $result"
+}
+
+
+
+function list-services() {
+    /bin/launchctl list | fgrep 'com.maximpuchkov'
+}
+
+function print-quotes() {
+    typeset arg=$1
+    printf "%-4s: ${lb}%s${rb}\n"  "q"    "${(q)arg}"
+    printf "%-4s: ${lb}%s${rb}\n"  "qq"   "${(qq)arg}"
+    printf "%-4s: ${lb}%s${rb}\n"  "qqq"  "${(qqq)arg}"
+    printf "%-4s: ${lb}%s${rb}\n"  "qqqq" "${(qqqq)arg}"
 }

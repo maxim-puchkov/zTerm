@@ -1,0 +1,38 @@
+#!/bin/zsh
+
+#  readf
+#  Z-Function (63)
+#
+#  Created by Maxim Puchkov on 2020-06-09.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Read an input file into an array so that N'th line of the file
+# is the N'th element of the array.
+function readf() {
+    typeset array_id='array'
+    # Options
+#    case $1 in
+#        -a|--array)
+#            if [[ -z $2 ]]; then
+#                error -1 'Missing array identifier'
+#            fi
+#            array_id=$2
+#        ;;
+#        -*) shift ;&
+#        *)  break ;;
+#    esac
+    
+    typeset -Ag optlist
+    get-arguments -o '-to' -- $argv
+    
+    
+    typeset -ag array
+    typeset filename=${1:-/dev/stdin}
+    
+    array=("${(@f)$(< $filename)}")
+    builtin print -P -- "${#array} lines read from $filename"
+    
+    
+    logm "${#array} lines read from $filename"
+}

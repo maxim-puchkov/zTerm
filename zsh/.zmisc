@@ -10,6 +10,7 @@
 export enckey1="f978c11e9a04fbda0ad2bbcd20ca8274ec2daa6f776b2192b8e20a060b765492"    # enckey1: 13 May 22:00
 export enciv1="be87368daada310f928cbbc33591a125"    # enciv1: 13 May 22:00
 export var="My new variable"    # var: 04 Jun 15:49
+export varb="%BMy new bold variable%b"    # varb: 07 Jun 19:13
 # <#Insertion Point: addexp#>
 
 
@@ -53,8 +54,7 @@ export var="My new variable"    # var: 04 Jun 15:49
 #    
 #}
 
-function f() {
-    print -P -- "%F{3}To Standard Input%f"   >&0
-    print -P -- "%F{2}To Standard Output%f"  >&1
-    print -P -- "%F{1}To Standard Error%f"   >&2
+function ret() {
+    return ${1:-0}; 
 }
+
