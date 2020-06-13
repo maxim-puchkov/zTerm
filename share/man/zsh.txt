@@ -1,0 +1,792 @@
+%!PS-Adobe-3.0
+%%Creator: groff version 1.19.2
+%%CreationDate: Thu Jun 11 21:31:09 2020
+%%DocumentNeededResources: font Times-Roman
+%%+ font Times-Bold
+%%+ font Times-Italic
+%%DocumentSuppliedResources: procset grops 1.19 2
+%%Pages: 5
+%%PageOrder: Ascend
+%%DocumentMedia: Default 612 792 0 () ()
+%%Orientation: Portrait
+%%EndComments
+%%BeginDefaults
+%%PageMedia: Default
+%%EndDefaults
+%%BeginProlog
+%%BeginResource: procset grops 1.19 2
+%!PS-Adobe-3.0 Resource-ProcSet
+/setpacking where{
+pop
+currentpacking
+true setpacking
+}if
+/grops 120 dict dup begin
+/SC 32 def
+/A/show load def
+/B{0 SC 3 -1 roll widthshow}bind def
+/C{0 exch ashow}bind def
+/D{0 exch 0 SC 5 2 roll awidthshow}bind def
+/E{0 rmoveto show}bind def
+/F{0 rmoveto 0 SC 3 -1 roll widthshow}bind def
+/G{0 rmoveto 0 exch ashow}bind def
+/H{0 rmoveto 0 exch 0 SC 5 2 roll awidthshow}bind def
+/I{0 exch rmoveto show}bind def
+/J{0 exch rmoveto 0 SC 3 -1 roll widthshow}bind def
+/K{0 exch rmoveto 0 exch ashow}bind def
+/L{0 exch rmoveto 0 exch 0 SC 5 2 roll awidthshow}bind def
+/M{rmoveto show}bind def
+/N{rmoveto 0 SC 3 -1 roll widthshow}bind def
+/O{rmoveto 0 exch ashow}bind def
+/P{rmoveto 0 exch 0 SC 5 2 roll awidthshow}bind def
+/Q{moveto show}bind def
+/R{moveto 0 SC 3 -1 roll widthshow}bind def
+/S{moveto 0 exch ashow}bind def
+/T{moveto 0 exch 0 SC 5 2 roll awidthshow}bind def
+/SF{
+findfont exch
+[exch dup 0 exch 0 exch neg 0 0]makefont
+dup setfont
+[exch/setfont cvx]cvx bind def
+}bind def
+/MF{
+findfont
+[5 2 roll
+0 3 1 roll
+neg 0 0]makefont
+dup setfont
+[exch/setfont cvx]cvx bind def
+}bind def
+/level0 0 def
+/RES 0 def
+/PL 0 def
+/LS 0 def
+/MANUAL{
+statusdict begin/manualfeed true store end
+}bind def
+/PLG{
+gsave newpath clippath pathbbox grestore
+exch pop add exch pop
+}bind def
+/BP{
+/level0 save def
+1 setlinecap
+1 setlinejoin
+72 RES div dup scale
+LS{
+90 rotate
+}{
+0 PL translate
+}ifelse
+1 -1 scale
+}bind def
+/EP{
+level0 restore
+showpage
+}def
+/DA{
+newpath arcn stroke
+}bind def
+/SN{
+transform
+.25 sub exch .25 sub exch
+round .25 add exch round .25 add exch
+itransform
+}bind def
+/DL{
+SN
+moveto
+SN
+lineto stroke
+}bind def
+/DC{
+newpath 0 360 arc closepath
+}bind def
+/TM matrix def
+/DE{
+TM currentmatrix pop
+translate scale newpath 0 0 .5 0 360 arc closepath
+TM setmatrix
+}bind def
+/RC/rcurveto load def
+/RL/rlineto load def
+/ST/stroke load def
+/MT/moveto load def
+/CL/closepath load def
+/Fr{
+setrgbcolor fill
+}bind def
+/setcmykcolor where{
+pop
+/Fk{
+setcmykcolor fill
+}bind def
+}if
+/Fg{
+setgray fill
+}bind def
+/FL/fill load def
+/LW/setlinewidth load def
+/Cr/setrgbcolor load def
+/setcmykcolor where{
+pop
+/Ck/setcmykcolor load def
+}if
+/Cg/setgray load def
+/RE{
+findfont
+dup maxlength 1 index/FontName known not{1 add}if dict begin
+{
+1 index/FID ne{def}{pop pop}ifelse
+}forall
+/Encoding exch def
+dup/FontName exch def
+currentdict end definefont pop
+}bind def
+/DEFS 0 def
+/EBEGIN{
+moveto
+DEFS begin
+}bind def
+/EEND/end load def
+/CNT 0 def
+/level1 0 def
+/PBEGIN{
+/level1 save def
+translate
+div 3 1 roll div exch scale
+neg exch neg exch translate
+0 setgray
+0 setlinecap
+1 setlinewidth
+0 setlinejoin
+10 setmiterlimit
+[]0 setdash
+/setstrokeadjust where{
+pop
+false setstrokeadjust
+}if
+/setoverprint where{
+pop
+false setoverprint
+}if
+newpath
+/CNT countdictstack def
+userdict begin
+/showpage{}def
+/setpagedevice{}def
+}bind def
+/PEND{
+countdictstack CNT sub{end}repeat
+level1 restore
+}bind def
+end def
+/setpacking where{
+pop
+setpacking
+}if
+%%EndResource
+%%EndProlog
+%%BeginSetup
+%%BeginFeature: *PageSize Default
+<< /PageSize [ 612 792 ] /ImagingBBox null >> setpagedevice
+%%EndFeature
+%%IncludeResource: font Times-Roman
+%%IncludeResource: font Times-Bold
+%%IncludeResource: font Times-Italic
+grops begin/DEFS 1 dict def DEFS begin/u{.001 mul}bind def end/RES 72
+def/PL 792 def/LS false def/ENC0[/asciicircum/asciitilde/Scaron/Zcaron
+/scaron/zcaron/Ydieresis/trademark/quotesingle/Euro/.notdef/.notdef
+/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef
+/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef/.notdef
+/.notdef/.notdef/space/exclam/quotedbl/numbersign/dollar/percent
+/ampersand/quoteright/parenleft/parenright/asterisk/plus/comma/hyphen
+/period/slash/zero/one/two/three/four/five/six/seven/eight/nine/colon
+/semicolon/less/equal/greater/question/at/A/B/C/D/E/F/G/H/I/J/K/L/M/N/O
+/P/Q/R/S/T/U/V/W/X/Y/Z/bracketleft/backslash/bracketright/circumflex
+/underscore/quoteleft/a/b/c/d/e/f/g/h/i/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y
+/z/braceleft/bar/braceright/tilde/.notdef/quotesinglbase/guillemotleft
+/guillemotright/bullet/florin/fraction/perthousand/dagger/daggerdbl
+/endash/emdash/ff/fi/fl/ffi/ffl/dotlessi/dotlessj/grave/hungarumlaut
+/dotaccent/breve/caron/ring/ogonek/quotedblleft/quotedblright/oe/lslash
+/quotedblbase/OE/Lslash/.notdef/exclamdown/cent/sterling/currency/yen
+/brokenbar/section/dieresis/copyright/ordfeminine/guilsinglleft
+/logicalnot/minus/registered/macron/degree/plusminus/twosuperior
+/threesuperior/acute/mu/paragraph/periodcentered/cedilla/onesuperior
+/ordmasculine/guilsinglright/onequarter/onehalf/threequarters
+/questiondown/Agrave/Aacute/Acircumflex/Atilde/Adieresis/Aring/AE
+/Ccedilla/Egrave/Eacute/Ecircumflex/Edieresis/Igrave/Iacute/Icircumflex
+/Idieresis/Eth/Ntilde/Ograve/Oacute/Ocircumflex/Otilde/Odieresis
+/multiply/Oslash/Ugrave/Uacute/Ucircumflex/Udieresis/Yacute/Thorn
+/germandbls/agrave/aacute/acircumflex/atilde/adieresis/aring/ae/ccedilla
+/egrave/eacute/ecircumflex/edieresis/igrave/iacute/icircumflex/idieresis
+/eth/ntilde/ograve/oacute/ocircumflex/otilde/odieresis/divide/oslash
+/ugrave/uacute/ucircumflex/udieresis/yacute/thorn/ydieresis]def
+/Times-Italic@0 ENC0/Times-Italic RE/Times-Bold@0 ENC0/Times-Bold RE
+/Times-Roman@0 ENC0/Times-Roman RE
+%%EndSetup
+%%Page: 1 1
+%%BeginPageSetup
+BP
+%%EndPageSetup
+/F0 10/Times-Roman@0 SF 404.4(ZSH\(1\) ZSH\(1\))72 48 R/F1 10.95
+/Times-Bold@0 SF -.219(NA)72 84 S(ME).219 E F0(zsh \255 the Z shell)108
+96 Q F1 -.548(OV)72 112.8 S(ER).548 E(VIEW)-.602 E F0
+(Because zsh contains man)108 124.8 Q 2.5(yf)-.15 G
+(eatures, the zsh manual has been split into a number of sections:)-2.5
+E/F2 10/Times-Italic@0 SF(zsh)108 141.6 Q F0(Zsh o)25 E -.15(ve)-.15 G
+(rvie).15 E 2.5(w\()-.25 G(this section\))-2.5 E F2(zshr)108 153.6 Q
+(oadmap)-.45 E F0(Informal introduction to the manual)7.5 E F2(zshmisc)
+108 165.6 Q F0(An)15 E(ything not \214tting into the other sections)-.15
+E F2(zshe)108 177.6 Q(xpn)-.2 E F0(Zsh command and parameter e)15 E
+(xpansion)-.15 E F2(zshpar)108 189.6 Q(am)-.15 E F0(Zsh parameters)12.5
+E F2(zshoptions)108 201.6 Q F0(Zsh options)7.5 E F2(zshb)108 213.6 Q
+(uiltins)-.2 E F0(Zsh b)5 E(uilt\255in functions)-.2 E F2(zshzle)108
+225.6 Q F0(Zsh command line editing)17.5 E F2(zshcompwid)108 237.6 Q F0
+(Zsh completion widgets)7.5 E F2(zshcompsys)108 249.6 Q F0
+(Zsh completion system)7.5 E F2(zshcompctl)108 261.6 Q F0
+(Zsh completion control)7.5 E F2(zshmodules)108 273.6 Q F0
+(Zsh loadable modules)7.5 E F2(zshcalsys)108 285.6 Q F0(Zsh b)10 E
+(uilt\255in calendar functions)-.2 E F2(zshtcpsys)108 297.6 Q F0(Zsh b)
+10 E(uilt\255in TCP functions)-.2 E F2(zshzftpsys)108 309.6 Q F0(Zsh b)
+7.5 E(uilt\255in FTP client)-.2 E F2(zshcontrib)108 321.6 Q F0
+(Additional zsh functions and utilities)7.5 E F2(zshall)108 333.6 Q F0
+(Meta\255man page containing all of the abo)17.5 E -.15(ve)-.15 G F1
+(DESCRIPTION)72 350.4 Q F0 .879
+(Zsh is a UNIX command interpreter \(shell\) usable as an interacti)108
+362.4 R 1.178 -.15(ve l)-.25 H .878
+(ogin shell and as a shell script com-).15 F .449(mand processor.)108
+374.4 R .449(Of the standard shells, zsh most closely resembles)5.449 F
+/F3 10/Times-Bold@0 SF(ksh)2.949 E F0 -.2(bu)2.95 G 2.95(ti).2 G .45
+(ncludes man)-2.95 F 2.95(ye)-.15 G(nhancements.)-2.95 E .396
+(It does not pro)108 386.4 R .395
+(vide compatibility with POSIX or other shells in its def)-.15 F .395
+(ault operating mode:)-.1 F .395(see the section)5.395 F
+(Compatibility belo)108 398.4 Q(w.)-.25 E .256
+(Zsh has command line editing, b)108 415.2 R .256(uiltin spelling corre\
+ction, programmable command completion, shell func-)-.2 F(tions \(with \
+autoloading\), a history mechanism, and a host of other features.)108
+427.2 Q F1 -.548(AU)72 444 S(THOR).548 E F0 .634(Zsh w)108 456 R .633
+(as originally written by P)-.1 F .633(aul F)-.15 F(alstad)-.15 E F3
+(<pf@zsh.or)3.133 E(g>)-.1 E F0 5.633(.Z)C .633(sh is no)-5.633 F 3.133
+(wm)-.25 G .633(aintained by the members of the)-3.133 F(zsh\255w)108
+468 Q(ork)-.1 E 1.508(ers mailing list)-.1 F F3(<zsh\255w)4.008 E(ork)
+-.1 E(ers@zsh.or)-.1 E(g>)-.1 E F0 6.508(.T)C 1.508(he de)-6.508 F -.15
+(ve)-.25 G 1.508(lopment is currently coordinated by Peter).15 F
+(Stephenson)108 480 Q F3(<pws@zsh.or)3.578 E(g>)-.1 E F0 6.078(.T)C
+1.078(he coordinator can be contacted at)-6.078 F F3
+(<coordinator@zsh.or)3.578 E(g>)-.1 E F0 3.578(,b)C 1.078(ut matters)
+-3.778 F(relating to the code should generally go to the mailing list.)
+108 492 Q F1 -1.04 -1.588(AV A)72 508.8 T(ILABILITY)1.588 E F0(Zsh is a)
+108 520.8 Q -.25(va)-.2 G(ilable from the follo).25 E
+(wing HTTP and anon)-.25 E(ymous FTP site.)-.15 E F3(ftp://ftp.zsh.or)
+108 537.6 Q(g/pub/)-.1 E(https://www.zsh.or)108 549.6 Q(g/pub/)-.1 E F0
+(\))108 561.6 Q 7.443(The up\255to\255date source code is a)108 578.4 R
+-.25(va)-.2 G 7.444(ilable via Git from Sourcefor).25 F 9.944(ge. See)
+-.18 F F3(https://sour)9.944 E(ce-)-.18 E -.25(fo)108 590.4 S -.1(rg).25
+G(e.net/pr).1 E(ojects/zsh/)-.18 E F0 4.334(for details.)6.834 F 6.834
+(As)9.334 G 4.334(ummary of instructions for the archi)-6.834 F 4.634
+-.15(ve c)-.25 H 4.333(an be found at).15 F F3(http://zsh.sour)108 602.4
+Q(cef)-.18 E(or)-.25 E(ge.net/)-.1 E F0(.)A F1(MAILING LISTS)72 624 Q F0
+(Zsh has 3 mailing lists:)108 636 Q F3(<zsh\255announce@zsh.or)108 652.8
+Q(g>)-.1 E F0 1.444(Announcements about releases, major changes in the \
+shell and the monthly posting of the Zsh)144 664.8 R -1.57 -.74(FA Q)144
+676.8 T 5(.\().74 G(moderated\))-5 E F3(<zsh\255users@zsh.or)108 693.6 Q
+(g>)-.1 E F0(User discussions.)144 705.6 Q(zsh 5.8)72 768 Q
+(February 14, 2020)168.87 E(1)192.2 E 0 Cg EP
+%%Page: 2 2
+%%BeginPageSetup
+BP
+%%EndPageSetup
+/F0 10/Times-Roman@0 SF 404.4(ZSH\(1\) ZSH\(1\))72 48 R/F1 10
+/Times-Bold@0 SF(<zsh\255w)108 84 Q(ork)-.1 E(ers@zsh.or)-.1 E(g>)-.1 E
+F0(Hacking, de)144 96 Q -.15(ve)-.25 G(lopment, b).15 E
+(ug reports and patches.)-.2 E 1.6 -.8(To s)108 112.8 T
+(ubscribe or unsubscribe, send mail to the associated administrati).8 E
+.3 -.15(ve a)-.25 H(ddress for the mailing list.).15 E F1
+(<zsh\255announce\255subscribe@zsh.or)108 129.6 Q(g>)-.1 E
+(<zsh\255users\255subscribe@zsh.or)108 141.6 Q(g>)-.1 E(<zsh\255w)108
+153.6 Q(ork)-.1 E(ers\255subscribe@zsh.or)-.1 E(g>)-.1 E
+(<zsh\255announce\255unsubscribe@zsh.or)108 165.6 Q(g>)-.1 E
+(<zsh\255users\255unsubscribe@zsh.or)108 177.6 Q(g>)-.1 E(<zsh\255w)108
+189.6 Q(ork)-.1 E(ers\255unsubscribe@zsh.or)-.1 E(g>)-.1 E F0 -.3(YO)108
+206.4 S 3.495(UO).3 G(NL)-3.495 E 3.495(YN)-1 G .995(EED T)-3.495 F
+3.495(OJ)-.18 G .995(OIN ONE OF THE MAILING LISTS AS THEY ARE NESTED.)
+-3.495 F .994(All submis-)5.994 F .322(sions to)108 218.4 R F1
+(zsh\255announce)2.822 E F0 .322(are automatically forw)2.822 F .322
+(arded to)-.1 F F1(zsh\255users)2.822 E F0 5.322(.A)C .322
+(ll submissions to)-5.322 F F1(zsh\255users)2.823 E F0 .323(are auto-)
+2.823 F(matically forw)108 230.4 Q(arded to)-.1 E F1(zsh\255w)2.5 E(ork)
+-.1 E(ers)-.1 E F0(.)A 2.848(If you ha)108 247.2 R 3.148 -.15(ve p)-.2 H
+2.848(roblems subscribing/unsubscribing to an).15 F 5.348(yo)-.15 G
+5.348(ft)-5.348 G 2.848(he mailing lists, send mail to)-5.348 F F1
+(<listmas-)5.347 E(ter@zsh.or)108 259.2 Q(g>)-.1 E F0 5(.T)C
+(he mailing lists are maintained by Karsten Th)-5 E(ygesen)-.05 E F1
+(<karth)2.5 E(y@k)-.15 E(om.auc.dk>)-.15 E F0(.)A .832
+(The mailing lists are archi)108 276 R -.15(ve)-.25 G .832(d; the archi)
+.15 F -.15(ve)-.25 G 3.332(sc).15 G .832
+(an be accessed via the administrati)-3.332 F 1.132 -.15(ve a)-.25 H
+.832(ddresses listed abo).15 F -.15(ve)-.15 G(.).15 E 5.798
+(There is also a h)108 288 R(yperte)-.05 E 5.798(xt archi)-.15 F -.15
+(ve)-.25 G 8.298(,m).15 G 5.797(aintained by Geof)-8.298 F 8.297(fW)-.25
+G(ing)-8.697 E F1(<gcw@zsh.or)8.297 E(g>)-.1 E F0 8.297(,a)C -.25(va)
+-8.497 G 5.797(ilable at).25 F F1(https://www.zsh.or)108 300 Q(g/mla/)
+-.1 E F0(.)A/F2 10.95/Times-Bold@0 SF(THE ZSH F)72 316.8 Q -.493(AQ)
+-.986 G F0 .479(Zsh has a list of Frequently Ask)108 328.8 R .479
+(ed Questions \(F)-.1 F -.55(AQ)-.74 G .479
+(\), maintained by Peter Stephenson).55 F F1(<pws@zsh.or)2.98 E(g>)-.1 E
+F0 5.48(.I)C(t)-5.48 E .743(is re)108 340.8 R .742
+(gularly posted to the ne)-.15 F(wsgroup)-.25 E F1(comp.unix.shell)3.242
+E F0 .742(and the)3.242 F F1(zsh\255announce)3.242 E F0 .742
+(mailing list.)3.242 F .742(The latest v)5.742 F(er)-.15 E(-)-.2 E 1.064
+(sion can be found at an)108 352.8 R 3.565(yo)-.15 G 3.565(ft)-3.565 G
+1.065(he Zsh FTP sites, or at)-3.565 F F1(http://www.zsh.or)3.565 E(g/F)
+-.1 E -.45(AQ)-.9 G(/).45 E F0 6.065(.T)C 1.065(he contact address for)
+-6.065 F -1.57 -.74(FA Q)108 364.8 T(\255related matters is).74 E F1
+(<faqmaster@zsh.or)2.5 E(g>)-.1 E F0(.)A F2(THE ZSH WEB P)72 381.6 Q
+-.602(AG)-.81 G(E).602 E F0 1.129
+(Zsh has a web page which is located at)108 393.6 R F1
+(https://www.zsh.or)3.629 E(g/)-.1 E F0 6.129(.T)C 1.128
+(his is maintained by Karsten Th)-6.129 F(ygesen)-.05 E F1(<karth)108
+405.6 Q(y@zsh.or)-.15 E(g>)-.1 E F0 4.268(,o)C 4.268(fS)-4.268 G 1.768
+(unSITE Denmark.)-4.268 F 1.768
+(The contact address for web\255related matters is)6.768 F F1(<webmas-)
+4.269 E(ter@zsh.or)108 417.6 Q(g>)-.1 E F0(.)A F2(THE ZSH USERGUIDE)72
+434.4 Q F0 3.585(Au)108 446.4 S(ser)-3.585 E 1.085
+(guide is currently in preparation.)-.18 F 1.085
+(It is intended to complement the manual, with e)6.085 F 1.084
+(xplanations and)-.15 F .871(hints on issues where the manual can be ca\
+bbalistic, hierographic, or do)108 458.4 R .871
+(wnright mystifying \(for e)-.25 F(xample,)-.15 E 2.888(the w)108 470.4
+R 2.888(ord `hierographic' does not e)-.1 F 5.387(xist\). It)-.15 F
+2.887(can be vie)5.387 F 2.887(wed in its current state at)-.25 F F1
+(http://zsh.sour)5.387 E(ce-)-.18 E -.25(fo)108 482.4 S -.1(rg).25 G
+(e.net/Guide/).1 E F0 5.269(.A)C 2.769(tt)-5.269 G .269(he time of writ\
+ing, chapters dealing with startup \214les and their contents and the n\
+e)-2.769 F(w)-.25 E(completion system were essentially complete.)108
+494.4 Q F2(INV)72 511.2 Q(OCA)-.493 E(TION)-1.04 E F0 .587(The follo)108
+523.2 R .587(wing \215ags are interpreted by the shell when in)-.25 F
+-.2(vo)-.4 G -.1(ke).2 G 3.086(dt).1 G 3.086(od)-3.086 G .586
+(etermine where the shell will read com-)-3.086 F(mands from:)108 535.2
+Q F1<ad63>108 552 Q F0 -.8(Ta)25.86 G .857 -.1(ke t).8 H .657
+(he \214rst ar).1 F .657(gument as a command to e)-.18 F -.15(xe)-.15 G
+.658(cute, rather than reading commands from a script or).15 F .09
+(standard input.)144 564 R .09(If an)5.09 F 2.59(yf)-.15 G .09
+(urther ar)-2.59 F .09(guments are gi)-.18 F -.15(ve)-.25 G .089
+(n, the \214rst one is assigned to).15 F F1($0)2.589 E F0 2.589(,r)C
+.089(ather than being)-2.589 F(used as a positional parameter.)144 576 Q
+F1<ad69>108 592.8 Q F0 -.15(Fo)27.52 G(rce shell to be interacti).15 E
+-.15(ve)-.25 G 5(.I).15 G 2.5(ti)-5 G 2.5(ss)-2.5 G
+(till possible to specify a script to e)-2.5 E -.15(xe)-.15 G(cute.).15
+E F1<ad73>108 609.6 Q F0 -.15(Fo)26.41 G .748
+(rce shell to read commands from the standard input.).15 F .748(If the)
+5.748 F F1<ad73>3.248 E F0 .749(\215ag is not present and an ar)3.248 F
+(gu-)-.18 E(ment is gi)144 621.6 Q -.15(ve)-.25 G(n, the \214rst ar).15
+E(gument is tak)-.18 E(en to be the pathname of a script to e)-.1 E -.15
+(xe)-.15 G(cute.).15 E .541(If there are an)108 638.4 R 3.041(yr)-.15 G
+.541(emaining ar)-3.041 F .541
+(guments after option processing, and neither of the options)-.18 F F1
+<ad63>3.04 E F0(or)3.04 E F1<ad73>3.04 E F0 -.1(wa)3.04 G 3.04(ss).1 G
+(up-)-3.04 E .519(plied, the \214rst ar)108 650.4 R .519(gument is tak)
+-.18 F .519
+(en as the \214le name of a script containing shell commands to be e)-.1
+F -.15(xe)-.15 G 3.019(cuted. If).15 F .367(the option)108 662.4 R F1
+-.74(PA)2.867 G(TH_SCRIPT)-.21 E F0 .367(is set, and the \214le name do\
+es not contain a directory path \(i.e. there is no `)2.867 F F1(/)A F0
+2.867('i)C(n)-2.867 E .457
+(the name\), \214rst the current directory and then the command path gi)
+108 674.4 R -.15(ve)-.25 G 2.957(nb).15 G 2.957(yt)-2.957 G .457(he v)
+-2.957 F(ariable)-.25 E F1 -.74(PA)2.957 G(TH)-.21 E F0 .458
+(are searched)2.957 F(for the script.)108 686.4 Q
+(If the option is not set or the \214le name contains a `)5 E F1(/)A F0
+2.5('i)C 2.5(ti)-2.5 G 2.5(su)-2.5 G(sed directly.)-2.5 E .77
+(After the \214rst one or tw)108 703.2 R 3.269(oa)-.1 G -.18(rg)-3.269 G
+.769(uments ha).18 F 1.069 -.15(ve b)-.2 H .769
+(een appropriated as described abo).15 F -.15(ve)-.15 G 3.269(,t).15 G
+.769(he remaining ar)-3.269 F(guments)-.18 E
+(are assigned to the positional parameters.)108 715.2 Q(zsh 5.8)72 768 Q
+(February 14, 2020)168.87 E(2)192.2 E 0 Cg EP
+%%Page: 3 3
+%%BeginPageSetup
+BP
+%%EndPageSetup
+/F0 10/Times-Roman@0 SF 404.4(ZSH\(1\) ZSH\(1\))72 48 R -.15(Fo)108 84 S
+2.5(rf).15 G(urther options, which are common to in)-2.5 E -.2(vo)-.4 G
+(cation and the).2 E/F1 10/Times-Bold@0 SF(set)2.5 E F0 -.2(bu)2.5 G
+(iltin, see).2 E/F2 10/Times-Italic@0 SF(zshoptions)2.5 E F0(\(1\).)A
+.958(The long option `)108 100.8 R F1(\255\255emulate)A F0 3.459('f)C
+(ollo)-3.459 E .959(wed \(in a separate w)-.25 F .959
+(ord\) by an emulation mode may be passed to the)-.1 F 3.191(shell. The)
+108 112.8 R .691(emulation modes are those described for the)3.191 F F1
+(emulate)3.191 E F0 -.2(bu)3.191 G .69(iltin, see).2 F F2(zshb)3.19 E
+(uiltins)-.2 E F0 3.19(\(1\). The)B(`)3.19 E F1(\255\255emu-)A(late)108
+124.8 Q F0 3.127('o)C .627(ption must precede an)-3.127 F 3.127(yo)-.15
+G .627(ther options \(which might otherwise be o)-3.127 F -.15(ve)-.15 G
+.627(rridden\), b).15 F .628(ut follo)-.2 F .628(wing options)-.25 F
+.883
+(are honoured, so may be used to modify the requested emulation mode.)
+108 136.8 R .883(Note that certain e)5.883 F .883(xtra steps are)-.15 F
+(tak)108 148.8 Q .481(en to ensure a smooth emulation when this option \
+is used compared with the)-.1 F F1(emulate)2.981 E F0 .481
+(command within)2.981 F 1.125(the shell: for e)108 160.8 R 1.124
+(xample, v)-.15 F 1.124
+(ariables that con\215ict with POSIX usage such as)-.25 F F1(path)3.624
+E F0 1.124(are not de\214ned within the)3.624 F(shell.)108 172.8 Q .43
+(Options may be speci\214ed by name using the)108 189.6 R F1<ad6f>2.93 E
+F0(option.)2.93 E F1<ad6f>5.43 E F0 .43(acts lik)2.93 F 2.93(eas)-.1 G
+.43(ingle\255letter option, b)-2.93 F .43(ut tak)-.2 F .43(es a fol-)-.1
+F(lo)108 201.6 Q(wing string as the option name.)-.25 E -.15(Fo)5 G 2.5
+(re).15 G(xample,)-2.65 E F1(zsh \255x \255o shw)144 218.4 Q
+(ordsplit scr)-.1 E F0 5.711(runs the script)108 235.2 R F1(scr)8.211 E
+F0 8.211(,s)C 5.711(etting the)-8.211 F F1(XTRA)8.211 E(CE)-.55 E F0
+5.711(option by the corresponding letter `)8.211 F F1<ad78>A F0 8.21('a)
+C 5.71(nd the)-8.21 F F1(SH_W)108 247.2 Q(ORD_SPLIT)-.1 E F0 .68
+(option by name.)3.18 F .68(Options may be turned)5.68 F F2(of)3.181 E
+(f)-.18 E F0 .681(by name by using)3.181 F F1(+o)3.181 E F0 .681
+(instead of)3.181 F F1<ad6f>3.181 E F0(.)A F1<ad6f>5.681 E F0 .41
+(can be stack)108 259.2 R .41
+(ed up with preceding single\255letter options, so for e)-.1 F .41
+(xample `)-.15 F F1 .41(\255xo shw)B(ordsplit)-.1 E F0 2.91('o)C 2.91
+(r`)-2.91 G F1(\255xoshw)-2.91 E(ord-)-.1 E(split)108 271.2 Q F0 2.5('i)
+C 2.5(se)-2.5 G(qui)-2.5 E -.25(va)-.25 G(lent to `).25 E F1
+(\255x \255o shw)A(ordsplit)-.1 E F0('.)A .763
+(Options may also be speci\214ed by name in GNU long option style, `)108
+288 R F1<adad>A F2(option\255name)A F0 3.263('. When)B .764
+(this is done,)3.263 F(`)108 300 Q F1<ad>A F0 4.078('c)C 1.577
+(haracters in the option name are permitted: the)-4.078 F 4.077(ya)-.15
+G 1.577(re translated into `)-4.077 F F1(_)A F0 1.577
+(', and thus ignored.)B 1.577(So, for)6.577 F -.15(ex)108 312 S .793
+(ample, `).15 F F1 .793(zsh \255\255sh\255w)B(ord\255split)-.1 E F0
+3.293('i)C -1.9 -.4(nv o)-3.293 H -.1(ke).4 G 3.293(sz).1 G .793
+(sh with the)-3.293 F F1(SH_W)3.293 E(ORD_SPLIT)-.1 E F0 .794
+(option turned on.)3.293 F(Lik)5.794 E 3.294(eo)-.1 G(ther)-3.294 E .131
+(option syntax)108 324 R .131(es, options can be turned of)-.15 F 2.631
+(fb)-.25 G 2.631(yr)-2.631 G .131(eplacing the initial `)-2.631 F F1<ad>
+A F0 2.63('w)C .13(ith a `)-2.63 F F1(+)A F0 .13('; thus `)B F1
+(+\255sh\255w)A(ord\255split)-.1 E F0 2.63('i)C(s)-2.63 E(equi)108 336 Q
+-.25(va)-.25 G 1.399(lent to `).25 F F1<adad6e6fad7368ad77>A
+(ord\255split)-.1 E F0 3.899('. Unlik)B 3.899(eo)-.1 G 1.399
+(ther option syntax)-3.899 F 1.399
+(es, GNU\255style long options cannot be)-.15 F(stack)108 348 Q .487
+(ed with an)-.1 F 2.987(yo)-.15 G .486(ther options, so for e)-2.987 F
+.486(xample `)-.15 F F1(\255x\255shw)A(ordsplit)-.1 E F0 2.986('i)C
+2.986(sa)-2.986 G 2.986(ne)-2.986 G(rror)-2.986 E 2.986(,r)-.4 G .486
+(ather than being treated lik)-2.986 F(e)-.1 E(`)108 360 Q F1
+<ad7820adad736877>A(ordsplit)-.1 E F0('.)A .307
+(The special GNU\255style option `)108 376.8 R F1<adad76>A(ersion)-.1 E
+F0 2.807('i)C 2.807(sh)-2.807 G .307
+(andled; it sends to standard output the shell')-2.807 F 2.808(sv)-.55 G
+.308(ersion infor)-2.958 F(-)-.2 E .666(mation, then e)108 388.8 R .666
+(xits successfully.)-.15 F(`)5.666 E F1(\255\255help)A F0 3.166('i)C
+3.165(sa)-3.166 G .665
+(lso handled; it sends to standard output a list of options that)-3.165
+F(can be used when in)108 400.8 Q -.2(vo)-.4 G(king the shell, then e).2
+E(xits successfully.)-.15 E .437
+(Option processing may be \214nished, allo)108 417.6 R .437(wing follo)
+-.25 F .438(wing ar)-.25 F .438(guments that start with `)-.18 F F1<ad>A
+F0 2.938('o)C 2.938(r`)-2.938 G F1(+)-2.938 E F0 2.938('t)C 2.938(ob)
+-2.938 G 2.938(et)-2.938 G .438(reated as)-2.938 F .15(normal ar)108
+429.6 R .15(guments, in tw)-.18 F 2.65(ow)-.1 G 2.65(ays. Firstly)-2.75
+F 2.65(,al)-.65 G .15(one `)-2.65 F F1<ad>A F0 2.65('\()C .15(or `)-2.65
+F F1(+)A F0 .15('\) as an ar)B .15
+(gument by itself ends option processing.)-.18 F(Secondly)108 441.6 Q
+2.725(,as)-.65 G .225(pecial option `)-2.725 F F1<adad>A F0 2.725('\()C
+.225(or `)-2.725 F F1<2bad>A F0 .225
+('\), which may be speci\214ed on its o)B .225
+(wn \(which is the standard POSIX)-.25 F .49(usage\) or may be stack)108
+453.6 R .49(ed with preceding options \(so `)-.1 F F1<ad78ad>A F0 2.99
+('i)C 2.99(se)-2.99 G(qui)-2.99 E -.25(va)-.25 G .49(lent to `).25 F F1
+.49<ad7820adad>B F0 2.99('\). Options)B .49(are not per)2.99 F(-)-.2 E
+.019(mitted to be stack)108 465.6 R .019(ed after `)-.1 F F1<adad>A F0
+2.519('\()C .019(so `)-2.519 F F1<ad78ad66>A F0 2.519('i)C 2.519(sa)
+-2.519 G 2.519(ne)-2.519 G .02(rror\), b)-2.519 F .02
+(ut note the GNU\255style option form discussed abo)-.2 F -.15(ve)-.15 G
+(,).15 E(where `)108 477.6 Q F1<adad736877>A(ordsplit)-.1 E F0 2.5('i)C
+2.5(sp)-2.5 G(ermitted and does not end option processing.)-2.5 E .38
+(Except when the)108 494.4 R F1(sh)2.88 E F0(/)A F1(ksh)A F0 .38
+(emulation single\255letter options are in ef)2.88 F .38
+(fect, the option `)-.25 F F1<ad62>A F0 2.88('\()C .38(or `)-2.88 F F1
+(+b)A F0 .38('\) ends option)B 2.636(processing. `)108 506.4 R F1<ad62>A
+F0 2.636('i)C 2.636(sl)-2.636 G(ik)-2.636 E 2.636(e`)-.1 G F1<adad>
+-2.636 E F0 .136(', e)B .136
+(xcept that further single\255letter options can be stack)-.15 F .137
+(ed after the `)-.1 F F1<ad62>A F0 2.637('a)C .137(nd will)-2.637 F(tak)
+108 518.4 Q 2.5(ee)-.1 G -.25(ff)-2.5 G(ect as normal.).25 E/F3 10.95
+/Times-Bold@0 SF(COMP)72 544.8 Q -1.04(AT)-.81 G(IBILITY)1.04 E F0 .603
+(Zsh tries to emulate)108 556.8 R F1(sh)3.103 E F0(or)3.103 E F1(ksh)
+3.103 E F0 .602(when it is in)3.103 F -.2(vo)-.4 G -.1(ke).2 G 3.102(da)
+.1 G(s)-3.102 E F1(sh)3.102 E F0(or)3.102 E F1(ksh)3.102 E F0(respecti)
+3.102 E -.15(ve)-.25 G .602(ly; more precisely).15 F 3.102(,i)-.65 G
+3.102(tl)-3.102 G .602(ooks at the)-3.102 F .176
+(\214rst letter of the name by which it w)108 568.8 R .176(as in)-.1 F
+-.2(vo)-.4 G -.1(ke).2 G .176(d, e).1 F .176(xcluding an)-.15 F 2.676
+(yi)-.15 G .176(nitial `)-2.676 F F1(r)A F0 2.676('\()C .176
+(assumed to stand for `restricted'\),)-2.676 F .21(and if that is `)108
+580.8 R F1(b)A F0 .21(', `)B F1(s)A F0 2.71('o)C 2.71(r`)-2.71 G F1(k)
+-2.71 E F0 2.71('i)C 2.71(tw)-2.71 G .21(ill emulate)-2.71 F F1(sh)2.71
+E F0(or)2.71 E F1(ksh)2.709 E F0 5.209(.F)C .209(urthermore, if in)
+-5.209 F -.2(vo)-.4 G -.1(ke).2 G 2.709(da).1 G(s)-2.709 E F1(su)2.709 E
+F0 .209(\(which happens on cer)2.709 F(-)-.2 E .641
+(tain systems when the shell is e)108 592.8 R -.15(xe)-.15 G .641
+(cuted by the).15 F F1(su)3.141 E F0 .641
+(command\), the shell will try to \214nd an alternati)3.141 F .942 -.15
+(ve n)-.25 H(ame).15 E(from the)108 604.8 Q F1(SHELL)2.5 E F0(en)2.5 E
+(vironment v)-.4 E(ariable and perform emulation based on that.)-.25 E
+(In)108 621.6 Q F1(sh)2.749 E F0(and)2.749 E F1(ksh)2.749 E F0 .248
+(compatibility modes the follo)2.749 F .248
+(wing parameters are not special and not initialized by the shell:)-.25
+F F1(ARGC)108 633.6 Q F0(,)A F1(ar)3.663 E(gv)-.1 E F0(,)A F1(cdpath)
+3.663 E F0(,)A F1(\214gnor)3.663 E(e)-.18 E F0(,)A F1(fpath)3.663 E F0
+(,)A F1(HISTCHARS)3.663 E F0(,)A F1(mailpath)3.663 E F0(,)A F1(MANP)
+3.663 E -.95(AT)-.74 G(H).95 E F0(,)A F1(manpath)3.663 E F0(,)A F1(path)
+3.663 E F0(,)A F1(pr)3.663 E(ompt)-.18 E F0(,)A F1(PR)108 645.6 Q(OMPT)
+-.3 E F0(,)A F1(PR)2.5 E(OMPT2)-.3 E F0(,)A F1(PR)2.5 E(OMPT3)-.3 E F0
+(,)A F1(PR)2.5 E(OMPT4)-.3 E F0(,)A F1(psv)2.5 E(ar)-.1 E F0(,)A F1
+(status)2.5 E F0(,)A F1(watch)2.5 E F0(.)A 2.007
+(The usual zsh startup/shutdo)108 662.4 R 2.007(wn scripts are not e)
+-.25 F -.15(xe)-.15 G 4.507(cuted. Login).15 F 2.007(shells source)4.507
+F F1(/etc/pr)4.507 E(o\214le)-.18 E F0(follo)4.507 E 2.006(wed by)-.25 F
+F1($HOME/.pr)108 674.4 Q(o\214le)-.18 E F0 5.361(.I)C 2.861(ft)-5.361 G
+(he)-2.861 E F1(ENV)2.861 E F0(en)2.861 E .361(vironment v)-.4 F .361
+(ariable is set on in)-.25 F -.2(vo)-.4 G(cation,).2 E F1($ENV)2.861 E
+F0 .362(is sourced after the pro\214le)2.862 F 4.291(scripts. The)108
+686.4 R -.25(va)4.291 G 1.791(lue of).25 F F1(ENV)4.291 E F0 1.791
+(is subjected to parameter e)4.291 F 1.79
+(xpansion, command substitution, and arithmetic)-.15 F -.15(ex)108 698.4
+S 1.327(pansion before being interpreted as a pathname.).15 F 1.327
+(Note that the)6.327 F F1(PRIVILEGED)3.827 E F0 1.327(option also af)
+3.827 F 1.328(fects the)-.25 F -.15(exe)108 710.4 S
+(cution of startup \214les.).15 E 5.453(The follo)108 727.2 R 5.452
+(wing options are set if the shell is in)-.25 F -.2(vo)-.4 G -.1(ke).2 G
+7.952(da).1 G(s)-7.952 E F1(sh)7.952 E F0(or)7.952 E F1(ksh)7.952 E F0
+(:)A F1(NO_B)7.952 E(AD_P)-.3 E -.95(AT)-.74 G(TERN).95 E F0(,)A
+(zsh 5.8)72 768 Q(February 14, 2020)168.87 E(3)192.2 E 0 Cg EP
+%%Page: 4 4
+%%BeginPageSetup
+BP
+%%EndPageSetup
+/F0 10/Times-Roman@0 SF 404.4(ZSH\(1\) ZSH\(1\))72 48 R/F1 10
+/Times-Bold@0 SF(NO_B)108 84 Q(ANG_HIST)-.3 E F0(,)A F1(NO_BG_NICE)5.742
+E F0(,)A F1(NO_EQ)5.742 E -.6(UA)-.1 G(LS).6 E F0(,)A F1
+(NO_FUNCTION_ARGZER)5.743 E(O)-.3 E F0(,)A F1(GLOB_SUBST)5.743 E F0(,)A
+F1(NO_GLOB)108 96 Q(AL_EXPOR)-.3 E(T)-.4 E F0(,)A F1(NO_HUP)5.92 E F0(,)
+A F1(INTERA)5.92 E(CTIVE_COMMENTS)-.55 E F0(,)A F1(KSH_ARRA)5.92 E(YS)-1
+E F0(,)A F1(NO_MUL-)5.92 E(TIOS)108 108 Q F0(,)A F1(NO_NOMA)16.647 E
+(TCH)-.95 E F0(,)A F1(NO_NO)16.647 E(TIFY)-.4 E F0(,)A F1(POSIX_B)16.648
+E(UIL)-.1 E(TINS)-.92 E F0(,)A F1(NO_PR)16.648 E(OMPT_PERCENT)-.3 E F0
+(,)A F1(RM_ST)108 120 Q(AR_SILENT)-.9 E F0(,)A F1(SH_FILE_EXP)23.967 E
+(ANSION)-.74 E F0(,)A F1(SH_GLOB)23.967 E F0(,)A F1(SH_OPTION_LETTERS)
+23.966 E F0(,)A F1(SH_W)108 132 Q(ORD_SPLIT)-.1 E F0 6.779(.A)C 1.779
+(dditionally the)-6.779 F F1(BSD_ECHO)4.279 E F0(and)4.279 E F1
+(IGNORE_BRA)4.279 E(CES)-.55 E F0 1.779(options are set if zsh is)4.279
+F(in)108 144 Q -.2(vo)-.4 G -.1(ke).2 G 10.389(da).1 G(s)-10.389 E F1
+(sh)10.389 E F0 12.889(.A)C 7.889(lso, the)-12.889 F F1
+(KSH_OPTION_PRINT)10.388 E F0(,)A F1(LOCAL_OPTIONS)10.388 E F0(,)A F1
+(PR)10.388 E(OMPT_B)-.3 E(ANG)-.3 E F0(,)A F1(PR)108 156 Q(OMPT_SUBST)
+-.3 E F0(and)2.5 E F1(SINGLE_LINE_ZLE)2.5 E F0
+(options are set if zsh is in)2.5 E -.2(vo)-.4 G -.1(ke).2 G 2.5(da).1 G
+(s)-2.5 E F1(ksh)2.5 E F0(.)A/F2 10.95/Times-Bold@0 SF(RESTRICTED SHELL)
+72 172.8 Q F0 .445(When the basename of the command used to in)108 184.8
+R -.2(vo)-.4 G .646 -.1(ke z).2 H .446(sh starts with the letter `).1 F
+F1(r)A F0 2.946('o)C 2.946(rt)-2.946 G .446(he `)-2.946 F F1<ad72>A F0
+2.946('c)C .446(ommand line)-2.946 F .129(option is supplied at in)108
+196.8 R -.2(vo)-.4 G .129(cation, the shell becomes restricted.).2 F
+.128(Emulation mode is determined after stripping)5.128 F(the letter `)
+108 208.8 Q F1(r)A F0 2.5('f)C(rom the in)-2.5 E -.2(vo)-.4 G
+(cation name.).2 E(The follo)5 E(wing are disabled in restricted mode:)
+-.25 E 32.5<8363>108 225.6 S(hanging directories with the)-32.5 E F1(cd)
+2.5 E F0 -.2(bu)2.5 G(iltin).2 E 32.5<8363>108 242.4 S 9.52
+(hanging or unsetting the)-32.5 F F1(EGID)12.02 E F0(,)A F1(EUID)12.02 E
+F0(,)A F1(GID)12.02 E F0(,)A F1(HISTFILE)12.02 E F0(,)A F1(HISTSIZE)
+12.02 E F0(,)A F1(IFS)12.02 E F0(,)A F1(LD_A)144 254.4 Q(OUT_LIBRAR)-.45
+E(Y_P)-.35 E -.95(AT)-.74 G(H).95 E F0(,)A F1(LD_A)31.38 E(OUT_PRELO)
+-.45 E(AD)-.4 E F0(,)A F1(LD_LIBRAR)31.38 E(Y_P)-.35 E -.95(AT)-.74 G(H)
+.95 E F0(,)A F1(LD_PRELO)144 266.4 Q(AD)-.4 E F0(,)A F1(MODULE_P)4.968 E
+-.95(AT)-.74 G(H).95 E F0(,)A F1(module_path)4.968 E F0(,)A F1 -.74(PA)
+4.969 G(TH)-.21 E F0(,)A F1(path)4.969 E F0(,)A F1(SHELL)4.969 E F0(,)A
+F1(UID)4.969 E F0(and)4.969 E F1(USER-)4.969 E -.2(NA)144 278.4 S(ME).2
+E F0(parameters)2.5 E 32.5<8373>108 295.2 S
+(pecifying command names containing)-32.5 E F1(/)2.5 E F0 32.5<8373>108
+312 S(pecifying command pathnames using)-32.5 E F1(hash)2.5 E F0 32.5
+<8372>108 328.8 S(edirecting output to \214les)-32.5 E 32.5<8375>108
+345.6 S(sing the)-32.5 E F1(exec)2.5 E F0 -.2(bu)2.5 G
+(iltin command to replace the shell with another command).2 E 32.5<8375>
+108 362.4 S(sing)-32.5 E F1(jobs \255Z)2.5 E F0(to o)2.5 E -.15(ve)-.15
+G(rwrite the shell process' ar).15 E(gument and en)-.18 E
+(vironment space)-.4 E 32.5<8375>108 379.2 S(sing the)-32.5 E F1(ARGV0)
+2.5 E F0(parameter to o)2.5 E -.15(ve)-.15 G(rride).15 E F1(ar)2.5 E
+(gv[0])-.1 E F0(for e)2.5 E(xternal commands)-.15 E 32.5<8374>108 396 S
+(urning of)-32.5 E 2.5(fr)-.25 G(estricted mode with)-2.5 E F1(set +r)
+2.5 E F0(or)2.5 E F1(unsetopt RESTRICTED)2.5 E F0 .825
+(These restrictions are enforced after processing the startup \214les.)
+108 412.8 R .825(The startup \214les should set up)5.825 F F1 -.74(PA)
+3.325 G(TH)-.21 E F0(to)3.325 E 1.145
+(point to a directory of commands which can be safely in)108 424.8 R -.2
+(vo)-.4 G -.1(ke).2 G 3.645(di).1 G 3.645(nt)-3.645 G 1.145
+(he restricted en)-3.645 F 3.645(vironment. The)-.4 F 3.645(ym)-.15 G
+(ay)-3.645 E(also add further restrictions by disabling selected b)108
+436.8 Q(uiltins.)-.2 E 1.064(Restricted mode can also be acti)108 453.6
+R -.25(va)-.25 G 1.064(ted an).25 F 3.564(yt)-.15 G 1.063
+(ime by setting the)-3.564 F F1(RESTRICTED)3.563 E F0 3.563
+(option. This)3.563 F(immediately)3.563 E
+(enables all the restrictions described abo)108 465.6 Q .3 -.15(ve e)
+-.15 H -.15(ve)-.1 G 2.5(ni).15 G 2.5(ft)-2.5 G
+(he shell still has not processed all startup \214les.)-2.5 E 3.635(As)
+108 482.4 S(hell)-3.635 E/F3 10/Times-Italic@0 SF 1.135(Restricted Mode)
+3.635 F F0 1.135(is an outdated w)3.635 F 1.135
+(ay to restrict what users may do:)-.1 F 1.136(modern systems ha)6.136 F
+1.436 -.15(ve b)-.2 H(etter).15 E(,)-.4 E(safer and more reliable w)108
+494.4 Q(ays to con\214ne user actions, such as)-.1 E F3 -.15(ch)2.5 G
+-.45(ro).15 G(ot jails).45 E F0(,)A F3(container)2.5 E(s)-.1 E F0(and)
+2.5 E F3(zones)2.5 E F0(.)A 3.064(Ar)108 511.2 S .564
+(estricted shell is v)-3.064 F .564(ery dif)-.15 F .564
+(\214cult to implement safely.)-.25 F .564(The feature may be remo)5.564
+F -.15(ve)-.15 G 3.064(di).15 G 3.064(naf)-3.064 G .563(uture v)-3.064 F
+.563(ersion of)-.15 F(zsh.)108 523.2 Q .178(It is important to realise \
+that the restrictions only apply to the shell, not to the commands it r\
+uns \(e)108 540 R .179(xcept for)-.15 F .182(some shell b)108 552 R
+2.682(uiltins\). While)-.2 F 2.682(ar)2.682 G .182(estricted shell can \
+only run the restricted list of commands accessible via the)-2.682 F
+(prede\214ned `)108 564 Q F1 -.74(PA)C(TH)-.21 E F0 2.5('v)C
+(ariable, it does not pre)-2.75 E -.15(ve)-.25 G
+(nt those commands from running an).15 E 2.5(yo)-.15 G(ther command.)
+-2.5 E .066(As an e)108 580.8 R .066(xample, if `)-.15 F F1(en)A(v)-.4 E
+F0 2.566('i)C 2.566(sa)-2.566 G .066(mong the list of)-2.566 F F3
+(allowed)2.566 E F0 .066(commands, then it allo)2.566 F .066
+(ws the user to run an)-.25 F 2.566(yc)-.15 G(ommand)-2.566 E(as `)108
+592.8 Q F1(en)A(v)-.4 E F0 2.5('i)C 2.5(sn)-2.5 G(ot a shell b)-2.5 E
+(uiltin command and can run arbitrary e)-.2 E -.15(xe)-.15 G(cutables.)
+.15 E .087(So when implementing a restricted shell frame)108 609.6 R -.1
+(wo)-.25 G .087(rk it is important to be fully a).1 F -.1(wa)-.15 G .086
+(re of what actions each of).1 F(the)108 621.6 Q F3(allowed)2.5 E F0
+(commands or features \(which may be re)2.5 E -.05(ga)-.15 G(rded as).05
+E F3(modules)2.5 E F0 2.5(\)c)C(an perform.)-2.5 E(Man)108 638.4 Q 3.853
+(yc)-.15 G 1.353(ommands can ha)-3.853 F 1.653 -.15(ve t)-.2 H 1.353
+(heir beha).15 F 1.353(viour af)-.2 F 1.354(fected by en)-.25 F 1.354
+(vironment v)-.4 F 3.854(ariables. Except)-.25 F 1.354(for the fe)3.854
+F 3.854(wl)-.25 G(isted)-3.854 E(abo)108 650.4 Q -.15(ve)-.15 G 2.5(,z)
+.15 G(sh does not restrict the setting of en)-2.5 E(vironment v)-.4 E
+(ariables.)-.25 E .374(If a `)108 667.2 R F1(perl)A F0 .374(', `)B F1
+(python)A F0 .374(', `)B F1(bash)A F0 .374(', or other general purpose \
+interpreted script it treated as a restricted command,)B 1.848
+(the user can w)108 679.2 R 1.848
+(ork around the restriction by setting specially crafted `)-.1 F F1
+(PERL5LIB)A F0 1.849(', `)B F1(PYTHONP)A -.95(AT)-.74 G(H).95 E F0(',)A
+(`)108 691.2 Q F1 -.3(BA)C(SHENV).3 E F0 3.263('\()C .763(etc.\) en)
+-3.263 F .763(vironment v)-.4 F .763(ariables. On GNU systems, an)-.25 F
+3.263(yc)-.15 G .763(ommand can be made to run arbitrary)-3.263 F .684
+(code when performing character set con)108 703.2 R -.15(ve)-.4 G .684
+(rsion \(including zsh itself\) by setting a `).15 F F1(GCONV_P)A -.95
+(AT)-.74 G(H).95 E F0 3.184('e)C -.4(nv)-3.184 G(i-).4 E(ronment v)108
+715.2 Q 2.5(ariable. Those)-.25 F(are only a fe)2.5 E 2.5(we)-.25 G
+(xamples.)-2.65 E(zsh 5.8)72 768 Q(February 14, 2020)168.87 E(4)192.2 E
+0 Cg EP
+%%Page: 5 5
+%%BeginPageSetup
+BP
+%%EndPageSetup
+/F0 10/Times-Roman@0 SF 404.4(ZSH\(1\) ZSH\(1\))72 48 R 1.168
+(Bear in mind that, contrary to some other shells, `)108 84 R/F1 10
+/Times-Bold@0 SF -.18(re)C(adonly).18 E F0 3.668('i)C 3.667(sn)-3.668 G
+1.167(ot a security feature in zsh as it can be)-3.667 F
+(undone and so cannot be used to mitig)108 96 Q(ate the abo)-.05 E -.15
+(ve)-.15 G(.).15 E 2.597(Ar)108 112.8 S .097(estricted shell only w)
+-2.597 F .097(orks if the allo)-.1 F .097(wed commands are fe)-.25 F
+2.597(wa)-.25 G .098(nd carefully written so as not to grant more)-2.597
+F .214(access to users than intended.)108 124.8 R .214(It is also impor\
+tant to restrict what zsh module the user may load as some of)5.214 F
+(them, such as `)108 136.8 Q F1(zsh/system)A F0(', `)A F1(zsh/map\214le)
+A F0 2.5('a)C(nd `)-2.5 E F1(zsh/\214les)A F0(', allo)A 2.5(wb)-.25 G
+(ypassing most of the restrictions.)-2.5 E/F2 10.95/Times-Bold@0 SF(ST)
+72 153.6 Q(AR)-.986 E(TUP/SHUTDO)-.438 E(WN FILES)-.548 E F0 .091
+(Commands are \214rst read from)108 165.6 R F1(/etc/zshen)2.591 E(v)-.4
+E F0 2.591(;t)C .091(his cannot be o)-2.591 F -.15(ve)-.15 G 2.592
+(rridden. Subsequent).15 F(beha)2.592 E .092(viour is modi\214ed by)-.2
+F(the)108 177.6 Q F1(RCS)3.801 E F0(and)3.801 E F1(GLOB)3.801 E(AL_RCS)
+-.3 E F0 1.301(options; the former af)3.801 F 1.3
+(fects all startup \214les, while the second only af)-.25 F(fects)-.25 E
+.711(global startup \214les \(those sho)108 189.6 R .711
+(wn here with an path starting with a)-.25 F F1(/)3.211 E F0 3.212
+(\). If)B .712(one of the options is unset at an)3.212 F(y)-.15 E .35
+(point, an)108 201.6 R 2.85(ys)-.15 G .35(ubsequent startup \214le\(s\)\
+ of the corresponding type will not be read.)-2.85 F .349
+(It is also possible for a \214le)5.349 F(in)108 213.6 Q F1($ZDO)2.5 E
+(TDIR)-.4 E F0(to re\255enable)2.5 E F1(GLOB)2.5 E(AL_RCS)-.3 E F0 2.5
+(.B)C(oth)-2.5 E F1(RCS)2.5 E F0(and)2.5 E F1(GLOB)2.5 E(AL_RCS)-.3 E F0
+(are set by def)2.5 E(ault.)-.1 E .456(Commands are then read from)108
+230.4 R F1($ZDO)2.956 E(TDIR/.zshen)-.4 E(v)-.4 E F0 5.456(.I)C 2.956
+(ft)-5.456 G .456(he shell is a login shell, commands are read from)
+-2.956 F F1(/etc/zpr)108 242.4 Q(o\214le)-.18 E F0 1.616(and then)4.116
+F F1($ZDO)4.116 E(TDIR/.zpr)-.4 E(o\214le)-.18 E F0 6.616(.T)C 1.615
+(hen, if the shell is interacti)-6.616 F -.15(ve)-.25 G 4.115(,c).15 G
+1.615(ommands are read from)-4.115 F F1(/etc/zshr)108 254.4 Q(c)-.18 E
+F0 1.946(and then)4.446 F F1($ZDO)4.446 E(TDIR/.zshr)-.4 E(c)-.18 E F0
+6.946(.F)C(inally)-6.946 E 4.446(,i)-.65 G 4.446(ft)-4.446 G 1.947
+(he shell is a login shell,)-4.446 F F1(/etc/zlogin)4.447 E F0(and)4.447
+E F1($ZDO)4.447 E -.92(T-)-.4 G(DIR/.zlogin)108 266.4 Q F0(are read.)2.5
+E .377(When a login shell e)108 283.2 R .377(xits, the \214les)-.15 F F1
+($ZDO)2.877 E(TDIR/.zlogout)-.4 E F0 .377(and then)2.877 F F1
+(/etc/zlogout)2.877 E F0 .376(are read.)2.876 F .376(This happens with)
+5.376 F .391(either an e)108 295.2 R .391(xplicit e)-.15 F .391
+(xit via the)-.15 F F1(exit)2.891 E F0(or)2.892 E F1(logout)2.892 E F0
+.392(commands, or an implicit e)2.892 F .392
+(xit by reading end\255of\255\214le from the)-.15 F 3.651(terminal. Ho)
+108 307.2 R(we)-.25 E -.15(ve)-.25 G 1.951 -.4(r, i).15 H 3.651(ft).4 G
+1.151(he shell terminates due to)-3.651 F F1(exec)3.651 E F0 1.15
+('ing another process, the logout \214les are not read.)B .907
+(These are also af)108 319.2 R .907(fected by the)-.25 F F1(RCS)3.407 E
+F0(and)3.407 E F1(GLOB)3.407 E(AL_RCS)-.3 E F0 3.408(options. Note)3.408
+F .908(also that the)3.408 F F1(RCS)3.408 E F0 .908(option af)3.408 F
+(fects)-.25 E(the sa)108 331.2 Q(ving of history \214les, i.e. if)-.2 E
+F1(RCS)2.5 E F0(is unset when the shell e)2.5 E
+(xits, no history \214le will be sa)-.15 E -.15(ve)-.2 G(d.).15 E(If)108
+348 Q F1(ZDO)2.791 E(TDIR)-.4 E F0 .291(is unset,)2.791 F F1(HOME)2.791
+E F0 .291(is used instead.)2.791 F .291(Files listed abo)5.291 F .59
+-.15(ve a)-.15 H 2.79(sb).15 G .29(eing in)-2.79 F F1(/etc)2.79 E F0 .29
+(may be in another direc-)2.79 F(tory)108 360 Q 2.5(,d)-.65 G
+(epending on the installation.)-2.5 E(As)108 376.8 Q F1(/etc/zshen)2.779
+E(v)-.4 E F0 .279
+(is run for all instances of zsh, it is important that it be k)2.779 F
+.28(ept as small as possible.)-.1 F .28(In particu-)5.28 F(lar)108 388.8
+Q 2.77(,i)-.4 G 2.77(ti)-2.77 G 2.77(sag)-2.77 G .27
+(ood idea to put code that does not need to be run for e)-2.77 F -.15
+(ve)-.25 G .27(ry single shell behind a test of the form).15 F(`)108
+400.8 Q F1(if [[ \255o r)A(cs ]]; then ...)-.18 E F0 2.5('s)C 2.5(ot)
+-2.5 G(hat it will not be e)-2.5 E -.15(xe)-.15 G(cuted when zsh is in)
+.15 E -.2(vo)-.4 G -.1(ke).2 G 2.5(dw).1 G(ith the `)-2.5 E F1<ad66>A F0
+2.5('o)C(ption.)-2.5 E(An)108 417.6 Q 2.726(yo)-.15 G 2.726(ft)-2.726 G
+.227(hese \214les may be pre\255compiled with the)-2.726 F F1(zcompile)
+2.727 E F0 -.2(bu)2.727 G .227(iltin command \(see).2 F/F3 10
+/Times-Italic@0 SF(zshb)2.727 E(uiltins)-.2 E F0 2.727(\(1\)\). If)B
+2.727(ac)2.727 G(om-)-2.727 E .047(piled \214le e)108 429.6 R .047
+(xists \(named for the original \214le plus the)-.15 F F1(.zwc)2.547 E
+F0 -.15(ex)2.546 G .046(tension\) and it is ne).15 F .046
+(wer than the original \214le, the)-.25 F
+(compiled \214le will be used instead.)108 441.6 Q F2(FILES)72 458.4 Q
+F1($ZDO)108 470.4 Q(TDIR/.zshen)-.4 E(v)-.4 E($ZDO)108 482.4 Q
+(TDIR/.zpr)-.4 E(o\214le)-.18 E($ZDO)108 494.4 Q(TDIR/.zshr)-.4 E(c)-.18
+E($ZDO)108 506.4 Q(TDIR/.zlogin)-.4 E($ZDO)108 518.4 Q(TDIR/.zlogout)-.4
+E(${TMPPREFIX}*)108 530.4 Q F0(\(def)7.5 E(ault is /tmp/zsh*\))-.1 E F1
+(/etc/zshen)108 542.4 Q(v)-.4 E(/etc/zpr)108 554.4 Q(o\214le)-.18 E
+(/etc/zshr)108 566.4 Q(c)-.18 E(/etc/zlogin)108 578.4 Q(/etc/zlogout)108
+590.4 Q F0(\(installation\255speci\214c \255)10 E F1(/etc)2.5 E F0
+(is the def)2.5 E(ault\))-.1 E F2(SEE ALSO)72 607.2 Q F3(sh)108 619.2 Q
+F0(\(1\),)A F3(csh)4.374 E F0(\(1\),)A F3(tcsh)4.374 E F0(\(1\),)A F3
+-.37(rc)4.374 G F0(\(1\),).37 E F3(bash)4.374 E F0(\(1\),)A F3(ksh)4.374
+E F0(\(1\),)A F3(zshall)4.374 E F0(\(1\),)A F3(zshb)4.374 E(uiltins)-.2
+E F0(\(1\),)A F3(zshcalsys)4.374 E F0(\(1\),)A F3(zshcompwid)4.374 E F0
+(\(1\),)A F3(zsh-)4.374 E(compsys)108 631.2 Q F0(\(1\),)A F3(zshcompctl)
+6.553 E F0(\(1\),)A F3(zshcontrib)6.553 E F0(\(1\),)A F3(zshe)6.553 E
+(xpn)-.2 E F0(\(1\),)A F3(zshmisc)6.553 E F0(\(1\),)A F3(zshmodules)
+6.553 E F0(\(1\),)A F3(zshoptions)6.553 E F0(\(1\),)A F3(zsh-)6.552 E
+(par)108 643.2 Q(am)-.15 E F0(\(1\),)A F3(zshr)2.5 E(oadmap)-.45 E F0
+(\(1\),)A F3(zshtcpsys)2.5 E F0(\(1\),)A F3(zshzftpsys)2.5 E F0(\(1\),)A
+F3(zshzle)2.5 E F0(\(1\))A F1 .75(IEEE Standard f)108 660 R .751(or inf)
+-.25 F .751(ormation T)-.25 F .751(echnology \255 P)-.92 F .751
+(ortable Operating System Interface \(POSIX\) \255 P)-.2 F(art)-.1 E
+(2: Shell and Utilities)108 672 Q F0 2.5(,I)C
+(EEE Inc, 1993, ISBN 1\25555937\255255\2559.)-2.5 E(zsh 5.8)72 768 Q
+(February 14, 2020)168.87 E(5)192.2 E 0 Cg EP
+%%Trailer
+end
+%%EOF
