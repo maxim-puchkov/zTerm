@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-#  fd-2
+#  fd
 #  Z-Function (64)
 #
 #  Created by Maxim Puchkov on 2020-06-09.
@@ -8,7 +8,7 @@
 
 
 # <#Function description#>
-function fd-2() {
+function fd() {
     print -P "Template z-function: %F{4}$0%f."
     
     # Print to stderr
