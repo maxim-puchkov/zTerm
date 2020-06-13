@@ -10,14 +10,31 @@
 function doc() {
     typeset doc_links_file="$ZTERM/etc/doc.links"
     typeset -A doc_links
-    doc_links=($(< $doc_links_file))
+    typeset name
     
+    autoload readf
+    autoload error
+    readf lines < $doc_links_file
+    set -A doc_links ${=lines}
     
     while [[ $1 =~ '^[-]' ]]; do
         case $1 in
             -l|--list)
                 print -l -- "%F{4}"${(ok)doc_links}"%f"
                 return 0
+            ;;
+            -a|--add)
+                shift
+                name="$1"
+                link="$2"
+                if  [[ -n $name ]] && [[ -n $link ]] &&
+                    [[ ${+doc_links[$name]} -eq 0 ]]; then
+                    printf '%s %s' "$1" "$2" >> $doc_links_file
+                    logf 'DocLink successfully added: $name -> $link.'
+                    return 0
+                else
+                    error -2 'DocLink already exists or invalid: $name -> $link.'
+                fi
             ;;
             --) shift
                 break
@@ -29,13 +46,12 @@ function doc() {
     if [[ $# -eq 0 ]]; then
         error -2 'No input.'
     fi
-    typeset name=$1
-    typeset link=${doc_links[$name]}
     
+    name=$1
+    typeset link=${doc_links[$name]}
     if [[ -z $link ]]; then
         error -2 "No documentation for %F{1}$name%f."
     fi
-    
     open $link
 }
 

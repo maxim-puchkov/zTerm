@@ -29,6 +29,7 @@ function error() {
     typeset exit_code_label
     # Output
     typeset output_device
+    typeset output_color=${error_color:-1}
     # Output options
     typeset autocapitalize='true'
     typeset remove_trailing_space='true'
@@ -46,7 +47,7 @@ function error() {
         # Find and replace variables
         typeset find replace
         find='[$]([{])?(([A-Za-z_\(][^ ]*)?[A-Za-z0-9!@#$%^&*=?_\)])([}])?'
-        replace="%F{${error_color:-1}}\${\${\2}:-${(%)undefined_var_label}}%f"
+        replace="%F{1}\${\${\2}:-${(%)undefined_var_label}}%f"
         # Highlight variables in description
         message_desc=$(sed -E "s/$find/$replace/g" <<< "$argv")
     }
@@ -84,7 +85,7 @@ function error() {
                 -t|--title)
                     if [[ -n $2 ]]; then
                         error-plain-title
-                        message_title="%B%F{9}${2}%f%b"
+                        message_title="%B%F{$output_color}${2}%f%b"
                         shift
                     else
                         break
@@ -115,8 +116,8 @@ function error() {
     # Title - text, color, and exit code
     function error-format-title() {
         if [[ $exit_code -gt 0 ]]; then
-            message_title='%F{1}Error%f'
-            exit_trap="return $exit_code"
+            message_title="%F{$output_color}Error%f"
+            exit_trap="return $exit_code;"
         else
             message_title='%F{3}Warning%f'
             exit_trap='-'
@@ -185,6 +186,6 @@ function error() {
         error-print &&
         trap "$exit_trap" EXIT
     }
-#    unfunction -m "${0}-*"
+    unfunction -m "${0}-*"
     return $exit_code
 }

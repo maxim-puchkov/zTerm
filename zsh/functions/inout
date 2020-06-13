@@ -7,8 +7,20 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# <#Function description#>
+# Display standard input, output, and error.
 function inout() {
+    exec 3<&0;
+    # Print function
+    function print-inout() {
+        while [[ -n $1 ]]; do
+            print -P -x2 -- "\t$1"
+            shift
+        done
+    }
+    
+    # Devices
+    typeset -a std{in,out,err}
+    
     # Determine input source
     typeset input_source
     if [[ -p /dev/stdin ]];             then input_source='pipe';       fi
@@ -16,22 +28,47 @@ function inout() {
     if [[ ! -t 0 && ! -p /dev/stdin ]]; then input_source='redirected'; fi
     
     # Read /dev/stdin
-    typeset -a std{in,out,err}
     local arg
-    while read -t arg; do stdin+=($arg); done
+    while read -t -u0 arg; do stdin+=($arg); done
+    # Read fd3
+    while read -t -u3 arg; do S $arg; done
+    
     # Add positional arguments to input
     stdin+=($argv)
     set -- $stdin
     
+    # Output header
+    typeset header
+    # Standard input, output, and error
+    typeset IN OUT ERR
+    IN="%F{2}Standard input%f (source: %F{4}${input_source}%f) [${#stdin}] = {${(j:, :)stdin}}"
+    OUT="%F{3}Standard output%f [${#stdout}] = {${(j:, :)stdout}}"
+    ERR="%F{1}Standard error%f  [${#stderr}] = {${(j:, :)stderr}}"
+    # File descriptors and named pipes
+    typeset FDS
+    FDS="$(fds {0..10})"
+    
+    
+    
+    header='%BInput/Output%b:'
+    print-inout $header $IN $OUT $ERR
+    
+    header="%BFile Descriptors%b:"
+    print-inout $header "$FDS"
+    
+    
     # Process input and output
-    print -P -- "\t%BInput/Output%b:"
-    print -P -- "\t%F{2}Standard input%f  [${#stdin}] = {${(j:, :)stdin}}"
-    print -P -- "\t%F{3}Standard output%f [${#stdout}] = {${(j:, :)stdout}}"
-    print -P -- "\t%F{1}Standard error%f  [${#stderr}] = {${(j:, :)stderr}}" >/dev/stderr
+#    print -P -- "\t"
+#    print -P -- "\t"
+#    print -P -- "\t"
+#    print -P -- "\t" >/dev/stderr
     
     # File descriptors
-    print -P -- "\t%BFile Descriptors%b:"
-    fds
+#    print -P -- "\t%BFile Descriptors%b:"
+#    print -P -- "$(fds)"
     
     echo;echo;
+    
+    unfunction print-inout
+    return 0
 }

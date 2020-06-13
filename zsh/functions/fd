@@ -7,17 +7,14 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# <#Function description#>
+# fd - open and close file descriptors
 function fd() {
-    print -P "Template z-function: %F{4}$0%f."
-    
-    # Print to stderr
-    local def=$(fn src $0)
-    if [[ $? -ne 0 ]]; then
-        print 'Definition not found.' >&2
-        return 1
-    fi
-    
-    print -P "Defined in: %F{4}$def%f."
-    return 0
+    function fd-split() {
+        typeset -a string=($argv)
+        typeset arg_chars=(${argv})
+    }
+    case $1 in
+        'r'|'read')
+        ;;
+    esac
 }

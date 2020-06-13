@@ -9,14 +9,17 @@
 
 # <#Function description#>
 function list() {
-    trap "unfunction -m '${0}_*'" EXIT
+    trap "
+        unfunction -m '${0}_*';
+        unfunction -m '__${0}_*';
+    " EXIT
     
-    function list-ls() {
+    function __list_ls() {
         typeset flags=$1
         shift
         script -q /dev/null command ls ${=flags} "$@"
     }
-    function list-grep() {
+    function __list_grep() {
         colorize_grep 'b_green' \
             egrep --color='always' "$@"
     }
@@ -24,27 +27,26 @@ function list() {
     ## tc: time of creation ##
     function list_tc() {
         print_h1 'File creation time'
-        blue $time_regex
-        list-ls -lFGHTUhrt "$@" |
-            list-grep --regexp $time_regex
+        __list_ls -lFGHTUhrt "$@" |
+            __list_grep --regexp $time_regex
     }
     ## tch: time of change ##
     function list_tch() {
         print_h1 'File change time'
-        list-ls -lFGHTchrt "$@" |
-            list-grep --regexp $time_regex
+        __list_ls -lFGHTchrt "$@" |
+            __list_grep --regexp $time_regex
     }
     ## tm: time of modification ##
     function list_tm() {
         print_h1 'Modification time'
-        list-ls -lFGHThrt "$@" |
-            list-grep --regexp $time_regex
+        __list_ls -lFGHThrt "$@" |
+            __list_grep --regexp $time_regex
     }
     ## ta: time of access ##
     function list_ta() {
         print_h1 'File access time'
-        list-ls -lFGHThrtu "$@" |
-            list-grep --regexp $time_regex
+        __list_ls -lFGHThrtu "$@" |
+            __list_grep --regexp $time_regex
     }
     
     ## f: file flags ##
@@ -53,32 +55,27 @@ function list() {
         () {
             local flags=($(awk '{ print $5; }' "$1"))
             shift
-            list-ls -lFGHOh "$@" |
-                list-grep --regexp " (${(j:|:)flags}) "
+            __list_ls -lFGHOh "$@" |
+                __list_grep --regexp " (${(j:|:)flags}) "
         } =( command ls -lFGHOh "$@" ) "$@"
     }
     ## S: file size ##
     function list_S() {
         print_h1 'File size'
-        list-ls -lFGHShr "$@" |
-            list-grep --regexp '([0-9][\.0-9]*)[BKMG]'
+        __list_ls -lFGHShr "$@" |
+            __list_grep --regexp '([0-9][\.0-9]*)[BKMG]'
+    }
+    
+    ## all: all files ##
+    function list_all() {
+        print_h1 'All files'
+        __list_ls -lFGHah "$@"
     }
     
     
+    default time_regex $(< $zdot/etc/ls-time.regex)
     
-    
-    if [[ ! -v time_regex ]]; then
-        typeset -a months
-        typeset m
-        for m in $langinfo[(I)ABMON_*]; do
-            months+=($langinfo[$m])
-        done
-        # "[0-9]{1,2} [A-Z][a-z]{2} [0-9\:]{8} [0-9]{4}"
-        time_regex="[1-9][0-9]?\s+(${(@j:|:)months})\s+[0-9:]+\s+[1-2][0-9]{3}"
-        export time_regex
-    fi
-    
-    typeset cmd=$1
+    typeset cmd=${1:-'all'}
     if ! isdef ${0}_${cmd}; then
         error -127 "Command not found: %F{1}${cmd}%f."
     fi

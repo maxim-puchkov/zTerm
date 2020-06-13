@@ -1,0 +1,64 @@
+#!/bin/zsh
+
+#  brew
+#  Z-Function (65)
+#
+#  Created by Maxim Puchkov on 2020-06-11.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Homebrew wrapper
+function brew() {(
+#    print -P -- 'Homebrew wrapper function'
+#    print-line
+#    fn show $0
+#    print-line
+#    print -P -- "Command: '%S%B${0}%b ${argv}%s'"
+    local brew_command=$1
+    case $brew_command in
+        'install')
+            local log=$ZTERM/var/log/Homebrew/install.log
+            for formula in ${argv:2}; do
+                echo $formula >> $log
+            done
+        ;;
+    esac
+#
+    logf $argv
+#    ${=argv}
+        
+)}
+
+
+#function brew() {(
+#    BREW=${commands[${0}]}
+#    if [[ -z $BREW ]]; then
+#        error -127 'Not found.'
+#    fi
+#
+#    case $1 in
+#        install)
+#        ;;
+#        *)
+#        ;;
+#    esac
+#    logf 'ok'
+#)}
+
+
+
+
+#function brew() {(
+#    BREW=${commands[${0}]}
+#    if [[ -z $BREW ]]; then
+#        error -127 'Not found.'
+#    fi
+#
+#    case $1 in
+#        install)
+#        ;;
+#        *)
+#        ;;
+#    esac
+#    logf 'ok'
+#)}

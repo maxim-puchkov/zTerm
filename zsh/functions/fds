@@ -63,8 +63,8 @@ function fds() {
     
     
     # Print results
-    print -P --   "${fds_label}  ${(j:, :)terminal_fds}"
-    print -P -- "${pipes_label}  ${(j:, :)named_pipes}"
+    print -P -- "\t${fds_label}  ${(j:, :)terminal_fds}"
+    print -P -- "\t${pipes_label}  ${(j:, :)named_pipes}"
     
     return 0
 }

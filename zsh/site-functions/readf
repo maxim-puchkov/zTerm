@@ -1,0 +1,60 @@
+#!/bin/zsh
+
+#  readf
+#  Z-Function (63)
+#
+#  Created by Maxim Puchkov on 2020-06-09.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Read an input file into an array so that N'th line of the file
+# is the N'th element of the array.
+function readf() {
+    #MARK: - Options
+    autoload -Uz get-arguments
+    typeset -A optlist
+    get-arguments -f 'v,s' -o 'e' -- ${argv}
+    
+    typeset array_id=${1:-'array'}
+    ## -v: be verbose ##
+    typeset output_file=/dev/null
+    if [[ -n $optlist[-v] ]]; then
+        output_file=/dev/stdout
+    fi
+    
+    #MARK: - Read File
+    # Input file path
+    typeset input_file=/dev/stdin
+    # Read and store the input file in an array
+    typeset -a file_contents
+    () {
+        file_contents=("${(@f)$(< $1)}")
+    } =(sed -E -e 's/^[[:space:]]*//g' \
+               -e 's/[[:space:]]*$//g' \
+               < $input_file)
+    # Length of array is number of lines in file
+    typeset line_count=${#file_contents}
+    
+    ## readf -s: skip empty lines ##
+    if [[ -n $optlist[-s] ]]; then
+        file_contents=(${file_contents:#})
+    fi
+    ## readf -e <pattern>: exclude lines matching pattern ##
+    if [[ -n $optlist[-e] ]]; then
+        file_contents=(${file_contents:#${~optlist[-e]}})
+    fi
+    
+    
+    #MARK: - Store File in Array
+    unset $array_id
+    typeset -ag $array_id
+    set -A $array_id $file_contents
+    
+    
+    #MARK: - Log
+    autoload logf
+    logf 'read ${line_count} lines from ${input_file}'\
+         'into ${array_id}.' >$output_file
+    
+    return 0
+}

@@ -8,16 +8,8 @@
 
 
 # Highlight code syntax
-function highlight() {
+function highlight() { (
 #    # Syntax highlighting
-#    function highlight-syntax() {
-#        ${=cmd} -f 'terminal16m' \
-#                -O style='xcodedark' \
-#                -l 'zsh' \
-#                "$@"
-#        return $?
-#    }
-    
     function highlight-syntax() {
         $=cmd $=flags "$@"
         return $?
@@ -26,7 +18,11 @@ function highlight() {
     # Flags
     typeset -a flags=()
     if [[ $# -le 1 ]]; then
-        flags=(-f 'terminal16m' -O style='xcodedark' -l 'zsh')
+        flags=(
+            -f 'terminal16m'
+            -O style='xcodedark'
+            -l 'zsh'
+        )
     else
         flags=(${argv:1:-1})
     fi
@@ -42,7 +38,6 @@ function highlight() {
     cmd=${commands[$cmd_name]}
     if [[ -z $cmd ]]; then
         error -127 'Command not found: $cmd_name.'
-        return 0
     fi
     
 
@@ -69,4 +64,4 @@ function highlight() {
     
     unfunction -m '${0}-*'
     return 0
-}
+) }

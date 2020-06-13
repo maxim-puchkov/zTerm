@@ -12,9 +12,18 @@ function zopts() {
     local ON=$(green 'on')
     local OFF=$(red 'off')
     local k v
+    typeset -A list
+    list=(${(kv)options})
+    
+    if [[ $# -gt 0 ]]; then
+        local filter=$1
+        case $filter in
+            'on'|'off')   list=(${(kv)options[(R)$filter]}) ;;
+        esac
+    fi
     
     printf '%-20s%5s\n' "Option" "Status"
-    for k v in ${(kv)options}; do
+    for k v in ${(kv)list}; do
         local option_label=$k
         local value_label=$OFF
         if [[ $v == 'on' ]]; then

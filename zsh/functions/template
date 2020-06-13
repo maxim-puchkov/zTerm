@@ -96,7 +96,7 @@ function template() {
     }
     
     #MARK: - Z-Shell function
-    ## zfunction: zsh autoload function
+    ## zfunction: zsh autoload function ##
     function template_zfunction() {
         target_dir="${target_dir:-${zfunc}}"
         name="${$( generate_filename $1 ):-${(U)0}}"
@@ -162,8 +162,9 @@ function template() {
             chmod a+x $template_new
         fi
     }
-    
+	
     #MARK: - Launchd service
+    ## launchd: launchd agent property list and zsh script ##
     function template_launchd() {
         target_dir="${target_dir:-${ZTERM}/etc/$1}"
         command mkdir -p -- $target_dir
@@ -179,10 +180,31 @@ function template() {
         command ln -s -- $ZTERM/Services/$1 /usr/local/bin/$1
     }
     
+    #MARK: - Pygments theme
+    ## pygment: pygments style ##
+    function template_pygment() {
+        target_dir="${target_dir:-${ZTERM/Python/pygments/styles}}"
+        command mkdir -p -- $target_dir
+        name="${$( generate_filename $1 ):-${(U)0}}.py"
+        m_filename=$name
+        m_package_name='Pygments style'
+        template_new="${target_dir}/${name}"
+        template_orig="$templates_dir/$0"
+        copy_template
+        
+        local pygments_dir=/usr/local/Cellar/pygments/2.6.1/
+        local link_dir=/usr/local/Cellar/pygments/2.6.1/libexec\
+                       /lib/python3.8/site-packages\
+                       /pygments/styles
+        command mkdir -p -- $install_dir
+        command ln -s -- $target_dir/$name $install_dir/$name
+        
+    }
+    
     #MARK: - Oh-my-zsh custom plugin
     function template_plugin() {
         target_dir="${target_dir:-${ZDOTDIR/plugins/$1}}"
-        mkdir -p -- $target_dir
+        command mkdir -p -- $target_dir
         name="${$( generate_filename $1 ):-${(U)0}}.plugin.zsh"
         m_filename=$name
         m_package_name='Oh-my-zsh plugin'
@@ -190,8 +212,9 @@ function template() {
         template_orig="$templates_dir/$0"
         copy_template
         
-        command mkdir -p -- $target_dir
-        command ln -s -- $target_dir/$name $ZDOTDIR/.oh-my-zsh/plugins/custom/$1/$name
+        local install_dir=$ZSH/plugins/custom/$1
+        command mkdir -p -- $install_dir
+        command ln -s -- $target_dir/$name $install_dir/$name
         
     }
     
@@ -199,6 +222,7 @@ function template() {
     function template_null() {
         print -P "Called $0"
         print-fstack
+        print-var @
     }
     
     
@@ -261,7 +285,6 @@ function template() {
     ${0}_${cmd} "$@"
     typeset -i exit_code=$?
     
-#    builtin print -P -- "${0}: done."
-    logm "Done"
+    logf -c $exit_code 'Template created: $template_new'
     return $exit_code
 }

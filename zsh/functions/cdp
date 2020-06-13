@@ -23,20 +23,21 @@ function cdp() {
         return $?
     }
     
-        
+    
     #MARK: - Options
+    autoload -Uz get-arguments
     typeset -A optlist
     get-arguments -A optlist -f 'q,s,L,P' -- $argv
     
     
     #MARK: - Arguments
-    typeset dir arg
+    typeset dir
     case $# in
         # No arguments (cd)
         0)  dir=$HOME
         ;;
         # One argument (cd DIR)
-        1)  arg=$1
+        1)  typeset arg=$1
             if [[ $arg == '-' ]]; then
                 arg='-1'
             fi
@@ -52,7 +53,7 @@ function cdp() {
                     return 1
                 fi
             else
-                dir="${arg:a}"
+                dir="${arg}"
             fi
         ;;
         # Two arguments (cd OLD NEW)
@@ -95,8 +96,9 @@ function cdp() {
         cdp-error 'cannot change directory to $dir.'
         return 1
     fi
-    if [[ -z ${optlist[-q]} ]]; then
-        print -P "Directory changed to %F{2}${PWD}%f."
+    if [[ -z $optlist[-q] ]]; then
+        builtin print -P -- "Directory changed to %F{2}${PWD}%fx."
+        logf "Directory changed to %F{2}${PWD}%f."
     fi
     
     unfunction -m "${0}-*"

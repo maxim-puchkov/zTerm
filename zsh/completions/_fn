@@ -33,6 +33,7 @@ case $state in
     typeset -a args
     args=(
       # Completion for commands' arguments
+      _functions
     )
     _describe -t args arg args
   ;;

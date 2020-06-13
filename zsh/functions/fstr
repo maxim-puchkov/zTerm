@@ -16,12 +16,21 @@ function fstr() {
     # String, directory, and depth
     local search_directory="${${1:-.}:a}"
     local string="${2:-.}"
+    shift 2
+    
+    # Search options for grep
+    local -a grep_options=($argv)
+    if [[ -z $grep_options ]]; then
+        grep_options=('--ignore-case' '--text')
+    fi
     
     # Files in the directory
-    typeset -a files=(${(@f)"$(
-        find $search_directory -type f 2>/dev/null
+    local -a files=(${(@f)"$(
+        find -L $search_directory           \
+                '(' -type f -or -type l ')' \
+                2>/dev/null
     )"})
-    typeset -i10 n_files n_matches
+    local -i n_files n_matches
     n_files=${#files}
     n_matches=0
     
@@ -30,18 +39,17 @@ function fstr() {
     for file in $files; do
         match=$( colorize_grep 'b_byellow' \
             egrep --color='always'         \
-                  --ignore-case            \
-                  --text                   \
+                  $grep_options            \
                   --regexp "$string" --    \
                   $file )
         if [[ -n "$match" ]]; then
             n_matches=$(( $n_matches + 1 ))
-            print -P -- "%B%K{11}%F{16} [$n_matches]  $file %f%k%b"
+            print -P -- "%B%K{11}%F{16} [Match $n_matches]  $file %f%k%b"
             print    -- "$match"
         fi
     done
     
     # Display number of matches and files
-    print -P -- "%B$0%b: %F{4}$n_matches%f out of %F{4}$n_files%f files match."
+    logf 'String $string is found in $n_matches out of $n_files files.'
     return 0
 }
