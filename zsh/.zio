@@ -19,10 +19,16 @@ function __style_print() {
 
 
 #MARK: Styles Definitions
-NORMAL="$( tput sgr0 )"
-BOLD="$( tput bold )"
-UNDERLINE="$( tput smul )"
-REVERSE="$( tput rev )"
+NORMAL=$'\e[0m'
+BOLD=$'\e\[1m'
+DIM=$'\e\[2m'
+ITALIC=$'\e\[3m'
+UNDERLINE=$'\e\[4m'
+STANDOUT=$'\e\[7m'
+#NORMAL="$( tput sgr0 )"
+#BOLD="$( tput bold )"
+#UNDERLINE="$( tput smul )"
+#REVERSE="$( tput rev )"
 
 #MARK: Foreground Definitions
 # Default
@@ -88,11 +94,19 @@ B_CYANBG="$( bg_color 14 )"
 #MARK: - Aliases 
 #MARK: Styles
 function normal() { __style_print "$NORMAL$*" }
+function dim() { __style_print "$DIM$*" }
+functions -c dim D
 function bold() { __style_print "$BOLD$*" }
+function italic() { __style_print "$ITALIC$*" }
+functions -c italic em
+functions -c italic it
 alias B='bold'
 function underline() { __style_print "$UNDERLINE$*" }
 alias U='underline'
-function reverse() { __style_print "$REVERSE$*" }
+function standout() { __style_print "$STANDOUT$*" }
+functions -c standout S
+
+#function reverse() { __style_print "$REVERSE$*" }
 
 #MARK: Foreground
 # Default
@@ -163,19 +177,19 @@ function b_cyanbg() { __style_print "$B_CYANBG$*" }
 #}
 
 function OK() {
-    b_green "$*"
+    b_green "${*:-$0}"
 }
 function Warn() {
-    yellow "$*"
+    yellow "${*:-$0}"
 }
 function InfoSection() {
     b_bcyan $(underline "$*")
 }
 function Info() {
-    cyan "$*"
+    cyan "${*:-$0}"
 }
 function Bad() {
-    b_red "$*"
+    b_red "${*:-$0}"
 }
 function group() {
     local color=$1
@@ -191,14 +205,13 @@ function group() {
 #}
 
 function print_h1() {
-    print -P -- "%B%K{11}%F{16} ${(U)@} %f%k%b"
+    print -P -- "%B%K{11}%F{16} ${(U)argv} %f%k%b"
 }
 
 
 
 alias grey='lgrey'
 
-function S() {
-    builtin print -P -- "%S$@%s"
-    return $?
-}
+#function S() {
+#    __style_print $'\033\[7m'"$argv"
+#}

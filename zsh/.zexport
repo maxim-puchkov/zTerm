@@ -15,6 +15,8 @@ export tempdir="${TMPDIR}tempfiled"
 # Projects
 export zterm='/usr/local/Terminal'
 export ztermxcodeproj="$zterm/Terminal.xcodeproj"
+export zetc="$zterm/etc"
+export zvar="$zterm/var"
 
 export zdot="$ZDOTDIR"
 export zplug="$ZDOTDIR/.oh-my-zsh/custom/plugins"
@@ -27,8 +29,8 @@ export zcompdir="$ZDOTDIR/completions"
 
 # Package Managers
 export HOMEBREW='/usr/local/Homebrew'
-export ZSHLIB='/usr/local/Cellar/zsh/5.8/share/zsh'
-export CELLAR="$HOMEBREW/Cellar"
+export CELLAR="/usr/local/Cellar"
+
 
 # SFU Files
 export SFU="$ICLOUD/SFU"
@@ -43,6 +45,7 @@ export A310="$SFU_TERM/PHIL 310/assignments"
 
 # Command variables
 export GREP_COLOR='00;95'
+#export GREP_COLOR='00;38;5;226'
 export PCREGREP_COLOUR="$GREP_COLOR"
 
 
@@ -51,10 +54,14 @@ export SETOPT='set'
 export FALSE=1
 export TRUE=0
 
-export LDFLAGS='-L/usr/local/opt/openssl@1.1/lib'
-export CPPFLAGS='-I/usr/local/opt/openssl@1.1/include'
+#export LDFLAGS='-L/usr/local/opt/openssl@1.1/lib'
+#export CPPFLAGS='-I/usr/local/opt/openssl@1.1/include'
 
-export error_color=9
+error_color=9
+logf_color=4
 
-export LB='\e[1;31m'{'\e[0m'
-export RB='\e[1;31m'}'\e[0m'
+# Colored symbols and labels
+LB='\e[1;31m'{'\e[0m'
+RB='\e[1;31m'}'\e[0m'
+undefined_label=$'\033\[33m'undefined$'\033\[39m'
+null_label=$'\033\[31m'null$'\033\[39m'

@@ -370,8 +370,6 @@ function txt() {
 
 
 
-alias linux='open https://docstore.mik.ua/orelly/linux/lnut/index.htm'
-
 function te() {
     a='11 22'
     b=(a b)
@@ -417,7 +415,7 @@ function env0() {
 }
 function env1() {
     /usr/bin/env -i "${(@f)$(< ~/etc/env1)}" \
-    /usr/local/bin/zsh  -f "$@"
+    /usr/local/bin/zsh -f "$@"
 }
 
 
@@ -476,13 +474,105 @@ function fdc() {
 
 
 function list-services() {
-    /bin/launchctl list | fgrep 'com.maximpuchkov'
+    /bin/launchctl list | /usr/bin/fgrep -e 'com.maximpuchkov'
 }
 
 function print-quotes() {
-    typeset arg=$1
+    typeset arg="$argv"
     printf "%-4s: ${lb}%s${rb}\n"  "q"    "${(q)arg}"
     printf "%-4s: ${lb}%s${rb}\n"  "qq"   "${(qq)arg}"
     printf "%-4s: ${lb}%s${rb}\n"  "qqq"  "${(qqq)arg}"
     printf "%-4s: ${lb}%s${rb}\n"  "qqqq" "${(qqqq)arg}"
 }
+
+function print-debug() {
+    local c='%F{4}'
+    local args="$argv"
+    local value="${c}${args}%f"
+    local length="${c}${#args}%f"
+    local label='%B%UValue%u%b'
+    builtin printf "%s(length: %s) = <%s>\n" \
+                    "${(%)label}" "${(%)length}" "${(%)value}"
+}
+
+
+
+
+#function untab() {
+#    typeset find replace out
+#    find='^[[:space:]]+'
+#    replace=''
+#    out=$(sed -n -E "s/${find}/${replace}/p" <<< "$argv")
+#    print -- ${out:-$argv}
+#}
+
+
+
+
+
+
+
+#MARK: - TEMP
+
+
+function theme_dislike() {
+    local f=$HOME/var/Themes/disliked.txt
+    echo $ZSH_THEME >> $f
+    logf "Disliked oh-my-zsh theme '\$ZSH_THEME'."
+    logf "Theme name is written to \$f."
+    theme_n; sleep 3; re;
+}
+function theme_like() {
+    local f=$HOME/var/Themes/liked.txt
+    local i=$(( ${=$(wc -l < $f)} + 1 ))
+    echo $ZSH_THEME >> $f
+    
+    local outf=$HOME/var/Themes/"Like ${i} - $ZSH_THEME"
+    theme_example > $outf
+    logf "Liked oh-my-zsh theme '\$ZSH_THEME'."
+    logf "Theme name is written to '\$f'."
+    logf "Theme example is written to '\$outf'."
+    theme_n; sleep 3; re;
+}
+#
+function theme_n() {
+    local -i next=$1
+    if [[ $next -eq 0 ]]; then
+        next=$(( $TEMP_THEME_N + 1 ))
+    fi
+    echo $next > ~/var/TEMP_THEME_N
+}
+function theme_example() (
+    cd $zterm
+    for p in PS{1..4}; do
+        print -P -x4 -- "\tPrompt '$p' = <${(P)p}>"
+    done
+    echo;echo;
+    ls -lFGHah
+)
+
+alias dislike='theme_dislike'
+alias like='theme_like'
+alias example='theme_example'
+alias next='theme_n'
+
+#MARK:   TEMP -
+
+function nowrap() {
+    tput rmam
+    print -P -- "%F{4}%S${(@)argv[1]}%s ${(@)argv:2}%f"
+    ${=argv}
+    tput smam
+}
+
+
+#function tap() {
+#    pv@
+#    while [[ $1 =~ '^[-+]' ]]; do
+#        D "Shifting 1=$1"
+#        shift
+#    done
+#    pv@
+#    builtin set -- "${(@)argv}"
+#    pv@
+#}

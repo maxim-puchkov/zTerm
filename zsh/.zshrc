@@ -1,18 +1,42 @@
 # User-specific z-shell shell configuration.
 
 
+
+
+fpath=($ZDOTDIR/site-functions $fpath)
+autoload readf
+
+
+#MARK: - TEMP
+f=~/var/lines
+export TEMP_THEME_N=${$(< ~/var/TEMP_THEME_N):-1}
+#MARK:   TEMP -
+
+
+
 #MARK: - Oh-my-zsh
 export ZSH="$ZDOTDIR/.oh-my-zsh"
 
 # Themes
-export ZSH_THEMES="$ZDOTDIR/themes.oh-my-zsh"
-if [[ -z $ZSH_THEME ]]; then
-    ZSH_THEME=${$(< $ZSH_THEMES)[1]:-robbyrussell}
+readf -e '#*' themes < "$ZDOTDIR/etc/themes.oh-my-zsh"
+readf -e '#*' plugins < "$ZDOTDIR/etc/plugins.oh-my-zsh"
+
+if [[ ! -v ZSH_THEME ]]; then
+    ZSH_THEME=$themes[1]
+    print -P -- "%F{5}ZSH theme is %U$ZSH_THEME%u (n = $TEMP_THEME_N)%f"
+    # :-robbyrussell}
 fi
 
-# Plugins
-export ZSH_PLUGINS="$ZDOTDIR/plugins.oh-my-zsh"
-export plugins=($(< $ZSH_PLUGINS))
+
+
+
+#MARK: - Python Environment
+export PYTHONSTARTUP="$ZTERM/Python/.pyenv"
+export PYTHONPATH="$HOME/Library/Application Support/iTerm2/Scripts"
+PYTHONPATH="$PYTHONPATH:$ZTERM/Python"
+typeset -T PYTHONPATH pythonpath
+
+
 
 # Source files
 source "$ZSH/oh-my-zsh.sh"
@@ -23,18 +47,6 @@ source "$ZDOTDIR/.zload"
 # GNU Privacy Guard
 GPG_TTY=$(tty)
 export GPG_TTY
-
-CFD=$(pfd)
-export CFD
-
-v1='pfd'
-export v1
-
-v2='(pfd)'
-export v2
-
-#argc(=$(printf '%d' $ARGC))
-#export argc
 
 # Preferred editor for local and remote sessions
 export EDITOR='/usr/local/bin/nano --mouse'
@@ -47,9 +59,8 @@ preexec_functions+=(ref)
 
 #
 zmodload zsh/zprof
-
-
-
+#zmodload zsh/mapfile
+#typeset -a array; array=(${(f@)${mapfile[${f}]%$'\n'}});
 
 #MARK: - iTerm 2
 # Shell integration
@@ -87,14 +98,14 @@ function var()      { cd "$HOME/var/$@"; }
 function services() { cd "$HOME/Library/LaunchAgents/$@"; }
 # Go to logs.
 function logs()     { cd "$ZTERM/var/log/$@"; }
-
 # Go to Test Files.
 #function testdir()  { cd "$testdir/$@"; }
 
 
-
-
-#MARK: - Python Environment
-export PYTHONSTARTUP="$ZTERM/Python/.pyenv"
-export PYTHONPATH="$ZTERM/Python:$PYTHONPATH"
-export PYTHONPATH="$HOME/Library/Application Support/iTerm2/Scripts:$PYTHONPATH"
+function cleanf() {
+    local bytes=256
+    local file="$1"
+    stat -f "$1: %z bytes" < $file
+    hexyl -n $bytes < $file
+    
+}

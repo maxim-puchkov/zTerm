@@ -12,10 +12,9 @@ path=(
   $path
   $DEV/bin
   $PROJ/Terminal/.config/bin
-  $PROJ/Terminal/Python
-  # $SFU/bin
+  $pythonpath
+  #$PROJ/Terminal/Python
 )
-
 
 # FPATH
 fpath=(
@@ -24,9 +23,10 @@ fpath=(
   $PROJ/Terminal/zsh/completions
   $fpath
 )
+
+# Load functions
 autoload fload
 fload
-
 
 # Source files
 source "$ZIO"

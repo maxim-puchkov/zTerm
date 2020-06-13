@@ -2,15 +2,17 @@
 
 
 #MARK: - Z-Terminal
-# Open Z-Terminal project.
-function ztermx()   { open -a Xcode "$ztermxcodeproj" }
+# Open Z-Terminal Xcode project.
+function xct()      { open -a Xcode "$zterm/Terminal.xcodeproj" }
+alias zxc='xct'
+# Open Services Xcode project.
+function xcs()      { open -a Xcode "$zterm/Services.xcodeproj" }
 # zshenv - zsh environment for all shells.
 function zenv()     { open -a Xcode "$ZSHENV" }
 # zprofile - profile for zsh shells.
 function zprofile() { open -a Xcode "$ZPROFILE" }
 # zshrc - configuration file for zsh shells.
 function zrc()      { open -a Xcode "$ZSHRC" }
-function zload()    { open -a Xcode "$ZDOTDIR/.zload" }
 # zio - input/output display configuration.
 function zio()      { open -a Xcode "$ZIO" }
 # zalias - zsh aliases.
@@ -25,8 +27,10 @@ function zmisc()    { open -a Xcode "$ZMISC" }
 # zcomp - zsh completion functions.
 function zcomp()    { open -a Xcode "$ZCOMP" }
 
+function zload()    { open -a Xcode "$ZDOTDIR/.zload" }
 
 
+function add_tests() {
 
 # Compdef test function.
 function foo() {
@@ -49,15 +53,17 @@ l2=( '1' '2' '3' )
 l3=( {a..z} )
 l4=( 'word' 'word abc' 'abc word' 'word abc word' )
 l5=( '/path/to/a' '/path/to/b' '/c' 'c/d' )
+l6=( 'Bob' 'Alice' 'Bob' 'Charlie' 'Bob' 'Bob' 'Charlie' 'Alice' )
 
-typeset -A A
-A=( 'message' 'Hello, world!'
+typeset -A Assoc
+Assoc=(
+    'message'   'Hello, world!'
     'name'      'Bob'
-    'age'   50
+    'age'       50
     'cmpt404'   ~/iCloud/SFU/10-*/404/assignments
     'cmpt473'   ~/iCloud/SFU/10-*/473/assignments
     'phil310'   ~/iCloud/SFU/10-*/PHIL\ 310/assignments
-     )
+)
 
 typeset -A A1
 for i in {1..26}; do
@@ -87,4 +93,6 @@ function job10() {
     local exitcode=$?
     printf 'Exit %s.\n' $exitcode
     return $exitcode
+}
+
 }

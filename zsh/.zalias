@@ -12,14 +12,14 @@ alias -g T='; then echo "-- $(green True)  $(pass) --"; \
               else echo "-- $(red   False) $(fail) --"; \
             fi;'
 
-
+alias ei='open -a Xcode "$zterm/Services/Identity"'
 
 #MARK: - Regular Aliases
 # Command 'ls'
 alias ls='command ls -FGHh'
 alias la='ls -la'
 alias l='ls -l'
-alias ll='ls -lA'
+alias ll='ls -la'
 alias lll='ls -lR'
 alias llll='ls -lAR'
 # List
@@ -28,7 +28,9 @@ alias lta='list ta'
 alias ltch='list tch'
 alias ltm='list tm'
 alias lS='list S'
+alias lSa='list -a S'
 alias lf='list f'
+alias limg='imgls'
 
 # Brew
 alias bb='brew_browse'
@@ -39,9 +41,6 @@ alias cp='command cp -i'
 
 # Builtin 'cd'
 alias cfd='cd -- "$(pfd)"'
-
-# List of commands
-alias cmdlist='printf "%s\n" ${commands:t}'
 
 # Builtin 'echo'
 alias e='builtin echo'
@@ -59,19 +58,20 @@ alias p='print'
 alias pp='printp'
 alias pl='printl'
 alias pn='printn'
+alias pdb='print-debug'
 alias pdir='builtin print -P -D'
-#alias pc='builtin print -P "%F{1}"'
 
 
-pc() {
-    color=$1
-    shift
-    print -P "%F{$color}${argv}%f"
-    print -P "%F{2}${argv:1}%f"
-print -P '%F{3}' ${argv:1} '%f'
-
-
-}
+function manp() {(
+    local name="$argv"
+    local dir="${zterm}/share/man"
+    if [[ ! -d $dir ]]; then
+        /bin/mkdir -p -- $dir
+    fi
+    local file="${dir}/${name}"
+    /usr/bin/man  -t -- $name > $file
+    /usr/bin/open -a Preview -- $file
+)}
 
 # Print variables
 alias pv='print-var'
@@ -104,13 +104,17 @@ alias lctl='command launchctl'
 alias mv='command mv -i'
 
 # Command 'open'
-alias open='command open -a Xcode'
+#alias open='command open -a Xcode'
 alias o='open "$PWD"'
 alias xopen='open -a Xcode'
 alias textopen='open -a TextEdit'
 alias webopen='open -a Safari'
 alias scriptopen='open -a "Script Editor"'
 alias vb='open -a VirtualBox'
+
+function xman() {
+    open -a Terminal -g x-man-page://"$argv"
+}
 
 # Command 'openssl'
 alias sha256='openssl sha256'
