@@ -16,6 +16,8 @@ path=(
   #$PROJ/Terminal/Python
 )
 
+export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"
+
 # FPATH
 fpath=(
   /usr/local/share/zsh-completions
@@ -38,10 +40,15 @@ source "$ZCOMP"
 
 source '/usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh'
 source '/usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh'
-
+typeset -H _ZSH_AUTOSUGGEST_BIND_COUNTS
+typeset -H ZSH_HIGHLIGHT_STYLES
+typeset -H ZSH_AUTOSUGGEST_ACCEPT_WIDGETS
+typeset -H ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS
+typeset -H ZSH_AUTOSUGGEST_IGNORE_WIDGETS
+typeset -H ZSH_HIGHLIGHT_REVISION
+typeset -H ZSH_AUTOSUGGEST_CLEAR_WIDGETS
 
 unalias run-help
 autoload run-help
 
 unalias g
-unalias gr

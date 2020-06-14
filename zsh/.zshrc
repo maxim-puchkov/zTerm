@@ -1,17 +1,8 @@
 # User-specific z-shell shell configuration.
 
 
-
-
 fpath=($ZDOTDIR/site-functions $fpath)
 autoload readf
-
-
-#MARK: - TEMP
-f=~/var/lines
-export TEMP_THEME_N=${$(< ~/var/TEMP_THEME_N):-1}
-#MARK:   TEMP -
-
 
 
 #MARK: - Oh-my-zsh
@@ -20,11 +11,8 @@ export ZSH="$ZDOTDIR/.oh-my-zsh"
 # Themes
 readf -e '#*' themes < "$ZDOTDIR/etc/themes.oh-my-zsh"
 readf -e '#*' plugins < "$ZDOTDIR/etc/plugins.oh-my-zsh"
-
 if [[ ! -v ZSH_THEME ]]; then
-    ZSH_THEME=$themes[1]
-    print -P -- "%F{5}ZSH theme is %U$ZSH_THEME%u (n = $TEMP_THEME_N)%f"
-    # :-robbyrussell}
+    ZSH_THEME=${themes[1]:-robbyrussell}
 fi
 
 
@@ -38,6 +26,7 @@ typeset -T PYTHONPATH pythonpath
 
 
 
+
 # Source files
 source "$ZSH/oh-my-zsh.sh"
 source "$ZDOTDIR/.zload"
@@ -47,6 +36,7 @@ source "$ZDOTDIR/.zload"
 # GNU Privacy Guard
 GPG_TTY=$(tty)
 export GPG_TTY
+
 
 # Preferred editor for local and remote sessions
 export EDITOR='/usr/local/bin/nano --mouse'
@@ -59,8 +49,7 @@ preexec_functions+=(ref)
 
 #
 zmodload zsh/zprof
-#zmodload zsh/mapfile
-#typeset -a array; array=(${(f@)${mapfile[${f}]%$'\n'}});
+
 
 #MARK: - iTerm 2
 # Shell integration
@@ -69,6 +58,10 @@ if [[ -e "$ZDOTDIR/.iterm2_shell_integration.zsh" ]]; then
 fi
 # Key bindings
 bindkey '^X\x7f' backward-kill-line  # Command-Delete
+
+
+
+
 
 
 
@@ -100,12 +93,3 @@ function services() { cd "$HOME/Library/LaunchAgents/$@"; }
 function logs()     { cd "$ZTERM/var/log/$@"; }
 # Go to Test Files.
 #function testdir()  { cd "$testdir/$@"; }
-
-
-function cleanf() {
-    local bytes=256
-    local file="$1"
-    stat -f "$1: %z bytes" < $file
-    hexyl -n $bytes < $file
-    
-}

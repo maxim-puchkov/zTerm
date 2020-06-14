@@ -23,10 +23,8 @@ function brew() {(
             done
         ;;
     esac
-#
+    command brew ${=argv}
     logf $argv
-#    ${=argv}
-        
 )}
 
 

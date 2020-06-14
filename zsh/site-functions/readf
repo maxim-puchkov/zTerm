@@ -29,9 +29,9 @@ function readf() {
     typeset -a file_contents
     () {
         file_contents=("${(@f)$(< $1)}")
-    } =(sed -E -e 's/^[[:space:]]*//g' \
+    } =(LANG=C sed -E -e 's/^[[:space:]]*//g' \
                -e 's/[[:space:]]*$//g' \
-               < $input_file)
+               < $input_file 2>/dev/null)
     # Length of array is number of lines in file
     typeset line_count=${#file_contents}
     

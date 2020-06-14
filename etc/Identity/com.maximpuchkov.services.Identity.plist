@@ -13,8 +13,8 @@
 	<key>WorkingDirectory</key>
 	<string>/usr/local/Terminal</string>
 	<key>StandardOutPath</key>
-	<string>var/log/Services/com.maximpuchkov.services.Identity.log</string>
+	<string>var/log/com.maximpuchkov.services/Identity.log</string>
 	<key>StandardErrorPath</key>
-	<string>var/log/Services/com.maximpuchkov.services.Identity.log</string>
+	<string>var/log/com.maximpuchkov.services/Identity.log</string>
 </dict>
 </plist>

@@ -24,8 +24,8 @@
 	<key>WorkingDirectory</key>
 	<string>/usr/local/Terminal</string>
 	<key>StandardOutPath</key>
-	<string>var/log/Services/com.maximpuchkov.services.Committer.log</string>
+	<string>var/log/com.maximpuchkov.services/Committer.log</string>
 	<key>StandardErrorPath</key>
-	<string>var/log/Services/com.maximpuchkov.services.Committer.log</string>
+	<string>var/log/com.maximpuchkov.services/Committer.log</string>
 </dict>
 </plist>

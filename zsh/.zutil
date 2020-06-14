@@ -1,16 +1,18 @@
 # User-specific functions for interactive zsh(1) shells.
 
 
-# Open default macOS Terminal.
+# stat -f 'Permissions for %N: %SMp%SLp' 
+
+# Open default macOS Terminal
 function term1() {
     open -a '/System/Applications/Utilities/Terminal.app' -g -n
 }
-# Open iTerm2.
+# Open iTerm2
 function term2() {
     open -a '/Applications/iTerm.app' -g -n
 }
 
-# Open in editor.
+# Open in editor
 function edit() {
     ${=EDITOR} "$@"
 }
@@ -21,11 +23,11 @@ function calc() {
 
 #
 function themes() {
-    ${=EDITOR} $ZSH_THEMES
+    ${=EDITOR} $zdot/etc/themes.oh-my-zsh
 }
 #
 function plugins() {
-    ${=EDITOR} $ZSH_PLUGINS
+    ${=EDITOR} $zdot/etc/plugins.oh-my-zsh
 }
 
 
@@ -474,7 +476,8 @@ function fdc() {
 
 
 function list-services() {
-    /bin/launchctl list | /usr/bin/fgrep -e 'com.maximpuchkov'
+    /bin/launchctl list |
+        /usr/bin/fgrep -e 'com.maximpuchkov'
 }
 
 function print-quotes() {
@@ -513,7 +516,7 @@ function print-debug() {
 
 
 #MARK: - TEMP
-
+export TEMP_THEME_N=${$(< ~/var/TEMP_THEME_N):-1}
 
 function theme_dislike() {
     local f=$HOME/var/Themes/disliked.txt
@@ -555,10 +558,9 @@ alias dislike='theme_dislike'
 alias like='theme_like'
 alias example='theme_example'
 alias next='theme_n'
-
 #MARK:   TEMP -
 
-function nowrap() {
+function unwrap() {
     tput rmam
     print -P -- "%F{4}%S${(@)argv[1]}%s ${(@)argv:2}%f"
     ${=argv}
@@ -576,3 +578,146 @@ function nowrap() {
 #    builtin set -- "${(@)argv}"
 #    pv@
 #}
+
+
+
+
+
+
+
+function tt() {
+    local x=${1:-0}
+    local y=${2:-1}
+    if [[ $x -eq $y ]]; then
+        
+    fi
+}
+
+
+#function iff() {
+#    eval [[ ]]
+#}
+
+
+function thesaurus() {
+    local URL='https://www.thesaurus.com/browse'
+    local word=${argv// /%20}
+    open -a 'Safari' $URL/$word
+}
+
+
+function one-by-one() {
+    typeset -a commands
+    commands=($argv)
+    local argc=$#
+    
+#    while [[ -n $1 ]] && [[ $? -eq 0 ]]; do
+#        () { green $1; return $1 } $1
+#        shift
+#    done
+#    done
+#
+#    for cmd in $commands; do
+    while [[ -n $1 ]]; do
+        $=1
+#        $=cmd
+        
+        printf '%d/%d  -  continue? (y/n)  ' $# $argc
+        read -q do_next
+        shift
+    done
+}
+
+
+
+function cleanf() {
+    local bytes=256
+    local file=$1
+    local size=$(stat -f '%z' < $file)
+    print -a -C2 -Pl -- "%UFile:%u:" "$file" "%USize%u:" "$size bytes"
+    
+    hexyl -n $bytes < $file
+    
+    # ...
+}
+
+
+function f () {
+    integer a b c
+     #{1,2}
+    #=${1:3}
+    exec {a}>&0 {b}>&1 {c}>&2
+#    exec
+#    exec {
+    print 'This is a log message.' >&$a >&1
+    S a: $a,   b: $b,   c: $c
+    exec {a}>&- {b}>&- {c}>&-
+}
+
+
+
+function dgst() {
+    tput rmam
+    local file d
+    for file in $argv; do
+        print -P -- "%F{4}${(l:$COLUMNS::*:)}%f"
+        local -a list=(md4 md5 md5-sha1 sha1 sha256 sha512 rmd160 blake2b512)
+        for d in $list; do
+            openssl dgst -$d $file
+#            openssl dgst -$d -binary $file
+            # | fgrep -i $d
+        done
+    done
+    print -P -- "%F{4}${(l:$COLUMNS::*:)}%f"
+    tput smam
+}
+
+function randbytes() {
+    local n_bytes=${1:-1}
+    local output_file=${2:-/dev/stdout}
+    print "Writing $n_bytes random bytes to $output_file."
+    dd if=/dev/random of=$output_file bs=8 count=$n_bytes 2>/dev/null
+}
+function enc() {
+    local file=$1
+    local n=128
+    local KEY
+    local IV='00000000000000000000000000000000'
+    for n in {128,192,256}; do
+        KEY="$(printf '%s' $(xxd -p < ~/var/$n.key))"
+        openssl enc -aes-$n-cbc -p -K $KEY -iv $IV -e -in $file -out $file-enc-$n
+    done
+}
+function dec() {
+    local file=$1
+    local n=128
+    local KEY
+    local IV='00000000000000000000000000000000'
+    for n in {128,192,256}; do
+        KEY="$(printf '%s' $(xxd -p < ~/var/$n.key))"
+        openssl enc -aes-$n-cbc -p -K $KEY -iv $IV -d -in ${file%-enc*}-enc-$n-* -out ${file%-enc*}-dec-$n
+    done
+}
+
+function ecn2() {
+    local file=$1
+    cp -- "$file" "plaintext-$file.txt"
+    
+}
+
+
+
+
+
+function ow() {
+    stat -f "%Sp -> owner=%SHp group=%SMp other=%SLp"
+}
+function recent_files() {
+    stat -f "%m%t%Sm %N" ${argv:-$PWD}/* | sort -rn | head -3 | cut -f2-
+}
+
+
+function tprof() {
+    local name=${1:-'Light'}
+    printf '%b\n' "\e]1337;SetProfile=Term 3: $name\a"
+}

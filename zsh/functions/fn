@@ -10,7 +10,7 @@
 # Information about shell functions.
 #
 # Options:
-## -h,--help: show help ##
+## fn -h,--help: show help ##
 function fn() (
     ## def: print function definition ##
     function fn_def() {
@@ -194,9 +194,9 @@ function fn() (
         function completion_arguments() {
             typeset file=$1
             typeset -A reply
-            typeset grep_pattern='^[ ]*##[ ]*-[^ ]+: .* ##[ ]*$'
-            typeset sed_pattern='s/## ([-].*): (.*) ##/\1: \2/p'
-            reply=("${(@f)$(grep -E $grep_pattern $zfunc/fn |
+            typeset grep_pattern='^[ ]*##[ ]* (.+) -[^ ]+: .* ##[ ]*$'
+            typeset sed_pattern='s/## (.+) ([-].+): (.+) ##/\2: \3/p'
+            reply=("${(@f)$(grep -E $grep_pattern $file |
                 sed -n -E $sed_pattern |
                 awk -F ': ' '{print $1; print $2;}' )}") 2>/dev/null
             if [[ $? -ne 0 ]]; then
@@ -245,6 +245,9 @@ function fn() (
             autoload +X ${file:t}
             arg_completion=(${(@f)"$(completion_arguments $file)"})
             cmd_completion=(${(@f)"$(completion_commands $file)"})
+            
+            print-var arg_completion
+            print-var cmd_completion
         done
         
 cat <<EOF
@@ -258,7 +261,7 @@ cat <<EOF
 
 
 _arguments -C \\
-$( print -x2 -l -- ${arg_completion} )
+$( if [[ -n $arg_completion ]] print -x2 -l -- ${arg_completion} )
   ":command:->command" \\
   "*::arg:->arg"
 
@@ -266,7 +269,7 @@ case \$state in
   (command)
     typeset -a commands
     commands=(
-$( print -x6 -l -- ${cmd_completion} )
+$( if [[ -n $cmd_completion ]] print -x6 -l -- ${cmd_completion} )
     )
     _describe -t commands command commands
   ;;

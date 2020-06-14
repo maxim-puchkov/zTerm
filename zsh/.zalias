@@ -1,5 +1,6 @@
 # User-specific profile for interactive zsh(1) shells
 
+alias python3.8='/usr/local/opt/python@3.8/bin/python3.8'
 
 #MARK: - Global Aliases
 # Shell output

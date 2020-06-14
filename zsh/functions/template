@@ -7,9 +7,12 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# Generate files from templates.
+# Name:
+#   template - generate files from templates
 # Synopsis:
-#   template [options...] kind
+#   template [options...] kind [name]
+# Options:
+## template -t: 
 function template() {
     # Generate unique suffixes for files which
     # already exist in Output directory.
@@ -202,6 +205,7 @@ function template() {
     }
     
     #MARK: - Oh-my-zsh custom plugin
+    ## plugin: oh-my-zsh plugin ##
     function template_plugin() {
         target_dir="${target_dir:-${ZDOTDIR/plugins/$1}}"
         command mkdir -p -- $target_dir
@@ -218,7 +222,7 @@ function template() {
         
     }
     
-    
+    ## null: do nothing ##
     function template_null() {
         print -P "Called $0"
         print-fstack

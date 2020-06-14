@@ -30,6 +30,17 @@ function zcomp()    { open -a Xcode "$ZCOMP" }
 function zload()    { open -a Xcode "$ZDOTDIR/.zload" }
 
 
+
+
+
+
+
+
+
+
+#zmodload zsh/mapfile
+#typeset -a array; array=(${(f@)${mapfile[${f}]%$'\n'}});
+
 function add_tests() {
 
 # Compdef test function.

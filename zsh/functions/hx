@@ -17,15 +17,13 @@ function hx() {
         fi
         return 0
     }
-    while read -t arg; do
-        
-    done
     
     local n_files=$#
     local exitcode=0
     case $n_files in
-        0)  error 'No input files'
-            exitcode=2
+        0)  #error 'No input files'
+            #exitcode=2
+            hexyl < /dev/stdin
         ;;
         1)  __hx_dump "$1"
             exitcode=$?
