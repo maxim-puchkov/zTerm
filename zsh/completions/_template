@@ -1,24 +1,39 @@
 #compdef template
 
+# _template
+# ~/Developer/Projects/Terminal/zsh/functions/template
+#
+# zsh function completion
+# Updated on 2020-06-14 at 03:12 pm
+
 
 _arguments -C \
-  '-d[specify output directory]:file:_files' \
-  '(-d):command:->command' &&
-    ret=0
+  ":command:->command" \
+  "*::arg:->arg"
 
 case $state in
-  command)
-    declare -a commands
+  (command)
+    typeset -a commands
     commands=(
-      python:'python file'
-      zcompletion:'zsh compdef template'
-      ztool:'non-autoloadable zsh command template'
-      zfunction:'autoloadable zsh function template'
-      zsh:'default zsh script template'
+      zfunction:"zsh autoload function"
+      plugin:"oh-my-zsh plugin"
+      zcompletion:"zsh function completion"
+      null:"do nothing"
+      pygment:"pygments style"
+      zsh:"zsh script"
+      launchd:"launchd agent property list and zsh script"
+      ztool:"standalone zsh script"
+      python:"python3 script"
     )
-    _describe -t commands command commands &&
-      ret=0
+    _describe -t commands command commands
+  ;;
+  (arg)
+    typeset -a args
+    args=(
+      # Completion for commands' arguments
+    )
+    _describe -t args arg args
   ;;
 esac
 
-return $ret
+return 0

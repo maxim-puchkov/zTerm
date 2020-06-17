@@ -208,7 +208,7 @@ function fn() (
                 if [[ $k =~ '[,]' ]]; then
                     k="{$k}"
                 fi
-                printf '\t%s"[%s]" \\\\\n' "$k" "$v"
+                printf '\t%s"[%s]"\n' "$k" "$v"
             done
         }
         
@@ -245,9 +245,6 @@ function fn() (
             autoload +X ${file:t}
             arg_completion=(${(@f)"$(completion_arguments $file)"})
             cmd_completion=(${(@f)"$(completion_commands $file)"})
-            
-            print-var arg_completion
-            print-var cmd_completion
         done
         
 cat <<EOF
@@ -260,8 +257,7 @@ cat <<EOF
 # $(date -j +'Updated on %F at %I:%M %p')
 
 
-_arguments -C \\
-$( if [[ -n $arg_completion ]] print -x2 -l -- ${arg_completion} )
+_arguments -C \\$( if [[ -n $arg_completion ]] print -x2 -- '\n' ${^arg_completion}' \\\n' )
   ":command:->command" \\
   "*::arg:->arg"
 

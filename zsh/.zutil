@@ -516,48 +516,48 @@ function print-debug() {
 
 
 #MARK: - TEMP
-export TEMP_THEME_N=${$(< ~/var/TEMP_THEME_N):-1}
-
-function theme_dislike() {
-    local f=$HOME/var/Themes/disliked.txt
-    echo $ZSH_THEME >> $f
-    logf "Disliked oh-my-zsh theme '\$ZSH_THEME'."
-    logf "Theme name is written to \$f."
-    theme_n; sleep 3; re;
-}
-function theme_like() {
-    local f=$HOME/var/Themes/liked.txt
-    local i=$(( ${=$(wc -l < $f)} + 1 ))
-    echo $ZSH_THEME >> $f
-    
-    local outf=$HOME/var/Themes/"Like ${i} - $ZSH_THEME"
-    theme_example > $outf
-    logf "Liked oh-my-zsh theme '\$ZSH_THEME'."
-    logf "Theme name is written to '\$f'."
-    logf "Theme example is written to '\$outf'."
-    theme_n; sleep 3; re;
-}
+#export TEMP_THEME_N=${$(< ~/var/TEMP_THEME_N):-1}
 #
-function theme_n() {
-    local -i next=$1
-    if [[ $next -eq 0 ]]; then
-        next=$(( $TEMP_THEME_N + 1 ))
-    fi
-    echo $next > ~/var/TEMP_THEME_N
-}
-function theme_example() (
-    cd $zterm
-    for p in PS{1..4}; do
-        print -P -x4 -- "\tPrompt '$p' = <${(P)p}>"
-    done
-    echo;echo;
-    ls -lFGHah
-)
-
-alias dislike='theme_dislike'
-alias like='theme_like'
-alias example='theme_example'
-alias next='theme_n'
+#function theme_dislike() {
+#    local f=$HOME/var/Themes/disliked.txt
+#    echo $ZSH_THEME >> $f
+#    logf "Disliked oh-my-zsh theme '\$ZSH_THEME'."
+#    logf "Theme name is written to \$f."
+#    theme_n; sleep 3; re;
+#}
+#function theme_like() {
+#    local f=$HOME/var/Themes/liked.txt
+#    local i=$(( ${=$(wc -l < $f)} + 1 ))
+#    echo $ZSH_THEME >> $f
+#
+#    local outf=$HOME/var/Themes/"Like ${i} - $ZSH_THEME"
+#    theme_example > $outf
+#    logf "Liked oh-my-zsh theme '\$ZSH_THEME'."
+#    logf "Theme name is written to '\$f'."
+#    logf "Theme example is written to '\$outf'."
+#    theme_n; sleep 3; re;
+#}
+##
+#function theme_n() {
+#    local -i next=$1
+#    if [[ $next -eq 0 ]]; then
+#        next=$(( $TEMP_THEME_N + 1 ))
+#    fi
+#    echo $next > ~/var/TEMP_THEME_N
+#}
+#function theme_example() (
+#    cd $zterm
+#    for p in PS{1..4}; do
+#        print -P -x4 -- "\tPrompt '$p' = <${(P)p}>"
+#    done
+#    echo;echo;
+#    ls -lFGHah
+#)
+#
+#alias dislike='theme_dislike'
+#alias like='theme_like'
+#alias example='theme_example'
+#alias next='theme_n'
 #MARK:   TEMP -
 
 function unwrap() {
@@ -685,7 +685,9 @@ function enc() {
     local IV='00000000000000000000000000000000'
     for n in {128,192,256}; do
         KEY="$(printf '%s' $(xxd -p < ~/var/$n.key))"
-        openssl enc -aes-$n-cbc -p -K $KEY -iv $IV -e -in $file -out $file-enc-$n
+        openssl enc -aes-$n-cbc -K $KEY -iv $IV -e \
+                    -in $file                      \
+                    -out $file-enc-$n
     done
 }
 function dec() {
@@ -695,7 +697,9 @@ function dec() {
     local IV='00000000000000000000000000000000'
     for n in {128,192,256}; do
         KEY="$(printf '%s' $(xxd -p < ~/var/$n.key))"
-        openssl enc -aes-$n-cbc -p -K $KEY -iv $IV -d -in ${file%-enc*}-enc-$n-* -out ${file%-enc*}-dec-$n
+        openssl enc -aes-$n-cbc -K $KEY -iv $IV -d \
+                    -in ${file%-enc*}-enc-$n-*     \
+                    -out ${file%-enc*}-dec-$n
     done
 }
 
@@ -720,4 +724,81 @@ function recent_files() {
 function tprof() {
     local name=${1:-'Light'}
     printf '%b\n' "\e]1337;SetProfile=Term 3: $name\a"
+}
+
+function setprof() {
+    local profile_name=${1}
+    
+}
+
+function SetProfile() {
+    local name=${1:-'Light'}
+    printf '%b\n' "\e]1337;$0=Term 3: $name\a"
+}
+function GetProfile() {
+    printf '%b\n' "\e]1337;$0\a"
+}
+
+
+function examples() {
+    function prompt() {
+#        for
+    }
+}
+
+function testpyg() {
+    for style in xcode{dark,light}; do
+        pygmentize -O style=$style $argv
+        print-line
+    done
+}
+
+function pyg-rtf() {
+    local file=$1
+    shift
+    pygmentize -f 'rtf' ${=argv}
+}
+
+
+
+
+
+
+
+
+function le() {
+    unfunction _$0
+cat >"$zdot/completions/_$0" <<EOF
+#compdef $0
+
+# _$0
+#
+#
+# zsh function completion
+#
+
+typeset -a args=()
+
+args=(
+    "-n[create an empty filename (the disk blocks aren't allocated until data is written to them)]"
+    "-v[report the names and sizes of created files]"
+    $(print -Pl -- ${(qq)argv};)
+)
+
+#_arguments -s -S \$args
+_arguments -s \$args \
+    '-E[specify EOF marker]:end-of-file marker' \
+    '(-x -i)-I[specify replacement string for command line]:replacement string' \
+    '(-n -l)-L[call program for every number of lines]:number of input lines' \
+    '(-)1: :(b k m g)' \
+    '*::args: _normal'
+
+
+return 0
+EOF
+    OK ; pass
+    
+    compdef _$0 $0
+    autoload -Uz _$0
+    return 0
 }

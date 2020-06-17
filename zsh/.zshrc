@@ -84,7 +84,8 @@ function proj()     { cd "$DEV/Projects/$@"; }
 # Go to Developer Library.
 function devlib()   { cd "$devlib/$@"; }
 # Go to Temporary Files.
-function temp()     { cd "$tempdir/$@"; }
+function tmp()      { cd "/tmp/$@"; }
+#function temp()     { cd "$tempdir/$@"; }
 # Go to my var directory.
 function var()      { cd "$HOME/var/$@"; }
 # Go to launchd services.
@@ -93,3 +94,6 @@ function services() { cd "$HOME/Library/LaunchAgents/$@"; }
 function logs()     { cd "$ZTERM/var/log/$@"; }
 # Go to Test Files.
 #function testdir()  { cd "$testdir/$@"; }
+
+
+# eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib=$HOME/perl5)"

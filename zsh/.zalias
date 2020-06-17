@@ -62,6 +62,7 @@ alias pn='printn'
 alias pdb='print-debug'
 alias pdir='builtin print -P -D'
 
+alias pyg='pygmentize'
 
 function manp() {(
     local name="$argv"
