@@ -1,0 +1,4 @@
+#compdef doc
+
+
+_files -/ -W $ZTERM/share/docs
