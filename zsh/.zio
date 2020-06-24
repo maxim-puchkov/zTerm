@@ -1,7 +1,10 @@
 # Input/output styles.
 
 
-local __COLOR_NAMES__=( 'RED' 'GREEN' 'YELLOW' 'BLUE' 'MAGENTA' 'CYAN' )
+typeset -aH __COLOR_NAMES__=(
+    'RED'  'GREEN'   'YELLOW'
+    'BLUE' 'MAGENTA' 'CYAN'
+)
 
 function fg_color() {
     tput setaf ${1:?}
@@ -12,10 +15,21 @@ function bg_color() {
 function boldtext() {
     tput bold
 }
-function __style_print() {
-    printf '%s%s' $* $NORMAL
-    echo
-}
+function __style_print() {(
+#    if [[ -z $* ]]; then
+#        while read -t arg; do
+#            argv+=($arg)
+##            set -- $argv $arg
+#        done
+##        set -- $()
+#    fi
+    : ${on:-$NORMAL} ${off:-$NORMAL}
+    if [[ -z $argv ]]; then
+        
+    fi
+    printf '%s%s%s\n' "$on" "$argv" "$off"
+#    echo
+)}
 
 
 #MARK: Styles Definitions
@@ -103,8 +117,8 @@ functions -c italic it
 alias B='bold'
 function underline() { __style_print "$UNDERLINE$*" }
 alias U='underline'
-function standout() { __style_print "$STANDOUT$*" }
-functions -c standout S
+function Standout() { __style_print "$STANDOUT$*" }
+functions -c Standout S
 
 #function reverse() { __style_print "$REVERSE$*" }
 

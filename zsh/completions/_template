@@ -4,10 +4,12 @@
 # ~/Developer/Projects/Terminal/zsh/functions/template
 #
 # zsh function completion
-# Updated on 2020-06-14 at 03:12 pm
+# Updated on 2020-06-22 at 10:45 pm
 
 
 _arguments -C \
+  -d"[output directory]" \
+  -t"[test run (do not create files)]" \
   ":command:->command" \
   "*::arg:->arg"
 
@@ -15,15 +17,16 @@ case $state in
   (command)
     typeset -a commands
     commands=(
-      zfunction:"zsh autoload function"
-      plugin:"oh-my-zsh plugin"
-      zcompletion:"zsh function completion"
-      null:"do nothing"
-      pygment:"pygments style"
-      zsh:"zsh script"
       launchd:"launchd agent property list and zsh script"
-      ztool:"standalone zsh script"
+      null:"do nothing"
+      plugin:"oh-my-zsh plugin"
+      pygment:"pygments style"
       python:"python3 script"
+      zcompletion:"zsh function completion"
+      zfunction:"zsh autoload function"
+      zsh:"zsh script"
+      ztest:"zsh test script"
+      ztool:"standalone zsh script"
     )
     _describe -t commands command commands
   ;;

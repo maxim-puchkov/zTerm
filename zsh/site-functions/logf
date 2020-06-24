@@ -7,7 +7,7 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# logf
+# logf - log formatted messages
 function logf() {
     typeset -i last_status=$status
     typeset -a flags=(-P -X2)
@@ -28,14 +28,14 @@ function logf() {
         find='[$]([{])?(([A-Za-z_\(][^ ]*)?[A-Za-z0-9!@#$%^&*=?_\)])([}])?'
         replace="%U%F{${output_color}}\${\${\2}:-${(%)undefined_label}}%f%u"
         # Highlight variables in description
-        sed -E "s/$find/$replace/g" <<< "${argv}"
+        sed -E -e "s/$find/$replace/g" <<< "${argv}"
     }
     
     
     #MARK: - Options
     autoload -Uz get-arguments
     typeset -A optlist
-    get-arguments -o 'c' -f '-short' -- $argv
+    get-arguments -o 'c' -f 's' -- $argv
     
     ## logf -c: log a status code different from last command's ##
     if [[ -n $optlist[-c] ]]; then
@@ -56,24 +56,24 @@ function logf() {
     # Message prefix components
     typeset date host program pid
     date='%D{%b-%d-%Y %T}'
-    host='%n@%m'
+    user='%n'
     program='${0:t}'
     pid='$$'
     
     # Additional formatting when outputting to
     # terminal file descriptor
     if [[ -t 1 ]]; then
-        # description="%F{4}${description}%f"
-        host="${host/@/%F\{7\}@%f}"
+        user="%F{4}${user}%f"
         program="%B${program}%b"
     fi
    
     # Format message prefix (default style: long)
-    ## logf --short: do not log date and hostname ##
-    if [[ -z $optlist[--short] ]]; then
-        prefix="[${date}]\t${host}\t${program}[$pid] -> ${last_status}"
+    ## logf -s: do not log date and hostname ##
+    if [[ -z $optlist[-s] ]]; then
+        prefix="[$pid]\t${date}\t${user}\t${program}(${last_status})"
     else
-        prefix="${program}[$pid] -> ${last_status}"
+#        prefix="${program}[$pid] -> ${last_status}"
+        prefix="[$pid]\t${program}(${last_status})"
     fi
     
     

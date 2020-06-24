@@ -1,8 +1,6 @@
 # User-specific functions for interactive zsh(1) shells.
 
 
-# stat -f 'Permissions for %N: %SMp%SLp' 
-
 # Open default macOS Terminal
 function term1() {
     open -a '/System/Applications/Utilities/Terminal.app' -g -n
@@ -29,6 +27,38 @@ function themes() {
 function plugins() {
     ${=EDITOR} $zdot/etc/plugins.oh-my-zsh
 }
+
+
+
+
+#MARK: - File Directories
+# Go to Z-Terminal directory.
+function zterm()    { cd "$ZTERM/$@"; }
+# Go to ZDOTDIR.
+function zdot()     { cd "$ZDOTDIR/$@"; }
+# Go to SFU directory.
+function sfu()      { cd "$SFU/$@"; }
+# Go to Desktop.
+function desk()     { cd "$HOME/Desktop/$@"; }
+# Go to Library.
+function lib()      { cd "$HOME/Library/$@"; }
+# Go to Development root.
+function dev()      { cd "$DEV/$@"; }
+# Go to Projects directory.
+function proj()     { cd "$DEV/Projects/$@"; }
+# Go to Developer Library.
+function devlib()   { cd "$devlib/$@"; }
+# Go to Temporary Files.
+function tmp()      { cd "/tmp/$@"; }
+#function temp()     { cd "$tempdir/$@"; }
+# Go to my var directory.
+function var()      { cd "$HOME/var/$@"; }
+# Go to launchd services.
+function services() { cd "$HOME/Library/LaunchAgents/$@"; }
+# Go to logs.
+function logs()     { cd "$ZTERM/var/log/$@"; }
+# Go to Test Files.
+#function testdir()  { cd "$testdir/$@"; }
 
 
 
@@ -253,9 +283,31 @@ function zshrc_template() {
 }
 
 # 
-function lorem() {
-    printf "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse nec convallis neque, eget interdum diam. Donec sit amet arcu faucibus, lobortis lacus sed, molestie massa. Vestibulum eget cursus ligula. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Integer sit amet diam rutrum, dictum eros at, dignissim orci. Nullam pulvinar pellentesque mollis. Etiam ultrices fermentum augue, vitae imperdiet mi. Nullam nec lectus nec sem eleifend pharetra. Cras congue orci vel aliquam fermentum. Ut quis metus quis mauris dapibus cursus ac vitae leo.\n"
-}
+function lorem() {(
+    if [[ $# -gt 0 ]]; then
+        export format="$format $argv"
+    fi
+    [[ $# -gt 0 ]] && export format+="$argv"
+    
+    export format="${format}${argv:+${format}${argv}}"
+    
+    typeset -a lines=(
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+        'Suspendisse nec convallis neque, eget interdum diam.'
+        'Donec sit amet arcu faucibus, lobortis lacus sed, molestie massa.'
+        'Vestibulum eget cursus ligula.'
+        'Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.'
+        'Integer sit amet diam rutrum, dictum eros at, dignissim orci.'
+        'Nullam pulvinar pellentesque mollis.'
+        'Etiam ultrices fermentum augue, vitae imperdiet mi.'
+        'Nullam nec lectus nec sem eleifend pharetra.'
+        'Cras congue orci vel aliquam fermentum.'
+        'Ut quis metus quis mauris dapibus cursus ac vitae leo.'
+    )
+    builtin print ${=format} -- $lines
+#    printf '%s\n' "$text"
+#    printf "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse nec convallis neque, eget interdum diam. Donec sit amet arcu faucibus, lobortis lacus sed, molestie massa. Vestibulum eget cursus ligula. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Integer sit amet diam rutrum, dictum eros at, dignissim orci. Nullam pulvinar pellentesque mollis. Etiam ultrices fermentum augue, vitae imperdiet mi. Nullam nec lectus nec sem eleifend pharetra. Cras congue orci vel aliquam fermentum. Ut quis metus quis mauris dapibus cursus ac vitae leo.\n"
+)}
 
 # ls format
 function datels() {
@@ -311,15 +363,6 @@ function ndo() {
     done
 }
 
-function icmv() {
-    local filepath=$1
-    local directory=$ICLOUD/MovedFiles
-    mkdir -p $directory
-#    mvp $filepath $directory
-    mv $filepath $directory
-    print -P "Moved %B%U${filepath:t}%u%b to %F{10}${directory}%f."
-}
-
 
 function compress3 {
     local file=$1
@@ -347,11 +390,6 @@ function compress3 {
     if [[ $file != $filename ]]; then
         mv -- $filename $file
     fi
-}
-
-function filename() {
-    name="${1:-New File}"
-#    files
 }
 
 function txt() {
@@ -412,11 +450,11 @@ function kv() {
 }
 
 function env0() {
-    /usr/bin/env -i "${(@f)$(< ~/etc/env0)}" \
+    /usr/bin/env -i "${(@f)$(< $zterm/etc/zsh/env0)}" \
     /usr/local/bin/zsh -f "$@"
 }
 function env1() {
-    /usr/bin/env -i "${(@f)$(< ~/etc/env1)}" \
+    /usr/bin/env -i "${(@f)$(< $zterm/etc/zsh/env1)}" \
     /usr/local/bin/zsh -f "$@"
 }
 
@@ -585,48 +623,7 @@ function unwrap() {
 
 
 
-function tt() {
-    local x=${1:-0}
-    local y=${2:-1}
-    if [[ $x -eq $y ]]; then
-        
-    fi
-}
 
-
-#function iff() {
-#    eval [[ ]]
-#}
-
-
-function thesaurus() {
-    local URL='https://www.thesaurus.com/browse'
-    local word=${argv// /%20}
-    open -a 'Safari' $URL/$word
-}
-
-
-function one-by-one() {
-    typeset -a commands
-    commands=($argv)
-    local argc=$#
-    
-#    while [[ -n $1 ]] && [[ $? -eq 0 ]]; do
-#        () { green $1; return $1 } $1
-#        shift
-#    done
-#    done
-#
-#    for cmd in $commands; do
-    while [[ -n $1 ]]; do
-        $=1
-#        $=cmd
-        
-        printf '%d/%d  -  continue? (y/n)  ' $# $argc
-        read -q do_next
-        shift
-    done
-}
 
 
 
@@ -660,23 +657,22 @@ function dgst() {
     tput rmam
     local file d
     for file in $argv; do
-        print -P -- "%F{4}${(l:$COLUMNS::*:)}%f"
+        builtin print -P -- "%F{4}${(l:$COLUMNS::*:)}%f"
         local -a list=(md4 md5 md5-sha1 sha1 sha256 sha512 rmd160 blake2b512)
         for d in $list; do
             openssl dgst -$d $file
-#            openssl dgst -$d -binary $file
-            # | fgrep -i $d
         done
     done
-    print -P -- "%F{4}${(l:$COLUMNS::*:)}%f"
+    builtin print -P -- "%F{4}${(l:$COLUMNS::*:)}%f"
     tput smam
+    return 0
 }
 
 function randbytes() {
     local n_bytes=${1:-1}
     local output_file=${2:-/dev/stdout}
-    print "Writing $n_bytes random bytes to $output_file."
-    dd if=/dev/random of=$output_file bs=8 count=$n_bytes 2>/dev/null
+    builtin print "Writing ${n_bytes} random bytes to ${output_file}."
+    /bin/dd if=/dev/random of=$output_file bs=8 count=$n_bytes 2>/dev/null
 }
 function enc() {
     local file=$1
@@ -740,11 +736,7 @@ function GetProfile() {
 }
 
 
-function examples() {
-    function prompt() {
-#        for
-    }
-}
+
 
 function testpyg() {
     for style in xcode{dark,light}; do
@@ -802,3 +794,308 @@ EOF
     autoload -Uz _$0
     return 0
 }
+
+
+#MARK: - Manual Pages
+function manp() {(
+    local name="$argv"
+    local dir="${zterm}/share/man"
+    if [[ ! -d $dir ]]; then
+        /bin/mkdir -p -- $dir
+    fi
+    local file="${dir}/${name}"
+    /usr/bin/man  -t -- $name > $file
+    /usr/bin/open -a Preview -- $file
+)}
+function xman() {(
+    open -a Terminal -g x-man-page://"$argv"
+)}
+
+
+
+
+function test_print-var() {
+    # Test 0
+    (
+        print-var
+        Standout "Exit code: $?"
+    )
+    print-line
+    
+    # Test 0
+    (
+        print-var myVar
+        Standout "Exit code: $?"
+    )
+    print-line
+    
+    # Test 1
+    (
+        typeset myVar
+        myVar='One variable'
+        
+        print-var myVar
+        Standout "Exit code: $?"
+    )
+    print-line
+    
+    # Test *
+    (
+        typeset myStr
+        typeset -i10 myInt
+        typeset -a myArr
+        typeset -A myAssoc
+        myStr='my string'
+        myInt=1234567890
+        myArr=('my' 'array' 'elements')
+        myAssoc=( [name]='John' [surname]='Doe' [age]=50 )
+        
+        print-var my{Str,Int,Arr,Assoc}
+        Standout "Exit code: $?"
+    )
+    print-line
+    
+    # Test * (null values)
+    (
+        typeset myStr
+        typeset -i10 myInt
+        typeset -a myEmptyArr
+        typeset -a myArr
+        typeset -A myAssoc
+        myStr=""
+        myInt=0
+        myEmptyArr=()
+        myArr=(1 '' 3 '' 5 "" 7 "" 9 "\"\"" "''" )
+        myAssoc=( [key]='' ['']='value' )
+        
+        print-var my{Str,Int,EmptyArr,Arr,Assoc}
+        Standout "Exit code: $?"
+    )
+    print-line
+    
+    # Test * (undefined variables)
+    (
+        typeset myVar
+        myVar='my defined variable'
+        
+        print-var my{Str,Int,Arr,Var,Assoc}
+        Standout "Exit code: $?"
+    )
+    print-line
+}
+
+
+
+
+
+
+#MARK: - Misc Functions
+# Move a file to iCloud.
+function icmv() {
+    # Create 'MovedFiles' directory
+    local directory=$iCloud/MovedFiles
+    if [[ ! -e $directory ]]; then
+        /usr/bin/mkdir -p -- $directory
+    fi
+    # Move files
+    local filepath
+    for filepath in $argv; do
+        /bin/mv -- $filepath $directory
+        local message="Moved %B%U${filepath:t}%u%b to %F{10}${directory}%f."
+        builtin print -P -- "$message"
+    done
+    return 0
+}
+
+# Show synonyms and antonyms for a given word (online).
+function thesaurus() {
+    local base='https://www.thesaurus.com/browse'
+    local word=${argv// /+}
+    local url="${base}/${word}"
+    /usr/bin/open -a 'Safari' -- $url
+}
+
+function word() {
+    function word_thesaurus() {
+        base='https://www.thesaurus.com/browse'
+    }
+    
+    function word_sentences() {
+        base='https://www.wordhippo.com/what-is/sentences-with-the-word/'
+    }
+    
+    case $# in
+        0)  fn print-commands $0
+            return 22
+        ;;
+        1)  error -1 'Word is not specified.'
+            
+        ;;
+    esac
+    
+    if [[ $# -lt 2 ]]; then
+        error -1 'Bad input.'
+    fi
+    typeset cmd=$1
+    shift
+    
+    typeset word
+    word=${argv// /+}
+    
+    typeset base url
+    if [[ ${+functions[${0}_${cmd}]} -eq 0 ]]; then
+        error -127 'Command not found: $cmd.'
+    fi
+    
+}
+
+
+# Create a .webloc shortcut file
+function webloc() {
+    if [[ -z $1 ]]; then
+        error -1 'URL is not set.'
+    fi
+    local url=${${1#*://}//\//:}
+    local filename=${2:-$url}
+    if [[ -d $filename ]]; then
+        filename="${filename%/}/${url}"
+    fi
+    
+#    filename="${filename//\//:}"
+    
+    # ${2:-$url}
+    pv url filename
+#    https://coursys.sfu.ca/history
+}
+
+function ABC() {
+    # Read phonetic spellings (words) from file
+    typeset alphabet=${1:-"$zterm/share/misc/phonetic-alphabet.txt"}
+    # Set result to associative array (default name: ABC)
+    typeset id=${2:-$0}
+    typeset -Ag $id
+    set -A $id
+    # Set short and long
+    local word
+    local -l lowercase
+    local -u uppercase
+    {
+        while read -t word; do
+            lowercase="${word[1]}"
+            uppercase="${word[1]}"
+            ABC[$lowercase]="${(L)word}"
+            ABC[$uppercase]="Letter '${uppercase}' is '${word}'"
+        done <$alphabet &&
+        printf 'Associative array'
+    }
+    return 0
+}
+
+
+
+
+function one-by-one() {
+    typeset -a commands
+    commands=($argv)
+    local argc=$#
+    
+#    while [[ -n $1 ]] && [[ $? -eq 0 ]]; do
+#        () { green $1; return $1 } $1
+#        shift
+#    done
+#    done
+#
+#    for cmd in $commands; do
+    while [[ -n $1 ]]; do
+        $=1
+#        $=cmd
+        
+        printf '%d/%d  -  continue? (y/n)  ' $# $argc
+        read -q do_next
+        shift
+    done
+}
+
+
+function get-arguments-t() {
+    # Names of set flags/options
+    local -a set_{flags,opts}
+    set_flags=(${(s: :)1})
+    set_opts=(${(s: :)2})
+    # Names of wanted flags/options
+    local -a get_{flags,opts}
+    get_flags=(${(s: :)3})
+    get_opts=(${(s: :)4})
+    # Non-flag/option arguments
+    local -a other_args
+    set -A other_args 'Hello World'{1..5}
+    
+    
+    # Output option list
+    typeset -Ag optlist
+    optlist=()
+    
+    # Set positional arguments
+    set -- '-'${^set_flags} \
+           '-'${^set_opts}{,' opt-value'} \
+              ${^other_args}
+    
+    # Set and parse arguments
+    print -P -- "%F{1}BEFORE:\t{$argv} [$#]%f"
+    
+    get-arguments -A optlist    \
+                  -f $get_flags \
+                  -o $get_opts  \
+                  -- $argv
+    print -Pl -- "%Uget-arguments%u" \
+                 "-A optlist" \
+                 "-f $get_flags" \
+                 "-o $get_opts" \
+                 "-- $argv"
+    
+    print -P  -- "%F{2}AFTER:\t{$argv} [$#]%f"
+    echo; echo;
+    
+    
+    # Print results
+    print-line
+    print -P -- "Test: $0."
+    print -P -- "Set flags: {%F{2}${set_flags}%f}, options: {%F{2}${set_opts}%f}."
+    print -P -- "Get flags: {%F{4}${get_flags}%f}, options: {%F{4}${get_opts}%f}."
+    print -P -- "Optlist[${#optlist}]: {%F{3}${optlist}%f}."
+    print-var optlist defaults @
+    print-line
+    echo
+}
+
+function cat() {
+    if [[ ! -v cc ]]; then
+        /bin/cat ${argv}
+    else
+        print -P -- "$0: setting output color to %F{${cc}}Color #${cc}%f."
+        tput setaf $cc
+        /bin/cat ${argv}
+        tput sgr0 
+    fi
+}
+#
+#
+#    typeset input=${argv:-/dev/stdin}
+#    if [[ -n $c ]]; then
+#        (
+#            local program="%B${0}%b"
+#            print -P -- "%B>  Setting %F{${c}}color%f of %U${0}%u%b"
+#
+##            printf '>  ' &&
+##            /usr/bin/tput smul &&
+##            printf '%s color is set to %d\n' "${(%)program}" $c &&
+##            /usr/bin/tput rmul
+#        )
+#        /usr/bin/tput setaf $c
+#    fi
+#    cat <<EOF
+#
+#EOF
+#    /bin/cat <$input
+#    /usr/bin/tput sgr0
+#)}

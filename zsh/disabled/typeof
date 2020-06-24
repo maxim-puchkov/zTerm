@@ -1,0 +1,74 @@
+#!/bin/zsh
+
+#  typeof
+#  Z-Function
+#
+#  Created by Maxim Puchkov on 2020-04-08.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Print type of variables.
+function typeof() {
+#    local results=()
+#    for var_id in "$@"; do
+#        local var_type="$(Bad 'undefined')"
+#        if [[ -n ${(P)var_id} ]]; then
+#            var_type="$(Info ${(t)${(P)var_id}})"
+#        fi
+#        results+=( "typeof $var_id:" "$var_type" )
+#    done
+    
+#    function typeof-shell-command() {
+#        case $what in
+#            (*( is an alias for (noglob|nocorrect))*)
+#                [[ ${what[(w)7]:t} != ${what[(w)1]} ]] && run_help_orig_cmd=${what[(w)1]} run-help ${what[(w)7]:t} ;;
+#            (*( is an alias)*) [[ ${what[(w)6]:t} != ${what[(w)1]} ]] && run_help_orig_cmd=${what[(w)1]} run-help ${what[(w)6]:t} ;;
+#            (*( is a * function)) case ${what[(w)1]} in
+#                    (comp*) man zshcompsys ;;
+#                    (zf*) man zshftpsys ;;
+#                    (run-help) man zshcontrib ;;
+#                    (*) builtin functions ${what[(w)1]} | ${=PAGER:-more} ;;
+#                esac ;;
+#            (*( is a * builtin)) case ${what[(w)1]} in
+#                    (compctl) man zshcompctl ;;
+#                    (comp*) man zshcompwid ;;
+#                    (bindkey|vared|zle) man zshzle ;;
+#                    (*setopt) man zshoptions ;;
+#                    (cap|getcap|setcap)  ;&
+#                    (clone)  ;&
+#                    (ln|mkdir|mv|rm|rmdir|sync)  ;&
+#                    (sched)  ;&
+#                    (echotc|echoti|sched|stat|zprof|zpty|zsocket|zstyle|ztcp) man zshmodules ;;
+#                    (zftp) man zshftpsys ;;
+#                    (*) man zshbuiltins ;;
+#                esac ;;
+#            (*( is hashed to *))
+#                man ${what[(w)-1]:t}
+#            ;;
+#            (*( is a reserved word))
+#                man zshmisc
+#            ;;
+#    }
+#
+    typeset -a result=()
+    for var_id in $@; do
+        var_type='%F{1}undefined%f'
+        var_value=${(P)var_id}
+        var_length=${#var_value}
+        if [[ -n $var_value ]]; then
+            var_type="%F{6}${(Pt)var_id}%f"
+        fi
+        result+=( "typeof %U${var_id}%u:" "${var_type} (${(P)#var_id})" )
+    done
+    
+    
+ 
+#    case $1 in
+#        -v|--var)
+#        ;;
+#        -s|--shell)
+#        ;;
+#    esac
+    
+    print -a -C2 -P -- $result
+}

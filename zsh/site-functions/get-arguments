@@ -11,7 +11,14 @@
 #   get-arguments
 #
 # Usage:
-#   get-arguments [-[Aa] array_id] [-[fo] name,...],... args
+#   get-arguments
+#     [-[Aa] array_id]
+#     [-f name[, ...]]
+#     [-o name[, ...]]
+#     [
+#     [[-+]u]
+#   --
+#     args
 #
 # Description:
 #   Parse arguments, store recognized flags
@@ -26,148 +33,575 @@
 #       get-arguments -A myArray -f A,B -o C,D -- -C opt-C -A -D opt-D -B
 function get-arguments() {
     # Load 'zsh/zutil' module
-    if ! zmodload zsh/zutil; then
-        error -127 'Cannot load module'
+    local zsh_module='zsh/zutil'
+    if ! zmodload -e $zsh_module; then
+        error -127 'Cannot load zsh module: $zsh_module.'
     fi
     
-    #MARK: - Parse Argument Names
-    # Parse list of argument names and calculate
-    # shift distance
-    typeset -a name_list
-    typeset -i distance
-    function get-arguments-parse-list() {
-        distance=0
-        # Type (flag or option)
-        typeset name_type=$1
-        shift
-        distance=$(( $distance + 1 ))
-        if [[ -z $1 ]]; then
-            error -1 'Cannot parse $name_type.'
-        fi
-        # List of individual names
-        name_list=()
-        if [[ $1 =~ '[,]' ]]; then
-            # Add each comma-separated
-            # argument to the list
-            while [[ $1 =~ '[,]' ]]; do
-                name_list+=($=1)
-                distance=$(( $distance + 1 ))
-                if [[   $1 =~ '[,][ ]?$' ]] &&
-                   [[ ! $2 =~ '[,]' ]]; then
-                    name_list+=($=2)
-                    distance=$(( $distance + 1 ))
-                    break
-                fi
-            shift
-            done
-        else
-            # If an argument does not contain commas,
-            # then it is the only argument
-            name_list+=($=1)
-            distance=$(( $distance + 1 ))
-        fi
-        return 0
-    }
-    
-    
-    #MARK: - Parameters for get-arguments
-    # Names of flags and options
-    typeset -aU flag_names option_names
-    flag_names=()
-    option_names=()
-    # Result array
-    typeset array_id array_type
-    array_id='optlist'
-    array_type='-A'
-    
-    # Parse flag and option names
-    while [[ $1 =~ '^[-]' ]]; do
-        case $1 in
-            # Flags
-            -f|--flags)
-                # Parse flag names
-                get-arguments-parse-list $argv
-                if [[ $? -ne 0 ]]; then
-                    return 1
-                fi
-                # Append new flag names to 'flag_names' array
-                shift $distance
-                flag_names+=(${=${(s:,:)name_list}})
-            ;;
-            # Options
-            -o|--opts|--options)
-                # Parse option names
-                get-arguments-parse-list $argv
-                if [[ $? -ne 0 ]]; then
-                    return 1
-                fi
-                # Append new option names to 'option_names' array
-                shift $distance
-                option_names+=(${=${(s:,:)name_list}})
-            ;;
-            # Set name of the result associative array
-            -A) shift
-                array_id=$1
-                array_type='-A'
-                shift
-            ;;
-            # Set name of the result array
-            -a) shift
-                array_id=$1
-                array_type='-a'
-                shift
-            ;;
-            # Stop parsing parameters
-            --) shift ;&
-            *)  break ;;
-        esac
-    done
-    unfunction -m "${0}-*"
-    
-    # Check argument names
-    if [[ -z $flag_names ]] && [[ -z $option_names ]]; then
-        error -1 'Missing argument descriptions.'
+    # Find argument specification and value delimiter
+    local delimiter='--'
+    local -i delimiter_index=${argv[(i)$delimiter]}
+    # Missing '--' argument delimiter
+    if [[ $delimiter_index -gt $# ]]; then
+        error -1 "Argument specification and argument values must be delimited with two dashes '\$delimiter':" \
+        "\n '%B${0}%b -o o1,o2,o3 \$delimiter -o1 X -o2 Y -o3 Z other args'"
     fi
-    # Check that there are more arguments
-    if [[ $# -eq 0 ]]; then
-        #error -1 'Nothing to parse.'
+    # If delimiter '--' is the last argument, there is nothing to parse
+    if [[ $delimiter_index -eq $# ]]; then
         return 1
     fi
     
     
-    #MARK: - Parse Arguments with zparseopts
-    # Initialize 'flags' and 'opts' arrays
+    
+    
+    #MARK: - Parameters for 'get-arguments'
+    # Names of flags and options
+    typeset -aU flag_names option_names
+    flag_names=()
+    option_names=()
+    # Default values
+    typeset -A defaults
+    defaults=( [opt-unset]="''"
+               [flag-set]=1
+               [flag-unset]=0 )
+    # Result array name and type
+    typeset array_{id,type}
+    array_id='optlist'
+    array_type='-A'
+    
+    
+    
+    
+    #MARK: - Set 'get-arguments' Options
+    # Parameters of the current option
+    local -i last_index
+    local -a list
+    
+    # Parse all arguments which begin with '-' or '+'
+    while [[ $1 =~ '^[-+]' ]] &&
+          [[ $1 != '--' ]]; do
+#        S "next 1=<$1>\n"
+#        red $(S "ALL: <$argv>")
+        
+        # Find the last argument index of the current option,
+        # and set 'list' to all current arguments
+        let last_index=${${argv:2}[(i)[-+]*]}
+        set -A list ${argv[2,$last_index]}
+#        print -P "List is {$list}[$#list]"
+        
+        case $1 in
+            # Flags
+            -f|--flags)
+                
+#                ( red "RED [$#] $argv"
+#                shift;
+#                red "Len=$#list"
+#                shift $#list
+#                red "RED [$#] $argv"
+#                redbg "num 1 is now $1"
+#                yellowbg "Added $#list elements: {$list}"
+#                 )
+                shift
+                flag_names+=($list)
+                shift ${#list}
+            ;;
+            
+            # Options
+            -o|--opts|--options)
+                shift
+                local opt_spec=''
+                for opt_spec in $list; do
+                    case $opt_spec in
+                        *:*)
+                            name=${opt_spec%:*}
+                            value=${opt_spec#*:}
+                            defaults+=( [-$name]=$value )
+                        ;;
+                        *)  name=$opt_spec
+                        ;;
+                    esac
+                    option_names+=($name)
+                done
+                shift ${#list}
+            ;;
+            
+            # Specify output array name and type
+            -A|-a)
+                array_type=$1
+                unset $array_id
+                typeset $array_type -g $array_id
+                array_id=$2
+                shift 2
+            ;;
+            
+            # Stop parsing parameters
+            *)  break ;;
+        esac
+
+    done
+#    S "end is $argv"
+    # Skip '--'
+    if [[ $1 == '--' ]]; then
+        shift
+    fi
+    
+    # Exit if no flag or option names were recognized
+    if [[ -z $flag_names ]] &&
+       [[ -z $option_names ]]; then
+        error -1 'Missing descriptions of flags and/or options.'
+    fi
+    
+    
+    # Recognized options and options with default values
+    typeset -a {opts,def}_keys
+    opts_keys=(${(k)opts})
+    def_keys=(${(Mk)defaults:#-*})
+    
+    # Recognized flags/options
     typeset -a flags
     typeset -A opts
     flags=()
     opts=()
-    # Set 'specs' for the zparseopts builtin
+    
+    # Non-recognized flags/options
+    typeset -a unset_{flags,opts}
+    unset_opts=(${${:-'-'${^option_names}}:|opts_keys})
+    unset_flags=(${${:-'-'${^flag_names}}:|flags})
+    
+    
+    
+    
+    #MARK: - Parse Arguments
+    # Set 'specs' for the 'zparseopts' builtin
     typeset -a specs
-    specs=(${^flag_names}'=flags' ${^option_names}':=opts')
-    
-    # Parse and store recognized flags and options
-    builtin zparseopts -D -E -- $=specs &>/dev/null
+    specs=(
+        ${^flag_names}'=flags'
+        ${^option_names}':=opts'
+    )
+    # Store parsed flags
+    builtin zparseopts -D -E -- ${=specs} &>/dev/null
     if [[ $? -ne 0 ]]; then
-        error -1 'Failed to parse options.'
+        error -1 "Parse failure: 'zparseopts'."
     fi
-    if [[ $1 == '--' ]]; then
-        shift
-    fi
-    trap "builtin set -- \"${argv}\"" EXIT
     
-    # Append each flag to 'opts' as an option
-    # with value 'flag is set'
-    typeset flag
-    for flag in $flags; do
-        opts[$flag]="${flag} is set"
+    # Set remaining arguments of the caller
+    typeset -a rest
+    set -A rest ${(qq)argv}
+    trap "{
+        builtin set -- $rest &&
+        [[ \$1 == '--' ]] &&
+        builtin shift
+    }" EXIT
+    
+    
+    
+    
+    #MARK: - Result Array
+    # Initialize the result array
+    typeset -A result
+    result=()
+    # Append recognized 'flags' to 'result'
+    # as (flag_name, 1) pairs
+    for name in $flags; do
+        result+=( [$name]=$defaults[flag-set] )
+    done
+    # Append recognized 'opts' to 'result' as
+    # (option_name, option_value) pairs
+    for name value in ${(kv)opts}; do
+        result+=( [$name]=$value )
     done
     
     
-    #MARK: - Set Result Array
-    # Assign options to the result array
-    unset $array_id
-    typeset $=array_type -g $array_id
-    set -A $array_id ${(kv)opts}
+    # If an option is not set but has a default value,
+    # set option to its default value
+    local {default,given}_value
+    for name in $def_keys; do
+        default_value=${defaults[(k)$name]}
+        given_value=${result[(k)$name]}
+        if [[ -n $default_value ]] &&
+           [[ -z $given_value   ]]; then
+            result+=( [$name]=$default_value )
+        fi
+    done
     
+    
+    # Set the output [associative] array to the
+    # (name, value) pairs of result array
+#    print -l -- "unset $array_id" \
+#        "typeset $array_type -g $array_id" \
+#        "set -A $array_id ${(kv)result}"
+    
+    unset $array_id
+    typeset $array_type -g $array_id
+    set -A $array_id ${(kv)result}
     return 0
 }
+
+
+
+
+
+
+
+
+
+#function get-arguments() {
+#    # Load 'zsh/zutil' module
+#    local zsh_module='zsh/zutil'
+#    if ! zmodload -e $zsh_module; then
+#        error -127 'Cannot load zsh module: $zsh_module.'
+#    fi
+#    # Find argument specification and value delimiter
+#    local delimiter='--'
+#    if [[ ${argv[(i)$delimiter]} -gt $# ]]; then
+#        error -1 "Argument specification and argument values must be delimited with two dashes '\$delimiter':" \
+#        "\n '%B${0}%b -o o1,o2,o3 \$delimiter -o1 X -o2 Y -o3 Z other args'"
+#    fi
+#
+#
+##            defaults+=( ${(@fs/:/q):-'opt-'${(P)^list_id}} )
+##            typeset -Ag zzz
+##            zzz=("${(Ps/:/)list_id}")
+##            print -- ${(Ps/:/)list_id}
+#
+#    function get-arguments-parse-default-specs() {
+#        typeset list_id=$1
+#        typeset list_size=${(Pkv)#list_id}
+#        print-var list_id list_size
+#        print -Pl -- "%F{3}"${(Pkv)list_id}"%f"
+#        if [[ $list_size -eq 0 ]] ||
+#           [[ $(( $list_size % 2 )) -ne 0 ]]; then
+#            return 1
+##            error -2 'Invalid list'
+#        fi
+#        typeset -A arr
+#        set -A arr ${(Pkv)list_id}
+#
+#        if [[ $#arr -eq 0 ]]; then
+#            error -1 'invalid id: $list_id'
+#        fi
+##        list_values=()
+#        for arg value in ${(Pkv)list_id}; do
+#            arr+=( [-$arg]=$value )
+#        done
+#
+##        S $defaults
+#        return 0
+#    }
+#
+#    #MARK: - Parse Flag/Option Names
+#    # Parse list of argument names and calculate
+#    # shift distance
+#    typeset -a name_list
+#    typeset -i distance
+##    function get-arguments-parse-name-list() {
+##        distance=0
+##        # Type (flag or option)
+##        local name_type=$1
+##        shift
+##        distance=$(( $distance + 1 ))
+##        if [[ -z $1 ]]; then
+##            error -1 "Cannot parse argument for '\$name_type.'"
+##        fi
+##
+##        # List of individual names
+##        name_list=()
+##        if [[ $1 =~ '[,]' ]]; then
+##            # Add each comma-separated
+##            # argument to the list
+##            while [[ $1 =~ '[,]' ]]; do
+##                name_list+=($1)
+##                distance=$(( $distance + 1 ))
+##                if [[   $1 =~ '[,][ ]?$' ]] &&
+##                   [[ ! $2 =~ '[,]' ]]; then
+##                    name_list+=($2)
+##                    distance=$(( $distance + 1 ))
+##                    break
+##                fi
+##            shift
+##            done
+##        else
+##            # If an argument does not contain commas,
+##            # then it is the only argument
+##            name_list+=($1)
+##            distance=$(( $distance + 1 ))
+##        fi
+##        return 0
+##    }
+##
+#
+#
+#    #MARK: - Parameters for 'get-arguments'
+#    # Names of flags and options
+#    unset flag_names option_names
+#    typeset -aUg flag_names option_names
+#    # Result array
+#    unset array_{id,type}
+#    typeset array_{id,type}
+#    array_id='optlist'
+#    array_type='-A'
+#    # Default values
+#    typeset -Ag defaults
+#    defaults=( [flag-set]=1
+#               [flag-unset]=0
+#               [opt-unset]="''" )
+#    typeset def_{spec,value}
+#
+#    # Options
+#    ## get-arguments [-+]u: append unset flags [default: off] ##
+#    typeset -i include_unset_arguments=0
+#
+#
+#    #MARK: - Parse Names and Settings
+#    # Parse flag and option names
+#    while [[ $1 =~ '^[\+\-]' ]] &&
+#          [[ $1 != '--' ]]; do
+##        yellow "arg is $1"
+#print "Number one is $1"
+#        redbg "***********"; redbg "***********"
+#        print -- "argv=[$argv], argc=[${#argv}], 1=[$1]"
+#        redbg "***********"; redbg "***********"
+##        magenta "other args are $2 , $3 , $4"
+#        case $1 in
+#            -f|--flags)
+#                shift
+#                typeset -ag names
+#                local index=$(( ${argv[(i)[-+]*]} - 1 ))
+#                names=(${argv[1,$index]})
+#                shift $index
+#                print -l -- $names
+#                flag_names+=($names)
+#            ;;
+##            # Flags
+##            -f|--flags)
+##                shift
+##                while [[ ! $1 =~ '^[\+\-]' ]]; do
+##                blue $1
+##                    if [[ $1 =~ '^(.+):([\+\-]|[0-1])' ]]; then
+##                        name=${1%:*}
+##                        value=${1#*:}
+##                        red $name
+##                        green $value
+##                        case ${1/#*:} in
+##                            1|-) value=1 ; redbg $1 - $value ;;
+##                            *)   value=0 ;;
+##                        esac
+##shift
+##                    else
+##                        name=${1%:*}
+##                        value=${defaults[flag-set]}
+##                        blue $name
+##                        cyan $value
+##                    fi
+##                    print $name
+##                    print $value
+##                    S "WAIT"
+##                    read
+##                    defaults+=( [-$name]=$value )
+##                    flag_names+=($name)
+##                    shift
+##                done
+##                print-var @
+##            ;;
+##            # Options
+##            -o|--opts|--options)
+##                shift
+##                redbg start at o
+##                while [[ ! $1 =~ $'^[\-\+]' ]]; do
+##                S $1
+##                    if [[ $1 =~ '^(.+):(.+)' ]]; then
+##                        name=${1%:*}
+##                        value=${1#*:}
+##                        defaults+=( [-$name]=$value )
+##                    else
+##                        name=${1%:*}
+##                    fi
+##                    option_names+=($name)
+##                    shift
+##                done
+##                print-var @
+##            ;;
+#
+#            # Set output array name and type
+#            -A|-a)
+#                print "ARRAY TYPE $1"
+#                array_type=$1
+#                shift
+#                print "ARRAY ID $1"
+#                typeset $array_type -g $array_id
+#                print ${(Pt)array_id}
+#                array_id=$1
+##                bluebg $array_type
+##                cyanbg $array_id
+#red ${(P)array_id}
+#                unset $array_id
+#                typeset $array_type -g $array_id
+##                print -l -- $array_id
+##                set -A $array_id
+##                set -A $array_id
+#                shift
+##                S $array_type __ __ $array_id
+#            ;;
+#
+#            # When enabled (-u), append unset
+#            # arguments to the result array
+#            [-+]u)
+#                include_unset_arguments=$(opt-mode "$1")
+#                shift
+#            ;;
+#
+#            # Stop parsing parameters
+#            *)  print "break at $1, $argv, $#";  read; break ;;
+#        esac
+#        S "end of esac : $1"
+#        print -P -- "%K{2}${(j:, :)argv}%k\n\n"
+#        print-line
+#    done
+#    # Skip '--'
+#    if [[ $1 == '--' ]]; then
+#        shift
+#    fi
+#    # Check that more arguments are remaining
+#    if [[ $# -eq 0 ]]; then
+#        error -1 'Invalid argument values.'
+#        return 1
+#    fi
+#    # Check all parsed flag/option names
+#    if [[ -z $flag_names ]] &&
+#       [[ -z $option_names ]]; then
+#        error -1 'Missing descriptions of flags and/or options.'
+#    fi
+#     redbg 125
+#
+##    get-arguments-parse-default-specs flag_names
+##    get-arguments-parse-default-specs option_names
+#
+#    unfunction -m "${0}-*"
+#
+#
+#    #MARK: - Parse Arguments with 'zparseopts'
+#    # Initialize 'flags' and 'opts' arrays
+##    typeset -ag {unset_,}flags {unset_,}opts
+##    unset_flags=();  flags=()
+##    unset_opts=();   opts=()
+##    typeset -a {,unset_}{flags,opts}
+#    typeset -a flags
+#    typeset -a unset_flags
+#    typeset -A opts
+#    typeset -a unset_opts
+#    # Set 'specs' for the zparseopts builtin
+#    typeset -a specs
+#    S "All Flag names: <$flag_names>."
+#    echo; echo
+#    S "All Opt names: <$option_names>."
+#
+#    specs=(
+#        ${^flag_names}'=flags'
+#        ${^option_names}':=opts'
+#    )
+#
+#    greenbg "***********"; greenbg "***********"
+#    print -- "argv=[$argv], argc=[${#argv}], 1=[$1]"
+#    greenbg "***********"; greenbg "***********"
+#
+#    print-var argv flag_names option_names unset_opts unset_flags
+#    # Parse and store recognized flags and options
+#    builtin zparseopts -D -E -- ${=specs} &>/dev/null
+#    if [[ $? -ne 0 ]]; then
+#        error -1 'Failed to parse options.'
+#    fi
+# redbg 124
+#    # Set remaining arguments of the caller
+#    typeset -a rest
+#    set -A rest ${(qq)argv}
+#    trap "
+#        builtin set -- $rest;
+#        [[ \$1 == '--' ]] && builtin shift;
+#    " EXIT
+#
+#
+#    redbg 123
+#
+#    #MARK: - Set the Result Array
+#    typeset -A result
+#    result=()
+#
+#    # List of unset flag/option names
+#    local -a opts_keys
+#    opts_keys=(${(k)opts})
+#    unset_opts=(${${:-'-'${^option_names}}:|opts_keys})
+#    unset_flags=(${${:-'-'${^flag_names}}:|flags})
+#
+#    # Append unset options and flags to the result array
+#    # unless '-u' flag is set.
+#    local name value
+#    if [[ $include_unset_arguments -eq 1 ]]; then
+#        for name in $unset_flags; do
+#            value=${defaults[flag-unset]}
+#            result+=( [$name]=$value )
+#        done
+#        for name in $unset_opts; do
+#            value="${defaults[opt-unset]}"
+#            result+=( [$name]=$value )
+#        done
+#    fi
+#
+#    # Append all set options from 'opts' to 'result'
+##    result+=(${(kv)opts})
+##    set -A result ${(kv)opts}
+#    yellowbg $result
+#    result+=(${(kv)opts})
+#    yellowbg $result
+#    echo
+##    set -A result ${flags}
+#    print-var flags @
+#    print-var result optlist
+#    print-line
+#
+#    # Append all set flags to 'result' as options
+#    # with a value (default value: 1)
+#    for name in $flags; do
+#        result+=( [$name]=${defaults[flag-set]} )
+#    done
+##
+##    for name in ${flag_names}; do
+##        print -- ">> adding $name as result[-$name]=${defaults[flag-set]}."
+##        result+=( [-$name]=${defaults[flag-set]} )
+##    done
+#    print-var opts
+#    for name value in ${(kv)opts}; do
+#        print -- ">> adding $name, $value as result[-$name]=$value."
+#        result+=( [-$name]=$value )
+#    done
+#
+#
+##    missing_flags=(${${:-'-'${^flag_names}}:|flags})
+##    unset_flags=(${^${:-'-'${^flag_names}}:|flags}' '$flag_unset)
+##    print-var option_names opts
+##    unset_opts=(${^${:-'-'${^option_names}}:|options}' '$flag_unset)
+##
+##    result+=( ${=unset_flags} ${=unset_options} )
+#
+##    missing_flags=(${:-'-'${^flag_names}}:|flags})
+##    missing_flags=(${:-'-'${^flag_names}:|flags})
+##
+##    for flag in $unset_flags; do
+##        opts+=( [$flag]=$flag_unset )
+##    done
+#
+#    redbg "Result is ${#result}"
+#    read -k1
+#    # Assign options to the result array
+##    unset $array_id
+##    typeset $array_type -g $array_id
+##    typeset $array_type
+##    print -l -- ${(kv)result}
+##    bluebg ${(kv)result} ---- ${#result}
+##}
+#
+#    set -A $array_id ${(kv)result}
+##    print-var $array_id
+##    print-var array_id result
+#
+#    return 0
+#}

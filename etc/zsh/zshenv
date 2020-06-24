@@ -1,0 +1,33 @@
+# User-specific zsh environment for interactive
+# and non-interactive shells.
+#
+# Created on March 29, 2020.
+
+
+# Z-Shell main directory
+export ZTERM="/usr/local/Terminal"
+export ZDOTDIR="$ZTERM/zsh"
+
+
+# Z-Shell files
+export ZSHENV="$HOME/.zshenv"           # 1
+export ZPROFILE="$ZDOTDIR/.zprofile"    # 3     ##: ref
+export ZSHRC="$ZDOTDIR/.zshrc"          # 4
+export ZIO="$ZDOTDIR/.zio"              # 9     ##: ref
+export ZALIAS="$ZDOTDIR/.zalias"        # 10    ##: ref
+export ZEXPORT="$ZDOTDIR/.zexport"      # 11    ##: ref
+export ZUTIL="$ZDOTDIR/.zutil"          # 12    ##: ref
+export ZNET="$ZDOTDIR/.znetwork"        # 13    ##: ref
+export ZMISC="$ZDOTDIR/.zmisc"          # 14    ##: ref
+export ZCOMP="$ZDOTDIR/.zcomp"          # 17    ##: ref
+
+
+
+
+#print -l -P -- "%SArgs:%s ($#)=[${@}]"
+
+#if [[ ! -e ~/etc/env0 ]]; then
+#  /bin/mkdir -p  -- ~/etc      &&
+#  /usr/bin/touch -- ~/etc/env0 &&
+#  /usr/bin/env    > ~/etc/env0
+#fi

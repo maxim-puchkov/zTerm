@@ -33,13 +33,13 @@ function statall() {
     # Join arrays with commas
     local headers_str=${(j:,:)headers}
     local format_str=${(j:,:)format}
-    # Print csv to stdout
+    # Print comma-separated file status fields to stdout
     print $headers_str >&1
     local file
     for file in $argv; do
         stat -L -f $format_str $file >&1
     done
-    
-    print -- "${#argv} files" >&2
+    # Log number of files to stderr
+    print -- "$0: analyzed ${#argv} files" >&2
     return 0
 }

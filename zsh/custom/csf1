@@ -1,1 +1,6 @@
 #!/bin/zsh
+
+
+function csf1() {
+    
+}

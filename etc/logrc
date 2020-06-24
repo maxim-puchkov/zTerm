@@ -1,0 +1,14 @@
+# .logrc - default log(1) arguments, handy predicate shortcuts
+
+show:
+    --style compact
+    --last 1h
+    --info      # turn back off with --no-info
+    --no-debug  # turn back on with --debug
+
+predicate:
+    app 'process == "application"'
+    errors 'process == "application" and messageType == error'
+    s
+        'process == "application" and '         # adjacent strings
+        'subsystem == "com.maximpuchkov.zterm"'    # get merged

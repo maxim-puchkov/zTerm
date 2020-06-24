@@ -1,0 +1,43 @@
+#compdef error
+
+# _error
+# ~/Developer/Projects/Terminal/zsh/functions/error
+#
+# zsh function completion
+# Updated on 2020-06-23 at 12:54 PM
+
+
+_arguments -C \
+  {+a,--no-autocapitalize}"[do not capitalize first letter]" \
+  {+h,--no-highlight}"[disable syntax highlighting]" \
+  {+p,--no-trailing-period}"[do not add trailing period]" \
+  {-D,--plain-description}"[do not format description]" \
+  {-a,--autocapitalize}"[capitalize first letter]" \
+  {-c,--code}"[show error exit code]" \
+  {-h,--help}"[show help message]" \
+  {-h,--highlight}"[enable syntax highlighting]" \
+  {-n,--null}"[try to silence output messages]" \
+  {-p,--trailing-period}"[add trailing period]" \
+  {-t,--title}"[set error message title]" \
+  {-u,--usage}"[set title to 'Usage']" \
+  ":command:->command" \
+  "*::arg:->arg"
+
+case $state in
+  (command)
+    typeset -a commands
+    commands=(
+
+    )
+    _describe -t commands command commands
+  ;;
+  (arg)
+    typeset -a args
+    args=(
+      # Completion for commands' arguments
+    )
+    _describe -t args arg args
+  ;;
+esac
+
+return 0

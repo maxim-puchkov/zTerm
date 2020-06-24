@@ -47,7 +47,11 @@ commit_message="[CS${commit_id}-${commit_date}] ${commit_diff}."
 
 # Commit and push
 git commit --message="$commit_message" --signoff --no-gpg-sign $opts
+if [[ $? -ne 0 ]]; then
+    echo "${log_prefix} Failed to commit." >&2
+fi
 git push $opts
+
 
 # Save ID
 echo "$commit_id" > $id_file

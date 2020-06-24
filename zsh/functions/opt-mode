@@ -1,0 +1,36 @@
+#!/bin/zsh
+
+#  opt-mode
+#  Z-Function (72)
+#
+#  Created by Maxim Puchkov on 2020-06-21.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Name:
+#   opt-mode
+#
+# Description:
+#   If an option is enabled (prefixed with a '-' sign), print 1:
+#     opt-mode -on    -->   1
+#   If an option is diabled (prefixed with a '+' sign), print 0:
+#     opt-mode +off   -->   0
+function opt-mode() {
+    # Check that exactly one option name is specified
+    if [[ $# -lt 1 ]]; then
+        error -1 'Missing option specification.'
+    fi
+    if [[ $# -gt 1 ]]; then
+        error -1 'Too many arguments.'
+    fi
+    
+    # Output 0 (-option is enabled)
+    #     or 1 (+option is disabled)
+    typeset opt_prefix=${1[1]}
+    case $opt_prefix in
+        -) printf '%d' 1 ;;
+        +) printf '%d' 0 ;;
+        *) error -1 "Invalid option prefix: '\$opt_prefix'." ;;
+    esac
+    return 0
+}

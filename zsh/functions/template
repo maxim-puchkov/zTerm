@@ -12,7 +12,8 @@
 # Synopsis:
 #   template [options...] kind [name]
 # Options:
-## template -t: 
+## template -t: test run (do not create files) ##
+## template -d DIR: output directory ##
 function template() {
     # Generate unique suffixes for files which
     # already exist in Output directory.
@@ -199,7 +200,6 @@ function template() {
         local install_dir=$pygments_lib/python3.8/site-packages/pygments/styles
         command mkdir -p -- $install_dir
         command ln -s -- $target_dir/$name $install_dir/$name
-        
     }
     
     #MARK: - Oh-my-zsh custom plugin
@@ -217,14 +217,24 @@ function template() {
         local install_dir=$ZSH/plugins/custom/$1
         command mkdir -p -- $install_dir
         command ln -s -- $target_dir/$name $install_dir/$name
+    }
+    
+    ## ztest: zsh test script ##
+    function template_ztest() {
+        target_dir="${target_dir:-${ztest}}"
+        name="${$( generate_filename $1 ):-${(U)0}}"
+        m_filename="${name}-t"
+        m_package_name='zsh test'
+        template_new="${target_dir}/${name}"
+        template_orig="$templates_dir/$0"
         
+        copy_template
     }
     
     ## null: do nothing ##
     function template_null() {
-        print -P "Called $0"
-        print-fstack
-        print-var @
+        print -P -- "$0: template debug function"
+        print -P -- "$0: argv = {$argv}, function stack = {$(print-fstack)}"
     }
     
     
@@ -268,13 +278,12 @@ function template() {
     typeset name target_dir template_orig template_new
     
     # Template output directory (-d)
-    ## template -d DIR: output directory ##
     target_dir=${optlist[d]:a}
     if [[ -n "$target_dir" ]] && [[ ! -d "$target_dir" ]]; then
         error "Invalid directory: %F{1}$target_dir%f."
         return 2
     fi
-    ## template -t: test run (do not create files) ##
+    
     if [[ -n $optlist[t] ]]; then
         m_template_id='No identifier'
     fi

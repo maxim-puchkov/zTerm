@@ -1,4 +1,4 @@
-#compdef doc
+#compdef print-var
 
 
-_files -/ -W $ZTERM/share/docs
+_vars 

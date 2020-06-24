@@ -11,24 +11,47 @@
 function zopts() {
     local ON=$(green 'on')
     local OFF=$(red 'off')
+    local title='%U%F{4}Z-Shell Options%f%u'
     local k v
     typeset -A list
     list=(${(kv)options})
+    local pattern='.'
     
-    if [[ $# -gt 0 ]]; then
+    
+    # Filter results by options which are either
+    # 'on' or 'off'; or by option name.
+    if [[ -n $1 ]]; then
         local filter=$1
         case $filter in
-            'on'|'off')   list=(${(kv)options[(R)$filter]}) ;;
+            'on'|'off')  list=(${(kv)options[(R)$filter]}) ;;
+                     *)  pattern="$filter" ;;
         esac
     fi
     
-    printf '%-20s%5s\n' "Option" "Status"
+    
+    print -PN -- '%B'
+    print -P  -- "$title\n"
+    printf '%-20s %c %-9s\n' 'Option' '|' 'Status'
+    printf '%-30s\n' "${(l:30::-:)}"
+    print -PN -- '%b'
+#
+#    local B='%B%U'
+#    local E='%u%b'
+#    local col_1='%B%UOption%u%b'
+#    local col_2='%B%UStatus%u%b'
+#    printf '%-20s%*s%5s\n' "${(%)col_1}" 20 "${(%)col_2}"
+#
+    
+#    print -Pf '%s%-20s%s %+10s%s%s\n' "$B" 'Option' "$E" "$B" 'Status' "$E"
     for k v in ${(kv)list}; do
-        local option_label=$k
-        local value_label=$OFF
+        local option_name_label=$k
+        local option_value_label=$OFF
         if [[ $v == 'on' ]]; then
-            value_label=$ON;
+            option_value_label=$ON;
         fi
-        printf '%-20s%5s\n' "$option_label" "$value_label"
+        if [[ $option_name_label =~ "${pattern}" ]]; then
+        
+        printf '%-20s %c %-9s\n' "$option_name_label" '|' "$option_value_label"
+        fi
     done
 }

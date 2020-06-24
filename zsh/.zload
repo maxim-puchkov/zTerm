@@ -4,27 +4,34 @@
 source "$ZEXPORT"
 
 
-# PATH
+# Python path
+export PYTHONSTARTUP="$ZTERM/Python/.pyenv"
+export PYTHONPATH="$HOME/Library/Application Support/iTerm2/Scripts"
+PYTHONPATH="$PYTHONPATH:$ZTERM/Python"
+typeset -T PYTHONPATH pythonpath
+
+# Command path
 path=(
   /usr/local/sbin
   /usr/local/opt/python@3/bin
   /usr/local/opt/llvm/bin
+  /usr/local/opt/openssl@1.1/bin
   $path
   $DEV/bin
   $PROJ/Terminal/.config/bin
   $pythonpath
-  #$PROJ/Terminal/Python
 )
 
-export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"
-
-# FPATH
+# Function path
 fpath=(
   /usr/local/share/zsh-completions
   $PROJ/Terminal/zsh/functions
   $PROJ/Terminal/zsh/completions
   $fpath
 )
+
+
+
 
 # Load functions
 autoload fload
@@ -51,4 +58,4 @@ typeset -H ZSH_AUTOSUGGEST_CLEAR_WIDGETS
 unalias run-help
 autoload run-help
 
-unalias g
+#unalias g

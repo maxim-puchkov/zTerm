@@ -1,0 +1,55 @@
+#!/bin/zsh
+
+#  syntaxf
+#  Z-Function (70)
+#
+#  Created by Maxim Puchkov on 2020-06-21.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Format syntax
+function syntaxf() {
+#    typeset -A optlist
+#    get-arguments -A optlist -o 'c' -- $argv
+#    # Highlight color
+#    typeset output_color=$logf_color
+#    if [[ -n $optlist[-c] ]]; then
+#        output_color=$optlist[-c]
+#    fi
+#    # Placeholder label
+    
+    typeset -A optlist
+    if zmodload -e zsh/zutil; then
+        zparseopts -D -E -A optlist c:
+    else
+        warning 'Ignoring options.'
+    fi
+    
+    
+    
+    
+
+#    print-var optlist @
+    
+    
+    
+#    typeset undefined_label=${(%):-%F{3}undefined%f}
+    # Find and replace variables
+#    typeset find replace
+#    find='[$]([{])?(([A-Za-z_\(][^ ]*)?[A-Za-z0-9!@#$%^&*=?_\)])([}])?'
+#    replace="%U%F{${output_color}}\${\${\2}:-${undefined_label}}%f%u"
+#    echo $argv
+
+    # Highlight variables in description
+#    sed -E -e "s/$find/$replace/g" <<< "${argv}"
+    function format() {
+        typeset undefined_label=${(%):-%F{3}undefined%f}
+        typeset find='[$]([{])?(([A-Za-z_\(][^ ]*)?[A-Za-z0-9!@#$%^&*=?_\)])([}])?'
+        typeset replace="%U%F{${output_color}}\${\${\2}:-${undefined_label}}%f%u"
+        /usr/bin/sed -E -e "s/${find}/${replace}/g" <$1
+    }
+    #<(printf '%s' "$argv")
+    
+    syntax=$(format <(printf '%s' "$argv"))
+    print -P -- "'$syntax'"
+}

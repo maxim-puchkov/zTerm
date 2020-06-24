@@ -6,9 +6,7 @@ etc/template.id
 **/__pycache__
 **/*.pyc
 **/*.xcodeproj/*
-var/log/com.maximpuchkov.services
-var/log/Services
-var/log/tests
+**/var/
 **/.oh-my-zsh/
 **/.iterm2*
 **/.zcompdump*

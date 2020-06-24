@@ -4,7 +4,7 @@
 # ~/Developer/Projects/Terminal/zsh/functions/fn
 #
 # zsh function completion
-# Updated on 2020-06-13 at 07:20 pm
+# Updated on 2020-06-22 at 10:37 pm
 
 
 _arguments -C \
@@ -16,16 +16,19 @@ case $state in
   (command)
     typeset -a commands
     commands=(
-      isdef:"check if a function is defined"
-      options:"list function flags and options"
       commands:"list function commands"
-      open:"open function source file"
-      print-commands:"format and list function commands"
-      sub:"list functions defined within a function"
-      show:"display function definition and source file"
+      compgen:"generate and update function completion"
       completion:"generate function command completion"
-      src:"find function source file"
+      completion-arguments:"''"
+      completion-commands:"''"
       def:"print function definition"
+      isdef:"check if a function is defined"
+      open:"open function source file"
+      options:"list function flags and options"
+      print-commands:"format and list function commands"
+      show:"display function definition and source file"
+      src:"find function source file"
+      sub:"list functions defined within a function"
     )
     _describe -t commands command commands
   ;;

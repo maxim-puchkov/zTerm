@@ -9,14 +9,14 @@
 
 # <#Function description#>
 function mkarray() {
-    set -- $@
+#    set -- $@
     typeset array_id=$1
     shift
 
     typeset -a shell_command=($@)
     typeset -a array
     array=(${(@f)"$(
-        $=shell_command 
+        $=shell_command
     )"})
 
     set -A $array_id $array

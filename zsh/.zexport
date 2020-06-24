@@ -24,7 +24,7 @@ export zfunc="$ZDOTDIR/functions"
 export zsitefunc="$ZDOTDIR/site-functions"
 export zdisabled="$ZDOTDIR/disabled"
 export zcompdir="$ZDOTDIR/completions"
-
+export ztest="$ZDOTDIR/Tests"
 
 
 # Package Managers
@@ -45,14 +45,13 @@ export A310="$SFU_TERM/PHIL 310/assignments"
 
 # Command variables
 export GREP_COLOR='00;95'
-#export GREP_COLOR='00;38;5;226'
 export PCREGREP_COLOUR="$GREP_COLOR"
 
 
 # Misc. variables
 export SETOPT='set'
-export FALSE=1
-export TRUE=0
+export -H TRUE=${(%):-'%F{2}True ✔︎%f'}
+export -H FALSE=${(%):-'%F{1}False ✘%f'}
 
 #export LDFLAGS='-L/usr/local/opt/openssl@1.1/lib'
 #export CPPFLAGS='-I/usr/local/opt/openssl@1.1/include'
@@ -65,3 +64,13 @@ LB='\e[1;31m'{'\e[0m'
 RB='\e[1;31m'}'\e[0m'
 undefined_label=$'\033\[33m'undefined$'\033\[39m'
 null_label=$'\033\[31m'null$'\033\[39m'
+not_set_label=$'\033\[31m''variable is not set'$'\033\[39m'
+
+
+typeset -AH labels
+() {
+    labels=(
+        [undefined]="%F{1}null%f"
+        [unset]=$'\033\[31m''unset'$'\033\[39m'
+    )
+}

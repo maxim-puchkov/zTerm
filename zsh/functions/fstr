@@ -13,16 +13,17 @@ function fstr() {
         error -2 'No input.\nUsage: %B%Ufstr%u <directory> <string>%b.'
     fi
     
-    # String, directory, and depth
+    # String and directory
     local search_directory="${${1:-.}:a}"
     local string="${2:-.}"
     shift 2
     
     # Search options for grep
-    local -a grep_options=($argv)
-    if [[ -z $grep_options ]]; then
-        grep_options=('--ignore-case' '--text')
+    local -a grep_options
+    if [[ $# -eq 0 ]]; then
+        set -- '--ignore-case' '--text'
     fi
+    grep_options=($argv)
     
     # Files in the directory
     local -a files=(${(@f)"$(

@@ -7,10 +7,11 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# Path to file
+# Path to the file
 typeset file=$1
 () {
-    if [[ ! -r $1 ]] && [[ -r $2 ]]; then
+    if [[ ! -r $1 ]] &&
+       [[   -r $2 ]]; then
         file=$2
     fi
 } ${file} ${file%.}

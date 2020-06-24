@@ -66,24 +66,34 @@ l4=( 'word' 'word abc' 'abc word' 'word abc word' )
 l5=( '/path/to/a' '/path/to/b' '/c' 'c/d' )
 l6=( 'Bob' 'Alice' 'Bob' 'Charlie' 'Bob' 'Bob' 'Charlie' 'Alice' )
 
-typeset -A Assoc
+typeset -Ag Arr
+Arr=(
+    [name]='Jane'
+    [surname]='Doe'
+    [variable]='Arr'
+    [message]='Hello, world!'
+    [home]=~
+    [dir]="$HOME/Library/Mobile Documents/com~apple~CloudDocs"
+)
+
+
+typeset -Ag Assoc
 Assoc=(
     'message'   'Hello, world!'
     'name'      'Bob'
     'age'       50
-    'cmpt404'   ~/iCloud/SFU/10-*/404/assignments
+    'home'      ~
     'cmpt473'   ~/iCloud/SFU/10-*/473/assignments
     'phil310'   ~/iCloud/SFU/10-*/PHIL\ 310/assignments
 )
 
-typeset -A A1
-for i in {1..26}; do
-    A1[$i]=${(U)l3[$i]}
-done
-unset i
+typeset -Ag A1
+A1=($(print -C2 {1..26} {A..Z}))
 
-typeset -A A2
+typeset -Ag A2
 A2=( key1 val1 key2 val2 X-key3 val3 key4 X-val4 )
+
+
 
 
 # 10-second long job.

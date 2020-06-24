@@ -1,51 +1,41 @@
 # User-specific profile for interactive zsh(1) shells
 
-alias python3.8='/usr/local/opt/python@3.8/bin/python3.8'
 
 #MARK: - Global Aliases
 # Shell output
-alias -g noerr='2> /dev/null'  # redirect stderr
-alias -g quiet='&> /dev/null'  # redirect stdout and stderr
-alias -g 2NIL='2> /dev/null'
-alias -g NIL='&> /dev/null'
-# If statement: if [[ ... ]] T
-alias -g T='; then echo "-- $(green True)  $(pass) --"; \
-              else echo "-- $(red   False) $(fail) --"; \
-            fi;'
+alias -g noerr='2>/dev/null'  # redirect stderr
+alias -g 2NIL='2>/dev/null'
+alias -g quiet='&>/dev/null'  # redirect stdout and stderr
+alias -g NIL='&>/dev/null'
+# 'if [[ ... ]] T'
+alias -g T='; then print -P -- $TRUE; else print -P -- $FALSE; fi;'
+# 'for x in $array PX'
+# 'while read x PX'
+alias -g PX='; do print-var x; done;'
 
-alias ei='open -a Xcode "$zterm/Services/Identity"'
+
 
 #MARK: - Regular Aliases
 # Command 'ls'
-alias ls='command ls -FGHh'
+alias ls='command ls -BFGHhk'
 alias la='ls -la'
 alias l='ls -l'
 alias ll='ls -la'
-alias lll='ls -lR'
-alias llll='ls -lAR'
-# List
-alias ltc='list tc'
-alias lta='list ta'
-alias ltch='list tch'
-alias ltm='list tm'
-alias lS='list S'
-alias lSa='list -a S'
-alias lf='list f'
-alias limg='imgls'
+alias lll='ls -la'
+alias llll='ls -laR'
 
-# Brew
-alias bb='brew_browse'
-alias bi='brew info'
+# Command 'chflags'
+alias lock='command chflags uchg'
+alias unlock='command chflags nouchg'
 
 # Command 'cp'
 alias cp='command cp -i'
 
-# Builtin 'cd'
-alias cfd='cd -- "$(pfd)"'
-
 # Builtin 'echo'
 alias e='builtin echo'
 alias E='b_redbg'
+
+alias E='() ( print -P -- "$argv"; )'
 
 # Builtin 'functions'
 alias fns='functions'
@@ -55,30 +45,13 @@ alias fns='functions'
 alias printp='builtin print -P'
 alias printl='builtin print -l'
 alias printn='builtin print -n'
+alias printd='builtin print -P -D'
 alias p='print'
 alias pp='printp'
 alias pl='printl'
 alias pn='printn'
-alias pdb='print-debug'
-alias pdir='builtin print -P -D'
 
 alias pyg='pygmentize'
-
-function manp() {(
-    local name="$argv"
-    local dir="${zterm}/share/man"
-    if [[ ! -d $dir ]]; then
-        /bin/mkdir -p -- $dir
-    fi
-    local file="${dir}/${name}"
-    /usr/bin/man  -t -- $name > $file
-    /usr/bin/open -a Preview -- $file
-)}
-
-# Print variables
-alias pv='print-var'
-alias pv@='print-var @'
-alias pfs='print-fstack'
 
 # Builtin 'exit'
 alias q='builtin exit'
@@ -106,17 +79,12 @@ alias lctl='command launchctl'
 alias mv='command mv -i'
 
 # Command 'open'
-#alias open='command open -a Xcode'
 alias o='open "$PWD"'
 alias xopen='open -a Xcode'
 alias textopen='open -a TextEdit'
 alias webopen='open -a Safari'
 alias scriptopen='open -a "Script Editor"'
 alias vb='open -a VirtualBox'
-
-function xman() {
-    open -a Terminal -g x-man-page://"$argv"
-}
 
 # Command 'openssl'
 alias sha256='openssl sha256'
@@ -128,6 +96,7 @@ alias set3='set -- -a -b -c -d D -e E -f F --long LONG args "hello world"'
 
 # Python
 alias python='command python3'
+alias python3.8='/usr/local/opt/python@3.8/bin/python3.8'
 alias pip='command pip3'
 alias idle='command idle3'
 
@@ -136,16 +105,11 @@ alias rm='command rm -i'
 
 # Command 'strings'
 alias str='command strings'
-alias ss='showsrc'
 
-# Type
-alias i='infocmd'
-alias t='typeof'
+# Builtin 'whence'
 alias wh='builtin whence -av'
 
-# Files
-alias lock='command chflags uchg'
-alias unlock='command chflags nouchg'
+
 
 
 #MARK: - Extended Commands
@@ -153,7 +117,50 @@ alias cd='cdp'
 alias ln='lnp'
 
 
+alias ts='typeset'
+#alias array=
+function array() {
+    typeset id=$1
+    unset $id
+    typeset -ag $id
+    shift
+    set -A $id $argv
+    print -Pl -- "%F{4}%U${id}%u%f[$#] = {" \
+                 "  ${(j:, :)argv}" \
+                 "}" >&2
+}
 
+#MARK: - Custom Commands
+# List
+alias ltc='list tc'
+alias lta='list ta'
+alias ltch='list tch'
+alias ltm='list tm'
+alias lS='list S'
+alias lSa='list -a S'
+alias lf='list f'
+alias limg='imgls'
+
+# Brew
+alias bb='brew_browse'
+alias bi='brew info'
+
+# 'cd'
+alias cfd='cd -- "$(pfd)"'
+
+# Print
+alias pv='print-var'
+alias pv@='print-var @'
+alias pvt='print-var -t'
+alias pfs='print-fstack'
+alias pdb='print-debug'
+
+# Show command source
+alias ss='showsrc'
+
+# Type
+alias i='infocmd'
+#alias t='print-var -t'
 
 
 
@@ -169,3 +176,16 @@ alias my-postal='print -P "%F{14}V3T 2S5%f"'
 
 
 alias C='retc'
+
+
+function print-control-char() {
+    typeset -i10 -Z2 code
+    for code in $argv; do
+        typeset hex=0x${code[1,2]}
+        if [[ -t 1 ]]; then
+            printf '%s:  ' "${hex}"
+        fi
+        printf '%b\n' "\\${hex}"
+    done
+    return 0
+}

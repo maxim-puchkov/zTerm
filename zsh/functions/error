@@ -17,9 +17,10 @@
 #     and continue without returning any value.
 #       warning  'description...'
 #       error -0 'description...'
-#
 function error() {
     #MARK: - Data
+    # Error message label
+    typeset program_name='Error'
     # Message
     typeset message
     typeset message_title
@@ -38,6 +39,7 @@ function error() {
     
     
     
+    
     #MARK: - Functions
     # Highlight all shell '$variables' in description
     function error-replace-variables() {
@@ -46,77 +48,21 @@ function error() {
         undefined_var_label='%F{3}undefined%f'
         # Find and replace variables
         typeset find replace
-        find='[$]([{])?(([A-Za-z_\(][^ ]*)?[A-Za-z0-9!@#$%^&*=?_\)])([}])?'
+        find='[$]([{(])?(([A-Za-z_][^ ]*)?[A-Za-z0-9!@#$%^&*=?_])([})])?'
         replace="%F{1}\${\${\2}:-${(%)undefined_var_label}}%f"
         # Highlight variables in description
-        message_desc=$(sed -E "s/$find/$replace/g" <<< "$argv")
+        
+        message_desc=$(/usr/bin/sed -E -e "s/${find}/${replace}/g" <<< "${argv}")
     }
     
-    # Parse function options and flags
-    function error-parse-options() {
-        set -- $@
-        # Exit code flag (must be the first argument)
-        if [[ $1 =~ '-[0-9]+' ]]; then
-            exit_code=${1#-}
-            shift
-        fi
-        # Other options
-        while [[ $1 =~ '^[-+]' ]]; do
-            case $1 in
-                # Display the exit code for errors
-                -c|--code)
-                    exit_code_label="%f [$exit_code]"
-                ;;
-                # Do not format description
-                -D|--plain-description)
-                    error-plain-description
-                ;;
-                # Silence output
-                -n|--null)
-                    output_device=/dev/null
-                ;;
-                # Set title to 'Usage'
-                -u|--usage)
-                    error-plain-title
-                    error-plain-description
-                    message_title='%F{4}Usage%f'
-                ;;
-                # Set custom title
-                -t|--title)
-                    if [[ -n $2 ]]; then
-                        error-plain-title
-                        message_title="%B%F{$output_color}${2}%f%b"
-                        shift
-                    else
-                        break
-                    fi
-                ;;
-                # Autocapitalize description
-                -a|--autocapitalize)    autocapitalize='true'    ;;
-                +a|--no-autocapitalize) autocapitalize='false'   ;;
-                # Add a trailing period
-                -p|--trailing-period)    trailing_period='true'  ;;
-                +p|--no-trailing-period) trailing_period='false' ;;
-                # Highlight variables
-                -h|--highlight)    highlight_variables='true'    ;;
-                +h|--no-highlight) highlight_variables='false'   ;;
-                # Stop parsing options
-                --) shift ;&
-                *)  break ;;
-            esac
-            shift
-        done
-        # Set description to the remaining arguments
-        message_desc="$@"
-        return 0
-    }
+    
     
     
     #MARK: Format
     # Title - text, color, and exit code
     function error-format-title() {
         if [[ $exit_code -gt 0 ]]; then
-            message_title="%F{$output_color}Error%f"
+            message_title="%F{$output_color}${program_name}%f"
             exit_trap="return $exit_code;"
         else
             message_title='%F{3}Warning%f'
@@ -124,7 +70,6 @@ function error() {
         fi
         return 0
     }
-    
     function error-plain-title() {
         unfunction error-format-title
         function error-format-title() { return 0; }
@@ -152,7 +97,6 @@ function error() {
         fi
         return 0
     }
-    
     function error-plain-description() {
         unfunction error-format-description
         function error-format-description() { return 0; }
@@ -170,22 +114,105 @@ function error() {
         fi
         return 0
     }
-    
     # Format and print the error/warning message
     function error-print() {
         error-format-message
-        print -P -- "$message" >${output_device:-/dev/stderr}
+        redbg $message >&2
+        print -P -- "$message" >${output_device:-/dev/stderr} ||
+        printf 'QQ<%q>QQ\n\n' "$message"
         return 0
     }
     
     
     
-    # Parse options and print the error
-    {
-        error-parse-options "$@" &&
-        error-print &&
-        trap "$exit_trap" EXIT
-    }
+    
+    #MARK: - Command Arguments
+    # Set program name
+    if [[ $0 != 'error' ]]; then
+        program_name=$0
+    fi
+    
+    # If the first argument is a digit prefixed by a '-',
+    # then 'error -123' is the same as 'error -e 123'
+    if [[ $1 =~ '^[-][0-9]+$' ]]; then
+        set -- '-e' ${1#-} ${argv:2}
+    fi
+    
+    
+    # Parse command arguments
+    while [[ $1 =~ '^[-+]' ]] &&
+          [[ $1 != '--' ]]; do
+        case $1 in
+            ## error -h,--help: show help message ##
+            -h|--help)
+                fn print-commands $0
+                return 0
+            ;;
+            ## error -e: set the exit code ##
+            -e)
+                local -i code=$2
+                exit_code=$code
+                shift
+            ;;
+            ## error -c,--code: display exit code with error message ##
+            -c|--code)
+                exit_code_label="%f [$exit_code]"
+            ;;
+            ## error -D,--plain-description: do not format description ##
+            -D|--plain-description)
+                error-plain-description
+            ;;
+            ## error -n,--null: try to silence output messages ##
+            -n|--null)
+                output_device=/dev/null
+            ;;
+            ## error -u,--usage: set title to 'Usage' ##
+            -u|--usage)
+                error-plain-title
+                error-plain-description
+                message_title='%F{4}Usage%f'
+            ;;
+            ## error -t,--title: set error message title ##
+            -t|--title)
+                if [[ -n $2 ]]; then
+                    error-plain-title
+                    message_title="%B%F{$output_color}${2}%f%b"
+                    shift
+                else
+                    break
+                fi
+            ;;
+            
+            # Additional formatting options
+            ## error -a,--autocapitalize: capitalize first letter ##
+            ## error +a,--no-autocapitalize: do not capitalize first letter ##
+            -A|--autocapitalize)    autocapitalize='true'    ;;
+            +A|--no-autocapitalize) autocapitalize='false'   ;;
+            
+            ## error -p,--trailing-period: add trailing period ##
+            ## error +p,--no-trailing-period: do not add trailing period ##
+            -P|--trailing-period)    trailing_period='true'  ;;
+            +P|--no-trailing-period) trailing_period='false' ;;
+            
+            ## error -h,--highlight: enable syntax highlighting ##
+            ## error +h,--no-highlight: disable syntax highlighting ##
+            -H|--highlight)    highlight_variables='true'    ;;
+            +H|--no-highlight) highlight_variables='false'   ;;
+            
+            # Stop parsing options
+            *)  break ;;
+        esac
+        shift
+    done
+    [[ $1 == '--' ]] && shift
+    
+    
+    
+    
+    # Set message description to the remaining arguments
+    message_desc="$@"
+    error-print && trap "$exit_trap" EXIT
+    
     unfunction -m "${0}-*"
     return $exit_code
 }

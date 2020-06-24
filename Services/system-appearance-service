@@ -62,7 +62,7 @@ function TestSystemAppearanceService() {
   print "New status:     $new_status"
   print -- '---------------'
   print "End <${0:t}> ${?}"
-} &> $ROOT_DIR/var/log/tests/SystemAppearance/${test_log_name:-recent}.log
+} &> $ROOT_DIR/var/log/Tests/SystemAppearance/${test_log_name:-recent}.log
 
 
 

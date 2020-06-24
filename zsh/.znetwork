@@ -4,14 +4,24 @@
 #MARK: - SSH
 # SSH connect to one of SFU's CSIL servers.
 function csil() {
-    ssh -p '24' -l 'mpuchkov' $SFU_CSIL
+    # Command to execute
+    typeset -a cmd=()
+    while [[ $1 =~ '^[-]' ]]; do
+        case $1 in
+            -t|--tmux)  cmd+=(-t tmux a) ;;
+        esac
+        shift
+    done
+    # Connect to CSIL CPU
+    typeset server="csil-cpu${1:-4}.cs.surrey.sfu.ca"
+    print -P -- "Establishing ssh-connection to %F{2}$server%f..."
+    command ssh -p '24' -l 'mpuchkov' $server $cmd
+    print -P -- "Connection to %F{2}$server%f was closed ($?)."
 }
-function csil-tmux() {
-    ssh -p '24' -l 'mpuchkov' $SFU_CSIL -t tmux a
-}
-function vm() {
+# Connect to mininet
+function mininet() {
     typeset username=${1:-mininet}
-    ssh -Y -l "$username" mininet
+    ssh -Y -l $username mininet
 }
 
 function from-vm() {
@@ -22,6 +32,8 @@ function from-vm() {
     mkdir -p $local_path
     scp mininet@mininet:$remote_path $local_path
 }
+
+
 
 
 #MARK: - SSHFS
