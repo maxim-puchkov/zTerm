@@ -1,48 +1,22 @@
 # Input/output styles.
 
 
-typeset -aH __COLOR_NAMES__=(
-    'RED'  'GREEN'   'YELLOW'
-    'BLUE' 'MAGENTA' 'CYAN'
-)
+function fg_color() tput setaf ${1:?}
+function bg_color() tput setab ${1:?}
+function boldtext() tput bold
 
-function fg_color() {
-    tput setaf ${1:?}
-}
-function bg_color() {
-    tput setab ${1:?}
-}
-function boldtext() {
-    tput bold
-}
-function __style_print() {(
-#    if [[ -z $* ]]; then
-#        while read -t arg; do
-#            argv+=($arg)
-##            set -- $argv $arg
-#        done
-##        set -- $()
-#    fi
-    : ${on:-$NORMAL} ${off:-$NORMAL}
-    if [[ -z $argv ]]; then
-        
-    fi
-    printf '%s%s%s\n' "$on" "$argv" "$off"
-#    echo
-)}
+
 
 
 #MARK: Styles Definitions
 NORMAL=$'\e[0m'
+  NONE=$NORMAL
+  RESET=$NORMAL
 BOLD=$'\e\[1m'
 DIM=$'\e\[2m'
 ITALIC=$'\e\[3m'
 UNDERLINE=$'\e\[4m'
 STANDOUT=$'\e\[7m'
-#NORMAL="$( tput sgr0 )"
-#BOLD="$( tput bold )"
-#UNDERLINE="$( tput smul )"
-#REVERSE="$( tput rev )"
 
 #MARK: Foreground Definitions
 # Default
@@ -105,22 +79,21 @@ B_CYANBG="$( bg_color 14 )"
 
 
 
+
 #MARK: - Aliases 
 #MARK: Styles
 function normal() { __style_print "$NORMAL$*" }
 function dim() { __style_print "$DIM$*" }
-functions -c dim D
+  D() dim $@
 function bold() { __style_print "$BOLD$*" }
+  B() bold $@
 function italic() { __style_print "$ITALIC$*" }
-functions -c italic em
-functions -c italic it
-alias B='bold'
+  em() italic $@
+  it() italic $@
 function underline() { __style_print "$UNDERLINE$*" }
-alias U='underline'
+  U() underline $@
 function Standout() { __style_print "$STANDOUT$*" }
-functions -c Standout S
-
-#function reverse() { __style_print "$REVERSE$*" }
+  S() Standout $@
 
 #MARK: Foreground
 # Default
@@ -132,6 +105,7 @@ function blue() { __style_print "$BLUE$*" }
 function magenta() { __style_print "$MAGENTA$*" }
 function cyan() { __style_print "$CYAN$*" }
 function lgrey() { __style_print "$LGREY$*" }
+  grey() lgrey $@
 # Bright
 function dgrey() { __style_print "$DGREY$*" }
 function b_red() { __style_print "$B_RED$*" }
@@ -171,6 +145,7 @@ function bluebg() { __style_print "$BLUEBG$*" }
 function magentabg() { __style_print "$MAGENTABG$*" }
 function cyanbg() { __style_print "$CYANBG$*" }
 function lgreybg() { __style_print "$LGREYBG$*" }
+  greybg() lgreybg $@
 function dgreybg() { __style_print "$DGREYBG$*" }
 # Bright
 function b_redbg() { __style_print "$B_REDBG$*" }
@@ -182,14 +157,8 @@ function b_cyanbg() { __style_print "$B_CYANBG$*" }
 
 
 
-#
-#function B() {
-#    bold "$*"
-#}
-#function U() {
-#    underline "$*"
-#}
 
+#MARK: - Old Styles
 function OK() {
     b_green "${*:-$0}"
 }
@@ -213,19 +182,99 @@ function group() {
     echo "$($color $lt)${text}$($color $rt)"
 }
 
-
-#function print_h1() {
-#    printf '\e[1;107;30m  %s  \e[0m\n' "${(U)*}"
-#}
-
 function print_h1() {
     print -P -- "%B%K{11}%F{16} ${(U)argv} %f%k%b"
 }
 
 
 
-alias grey='lgrey'
 
-#function S() {
-#    __style_print $'\033\[7m'"$argv"
-#}
+
+
+
+typeset -aH __COLOR_NAMES__=(
+    'RED'  'GREEN'   'YELLOW'
+    'BLUE' 'MAGENTA' 'CYAN'
+)
+
+error_color=9
+logf_color=4
+
+# Colored symbols and labels
+LB='\e[1;31m'{'\e[0m'
+RB='\e[1;31m'}'\e[0m'
+undefined_label=$'\033\[33m'undefined$'\033\[39m'
+null_label=$'\033\[31m'null$'\033\[39m'
+not_set_label=$'\033\[31m''variable is not set'$'\033\[39m'
+
+
+
+
+
+
+function color_seq() {(
+    typeset -a color_codes
+    local color_name
+    for color_name in $=argv; do
+        local c=${color[$color_name]}
+        if [[ -n $c ]]; then
+            color_codes+=($c)
+        else
+            error -0 'Color $color_name is not recognized'
+        fi
+    done
+    printf '%s' "\e[${(j.;.)color_codes}m"
+    return 0
+)}
+
+function __style_print() {(
+    typeset style_formats
+    if [[ -v fmt ]]; then
+        style_formats+="$(color_seq $fmt)"
+    fi
+    
+    typeset style_reset='\e[0m'
+    printf '%b%s%b\n' "$style_formats" "$argv" "$style_reset"
+    return 0
+)}
+
+
+typeset -AHx text_labels
+set -A text_labels $((
+    typeset reset_seq='\e[0m'
+    while IFS=':' read label style; do
+        seq="$(color_seq $=style)"
+        for name in ${=${(s:,:)label}}; do
+            style="${seq}${name}${reset_seq}"
+            print -- "$name" "$style"
+        done
+    done <${1:-$zterm/etc/labels}
+))
+
+
+#MARK: - Tests
+pink=$MAGENTA
+function pink() {
+    fmt=($fmt magenta) __style_print "$*"
+}
+function pink2() {
+    ( fmt='magenta'
+    __style_print "$*" )
+}
+function pink3() {(
+    export fmt='magenta'
+    __style_print "$*"
+)}
+
+
+
+#
+#typeset cmd=$1
+#if [[ -z $functions[$0_$cmd] ]]; then
+#    error -127 'Command not found: \$cmd.'
+#fi
+#
+#$0_$cmd $argv
+#return $?
+
+

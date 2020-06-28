@@ -7,104 +7,118 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# Print variable type, length, and value.
+
+
+# print-var
+# Show type, length, value of shell variables
 #
 # Options:
-## print-var -t: print variable types only ##
+## print-var -t:    print variable types only
+## print-var -b:    brief output
 function print-var() {
-    # Get options
-    typeset -A opts=()
-    zparseopts -D -E -A opts 't'
-    
-    
+    print $#:$@
+    unsetopt localtraps
+    # Exclude duplicates, rename '@' to 'argv'
+    set -- ${(u)argv:/@/argv}
+    typeset -i argc=$#
     # Raise error when variable name is not given
-    if [[ $# -eq 0 ]]; then
-        error -2 'Enter at least one variable name.'
+    if [[ $argc -eq 0 ]]; then
+        error -1 'Enter at least one variable name.'
+        return 1
     fi
-    # Exclude duplicates
-    set -- ${(u)argv}
-    typeset -i10 argc=$#
-    # Rename '@' to 'argv'
-    set -- ${argv:/'@'/'argv'}
     
     
-    # Trap function to display variable in
-    # the environment of the caller
-    trap '(
-        # Set constant values
-        typeset {null,undefined,join,array_join}=""
-        null="%F{1}null%f"
-        undefined="%F{1}undefined%f"
-        join="%u, %U"
-        array_join="\n   "
-        
-        # Loop for every variable ID
-        typeset var_id=""
-        for var_id in '"$argv"'; do
-            # Print the name of the caller
-            print -PN -- "%B${0}%b(${SHLVL}): "
-            # Check that variable is set
-            if [[ ! -v $var_id ]]; then
-                print -P -- "Variable %F{9}${var_id}%f is not set."
-                continue
-            fi
-            
-            # Format variable description
-            typeset {type,length,description,desc_format}=""
-            type=${(Pt)var_id}
-            length=${(P)#var_id}
-            description="(%Btype%b: ${type:-$undefined}, %Blength%b: ${length:-0})"
-            desc_format="%F{2}${var_id}%f${description}"
-            
-            # Print only description if '-t' is given
-            if [[ '"${+opts[-t]}"' -eq 1 ]]; then
-                print -P  -- "${desc_format}"
-                continue
-            fi
-            
-            # Format variable value based on its type
-            typeset value_format=""
-            if [[ -z ${(P)var_id} ]]; then
-                value_format="${null}"
-            else
-                unset value
-                case $type in
-                    # Associative arrays: [key] = value
-                    *"association"*)
-                        typeset -a value=(${(Pqkv)var_id})
-                        value_format="{"
-                        for index in {1..$#value..2}; do
-                            local k="${${(Q)value[$index]}:-$null}"
-                            local v="${${(Q)value[$(( $index + 1 ))]}:-$null}"
-                            value_format+="${array_join}[${k}] = %U${v}%u"
-                        done
-                        value_format+="\n}"
-                    ;;
-                    # Arrays: [index] = value
-                    *"array"*)
-                        typeset -a value=(${(Pq)var_id})
-                        value_format="{"
-                        for index in {1..$length}; do
-                            value_format+="${array_join}[${index}] = %U${${(Q)value[$index]}:-$null}%u"
-                        done
-                        value_format+="\n}"
-                    ;;
-                    # Integers: value
-                    *"integer"*)
-                        typeset value="${(@P)var_id}"
-                        value_format="%U${value}%u"
-                    ;;
-                    # Other: "value"
-                    *)
-                        typeset value="${(@P)var_id}"
-                        value_format="\"%U${value}%u\""
-                    ;;
-                esac
-            fi
-            
-            # Print variable
-            print -P  -- "${desc_format} = ${value_format}"
+    # Get options
+    typeset -A optlist
+    autoload -Uz get-arguments
+    get-arguments -A optlist --flags t b -- $argv
+    
+   
+    # Brief output
+    if [[ $optlist[-b] -eq 1 ]]; then
+        while [[ -n $1 ]]; do
+            print -P -- "%B%F{4}${1}%f%b = ${(P)1}" #>&$out_fd
+            shift
         done
-    )' EXIT
-    return 0
+    else
+        # Trap function to display variable in
+        # the environment of the caller
+        trap '(
+            export prog='$0'
+            # Set constant values
+            typeset {null,undefined,join,array_join}=""
+            null=${text_labels[null]:-null}
+            undefined=${text_labels[undefined]:-undefined}
+            join="%u, %U"
+            array_join="\n   "
+            
+            # Loop for every variable ID
+            typeset var_id=""
+            for var_id in '"$argv"'; do
+                # Check that variable is set
+                if [[ ! -v $var_id ]]; then
+                    error -1 "Variable \$var_id is not set."
+                    continue
+                fi
+                
+                # Format variable description
+                typeset {type,length,description,desc_format}=""
+                type=${(Pt)var_id}
+                length=${(P)#var_id}
+                description="(%Btype%b: ${type:-$undefined}, %Blength%b: ${length:-0})"
+                desc_format="%F{2}${var_id}%f${description}"
+                
+                # Print only description if '-t' is given
+                if [[ "'$optlist[-t]'" -eq 1 ]]; then
+                    print -P -- "${desc_format}"
+                    continue
+                fi
+                
+                # Format variable value based on its type
+                typeset value_format=""
+                if [[ -z ${(P)var_id} ]]; then
+                    value_format="${null}"
+                else
+                    unset value
+                    case $type in
+                        # Associative arrays: [key] = value
+                        *"association"*)
+                            typeset -a value=(${(Pqkv)var_id})
+                            value_format="{"
+                            for index in {1..$#value..2}; do
+                                local k="${${(Q)value[$index]}:-$null}"
+                                local v="${${(Q)value[$(( $index + 1 ))]}:-$null}"
+                                value_format+="${array_join}[${k}] = %U${v}%u"
+                            done
+                            value_format+="\n}"
+                        ;;
+                        # Arrays: [index] = value
+                        *"array"*)
+                            typeset -a value=(${(Pq)var_id})
+                            value_format="{"
+                            for index in {1..$length}; do
+                                value_format+="${array_join}[${index}] = %U${${(Q)value[$index]}:-$null}%u"
+                            done
+                            value_format+="\n}"
+                        ;;
+                        # Integers: value
+                        *"integer"*)
+                            typeset value="${(@P)var_id}"
+                            value_format="%U${value}%u"
+                        ;;
+                        # Other: "value"
+                        *)
+                            typeset value="${(@P)var_id}"
+                            value_format="\"%U${value}%u\""
+                        ;;
+                    esac
+                fi
+                
+                # Print variable
+                print -P -- "${desc_format} = ${value_format}"
+            done
+        )' EXIT
+    fi
+    
+    return $?
 }

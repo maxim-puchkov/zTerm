@@ -10,6 +10,11 @@
 # Read all command options and store in an array with
 # the specified identifier.
 function get_options() {
+#    print -P -- "Function '%U${0}%u' is deprecated."
+#    print -P -- "Did you mean: '%F{2}get-arguments%f'?"
+#    print
+#    return 2
+    
     local identifier=$1
     local optstring="$2"
     local arguments=${@:3}

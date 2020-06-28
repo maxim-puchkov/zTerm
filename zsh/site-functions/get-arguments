@@ -15,8 +15,6 @@
 #     [-[Aa] array_id]
 #     [-f name[, ...]]
 #     [-o name[, ...]]
-#     [
-#     [[-+]u]
 #   --
 #     args
 #
@@ -27,10 +25,12 @@
 #
 # Examples:
 # 1. Parse options X,Y,Z and store their values in 'optlist':
-#       get-arguments -o X,Y,Z -- -Z opt-Z -X opt-x -Y opt-y
+#       set -- -Z opt-Z -X opt-x -Y opt-y
+#       get-arguments -o X Y Z -- $argv
 # 2. Parse flags A,B, options C,D, and store result in 'myArray':
+#       set --  -C opt-C -A -D opt-D -B
 #       typeset -A myArray
-#       get-arguments -A myArray -f A,B -o C,D -- -C opt-C -A -D opt-D -B
+#       get-arguments -A myArray -f A B -o C D -- $argv
 function get-arguments() {
     # Load 'zsh/zutil' module
     local zsh_module='zsh/zutil'
@@ -43,15 +43,14 @@ function get-arguments() {
     local -i delimiter_index=${argv[(i)$delimiter]}
     # Missing '--' argument delimiter
     if [[ $delimiter_index -gt $# ]]; then
-        error -1 "Argument specification and argument values must be delimited with two dashes '\$delimiter':" \
-        "\n '%B${0}%b -o o1,o2,o3 \$delimiter -o1 X -o2 Y -o3 Z other args'"
+        error -1 \
+            "Argument %Uspecification%u and argument %Uvalues%u must be delimited with two dashes '\$delimiter':" '\n' \
+            "'%B${0}%b %U-f a b c -o x y z%u \$delimiter %U-a -x X -y Y other args%u"
     fi
     # If delimiter '--' is the last argument, there is nothing to parse
     if [[ $delimiter_index -eq $# ]]; then
         return 1
     fi
-    
-    
     
     
     #MARK: - Parameters for 'get-arguments'
@@ -73,18 +72,13 @@ function get-arguments() {
     
     
     #MARK: - Set 'get-arguments' Options
-    # Parameters of the current option
-    local -i last_index
-    local -a list
-    
-    # Parse all arguments which begin with '-' or '+'
+    # Parse arguments which begin with '-'
+    # or '+' (command options)
     while [[ $1 =~ '^[-+]' ]] &&
           [[ $1 != '--' ]]; do
-#        S "next 1=<$1>\n"
-#        red $(S "ALL: <$argv>")
-        
-        # Find the last argument index of the current option,
-        # and set 'list' to all current arguments
+        # Arguments until the next command option
+        # are parameters for the current option
+        local -a list=()
         let last_index=${${argv:2}[(i)[-+]*]}
         set -A list ${argv[2,$last_index]}
 #        print -P "List is {$list}[$#list]"
@@ -92,15 +86,6 @@ function get-arguments() {
         case $1 in
             # Flags
             -f|--flags)
-                
-#                ( red "RED [$#] $argv"
-#                shift;
-#                red "Len=$#list"
-#                shift $#list
-#                red "RED [$#] $argv"
-#                redbg "num 1 is now $1"
-#                yellowbg "Added $#list elements: {$list}"
-#                 )
                 shift
                 flag_names+=($list)
                 shift ${#list}
@@ -110,6 +95,9 @@ function get-arguments() {
             -o|--opts|--options)
                 shift
                 local opt_spec=''
+                typeset -ag copy
+                copy=($list)
+                
                 for opt_spec in $list; do
                     case $opt_spec in
                         *:*)
@@ -128,8 +116,6 @@ function get-arguments() {
             # Specify output array name and type
             -A|-a)
                 array_type=$1
-                unset $array_id
-                typeset $array_type -g $array_id
                 array_id=$2
                 shift 2
             ;;
@@ -137,13 +123,9 @@ function get-arguments() {
             # Stop parsing parameters
             *)  break ;;
         esac
-
     done
-#    S "end is $argv"
-    # Skip '--'
-    if [[ $1 == '--' ]]; then
-        shift
-    fi
+    [[ $1 == '--' ]] && shift
+    
     
     # Exit if no flag or option names were recognized
     if [[ -z $flag_names ]] &&
@@ -152,45 +134,46 @@ function get-arguments() {
     fi
     
     
-    # Recognized options and options with default values
-    typeset -a {opts,def}_keys
-    opts_keys=(${(k)opts})
-    def_keys=(${(Mk)defaults:#-*})
     
+    
+    
+    #MARK: - Parse Arguments
     # Recognized flags/options
     typeset -a flags
     typeset -A opts
     flags=()
     opts=()
-    
-    # Non-recognized flags/options
-    typeset -a unset_{flags,opts}
-    unset_opts=(${${:-'-'${^option_names}}:|opts_keys})
-    unset_flags=(${${:-'-'${^flag_names}}:|flags})
-    
-    
-    
-    
-    #MARK: - Parse Arguments
     # Set 'specs' for the 'zparseopts' builtin
     typeset -a specs
     specs=(
         ${^flag_names}'=flags'
         ${^option_names}':=opts'
     )
-    # Store parsed flags
-    builtin zparseopts -D -E -- ${=specs} &>/dev/null
-    if [[ $? -ne 0 ]]; then
-        error -1 "Parse failure: 'zparseopts'."
+    
+    # Parse parameters
+    builtin zparseopts -D -E -- $specs &>/dev/null
+    local -i parse_status=$?
+    if [[ $parse_status -ne 0 ]] then
+        ( name='zparseopts' \
+            error -$parse_status -c "Invalid '%U\${name}%u' specs: {\${specs}}." )
     fi
+    
+    # Recognized options and options with default values
+    typeset -a {opts,def}_keys
+    opts_keys=(${(k)opts})
+    def_keys=(${(Mk)defaults:#-*})
+    # Non-recognized flags/options
+    typeset -a unset_{flags,opts}
+    unset_opts=(${${:-'-'${^option_names}}:|opts_keys})
+    unset_flags=(${${:-'-'${^flag_names}}:|flags})
     
     # Set remaining arguments of the caller
     typeset -a rest
     set -A rest ${(qq)argv}
     trap "{
-        builtin set -- $rest &&
+        set -- $rest &&
         [[ \$1 == '--' ]] &&
-        builtin shift
+        shift
     }" EXIT
     
     

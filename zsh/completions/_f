@@ -1,0 +1,54 @@
+#compdef f
+
+# _f
+# /usr/local/Terminal/zsh/f
+#
+# zsh function completion
+# Updated on 2020-06-24 at 07:05 pm
+
+
+_arguments -C \
+  ":command:->command" \
+  "*::arg:->arg"
+
+case $state in
+  (command)
+    typeset -a commands
+    commands=(
+      [1merror[0m(1)::""
+      [1mlength[0m::""
+      [32margv[39m([1mtype[0m::""
+      [4m--title[24m
+:""
+      [4m-1[24m
+:""
+      [4mFunction:""
+      [4mfn[24m
+:""
+      '.zutil':"''"
+      4):""
+      =:"''"
+      [1]:""
+      [2]:""
+      [3]:""
+      [4]:""
+      array-special,:"''"
+      defined.[24m
+}:""
+      is:"''"
+      not:"''"
+      {
+:"''"
+    )
+    _describe -t commands command commands
+  ;;
+  (arg)
+    typeset -a args
+    args=(
+      # Completion for commands' arguments
+    )
+    _describe -t args arg args
+  ;;
+esac
+
+return 0

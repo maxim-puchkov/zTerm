@@ -31,3 +31,5 @@
 /usr/local/Terminal/zsh/functions/syntaxf
 /usr/local/Terminal/zsh/functions/typeof
 /usr/local/Terminal/zsh/functions/arg-mode
+/usr/local/Terminal/zsh/functions/lines
+/usr/local/Terminal/zsh/functions/iff

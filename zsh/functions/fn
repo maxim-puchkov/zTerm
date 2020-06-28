@@ -15,17 +15,19 @@
 # Arguments:
 ## arg1: vars ##
 ## arg2: ##
-function fn() {
+function fn() {(
     typeset program_name=$0
-    function print-error() {
-        local code=-1
-        if [[ $1 =~ '-[0-9]' ]]; then
-            code=$1
-            shift
-        fi
-        error $code --title $program_name ${argv}
-        return $code
-    }
+    
+#    function print-error() error -t 'i am bob'
+#    function print-error() {
+#        local code=-1
+#        if [[ $1 =~ '-[0-9]' ]]; then
+#            code=$1
+#            shift
+#        fi
+#        error $code --title $program_name ${argv}
+#        return $code
+#    }
     
     ## def: print function definition ##
     function fn_def() {
@@ -50,19 +52,20 @@ function fn() {
     }
     ## show: display function definition and source file ##
     function fn_show() {
-        local code=$(fn def $fn_name)
-        local file=$(fn_src $fn_name)
-        local line=${(%):-"%F{8}${(l:$COLUMNS::-:)}%f"}
-        builtin print -f '%s\n%s\n%s\n\nFile: %s\n' "$line" "$code" "$line" "${(D)file}"
+        local fn_code=$(fn def $fn_name)
+        local fn_file=$(fn_src $fn_name)
+        local fn_line=${(%):-"%F{8}${(l:$COLUMNS::-:)}%f"}
+        builtin print -f '%s\n%s\n%s\n\n%s\n' \
+            "$fn_line" "$fn_code" "$fn_line" "${(D)file}"
         return 0
     }
     ## open: open function source file ##
     function fn_open() {
-        local file=$(fn_src $fn_name 2>/dev/null)
-        if [[ ! -r $file ]]; then
+        local fn_file=$(fn_src $fn_name 2>/dev/null)
+        if [[ ! -r $fn_file ]]; then
             print-error -1 'Cannot read source file for function $fn_name.'
         fi
-        /usr/bin/open -a Xcode -- $file
+        /usr/bin/open -a Xcode -- $fn_file
         return 0
     }
     ## isdef: check if a function is defined ##
@@ -74,18 +77,16 @@ function fn() {
     }
     ## sub: list functions defined within a function ##
     function fn_sub() {
-#        fn_prefix="${fn_prefix:-${fn_name%%[_-]*}}"
-        typeset srcfile
-        if ! srcfile=$( fn_src $fn_name ); then
+        if ! fn_file=$(fn_src $fn_name); then
             return 1
         fi
         typeset fn_syntax fn_pattern
         fn_syntax="${fn_prefix}_((?:\w|-)+)"
         fn_pattern="^[^#]*(function\s+${fn_syntax}|${fn_syntax}\s*\(\))\s*"
         typeset -a list
-        list=($( egrep -o -i -E "${fn_pattern}" -- $srcfile ))
+        list=($( egrep -o -i -E "${fn_pattern}" -- $fn_file ))
         list=(${${list#'function'*}%*'()'})
-        typeset f
+        local f
         for f in $list; do
             typeset subfn_name=${f%'('*')'}
             if [[ ${+functions[$subfn_name]} ]]; then
@@ -96,22 +97,15 @@ function fn() {
     }
     ## commands: list function commands ##
     function fn_commands() {
-#        fn_prefix="${fn_prefix:-${fn_name%%_*}}"
         typeset -a fcommands=(${$(fn_sub $fn_name)//${fn_prefix}_/})
         printf '%s\n' $fcommands
         return 0
     }
     ## print-commands: format and list function commands ##
     function fn_print-commands() {
-#        fn_prefix="${fn_prefix:-${fn_name%%_*}}"
         typeset -a commands
         commands=($(fn_commands $fn_name))
-#        print -- "fn commands is: ${functions[fn_commands]}";
-#        fn_commands fn >~/var/cfn
-#        fn_prefix='zfc' fn_commands zfc >~/var/czfc
-#        fn_prefix='error' fn_commands error >~/var/cerror
         if [[ -z $commands ]]; then
-#            error -1 "Function '\$fn_name' does not have any commands."
             return 1
         fi
         if [[ -t 1 ]]; then
@@ -124,14 +118,13 @@ function fn() {
     }
     ## options: list function flags and options ##
     function fn_options() {
-        typeset srcfile
-        if ! srcfile=$(fn_src $fn_name); then
+        if ! fn_file=$(fn_src $fn_name); then
             return 1
         fi
         typeset grep_pattern='^[ ]*##[ ]*[\-\+][^ ]+: .* ##[ ]*$'
         typeset sed_pattern='s/## ([\-\+].*): (.*) ##/\1: \2/p'
         typeset -A reply
-        reply=("${(@f)$(grep -E $grep_pattern $srcfile |
+        reply=("${(@f)$(grep -E $grep_pattern $fn_file |
             sed -n -E $sed_pattern |
             awk -F ': ' '{print $1; print $2;}' )}")
         # Print completion for arguments
@@ -144,17 +137,15 @@ function fn() {
         done
     }
     
-    
     # Completion for flags and options
     function fn_completion-arguments() {
-        typeset file
-        if ! file=$(fn_src $fn_name); then
+        if ! fn_file=$(fn_src $fn_name); then
             return 1
         fi
         typeset -A reply
         typeset grep_pattern='^[ ]*##[ ]* (.+) [-+][^ ]+[^:]*: .* ##[ ]*$'
         typeset sed_pattern='s/## (.+) ([-+][^ ]+)[^:]*: (.+) ##/\2: \3/p'
-        reply=("${(@f)$(grep -E $grep_pattern $file |
+        reply=("${(@f)$(grep -E $grep_pattern $fn_file |
             sed -n -E $sed_pattern |
             awk -F ': ' '{print $1; print $2;}' )}") 2>/dev/null
         if [[ $? -ne 0 ]]; then
@@ -174,18 +165,18 @@ function fn() {
     
     # Completion for commands
     function fn_completion-commands() {
-        typeset file
-        if ! file=$(fn_src $fn_name); then
+        typeset fn_file
+        if ! fn_file=$(fn_src $fn_name); then
             return 1
         fi
         typeset -A reply
-        typeset -a fn_commands=($(fn commands ${file:t}))
+        typeset -a fn_commands=($(fn commands ${fn_file:t}))
         # Parse commands
         local cmd
         for cmd in ${fn_commands}; do
             local pattern="## ${cmd}: .+ ##.*function ${fn_name}[\-\_]${cmd}[\s]*\(\)"
             local description=$(
-                greps '-o' "$pattern" "$file" |
+                greps '-o' "$pattern" "$fn_file" |
                     head -n 1 |
                     sed -e "s/## ${cmd}: //g" -e "s/ ##.*//g"
             )
@@ -210,10 +201,10 @@ function fn() {
         # Parse each file and generate argument/command completion
         typeset fn_dir file
         fn_dir="${$(fn_src $fn_name):h}"
-        for file in ${fn_dir}/${fn_name}*; do
-            autoload +X ${file:t}
-            arg_completion=(${(@f)"$(fn_completion-arguments $file)"})
-            cmd_completion=(${(@f)"$(fn_completion-commands $file)"})
+        for fn_file in ${fn_dir}/${fn_name}*; do
+            autoload +X ${fn_file:t}
+            arg_completion=(${(@f)"$(fn_completion-arguments $fn_file)"})
+            cmd_completion=(${(@f)"$(fn_completion-commands $fn_file)"})
         done
         
         
@@ -263,52 +254,72 @@ EOF
     ## compgen: generate and update function completion ##
     function fn_compgen() {
         function completion_function() {
-            awk '/_arguments/,/exit;/  {print $0}' <$1
+            awk '/_arguments/,/exit;/  { print $0; }' <&0
         }
+#         Set target file path
         () {
-            # Set target file path
-            typeset target=$zdot/completions/_$fn_name
-            # Compare old and new completion functions
-            diff -s -q -- =(completion_function $target) \
-                          =(completion_function $1)      \
-                          &>/dev/null
-            # Stop if the files are identical
-            if [[ $? -eq 0 ]]; then
-                print-error -2 'Function completion is already up-to-date.'
-                return 2
-            fi
-            
-            # If completion already exists, ask to overwrite it
+            typeset target="${zcomp}/_${fn_name}"
             if [[ -e $target ]]; then
+                # Compare old and new completion functions
+                diff -s -q -- =(completion_function <$target) \
+                              =(completion_function <$1)      \
+                              &>/dev/null
+                # Stop if the files are identical
+                if [[ $? -eq 0 ]]; then
+                    print-error -2 'Function completion is already up-to-date.'
+                    return 2
+                fi
+                # If completion function is outdated, ask to overwrite it
                 typeset -i target_size new_size
                 target_size=$(stat -f '%z' -- $target)
                 new_size=$(stat -f '%z' -- $1)
                 print -P -- "%F{1}%BWarning\!%b%f"
                 print -P -- "Target file '%F{2}${target}%f' already exists."
                 print -P -- "Overwrite '%F{2}${target}%f' (%F{2}${target_size}%f bytes) with updated completion file (%F{2}${new_size}%f bytes)? (yes/no)"
+                
                 # Read user response if overwrite is not enabled with option '-y'
-                [[ -z $response ]] && read response
-                if [[ ! $response =~ "${langinfo[YESEXPR]}" ]]; then
-                    print-error -1 'User response: no. Aborting...'
+                (
+                    [[ -z $response ]] &&
+                    read response &&
+                    if [[ ! $response =~ "${langinfo[YESEXPR]}" ]]; then
+                        print-error -1 "User response is 'no'." \
+                            "Aborting..."
+                    fi
+                )
+                if [[ $? -ne 0 ]]; then
                     return 1
                 fi
                 print -P -- "Overwriting completion function..."
-                unset response
             fi
             cat <$1 >$target
             print -P -- "Completion function %F{2}_${fn_name}%f updated."
-        } =(fn completion $fn_name)
+        } =(fn_completion $fn_name)
         return 0
     }
     
+    function fn_versions() {
+        typeset -ag patterns
+        patterns=('_v' '_version')
+        () {
+#            fgrep --file $1 <$2
+#            p=$(cat <$1)
+#            print -- "pattern is $p"
+            egrep --file $1 <$2
+        } <(builtin print -- '('${(j:|:):-${fn_name}${^patterns}}')' ) \
+          <(typeset -f -m + "${fn_name}[-_]*") \
+          <(print -l -- 'fn_v'{2..20} ${(z)EF}  )
+        return 0
+    }
     
+    print-error -3 'hey'
+    return 0
     
     
     
     
     #MARK: - Options
-    autoload -Uz get-arguments
     typeset -A optlist
+    autoload -Uz get-arguments
     get-arguments -A optlist \
                   --flags 'h' 'y' \
                   -- $argv
@@ -316,6 +327,7 @@ EOF
     typeset show_help
     show_help=${optlist[-h]}                        # -h
     typeset response
+    
 #    fn_prefix=${optlist[-p]:-${fn_name%%[_-]*}}   # -p <prefix>
 #    if [[ ${optlist[-y]} -eq 1 ]]; then
 #        response='yes'
@@ -335,13 +347,15 @@ EOF
         1)  print-error -2 'Function name is not specified.'
             return 2 ;;
     esac
-
+    
+    
     
     # Command name
     typeset cmd=$1
     shift
     # Command argument
     typeset fn_name="${argv}"
+    typeset fn_file
     # Function name prefix
     [[ -n $fn_prefix ]] || fn_prefix=${fn_name%%[_-]*}
     export fn_prefix
@@ -368,9 +382,8 @@ EOF
     local -i cmd_status=$?
     if [[ $cmd_status -ne 0 ]]; then
         local cmd_text="$0 $cmd $fn_name"
-#        print-error -$cmd_status -c "While executing \$cmd, an error code \$cmd_status \$cmd code: \$cmd_status."
         print-error -$cmd_status -c -- \
-            '\$cmd: command failed to complete (error code \$cmd_status).'
+            '\$cmd: command failed to complete (error code \${cmd_status}).'
         #"\n"
         
  #       "Executed command: '\$cmd_text'."
@@ -378,4 +391,4 @@ EOF
     
     unset fn_prefix
     return 0
-}
+)}

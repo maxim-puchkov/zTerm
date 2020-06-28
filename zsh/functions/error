@@ -18,40 +18,35 @@
 #       warning  'description...'
 #       error -0 'description...'
 function error() {
+#    setopt localtraps
     #MARK: - Data
-    # Error message label
-    typeset program_name='Error'
-    # Message
+    # Error message
     typeset message
     typeset message_title
     typeset message_desc
     # Exit code
-    typeset exit_code=1
+    typeset -i exit_code=1
     typeset exit_code_label
-    # Output
-    typeset output_device
-    typeset output_color=${error_color:-1}
-    # Output options
+    # Output format options
+    typeset -i output_color=${error_color:-1}
+    typeset split_lines='false'
     typeset autocapitalize='true'
     typeset remove_trailing_space='true'
     typeset trailing_period='true'
     typeset highlight_variables='true'
     
     
-    
-    
     #MARK: - Functions
     # Highlight all shell '$variables' in description
     function error-replace-variables() {
         # Placeholder label
-        typeset undefined_var_label
-        undefined_var_label='%F{3}undefined%f'
+#        typeset undefined_var_label
+#        undefined_var_label='%F{3}undefined%f'
         # Find and replace variables
         typeset find replace
         find='[$]([{(])?(([A-Za-z_][^ ]*)?[A-Za-z0-9!@#$%^&*=?_])([})])?'
-        replace="%F{1}\${\${\2}:-${(%)undefined_var_label}}%f"
+        replace="%F{1}\${\${\2}:-$text_labels[null]}%f"
         # Highlight variables in description
-        
         message_desc=$(/usr/bin/sed -E -e "s/${find}/${replace}/g" <<< "${argv}")
     }
     
@@ -62,16 +57,16 @@ function error() {
     # Title - text, color, and exit code
     function error-format-title() {
         if [[ $exit_code -gt 0 ]]; then
-            message_title="%F{$output_color}${program_name}%f"
-            exit_trap="return $exit_code;"
+            message_title="%F{${output_color}}${prog}%f"
+            exit_trap="return ${exit_code};"
         else
-            message_title='%F{3}Warning%f'
+            message_title="%F{3}${prog}%f"
             exit_trap='-'
         fi
         return 0
     }
     function error-plain-title() {
-        unfunction error-format-title
+        unset -f error-format-title
         function error-format-title() { return 0; }
     }
     
@@ -98,15 +93,13 @@ function error() {
         return 0
     }
     function error-plain-description() {
-        unfunction error-format-description
+        unset -f error-format-description
         function error-format-description() { return 0; }
     }
     
     # Message - title, description, and return status
     function error-format-message() {
-        error-format-title
-        error-format-description
-        message="%U${message_title}%u${exit_code_label}"
+        message="${message_title}${exit_code_label}"
         if [[ -n $message_desc ]]; then
             message="${message}: ${message_desc}"
         else
@@ -116,10 +109,10 @@ function error() {
     }
     # Format and print the error/warning message
     function error-print() {
+        error-format-title
+        error-format-description
         error-format-message
-        redbg $message >&2
-        print -P -- "$message" >${output_device:-/dev/stderr} ||
-        printf 'QQ<%q>QQ\n\n' "$message"
+        print -P -- "$message" >&2
         return 0
     }
     
@@ -127,17 +120,11 @@ function error() {
     
     
     #MARK: - Command Arguments
-    # Set program name
-    if [[ $0 != 'error' ]]; then
-        program_name=$0
-    fi
-    
-    # If the first argument is a digit prefixed by a '-',
-    # then 'error -123' is the same as 'error -e 123'
+    # Treat the very first flag as error code:
+    #   'error -123' == 'error -e 123'
     if [[ $1 =~ '^[-][0-9]+$' ]]; then
         set -- '-e' ${1#-} ${argv:2}
     fi
-    
     
     # Parse command arguments
     while [[ $1 =~ '^[-+]' ]] &&
@@ -149,23 +136,27 @@ function error() {
                 return 0
             ;;
             ## error -e: set the exit code ##
-            -e)
-                local -i code=$2
-                exit_code=$code
-                shift
+            -e) if [[ -n $2 ]] && [[ $2 =~ '^[0-9]+$' ]]; then
+                    exit_code=$2
+                    shift
+                else
+                    ( new_code=$2 \
+                    error -1 'exit code $new_code is invalid' )
+                    return $?
+                fi
             ;;
             ## error -c,--code: display exit code with error message ##
             -c|--code)
-                exit_code_label="%f [$exit_code]"
+                exit_code_label="%f [${exit_code}]"
             ;;
             ## error -D,--plain-description: do not format description ##
             -D|--plain-description)
                 error-plain-description
             ;;
-            ## error -n,--null: try to silence output messages ##
-            -n|--null)
-                output_device=/dev/null
-            ;;
+#            ## error -n,--null: try to silence output messages ##
+#            -n|--null)
+#                output_device=/dev/null
+#            ;;
             ## error -u,--usage: set title to 'Usage' ##
             -u|--usage)
                 error-plain-title
@@ -174,28 +165,33 @@ function error() {
             ;;
             ## error -t,--title: set error message title ##
             -t|--title)
-                if [[ -n $2 ]]; then
-                    error-plain-title
-                    message_title="%B%F{$output_color}${2}%f%b"
-                    shift
-                else
-                    break
+                if [[ -z $2 ]]; then
+                    error -1 'Error title is not set'
                 fi
+                error-plain-title
+                message_title="%F{${output_color}}${2}%f"
+                shift
             ;;
             
+            
             # Additional formatting options
-            ## error -a,--autocapitalize: capitalize first letter ##
-            ## error +a,--no-autocapitalize: do not capitalize first letter ##
+            ## error -S,--split-lines: capitalize first letter ##
+            ## error +S,--no-split-lines: do not capitalize first letter ##
+            -S|--split-lines)       split_lines='true'      ;;
+            +S|--no-split-lines)    split_lines='false'     ;;
+            
+            ## error -A,--autocapitalize: capitalize first letter ##
+            ## error +A,--no-autocapitalize: do not capitalize first letter ##
             -A|--autocapitalize)    autocapitalize='true'    ;;
             +A|--no-autocapitalize) autocapitalize='false'   ;;
             
-            ## error -p,--trailing-period: add trailing period ##
-            ## error +p,--no-trailing-period: do not add trailing period ##
+            ## error -P,--trailing-period: add trailing period ##
+            ## error +P,--no-trailing-period: do not add trailing period ##
             -P|--trailing-period)    trailing_period='true'  ;;
             +P|--no-trailing-period) trailing_period='false' ;;
             
-            ## error -h,--highlight: enable syntax highlighting ##
-            ## error +h,--no-highlight: disable syntax highlighting ##
+            ## error -H,--highlight: enable syntax highlighting ##
+            ## error +H,--no-highlight: disable syntax highlighting ##
             -H|--highlight)    highlight_variables='true'    ;;
             +H|--no-highlight) highlight_variables='false'   ;;
             
@@ -209,10 +205,26 @@ function error() {
     
     
     
-    # Set message description to the remaining arguments
-    message_desc="$@"
-    error-print && trap "$exit_trap" EXIT
+    # Display name
+    if [[ ! -v prog ]]; then
+        prog=${funcstack[2]:-${(C)0}}
+    fi
     
-    unfunction -m "${0}-*"
+    if [[ $exit_code -eq 0 ]]; then
+        default prog 'Warning'
+    fi
+    
+    # Set message description to the remaining arguments
+    if [[ $split_lines == 'true' ]]; then
+        message_desc=${(@F)argv}
+    else
+        message_desc=${argv}
+    fi
+    
+    # Print and exit
+    error-print && trap "print -- \${argv:0}; $exit_trap" EXIT
+    
+    unset -f -m "${0}-*"
+#    unset prog
     return $exit_code
 }

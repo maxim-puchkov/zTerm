@@ -8,28 +8,19 @@
 
 
 # <#Function description#>
-function typeof() {
-#    () (
-#        for var_name in $argv; do
-#            var_type=${${(Pt)var_name}:-$undefined_label}
-#            print -P -- "%B%F{4}${var_name}%f%b: ${var_type}"
-#        done
-#    ) ${(u)argv}
-    
-    (
-        function typeof-plain() {
-            for var_name in $argv; do
-                var_type=${${(Pt)var_name}:-$undefined_label}
-                print -P -- "%B%F{4}${var_name}%f%b: ${var_type}"
-            done
-            return 0
-        }
-        
-        typeof-plain ${(u)argv} > >(print-var argv)
-        print -- {W..Z}'-123' > >(print-var argv)
-        
-    )
-    
-#    > >(readf input <&0; print-var input argv )
-    return $?
-}
+function typeof() {(
+    if [[ $# -eq 0 ]]; then
+        error -1 'No input.'
+        return 1
+    fi
+    typeset var_{id,type}
+    for var_id in $argv; do
+        if [[ ! -v $var_id ]]; then
+            warning 'variable $var_id is not set.'
+            continue
+        fi
+        var_type=${(Pt)var_id}
+        builtin print -- "$var_id" "$var_type"
+    done
+    return 0
+)}

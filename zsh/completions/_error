@@ -4,20 +4,23 @@
 # ~/Developer/Projects/Terminal/zsh/functions/error
 #
 # zsh function completion
-# Updated on 2020-06-23 at 12:54 PM
+# Updated on 2020-06-25 at 06:59 pm
 
 
 _arguments -C \
-  {+a,--no-autocapitalize}"[do not capitalize first letter]" \
-  {+h,--no-highlight}"[disable syntax highlighting]" \
-  {+p,--no-trailing-period}"[do not add trailing period]" \
+  {+A,--no-autocapitalize}"[do not capitalize first letter]" \
+  {+H,--no-highlight}"[disable syntax highlighting]" \
+  {+P,--no-trailing-period}"[do not add trailing period]" \
+  {+S,--no-split-lines}"[do not capitalize first letter]" \
+  {-A,--autocapitalize}"[capitalize first letter]" \
   {-D,--plain-description}"[do not format description]" \
-  {-a,--autocapitalize}"[capitalize first letter]" \
-  {-c,--code}"[show error exit code]" \
+  {-H,--highlight}"[enable syntax highlighting]" \
+  {-P,--trailing-period}"[add trailing period]" \
+  {-S,--split-lines}"[capitalize first letter]" \
+  {-c,--code}"[display exit code with error message]" \
+              -e"[set the exit code]" \
   {-h,--help}"[show help message]" \
-  {-h,--highlight}"[enable syntax highlighting]" \
   {-n,--null}"[try to silence output messages]" \
-  {-p,--trailing-period}"[add trailing period]" \
   {-t,--title}"[set error message title]" \
   {-u,--usage}"[set title to 'Usage']" \
   ":command:->command" \

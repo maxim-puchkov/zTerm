@@ -4,7 +4,7 @@
 # ~/Developer/Projects/Terminal/zsh/functions/fn
 #
 # zsh function completion
-# Updated on 2020-06-22 at 10:37 pm
+# Updated on 2020-06-24 at 06:20 pm
 
 
 _arguments -C \
@@ -29,6 +29,7 @@ case $state in
       show:"display function definition and source file"
       src:"find function source file"
       sub:"list functions defined within a function"
+      versions:"''"
     )
     _describe -t commands command commands
   ;;

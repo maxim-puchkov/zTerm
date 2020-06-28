@@ -282,15 +282,116 @@ function zshrc_template() {
     open 'https://dev.to/manan30/what-is-the-best-zshrc-config-you-have-seen-14id'
 }
 
-# 
-function lorem() {(
-    if [[ $# -gt 0 ]]; then
-        export format="$format $argv"
+function print-line2() {(
+#    typeset -i width=${${1:-$COLUMNS}
+#    typeset -i width=$1
+#    export -i w=$COLUMNS
+#    export
+    
+    
+    
+#    print-var argv
+    typeset -A optlist
+    autoload -Uz get-arguments
+    
+#    get-arguments -A opts -- $argv
+#    print-var opts
+    
+    
+    get-arguments -A optlist \
+                  --options c:2 t:'-' w:$COLUMNS \
+                  -- $argv
+    
+    
+#    print-var args opts
+    
+    
+#    print -P -- "%B $#, {$argv}, $0, ${opts}, ${#opts}%b"
+#    return 2
+    
+    
+    w=$optlist[-w]
+    t=$optlist[-t]
+    
+    print -l -P -- '%F{1}' $optlist $argv $w $t '%f'
+#    print-var opts argv w t
+    
+#    #${1:-$COLUMNS}
+#    if [[ $width -eq 0 ]]; then
+#        width=$COLUMNS
+#    fi
+    
+#    typeset text="${argv:-$var}"
+    print -P -- "%Sw = '$w', t = '$t'%s"
+    print -- "${(pr:$w::$t:)}"
+    print -- "${(pr:$w::$t:)}"
+)}
+
+function print-q() {
+    builtin print -- "${(qqqq)argv}"
+}
+
+alias f30='fds {0..30}'
+function fdc() {
+    function fdc_open() {
+        exec {ifd}<&0 {ofd}>&1 {efd}>&2
+    }
+    function fdc_close() {
+        exec {ifd}>&- {ofd}>&- {efd}>&-
+    }
+    function fdc_show() {
+        for id in {i,o,e}fd; do
+            
+            if [[ -v $id ]]; then
+            
+            fi
+        done
+#        [[ -v ifd ]] && [[ -v ofd ]] && [[ -v efd ]]
+    }
+    
+    typeset -ig {i,o,e}fd
+    typeset cmd
+    if [[ $# -eq 0 ]]; then
+        cmd='show'
+    else
+        cmd=$1
+        shift
     fi
-    [[ $# -gt 0 ]] && export format+="$argv"
     
-    export format="${format}${argv:+${format}${argv}}"
-    
+    if ! fn isdef ${0}_${cmd}; then
+        error err
+    fi
+    OK ok
+}
+
+function linesf() {
+#    print -l -- $@
+#    print $#
+#touch ~/var/TTT
+    typeset -i fd
+    exec {fd}<&0
+    while [[ -n $1 ]]; do
+        print -- "Arg 1 is $1"
+        awk -v SR=$1 '(NR==SR) {print}'
+        shift
+    done
+    exec {fd}<&-
+#
+#    () {
+#        print -- $# args
+#        while [[ -n $1 ]]; do
+#            if [[ $1 =~ '^[0-9]+$' ]]; then
+#                awk "(NR == $1) {print}"
+#            fi
+#            shift
+#        done
+#    } <&0 $argv # >~/var/TTT
+}
+
+
+
+#
+function lorem() {
     typeset -a lines=(
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
         'Suspendisse nec convallis neque, eget interdum diam.'
@@ -304,10 +405,9 @@ function lorem() {(
         'Cras congue orci vel aliquam fermentum.'
         'Ut quis metus quis mauris dapibus cursus ac vitae leo.'
     )
-    builtin print ${=format} -- $lines
-#    printf '%s\n' "$text"
-#    printf "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse nec convallis neque, eget interdum diam. Donec sit amet arcu faucibus, lobortis lacus sed, molestie massa. Vestibulum eget cursus ligula. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Integer sit amet diam rutrum, dictum eros at, dignissim orci. Nullam pulvinar pellentesque mollis. Etiam ultrices fermentum augue, vitae imperdiet mi. Nullam nec lectus nec sem eleifend pharetra. Cras congue orci vel aliquam fermentum. Ut quis metus quis mauris dapibus cursus ac vitae leo.\n"
-)}
+    set -A fmt ${fmt} ${argv}
+    builtin print ${fmt} -- "${(@)lines}" >&1
+}
 
 # ls format
 function datels() {
@@ -434,7 +534,7 @@ function test-cdp() {
     done
     print-line
     
-    \cd $dir
+    cd $dir
 }
 
 
@@ -475,41 +575,41 @@ function fdw() {
     return $?
 }
 
-
-fdc_foo() {
-    count=$1
-    repeat $count; do
-        local delay=$(( $RANDOM % 10 ))
-        if [[ $delay -gt 2 ]]; then
-            print -P "Error: sleep delay is too long: i=%F{3}${delay}%f" >&2
-        else
-            print -P "OK: sleeping for i=%F{3}${delay}%f seconds..." >&1
-            sleep ${delay:-0}
-        fi
-    done
-}
-
-function fdc() {
-    exec 3<&0
-    exec 4>&1
-    exec 5>&2
-    count=${1:-1}
-    result=$( { time (fdc_foo $count 1>&4 2>&5); } 2>&1 )
-    
-    read -t -u0 args0;
-    red "FD0: $args0"
-    echo
-    read -t -u3 args3;
-    blue "FD3: $args3"
-    echo
-    
-#    cat <&3
-#    cat <&4
-#    cat <&5
-    
-    exec 3>&- 4>&- 5>&-
-    redbg "Result = $result"
-}
+#
+#fdc_foo() {
+#    count=$1
+#    repeat $count; do
+#        local delay=$(( $RANDOM % 10 ))
+#        if [[ $delay -gt 2 ]]; then
+#            print -P "Error: sleep delay is too long: i=%F{3}${delay}%f" >&2
+#        else
+#            print -P "OK: sleeping for i=%F{3}${delay}%f seconds..." >&1
+#            sleep ${delay:-0}
+#        fi
+#    done
+#}
+#
+#function fdc() {
+#    exec 3<&0
+#    exec 4>&1
+#    exec 5>&2
+#    count=${1:-1}
+#    result=$( { time (fdc_foo $count 1>&4 2>&5); } 2>&1 )
+#
+#    read -t -u0 args0;
+#    red "FD0: $args0"
+#    echo
+#    read -t -u3 args3;
+#    blue "FD3: $args3"
+#    echo
+#
+##    cat <&3
+##    cat <&4
+##    cat <&5
+#
+#    exec 3>&- 4>&- 5>&-
+#    redbg "Result = $result"
+#}
 
 
 
@@ -536,6 +636,19 @@ function print-debug() {
                     "${(%)label}" "${(%)length}" "${(%)value}"
 }
 
+
+# Print
+function print-br() {(
+    # Number of line breaks to print
+    typeset n=${1:-0}
+    if [[ ! $n =~ '^[1-9][0-9]*$' ]]; then
+        error -1 'invalid number of line breaks: $n.'
+    fi
+    # Default line break is '\n'
+    typeset linebr="${2:-\n}"
+    repeat $n { printf '%b' "$linebr" }
+    return 0
+)}
 
 
 
@@ -671,7 +784,7 @@ function dgst() {
 function randbytes() {
     local n_bytes=${1:-1}
     local output_file=${2:-/dev/stdout}
-    builtin print "Writing ${n_bytes} random bytes to ${output_file}."
+    builtin print "Writing ${n_bytes} random bytes to ${output_file}." >&2
     /bin/dd if=/dev/random of=$output_file bs=8 count=$n_bytes 2>/dev/null
 }
 function enc() {
@@ -915,6 +1028,7 @@ function thesaurus() {
     /usr/bin/open -a 'Safari' -- $url
 }
 
+
 function word() {
     function word_thesaurus() {
         base='https://www.thesaurus.com/browse'
@@ -950,6 +1064,48 @@ function word() {
 }
 
 
+function rand() {
+    function rand_str() {
+        local n_bytes=${1:-1}
+        local output_file=${2:-/dev/stdout}
+        {
+            builtin print -- \
+                    "Writing ${n_bytes} random bytes" \
+                    "to ${output_file}." \
+                    >&2
+            /bin/dd  if=/dev/random  \
+                     of=$output_file \
+                     bs=8            \
+                     count=$n_bytes  \
+                     2>/dev/null
+        }
+    }
+    
+    case $# in
+        0)  fn print-commands $0
+            return 22
+        ;;
+        1)  error -1 ' is not specified.'
+            
+        ;;
+    esac
+    
+    if [[ $# -lt 2 ]]; then
+        error -1 'Bad input.'
+    fi
+    typeset cmd=$1
+    shift
+    
+    
+    typeset value
+    if [[ ${+functions[${0}_${cmd}]} -eq 0 ]]; then
+        error -127 'Command not found: $cmd.'
+    fi
+    ${0}_${cmd} "$@"
+    return $?
+}
+
+
 # Create a .webloc shortcut file
 function webloc() {
     if [[ -z $1 ]]; then
@@ -968,9 +1124,21 @@ function webloc() {
 #    https://coursys.sfu.ca/history
 }
 
+
+# Initialize an array of letters A-Z and a-z.
+#
+#   1) ABC
+#       echo $ABC[A]    # Letter 'A' is 'Alpha'
+#       echo $ABC[a]    # alpha
+#       echo $#ABC      # 52
+#   2) assign='X y z' ABC
+#       echo $X         # Letter 'X' is 'X-ray'
+#       echo $y         # yankee
+#       echo $z         # zulu
 function ABC() {
     # Read phonetic spellings (words) from file
     typeset alphabet=${1:-"$zterm/share/misc/phonetic-alphabet.txt"}
+    typeset abc_file=~/var/commands/abc.spellings
     # Set result to associative array (default name: ABC)
     typeset id=${2:-$0}
     typeset -Ag $id
@@ -979,16 +1147,77 @@ function ABC() {
     local word
     local -l lowercase
     local -u uppercase
-    {
+    # Set variables
+    () {
         while read -t word; do
             lowercase="${word[1]}"
             uppercase="${word[1]}"
             ABC[$lowercase]="${(L)word}"
             ABC[$uppercase]="Letter '${uppercase}' is '${word}'"
-        done <$alphabet &&
-        printf 'Associative array'
-    }
+        done <&0
+    } <$alphabet
+    # Save ABC to a file
+    () {
+        print -l -- ${(kv)ABC} >&1
+    } >$abc_file
+    # Quickly assign variables. E.g., if assign is 'a b',
+    # then a is set to ABC[a] and b is set to ABC[b]
+    export assign
+    () {
+        for var in $argv; do
+            typeset -ag $var
+            set -A $var ${(kv)ABC[$var]}
+        done
+        print -P -- "Assigned %F{2}${#argv}%f variables"
+    } $=assign
     return 0
+}
+
+
+
+function setget() {
+    unset optlist
+    typeset -A optlist
+    
+    typeset -ag opt_strings val_strings
+    opt_strings=(
+        '-f a -o x'
+        '-f a b'
+        '-o x y'
+        '-f a b c -o x y z'
+        '-f a'
+        '-o x'
+        '-o z:12345'
+    )
+    val_strings=(
+        '-a -x 100'
+        '-a -b'
+        '-x valX -y valY'
+        '-a -b -c -x x1 -y y2 -z z3'
+        '-a'
+        '-x valX'
+        '-notz abcde'
+    )
+    
+    
+    
+    local set_array_opt='-A optlist'
+    opt_flags=(${set_array_opt:^opt_strings})
+    
+    local rest='and1 other2 args3'
+    set +A val_strings ${^val_strings}' REST '${rest}
+    
+    for str val in ${opt_strings:^val_strings}; do
+        print -- "get-arguments "$(red $str)" -- "$(green $val)"\n\n"
+        typeset -A optlist
+        optlist=()
+        set -- ${=val}
+        get-arguments -A optlist ${=str} -- $argv
+        
+        printf "<<-$(magenta '%s')-  |  -$(blue '%s')->>\n" "$val" "get-arguments -A optlist ${str} -- $argv"
+        print-var optlist @
+        tput setab 2; print-line tput sgr0;
+    done
 }
 
 
@@ -1068,6 +1297,9 @@ function get-arguments-t() {
     echo
 }
 
+
+
+
 function cat() {
     if [[ ! -v cc ]]; then
         /bin/cat ${argv}
@@ -1099,3 +1331,139 @@ function cat() {
 #    /bin/cat <$input
 #    /usr/bin/tput sgr0
 #)}
+
+
+
+
+#
+#
+#function iff() {
+#    function iff_result() {
+#        eval "[[ $argv ]]"
+#        print $?
+#    }
+#    
+#    local cond res
+#    for cond in $argv; do
+#        let res=$(iff_result $cond)
+#        printf 'if [[ %s ]]:  %s\n' "${cond}" "${res}"
+#    done
+#    return 0
+#    
+#    
+#    typeset condition
+#    for condition in $argv; do
+#        eval "[[ ${condition} ]]; result=\$?"
+#        
+##        let bool=$(iff_result $1)
+#        print $bool
+#        printf 'if [[ %s ]]:  %s' "${condition}" $bool
+#        shift
+#    done
+##    [[ $argv ]]
+#}
+
+
+    # Format files
+#    typeset -A iofmt_files
+#    iofmt_files=( [labels]="$zterm/etc/iofmt/labels" )
+#    /usr/bin/touch -- ${(k)iofmt_files}
+    
+    #
+
+#typeset -A arrxyz
+#arrxyz=( [x1]=100 [y1]=500 )
+
+function all-prompts() {
+    
+    typeset -A result
+    result=()
+    
+    typeset -a list
+    list=($(< $zterm/etc/prompt-sequences.txt))
+    
+    
+    typeset file="$zterm/etc/prompt-sequences.txt"
+    typeset reset='\e[0m'
+    
+    () {
+        while [[ -n $1 ]]; do
+            cmd=(print -P "'%${1}' ")
+            value=$($cmd)
+            result+=("$cmd" "${(Q)value}${reset}")
+            shift
+        done
+    } $(<$file)
+    
+    
+#    for seq in $list; do
+#        cmd=(print -P "'%${seq}' ")
+#        value=$($cmd)
+#        result+=("$cmd" "${(Q)value}${reset}")
+#    done
+#
+#
+#    () {
+#        while [[ -n $1 ]]; do
+#        print $1
+#        shift
+#        done
+#    } <(<$zterm/etc/prompt-sequences.txt)
+    
+    print -aC2 -- ${(kv)result}
+    return 0
+}
+
+export texpr="100 -eq 100"
+export fexpr="\! -n 'not empty'"
+
+
+function get_exit_code() {
+    typeset -i ofd
+    exec {ofd}>/tmp/EXIT_CODE
+    # Run a command with arguments
+    typeset cmd=$1
+    shift
+    (eval '$cmd $argv' &>/dev/null)
+    # Get the exit code
+    typeset exit_code=$?
+    
+    
+    
+#    $( $cmd $argv )
+    print -- "Exit code: $exit_code" >&$ofd
+    print -P -- "Written to %Bfd $ofd%b by %m"
+    exec {ofd}>&-
+#    print-array this
+}
+
+
+
+
+function findf() {
+    typeset name=$1
+    typeset -a dirs=($PWD)
+    () (
+        for d in $dirs; do
+            ( /usr/bin/cd -- $d &&
+              /usr/bin/find . -name $name )
+        done
+    ) 2>/dev/null
+}
+
+
+
+
+
+function mapf() {
+    zmodload zsh/mapfile
+    typeset -ag map
+    typeset file=$1
+    map=(${(@f)${mapfile[$file]%$'\n'}})
+    pv map file @
+    
+    m1=(${(@f)${mapfile[$file]%\n}})
+    m2=(${${mapfile[$file]%$'\n'}})
+    m3=(${(@f)"${mapfile[$file]%$'\n'}"})
+    pv m1 m2 m3
+}

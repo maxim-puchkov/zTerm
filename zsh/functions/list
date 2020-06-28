@@ -9,76 +9,111 @@
 
 # <#Function description#>
 function list() {
-    trap "
-        unfunction -m '${0}_*';
-        unfunction -m '__${0}_*';
-    " EXIT
-    
-    function __list_ls() {
-        typeset flags=$1
-        shift
-        script -q /dev/null command ls ${=flags} "$@"
-    }
-    function __list_grep() {
-        colorize_grep 'b_green' \
-            egrep --color='always' "$@"
-    }
-    
-    ## tc: time of creation ##
-    function list_tc() {
-        print_h1 'File creation time'
-        __list_ls -lFGHTUhrt "$@" |
-            __list_grep --regexp $time_regex
-    }
-    ## tch: time of change ##
-    function list_tch() {
-        print_h1 'File change time'
-        __list_ls -lFGHTchrt "$@" |
-            __list_grep --regexp $time_regex
-    }
-    ## tm: time of modification ##
-    function list_tm() {
-        print_h1 'Modification time'
-        __list_ls -lFGHThrt "$@" |
-            __list_grep --regexp $time_regex
-    }
-    ## ta: time of access ##
-    function list_ta() {
-        print_h1 'File access time'
-        __list_ls -lFGHThrtu "$@" |
-            __list_grep --regexp $time_regex
-    }
-    
-    ## f: file flags ##
-    function list_f() {
-        print_h1 'File flags'
-        () {
-            local flags=($(awk '{ print $5; }' "$1"))
-            shift
-            __list_ls -lFGHOh "$@" |
-                __list_grep --regexp " (${(j:|:)flags}) "
-        } =( command ls -lFGHOh "$@" ) "$@"
-    }
-    ## S: file size ##
-    function list_S() {
-        print_h1 'File size'
-        __list_ls -lFGHShr "$@" |
-            __list_grep --regexp '([0-9][\.0-9]*)[BKMG]'
-    }
-    
-    ## all: all files ##
-    function list_all() {
-        print_h1 'All files'
-        __list_ls -lFGHah "$@"
-    }
-    
-    
+    default base_options 'BFGHhk'
     default time_regex $(< $zdot/etc/ls-time.regex)
     
-    typeset cmd=${1:-'all'}
-    if ! isdef ${0}_${cmd}; then
-        error -127 "Command not found: %F{1}${cmd}%f."
-    fi
-    shift
-    ${0}_${cmd} "$@"
+    (
+        function header() {
+            builtin print -P -- "%B%K{11}%F{16} ${(U)argv}%b\t" \
+                "(ls${:- ${flags}}) %k%f" >&2
+        }
+        function do_ls() {
+            typeset flags=$1
+            shift
+            script -q /dev/null command ls ${=flags} "$@"
+        }
+        function do_grep() {
+            colorize_grep 'b_green' \
+                egrep --color='always' "$@"
+        }
+        
+        ## tc: time of creation ##
+        function list_tc() {
+            flags="-lTUrt${base_options}"
+            header 'File creation time'
+            do_ls $flags "$@" |
+                do_grep --regexp $time_regex
+        }
+        ## tch: time of change ##
+        function list_tch() {
+            flags="-lTcrt${base_options}"
+            header 'File change time'
+#            do_ls -lFGHTchrt "$@" |
+            do_ls $flags "$@" |
+                do_grep --regexp $time_regex
+        }
+        ## tm: time of modification ##
+        function list_tm() {
+            flags="-lTrt${base_options}"
+            header 'Modification time'
+#            do_ls -lFGHThrt "$@" |
+            do_ls $flags "$@" |
+                do_grep --regexp $time_regex
+        }
+        ## ta: time of access ##
+        function list_ta() {
+            flags="-lTrtu${base_options}"
+            header 'File access time'
+#            do_ls -lFGHThrtu "$@" |
+            do_ls $flags "$@" |
+                do_grep --regexp $time_regex
+        }
+
+        ## f: file flags ##
+        function list_f() {
+            flags="-lO${base_options}"
+            header 'File flags'
+            () {
+                local awk_flags=($(awk '{ print $5; }' "$1"))
+                shift
+                do_ls $flags "$@" |
+                    do_grep --regexp " (${(j:|:)awk_flags}) "
+            } =( command ls $flags "$@" ) "$@"
+        }
+        ## S: file size ##
+        function list_S() {
+            flags="-lSr${base_options}"
+            header 'File size'
+            do_ls -lFGHShr "$@" |
+                do_grep --regexp '([0-9][\.0-9]*)[BKMG]'
+        }
+        
+        ## all: all files ##
+        function list_all() {
+            flags="-la${base_options}"
+            header 'All files'
+            do_ls $flags "$@"
+        }
+        
+        
+        
+        typeset -A optlist
+        autoload -Uz get-arguments
+        get-arguments -A optlist -f 'h' -- $argv
+        
+        if [[ $optlist[-h] -eq 1 ]]; then
+            fn print-commands $0
+            return 0
+        fi
+        
+        
+        # When 'list' is run without arguments,
+        # run the 'list all' command
+        typeset cmd
+        if [[ -n $1 ]]; then
+            cmd=$1
+            shift
+        else
+            cmd='all'
+        fi
+        
+        # Check that command is defined
+        if [[ ${+functions[${0}_${cmd}]} -ne 1 ]]; then
+            error -127 'Command not found: $cmd.'
+            fn print-commands $0
+        fi
+        ${0}_${cmd} "$@"
+    )
+    
+    return $?
 }

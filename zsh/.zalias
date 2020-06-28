@@ -7,11 +7,11 @@ alias -g noerr='2>/dev/null'  # redirect stderr
 alias -g 2NIL='2>/dev/null'
 alias -g quiet='&>/dev/null'  # redirect stdout and stderr
 alias -g NIL='&>/dev/null'
-# 'if [[ ... ]] T'
-alias -g T='; then print -P -- $TRUE; else print -P -- $FALSE; fi;'
-# 'for x in $array PX'
-# 'while read x PX'
-alias -g PX='; do print-var x; done;'
+# 'if [[ ... ]] _T'
+alias -g _T='; then print -P -- $TRUE; else print -P -- $FALSE; fi;'
+# 'for x in $array _F'
+# 'while read x _F'
+alias -g _F='; do print-var x; done;'
 
 
 
@@ -29,13 +29,11 @@ alias lock='command chflags uchg'
 alias unlock='command chflags nouchg'
 
 # Command 'cp'
-alias cp='command cp -i'
+alias cp='/bin/cp -i'
 
 # Builtin 'echo'
 alias e='builtin echo'
-alias E='b_redbg'
-
-alias E='() ( print -P -- "$argv"; )'
+alias E='() ( print -P -- "%K{1}%F{15}%B${argv}%b%f%k"; )'
 
 # Builtin 'functions'
 alias fns='functions'
@@ -57,12 +55,15 @@ alias pyg='pygmentize'
 alias q='builtin exit'
 
 # Command 'find'
-alias ffind='command find -L'
+alias ffind='/usr/bin/find -L'
 
 # Command 'git'
 alias gs='git status'
 alias grs='git restore --staged'
-alias gt='() { cd "$zterm"; git status; }'
+alias motherfuck='() { \
+    cd "$zterm" \
+    git status \
+};'
 
 # Command 'grep'
 alias gr='grep'
@@ -83,7 +84,9 @@ alias o='open "$PWD"'
 alias xopen='open -a Xcode'
 alias textopen='open -a TextEdit'
 alias webopen='open -a Safari'
-alias scriptopen='open -a "Script Editor"'
+alias scriptopen='
+open -a "Script Editor"
+'
 alias vb='open -a VirtualBox'
 
 # Command 'openssl'
@@ -121,13 +124,14 @@ alias ts='typeset'
 #alias array=
 function array() {
     typeset id=$1
-    unset $id
-    typeset -ag $id
+    unset $id && typeset -ag $id
     shift
     set -A $id $argv
-    print -Pl -- "%F{4}%U${id}%u%f[$#] = {" \
-                 "  ${(j:, :)argv}" \
-                 "}" >&2
+    if [[ ${(P)id} -ne 0 ]]; then
+        print -Pl -- "%F{4}%U${id}%u%f[$#] = {" \
+                     '  '${(j:, :)argv} \
+                     "}" >&2
+    fi
 }
 
 #MARK: - Custom Commands
@@ -150,7 +154,7 @@ alias cfd='cd -- "$(pfd)"'
 
 # Print
 alias pv='print-var'
-alias pv@='print-var @'
+alias pv@='print-var -v @'
 alias pvt='print-var -t'
 alias pfs='print-fstack'
 alias pdb='print-debug'

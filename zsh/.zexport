@@ -23,7 +23,7 @@ export zplug="$ZDOTDIR/.oh-my-zsh/custom/plugins"
 export zfunc="$ZDOTDIR/functions"
 export zsitefunc="$ZDOTDIR/site-functions"
 export zdisabled="$ZDOTDIR/disabled"
-export zcompdir="$ZDOTDIR/completions"
+export zcomp="$ZDOTDIR/completions"
 export ztest="$ZDOTDIR/Tests"
 
 
@@ -55,22 +55,3 @@ export -H FALSE=${(%):-'%F{1}False ✘%f'}
 
 #export LDFLAGS='-L/usr/local/opt/openssl@1.1/lib'
 #export CPPFLAGS='-I/usr/local/opt/openssl@1.1/include'
-
-error_color=9
-logf_color=4
-
-# Colored symbols and labels
-LB='\e[1;31m'{'\e[0m'
-RB='\e[1;31m'}'\e[0m'
-undefined_label=$'\033\[33m'undefined$'\033\[39m'
-null_label=$'\033\[31m'null$'\033\[39m'
-not_set_label=$'\033\[31m''variable is not set'$'\033\[39m'
-
-
-typeset -AH labels
-() {
-    labels=(
-        [undefined]="%F{1}null%f"
-        [unset]=$'\033\[31m''unset'$'\033\[39m'
-    )
-}

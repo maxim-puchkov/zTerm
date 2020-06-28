@@ -18,15 +18,21 @@ function syntaxf() {
 #    fi
 #    # Placeholder label
     
+    
+#    function
     typeset -A optlist
-    if zmodload -e zsh/zutil; then
-        zparseopts -D -E -A optlist c:
-    else
-        warning 'Ignoring options.'
-    fi
+    get-arguments -A optlist -o c:4 -- $argv
     
     
+    local k v
+    for k v in ${(kv)optlist}; do
+        if [[ $k =~ '^[-]' ]]; then
+            k=${k#-}
+        fi
+        print -- "$k is set to $v"
+    done
     
+    return 0
     
 
 #    print-var optlist @

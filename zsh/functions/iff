@@ -1,0 +1,106 @@
+#!/bin/zsh
+
+#  iff
+#  Z-Function (74)
+#
+#  Created by Maxim Puchkov on 2020-06-25.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+#    labels=([0]='%F{1}false%f' [1]='%F{2}true%f')
+
+# Evaluate and display the result of conditional expressions.
+function iff() {
+    typeset -A truth_values
+    truth_values=( [0]='%F{2}true%f'
+                   [1]='%F{1}false%f' )
+    
+    ( eval '[[' ${argv} ']]' &>/dev/null )
+    typeset -i expr_code=$?
+    typeset expr_value=${truth_values[$expr_code]}
+    
+    if [[ -t 1 ]]; then
+        print -P -- "expression %F{4}[[ ${argv} ]]%f is %B${expr_value}%b"
+    else
+        printf '%s\n' "$expr_value"
+    fi
+}
+
+#function iff() {
+#    typeset -A
+#    labels=( [0]=$FALSE [1]=$TRUE )
+#
+#    typeset expr
+#
+#
+#
+#    # Evaluate an expression and set result to
+#    # If the expression is true, set
+#    function iff_eval() {
+#        builtin eval "[[ ${argv} ]]" && print 0 || print 1
+#    }
+#
+#    # Print the result of conditional expression
+#    function iff_print() {(
+#        typeset value_label=${labels[$2]}
+#        print -P -- "expression [[ %F{4}$1%f ]] is ${value}"
+#    )}
+#
+#
+#    if [[ $# -eq 0 ]]; then
+#        error -1 'No input'
+#    fi
+#
+##    if [[ $# -eq 1 ]]; then
+##        unset -f ${0}_print
+###        typeset -f ${0}_print() {  }
+##    fi
+#
+#    while [[ -n $1 ]]; do
+#        ${0}_print $1 $(${0}_eval $1)
+#
+#        shift
+#    done
+#
+##    case $# in
+##        0)  error -1 'No input'
+##        ;;
+##        1)  ${0}_eval $1
+##            print $result
+##        ;;
+##        *)
+##        ;;
+##    esac
+#
+#
+#    return 0
+#
+#    function iff_eval_and_print() {
+#        iff_eval $1
+#        print -P -C2 -- "if [[ %F{4}${1}%f ]]:" "${result}"
+#
+#    }
+#
+#
+#    case $# in
+#        1)  iff_eval_and_print $1 ;;
+#        *)  while [[ -n $1 ]]; do
+#                iff_eval_and_print $1
+#                shift
+#            done
+#        ;;
+#    esac
+#    return 0
+#
+#
+#
+#    local n result
+#    let n=1
+#
+#    while [[ -n $1 ]]; do
+#        eval "[[ $1 ]]"
+#        result=$?
+#
+#        shift
+#        let n=$n+1
+#    done
+#}

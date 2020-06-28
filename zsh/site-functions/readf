@@ -9,31 +9,58 @@
 
 # Read an input file into an array so that N'th line of the file
 # is the N'th element of the array.
+#
+# Optiins:
+## readf -e PATTERN: exclude matching lines ##
 function readf() {
+    typeset -i input_fd=0
+#    if [[ $optlist[-t] -eq 1 ]]; then
+        if [[ -t $input_fd ]]; then
+            error -2 'Cannot read from $input_fd'
+        fi
+#    fi
+    
     #MARK: - Options
     autoload -Uz get-arguments
     typeset -A optlist
-    get-arguments -f 'v,s' -o 'e' -- ${argv}
+    get-arguments -A optlist \
+                  -f 'v' 's' 't' \
+                  -o 'e' \
+                  -- ${argv}
     
+    # Initialzie variables
     typeset array_id=${1:-'array'}
-    ## -v: be verbose ##
+    typeset input_file=/dev/stdin
     typeset output_file=/dev/null
+    ## readf -v: be verbose ##
     if [[ -n $optlist[-v] ]]; then
         output_file=/dev/stdout
     fi
     
+    
     #MARK: - Read File
     # Input file path
-    typeset input_file=/dev/stdin
+    
     # Read and store the input file in an array
     typeset -a file_contents
+    typeset -i line_count
+#    typeset -a patterns
+#    patterns=('s/^[\h\v]+//g' 's/[\h\v]+$/\n/g')
     () {
-        file_contents=("${(@f)$(< $1)}")
-    } =(LANG=C sed -E -e 's/^[[:space:]]*//g' \
-               -e 's/[[:space:]]*$//g' \
-               < $input_file 2>/dev/null)
-    # Length of array is number of lines in file
-    typeset line_count=${#file_contents}
+        file_contents=(${(@f)"$(<$1)"})
+        line_count=${#file_contents}
+        if [[ $line_count -eq 0 ]]; then return 1; fi
+    } <( /usr/bin/perl \
+            -p -e 's/^[\h\v]+//g;  s/[\h\v]+$/\n/g;' \
+            <$input_file )
+#    patterns=('s/^[\h\v]+//g' '/[\h\v]+$/\n/g')
+#    () {  file_contents=(${(@f)"$(<$1)"})
+#          line_count=${#file_contents}
+#          if [[ $line_count -eq 0 ]]; then return 1; fi
+#    } <(  /usr/bin/perl -p -e    \
+#             ${(j:; :)patterns}  \
+#             <$input_file  )
+    
     
     ## readf -s: skip empty lines ##
     if [[ -n $optlist[-s] ]]; then
@@ -45,16 +72,18 @@ function readf() {
     fi
     
     
-    #MARK: - Store File in Array
+    #MARK: - Save file contents in an array
     unset $array_id
     typeset -ag $array_id
     set -A $array_id $file_contents
     
-    
     #MARK: - Log
     autoload logf
-    logf 'read ${line_count} lines from ${input_file}'\
-         'into ${array_id}.' >$output_file
+    logf 'read ${line_count} lines'\
+         'from ${input_file}' \
+         'into ${array_id}.' \
+         1>$output_file \
+         2>&1
     
     return 0
 }
