@@ -17,8 +17,7 @@
 #     and continue without returning any value.
 #       warning  'description...'
 #       error -0 'description...'
-function error() {
-#    setopt localtraps
+function error() {(
     #MARK: - Data
     # Error message
     typeset message
@@ -29,19 +28,20 @@ function error() {
     typeset exit_code_label
     # Output format options
     typeset -i output_color=${error_color:-1}
+    typeset -i output_color_2=${warning_color:-3}
     typeset split_lines='false'
     typeset autocapitalize='true'
     typeset remove_trailing_space='true'
     typeset trailing_period='true'
     typeset highlight_variables='true'
+    typeset return_on_exit='true'
+    
+    
     
     
     #MARK: - Functions
     # Highlight all shell '$variables' in description
     function error-replace-variables() {
-        # Placeholder label
-#        typeset undefined_var_label
-#        undefined_var_label='%F{3}undefined%f'
         # Find and replace variables
         typeset find replace
         find='[$]([{(])?(([A-Za-z_][^ ]*)?[A-Za-z0-9!@#$%^&*=?_])([})])?'
@@ -50,18 +50,13 @@ function error() {
         message_desc=$(/usr/bin/sed -E -e "s/${find}/${replace}/g" <<< "${argv}")
     }
     
-    
-    
-    
     #MARK: Format
     # Title - text, color, and exit code
     function error-format-title() {
-        if [[ $exit_code -gt 0 ]]; then
+        if [[ $exit_code -ne 0 ]]; then
             message_title="%F{${output_color}}${prog}%f"
-            exit_trap="return ${exit_code};"
         else
-            message_title="%F{3}${prog}%f"
-            exit_trap='-'
+            message_title="%F{$output_color_2}${prog}%f"
         fi
         return 0
     }
@@ -73,10 +68,13 @@ function error() {
     # Description - capitalization, trailing period, highlight
     function error-format-description() {
         message_desc="${message_desc:-No description.}"
-        if [[ $autocapitalize == 'true' ]]; then
+        [[ $autocapitalize == 'true' ]] &&
             message_desc="${(C)message_desc[1]}${${message_desc:1}}"
-        fi
+#        if [[ $autocapitalize == 'true' ]]; then
+#            message_desc="${(C)message_desc[1]}${${message_desc:1}}"
+#        fi
         if [[ $remove_trailing_space == 'true' ]]; then
+            
             if [[ $message_desc[-1] == ' ' ]]; then
                 message_desc="${message_desc% *}"
             fi
@@ -108,11 +106,11 @@ function error() {
         return 0
     }
     # Format and print the error/warning message
-    function error-print() {
+    function error-format() {
         error-format-title
         error-format-description
         error-format-message
-        print -P -- "$message" >&2
+#        print -P -- "$message" >&2
         return 0
     }
     
@@ -140,8 +138,7 @@ function error() {
                     exit_code=$2
                     shift
                 else
-                    ( new_code=$2 \
-                    error -1 'exit code $new_code is invalid' )
+                    ( new_code=$2 error -1 'Exit code $new_code is invalid' )
                     return $?
                 fi
             ;;
@@ -153,10 +150,6 @@ function error() {
             -D|--plain-description)
                 error-plain-description
             ;;
-#            ## error -n,--null: try to silence output messages ##
-#            -n|--null)
-#                output_device=/dev/null
-#            ;;
             ## error -u,--usage: set title to 'Usage' ##
             -u|--usage)
                 error-plain-title
@@ -195,6 +188,8 @@ function error() {
             -H|--highlight)    highlight_variables='true'    ;;
             +H|--no-highlight) highlight_variables='false'   ;;
             
+            [-+]R|--(no-|)return) return_on_exit=$(boolopt $1 'true' 'false') ;;
+            
             # Stop parsing options
             *)  break ;;
         esac
@@ -203,9 +198,7 @@ function error() {
     [[ $1 == '--' ]] && shift
     
     
-    
-    
-    # Display name
+    # Set display name
     if [[ ! -v prog ]]; then
         prog=${funcstack[2]:-${(C)0}}
     fi
@@ -222,9 +215,11 @@ function error() {
     fi
     
     # Print and exit
-    error-print && trap "print -- \${argv:0}; $exit_trap" EXIT
-    
+    error-format
+    notify -P -- $message >&2
+    if [[ $return_on_exit == 'true' ]]; then
+        trap 'return '${exit_code}';' EXIT
+    fi
     unset -f -m "${0}-*"
-#    unset prog
     return $exit_code
-}
+)}

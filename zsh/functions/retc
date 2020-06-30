@@ -7,40 +7,60 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# Print return code(s) of the last command or pipe.
-function retc() {
-    # Last status codes
-    typeset -a last_pipestatus=(${pipestatus})
-    local length index value
-    length=${#last_pipestatus}
+# Print return code of the last command.
+function retc() {(
+    escseq() {
+        printf '\e[%dm' $1
+    }
+
+    let code=$?
     
-    # Set color of status code 0 to green; status
-    # codes greater than 0 - to red
-    index=1
-    while [[ $index -le $length ]]; do
-        value=${last_pipestatus[$index]}
-        value="%F{%(${value}?:2:1)}${value}%f"
-        # Underline the very last status code
-        if [[ $index -eq $length ]]; then
-            value="%U${value}%u"
-        fi
-        last_pipestatus[$index]=${(%)value}
-        index=$(( $index + 1 ))
-    done
+    dim=$(escseq 2)
+    color=$code
+    nocolor=39
+    nodim=$(escseq 9)
     
-    # Set message label and description
-    typeset label description
-    if [[ $length -eq 1 ]]; then
-        label='Status code'
-    else
-        label='Pipe status'
-    fi
-    description=${(j:, :)last_pipestatus}
-    
-    # Additional formatting when outputting to terminal
-    if [[ -t 1 ]]; then
-        label="%B${label}%b"
-    fi
-    
-    builtin print -P -- "${label}: ${description}."
-}
+    printf '%b--- Return code: %b%d%b ---%b\n' \
+        $dim $color $code $nocolor $nodim
+   return $code
+   
+#    print -P -- "--- Return code: %F{%(?.2.1)}%?%f ---"; #&& print "return $?"
+)}
+
+
+#function retc() {
+#    # Last status codes
+#    typeset -a last_pipestatus=(${pipestatus})
+#    local length index value
+#    length=${#last_pipestatus}
+#
+#    # Set color of status code 0 to green; status
+#    # codes greater than 0 - to red
+#    index=1
+#    while [[ $index -le $length ]]; do
+#        value=${last_pipestatus[$index]}
+#        value="%F{%(${value}?:2:1)}${value}%f"
+#        # Underline the very last status code
+#        if [[ $index -eq $length ]]; then
+#            value="%U${value}%u"
+#        fi
+#        last_pipestatus[$index]=${(%)value}
+#        index=$(( $index + 1 ))
+#    done
+#
+#    # Set message label and description
+#    typeset label description
+#    if [[ $length -eq 1 ]]; then
+#        label='Status code'
+#    else
+#        label='Pipe status'
+#    fi
+#    description=${(j:, :)last_pipestatus}
+#
+#    # Additional formatting when outputting to terminal
+#    if [[ -t 1 ]]; then
+#        label="%B${label}%b"
+#    fi
+#
+#    builtin print -P -- "${label}: ${description}."
+#}

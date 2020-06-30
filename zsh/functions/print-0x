@@ -1,13 +1,13 @@
 #!/bin/zsh
 
-#  printx
+#  print-0x
 #  devx
 #
 #  Created by admin on 2020-03-01.
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-function printx() {
+function print-0x() {
     # Get ASCII input
     local input="$*"
     if [[ -z "$input" ]]; then
@@ -17,6 +17,8 @@ function printx() {
         error 'No input.'
         return 2
     fi
+    
+    
     
     # Convert to hexadecimal
     local hex=''

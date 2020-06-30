@@ -33,3 +33,7 @@
 /usr/local/Terminal/zsh/functions/arg-mode
 /usr/local/Terminal/zsh/functions/lines
 /usr/local/Terminal/zsh/functions/iff
+/usr/local/Terminal/zsh/functions/readfile
+/usr/local/Terminal/zsh/functions/boolopt
+/usr/local/Terminal/zsh/functions/show-2
+/usr/local/Terminal/zsh/functions/cutline

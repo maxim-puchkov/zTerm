@@ -1,0 +1,14 @@
+#!/bin/zsh
+
+#  show
+#  Z-Function (77)
+#
+#  Created by Maxim Puchkov on 2020-06-30.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function show() {
+    
+    
+}

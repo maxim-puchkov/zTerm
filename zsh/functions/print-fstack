@@ -7,11 +7,16 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# Print function stack
-function print-fstack() {
-    typeset -a array
-    array=('%F{2}'${(aO)^funcstack}'%f')
-    typeset arrow='%F{7}->%f'
-    print -P -- ${(pj:$arrow:)array}
+# Print functions in order of execution (excluding itself).
+function print-fstack() {(
+    typeset -a fstack=(${(aO)funcstack:1})
+    typeset arrow='->'
+    
+    if [[ -t 1 ]]; then
+        arrow="%F{7}${arrow}%f"
+        set -A fstack '%F{2}'${^fstack}'%f'
+    fi
+    
+    print -P -- "${(pj:$arrow:)fstack}"
     return 0
-}
+)}

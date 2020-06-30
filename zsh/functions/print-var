@@ -9,35 +9,37 @@
 
 
 
-# print-var
-# Show type, length, value of shell variables
+# Function print-var:
+#   Show type, length, value of shell variables.
 #
 # Options:
 ## print-var -t:    print variable types only
 ## print-var -b:    brief output
 function print-var() {
-    print $#:$@
-    unsetopt localtraps
     # Exclude duplicates, rename '@' to 'argv'
     set -- ${(u)argv:/@/argv}
-    typeset -i argc=$#
-    # Raise error when variable name is not given
-    if [[ $argc -eq 0 ]]; then
-        error -1 'Enter at least one variable name.'
-        return 1
-    fi
-    
     
     # Get options
     typeset -A optlist
     autoload -Uz get-arguments
     get-arguments -A optlist --flags t b -- $argv
     
+    # Raise error when variable name is not given
+    typeset -i argc=$#
+    if [[ $argc -eq 0 ]]; then
+        error -1 'Enter at least one variable name.'
+        return 1
+    fi
    
     # Brief output
     if [[ $optlist[-b] -eq 1 ]]; then
         while [[ -n $1 ]]; do
-            print -P -- "%B%F{4}${1}%f%b = ${(P)1}" #>&$out_fd
+            if [[ -v $1 ]]; then
+                print -P -- "%B%F{4}${1}%f%b = ${(P)1}"
+                notify -- "%B%F{4}${1}%f%b = ${(P)1}"
+            else
+                (var_id=$1  warning 'variable $var_id is not set')
+            fi
             shift
         done
     else
@@ -75,47 +77,47 @@ function print-var() {
                 fi
                 
                 # Format variable value based on its type
-                typeset value_format=""
+                typeset __value_format=""
                 if [[ -z ${(P)var_id} ]]; then
-                    value_format="${null}"
+                    __value_format="${null}"
                 else
-                    unset value
+                    unset __value
                     case $type in
                         # Associative arrays: [key] = value
                         *"association"*)
-                            typeset -a value=(${(Pqkv)var_id})
-                            value_format="{"
-                            for index in {1..$#value..2}; do
-                                local k="${${(Q)value[$index]}:-$null}"
-                                local v="${${(Q)value[$(( $index + 1 ))]}:-$null}"
-                                value_format+="${array_join}[${k}] = %U${v}%u"
+                            typeset -a __value=(${(Pqkv)var_id})
+                            __value_format="{"
+                            for index in {1..$#__value..2}; do
+                                local k="${${(Q)__value[$index]}:-$null}"
+                                local v="${${(Q)__value[$(( $index + 1 ))]}:-$null}"
+                                __value_format+="${array_join}[${k}] = %U${v}%u"
                             done
-                            value_format+="\n}"
+                            __value_format+="\n}"
                         ;;
                         # Arrays: [index] = value
                         *"array"*)
-                            typeset -a value=(${(Pq)var_id})
-                            value_format="{"
+                            typeset -a __value=(${(Pq)var_id})
+                            __value_format="{"
                             for index in {1..$length}; do
-                                value_format+="${array_join}[${index}] = %U${${(Q)value[$index]}:-$null}%u"
+                                __value_format+="${array_join}[${index}] = %U${${(Q)__value[$index]}:-$null}%u"
                             done
-                            value_format+="\n}"
+                            __value_format+="\n}"
                         ;;
                         # Integers: value
                         *"integer"*)
-                            typeset value="${(@P)var_id}"
-                            value_format="%U${value}%u"
+                            typeset __value="${(@P)var_id}"
+                            __value_format="%U${__value}%u"
                         ;;
                         # Other: "value"
                         *)
-                            typeset value="${(@P)var_id}"
-                            value_format="\"%U${value}%u\""
+                            typeset __value="${(@P)var_id}"
+                            __value_format="\"%U${__value}%u\""
                         ;;
                     esac
                 fi
                 
                 # Print variable
-                print -P -- "${desc_format} = ${value_format}"
+                print -P -- "${desc_format} = ${__value_format}"
             done
         )' EXIT
     fi

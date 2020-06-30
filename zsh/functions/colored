@@ -47,5 +47,5 @@ function colored() {
                     "$@"
             ;;
     esac
-    return 0
+    return $?
 }

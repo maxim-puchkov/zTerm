@@ -9,10 +9,50 @@
 
 # <#Function description#>
 function zman() {
-    man_zsh=( ${(u)$(man -aw 'zsh*'):t:r} )
-    print -l $man_zsh
+    list=(
+        zsh zshroadmap zshmisc zshexpn zshparam
+        zshoptions zshbuiltins zshzle zshcompwid
+        zshcompsys zshcompctl zshmodules zshcalsys
+        zshtcpsys zshzftpsys zshcontrib zshall
+        zsh-lovers zshdb
+    )
+#    man_zsh=( ${(u)$(man -aw 'zsh*'):t:r} )
+#    print -l $man_zsh
+    
+    
+#    print-line
+#    print -l $list
+    
+    
     if [[ $# -eq 0 ]]; then
-        
-        return 0
+        local header='Z shell manual sections'
+        builtin print -Pl -x2 -- "%U%B${header}%b%u" '\t%F{4}'${^list}'%f'
     fi
+    
+    () {
+        
+    }
+    
+    
+    () {
+        echo $?
+    } < <(/usr/bin/man ${=argv} 2>&1)
+    
+#    if ( >/dev/null); then
+        
+#    fi
+    
+#    if [[ ]]
+    
+#    man ${=argv}
+    
+    return 0
 }
+
+#
+#function zman() {
+#    if [[ $# -eq 0 ]]; then
+#
+#        return 0
+#    fi
+#}
