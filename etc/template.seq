@@ -37,3 +37,4 @@
 /usr/local/Terminal/zsh/functions/boolopt
 /usr/local/Terminal/zsh/functions/show-2
 /usr/local/Terminal/zsh/functions/cutline
+/usr/local/Terminal/zsh/functions/splitstr

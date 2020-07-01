@@ -22,7 +22,7 @@ function print-var() {
     # Get options
     typeset -A optlist
     autoload -Uz get-arguments
-    get-arguments -A optlist --flags t b -- $argv
+    get-arguments -A optlist --flags t b 1 -- $argv
     
     # Raise error when variable name is not given
     typeset -i argc=$#

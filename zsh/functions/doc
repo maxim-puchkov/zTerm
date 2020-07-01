@@ -29,7 +29,7 @@ function doc() {
                 link="$2"
                 if  [[ -n $name ]] && [[ -n $link ]] &&
                     [[ ${+doc_links[$name]} -eq 0 ]]; then
-                    printf '%s %s' "$1" "$2" >> $doc_links_file
+                    printf '%s %s\n' "$1" "$2" >> $doc_links_file
                     logf 'DocLink successfully added: $name -> $link.'
                     return 0
                 else

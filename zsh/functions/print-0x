@@ -7,14 +7,18 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-function print-0x() {
-    # Get ASCII input
-    local input="$*"
-    if [[ -z "$input" ]]; then
-        read input
+function print-0x() {(
+    if [[ -z $argv ]]; then
+        
     fi
-    if [[ -z "$input" ]]; then
-        error 'No input.'
+
+    # Get ASCII input
+    local ascii="$*"
+#    if [[ -z "$ascii" ]]; then
+#        read ascii
+#    fi
+    if [[ -z "$ascii" ]]; then
+        error 'No ascii.'
         return 2
     fi
     
@@ -22,7 +26,11 @@ function print-0x() {
     
     # Convert to hexadecimal
     local hex=''
-    hex=$( ascii2hex.py "$input" 2> /dev/null )
+    hex=$( python -c '\
+        ascii="'$ascii'"; \
+        hex=bytes.hex(ascii.encode()); \
+        print(hex);' )
+#    hex=$( ascii2hex.py "$ascii" 2> /dev/null )
     
     if [[ -z $hex ]]; then
         return 1
@@ -30,4 +38,4 @@ function print-0x() {
     
     printf '%s' "$hex"
     return 0
-}
+)}

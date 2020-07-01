@@ -70,9 +70,6 @@ function error() {(
         message_desc="${message_desc:-No description.}"
         [[ $autocapitalize == 'true' ]] &&
             message_desc="${(C)message_desc[1]}${${message_desc:1}}"
-#        if [[ $autocapitalize == 'true' ]]; then
-#            message_desc="${(C)message_desc[1]}${${message_desc:1}}"
-#        fi
         if [[ $remove_trailing_space == 'true' ]]; then
             
             if [[ $message_desc[-1] == ' ' ]]; then
@@ -216,10 +213,15 @@ function error() {(
     
     # Print and exit
     error-format
-    notify -P -- $message >&2
-    if [[ $return_on_exit == 'true' ]]; then
-        trap 'return '${exit_code}';' EXIT
-    fi
-    unset -f -m "${0}-*"
+    print -P -- $message >&2
+#    if [[ $return_on_exit == 'true' ]]; then
+#        print trap 'exit '${exit_code}';' EXIT
+#        trap 'return '${exit_code}';' EXIT
+#    fi
+    
     return $exit_code
-)}
+)
+    typeset -i code=$?
+    trap '{return '$code'}' EXIT
+    return $code
+}
