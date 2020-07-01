@@ -7,10 +7,10 @@ alias -g noerr='2>/dev/null'  # redirect stderr
 alias -g 2NIL='2>/dev/null'
 alias -g quiet='&>/dev/null'  # redirect stdout and stderr
 alias -g NIL='&>/dev/null'
+
 # 'if [[ ... ]] _T'
 alias -g _T='; then print -P -- $TRUE; else print -P -- $FALSE; fi;'
-# 'for x in $array _F'
-# 'while read x _F'
+# 'for x in $array _F', 'while read x _F'
 alias -g _F='; do print-var x; done;'
 
 
@@ -32,7 +32,7 @@ alias unlock='command chflags nouchg'
 alias cp='/bin/cp -i'
 
 # Builtin 'echo'
-alias e='builtin echo'
+alias e='builtin echo -'
 alias E='() ( print -P -- "%K{1}%F{15}%B${argv}%b%f%k"; )'
 
 # Builtin 'functions'
@@ -54,16 +54,11 @@ alias pyg='pygmentize'
 # Builtin 'exit'
 alias q='builtin exit'
 
-# Command 'find'
-alias ffind='/usr/bin/find -L'
 
 # Command 'git'
 alias gs='git status'
 alias grs='git restore --staged'
-alias motherfuck='() { \
-    cd "$zterm" \
-    git status \
-};'
+alias gt='() { cd "$zterm" && git status; };'
 
 # Command 'grep'
 alias gr='grep'
@@ -77,16 +72,14 @@ alias {h,help}='run-help'
 alias lctl='command launchctl'
 
 # Command 'mv'
-alias mv='command mv -i'
+alias mv='/bin/mv -i'
 
 # Command 'open'
 alias o='open "$PWD"'
 alias xopen='open -a Xcode'
 alias textopen='open -a TextEdit'
 alias webopen='open -a Safari'
-alias scriptopen='
-open -a "Script Editor"
-'
+alias scriptopen='open -a "Script Editor"'
 alias vb='open -a VirtualBox'
 
 # Command 'openssl'
@@ -104,7 +97,7 @@ alias pip='command pip3'
 alias idle='command idle3'
 
 # Command 'rm'
-alias rm='command rm -i'
+alias rm='/bin/rm -i'
 
 # Command 'strings'
 alias str='command strings'
@@ -117,22 +110,28 @@ alias wh='builtin whence -av'
 
 #MARK: - Extended Commands
 alias cd='cdp'
-alias ln='lnp'
+#alias ln='lnp'
 
 
 alias ts='typeset'
-#alias array=
-function array() {
+
+function Array array() {
+    typeset type=${0[1]}
     typeset id=$1
-    unset $id && typeset -ag $id
     shift
+    if [[ -v $id ]]; then
+        unset $id
+    fi
+    typeset $type -g $id
     set -A $id $argv
-    if [[ ${(P)id} -ne 0 ]]; then
-        print -Pl -- "%F{4}%U${id}%u%f[$#] = {" \
-                     '  '${(j:, :)argv} \
-                     "}" >&2
+    if [[ -n ${(P)id} ]]; then
+        notify -P -- "%F{4}%U${id}%u%f[${#}] = "\
+            "{ ${(j:, :)argv} }" >&2
     fi
 }
+#function Array() {
+#    typeset id=$1
+#}
 
 #MARK: - Custom Commands
 # List
@@ -154,8 +153,10 @@ alias cfd='cd -- "$(pfd)"'
 
 # Print
 alias pv='print-var'
-alias pv@='print-var -v @'
+alias pv@='print-var @'
+alias pvo='print-var @ optlist'
 alias pvt='print-var -t'
+
 alias pfs='print-fstack'
 alias pdb='print-debug'
 

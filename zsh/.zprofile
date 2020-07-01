@@ -2,13 +2,37 @@
 
 
 #MARK: - Z-Terminal
-typeset -Ag F;
-F=( [lf]=~/var/files/linesf
-    [tf]=~/var/files/textf
-    [pf]=~/var/files/patternsf
-    [lbf]=/usr/local/Terminal/etc/iofmt/labels )
-export lf=$F[lf]; export tf=$F[tf]; export pf=$F[pf]
+function txtf() {
+    typeset txtf_file="${zterm}/etc/${0}"
+    typeset -A txtf_list
+    readfile lines <$txtf_file
+    
+#    set -A txtf_list
+    
+    while [[ -n $1 ]]; do
+        case $1 in
+            -e) ${=EDITOR} $txtf_file ;;
+            *)
+        esac
+        shift
+    done
+    
+    typeset -A text_files;
+    text_files=(
+        [lf]=~/var/files/linesf
+        [tf]=~/var/files/textf
+        [pf]=~/var/files/patternsf
+        [lbf]=/usr/local/Terminal/etc/labels
+    )
+        
+    builtin print -- $text_files[
+}
+export lf=$F[lf]
+export tf=$F[tf];
+export pf=$F[pf]
 export lbf=$F[lbf]
+
+
 
 # Open Z-Terminal Xcode project.
 function xct()      { open -a Xcode "$zterm/Terminal.xcodeproj" }
@@ -39,118 +63,37 @@ function zload()    { open -a Xcode "$ZDOTDIR/.zload" }
 
 
 
-#function stack-t() {
-#    typeset -a list
-#    list=({a..z})
-#    set -- 'fs'{a..z}
-#
-#    function funcdef() {
-#        print "function $1() { ${argv:3}; }"
-##        typeset -f $1() { ${argv:2}; }
-#        eval "function $1() { ${argv:3} }"
-#    }
-#    funcdef $1 'errorX \$0'
-#    while [[ -n $2 ]]; do
-#        funcdef $2 "errorX \$0; $1"
-##        print "function $2() { $1; }"
-#        shift
-#    done
-##    for l in $list; do
-##        prev=${list[$list[(i)$l]-1]:-errorX \$0}
-##        print "function $l() { $prev; }"
-##    done
-#}
 
-
-#function errorX() {
-#    redbg "Last executed function is"
-#    print $funcstack[2]
-##    print-fstack
-##    error "$@"
-#}
-
-#
-#function fstack() {(
-#    typeset -a vars=( FUNCNEST funcsourcetrace functrace
-#        funcfiletrace funcstack )
-#    for var in $vars; do
-#        print -- "$(yellow $var) = ${(P)var}"
-#        
-#    done
-#    echo; echo
-#)}
-#
-#function is_set() {
-#    if [[ -v optlist[$1] ]] &&
-#       [[ $optlist[$1] -ne 0 ]]; then
-#
-#    fi
-#    if [[ ${+optlist[$1]} -eq 1 ]]
-#    if [[ ${optlist[$1]} -eq 1 ]]; then
-#        print 'yes'
-#    fi
-#        print ${+optlist[$1]}
-#}
+function xexpn() {
+    typeset expansion=$argv
+    S "$expansion"
+    while read param; do
+        print ${param:t}
+    done <&0
+}
+function xxargs() {
+    set +A $argv[6] 1 2 3 4
+    xargs ${=argv}
+    typeset command=$argv
+    while read arg; do
+        ($command $arg)
+    done <&0
     
-    
-#    if [[ ! is_set '-v' ]]; then
-#        print 'Not set: -v'
-#    fi
-
-
-#
-#function parse-args() {
-#    typeset -a arglist=($argv)
-#    print-var -v arglist
-#}
-
-
-
-
-#export lf=~/var/linesf
-#export tf=~/var/textf
-#export pf=~/var/patternsf
-
-
-
-
-#function show_command() {
-#    typeset -i width=$COLUMNS
-#    typeset -L header
-##}
-#function print-br() {
-#    typeset -A optlist
-#    get-arguments -A optlist -f n -o c:1 -- $argv
-##    typeset -i count=$optlist[-c]
-##    if [[ $count -gt ]]
-##    printf '%s%-*s' 25 'B'
-##    return $count;
-#    print-var optlist
-#    return $#optlist
-#
-#    while [[ -z $1 ]]; do
-#    echo
-#    done
-#    return 9
-#    while [[ -n $1 ]]; do
-#        echo $1
-#        shift
-#    done
-#    builtin print -- ${(pl:$count::\n:)}
-#}
-
-
-function file_lines() {
-    local line_prefix=$1
-    local line_suffix=$2
-    readf lines <&0
-    print -l ${line_prefix}${^lines}${line_suffix}
-    return 0
 }
 
 
 
 
+
+
+#MARK: - Text Patterns
+function file_lines() {
+    local line_prefix=$1
+    local line_suffix=$2
+    readfile lines <&0
+    print -l ${line_prefix}${^lines}${line_suffix}
+    return 0
+}
 function cmds() {
 cat <<'EOF'
 "perl -p -e 's/^[\h\v]+//g;  s/[\h\v]+$/\n/g'"
@@ -158,8 +101,6 @@ cat <<'EOF'
 "sed -E -n -e 'p'"
 EOF
 }
-
-
 function lines() {
     typeset -ag ${1:-lines}
     print -v ${1:-lines} -l -- ${(fq)"$(cat <<'EOF'
@@ -169,34 +110,20 @@ sed -E -n -e 'p'
 EOF
     )"}
 }
-
-#print -l -- xArr{1..3} | xfunc -I _ "typeset -a _=(_)"
-#xfunc() {
-#
-#}
 function call() {
     set -- $argv
     $argv
 }
-
 function wsr() {
     only_matching='/./'
     typeset -ag list
-    
     list=(${(@fqqqq)"$(cat <<'EOF'
 perl -p -e 's/^[\h\v]+//g;  s/[\h\v]+$/\n/g'
 awk '/./ { sub(/^[[:blank:]]+/, ""); print; }'
 sed -E -n -e 'p'
 EOF
     )"})
-    
-    
-    
-    print-var list
-    
-    
     () {
-#        typeset -a cmd
         input_file=$1
         while [[ -n $1 ]]; do
             cmd=(${(Q)1})
@@ -207,61 +134,8 @@ EOF
         done
     } =(<&0) ${list}
     return 0
-#
-
-    
-#    printf
-
-
-    
-    
- 
-#    list=(
-#        'perl -p -e "s/^[\h\v]+//g;  s/[\h\v]+\$/\n/g"'
-#        'awk "/^[[:space:]]\$/ { sub(/^[[:space:]]+//); print; }"'
-#        "sed -E -n -e 'p'"
-#    )
-#
-#    noglob list=(
-#    perl -p -e 's/^[\h\v]+//g;  s/[\h\v]+$/\n/g'
-#    awk '/^[[:space:]]\$/ { sub(/^[[:space:]]+//); print; }'
-#    sed -E -n -e 'p'
-#    )
-
-
-#        awk -v only="$only_matching" '($0 ~ only_matching) {print}'
-    
-    () {
-        print $argv
-    } $list =(<&0)
-    
-    return 0
-    () {
-        print_h1 'PERL'
-        perl -p -e 's/^[\h\v]+//g;  s/[\h\v]+$/\n/g' <$1
-        print-br 5
-        
-        print_h1 'AWK'
-        awk '/^[[:space:]]$/ { sub(/^[[:space:]]+//); print; }' <$1
-        print-br 5
-        
-        print_h1 'SED'
-        sed -E -n -e 'p' <$1
-        print-br 5
-        
-        call 'echo'
-    } =(<&0)
 }
-#
-#zsh -ec '
-#true && while [[ $? -eq 0 ]]; do
-##    printf %.8x $n
-#    repeat 8 > {
-##        read -ku0 a
-##        printf \ %.8d $(([##2]#a))}
-##        print;((n+=8))
-#    }
-#done <(print -l -- Line\ {1..10})'
+
 
 
 typeset -ix current_id=0
