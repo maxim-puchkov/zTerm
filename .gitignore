@@ -7,7 +7,7 @@ etc/template.id
 **/*.pyc
 **/*.xcodeproj/*
 **/var/
-**/.oh-my-zsh/
+**/.oh-my-zsh
 **/.iterm2*
 **/.zcompdump*
 **/.zsh_history
