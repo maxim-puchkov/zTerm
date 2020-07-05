@@ -7,50 +7,69 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# Print zsh arrays (-a) or associative arrays (-A). 
-function print-array() {
-    function __print-array-element() {
-        printf "  %s[$(cyan %+s)] %-3s '$(bold '%+s')'\n" "$var_id" "$1" '=' "$2"
+# Format and print array indicies and values.
+# Output formats:
+#    -l: {
+#          [x]=1
+#          [y]=2
+#        }
+#    -1: {  [x]=1, [y]=2  }
+function print-array() {(
+    # Choose multi- or single-line output
+    typeset out_format='list'
+    case $1 in
+        -l|--list) out_format='list'; shift ;;
+        -1|--line) out_format='line'; shift ;;
+    esac
+    # If $1 is set, print array with name $1;
+    # or combine arguments into an array
+    if [[ ! -v $1 ]]; then
+        typeset tmp_array_type='-a'
+        if [[ $1 == '--' ]]; then
+            shift
+        else
+            if [[ $1 == '-A' ]]; then
+                tmp_array_type=$1
+                shift
+            fi
+        fi
+        typeset $tmp_array_type tmp_array
+        set -A tmp_array $argv
+        set -- tmp_array
+    fi
+    # Print all [index]=value pairs on one line
+    function print-array_line() {
+        print -P -- "$lbrace" "${(@j:,  :)list}" "$rbrace"
+    }
+    # Print one [index]=value pair per line
+    function print-array_list() {
+        print -Pl -- "$lbrace" "  ${(@j:,\n  :s:\n:)list}" "$rbrace"
     }
     
-    if [[ $# -eq 0 ]]; then
-        error 'Usage:\n  arr=( a b c 1 2 3 );\n  print-array arr'
-        return 2
-    fi
     
-    local var_id var_type var_size
-    var_id=$1
-    var_type=${(Pt)var_id:-undefined}
-    var_size=${(P)#var_id}
+
     
-    # Print array[key/index] = value
-    printf "$(b_bcyan '%s') (%s)\n" "$var_id" "$var_type"
-    print-line
+    # Set colors and styles
+    typeset index_color
+    typeset {l,r}brace
+    lbrace=$(bold '{')
+    rbrace=$(bold '}')
     
-    local i k v n
-    case $var_type in
-        *association*)
-            for k v in ${(Pkv)var_id}; do
-                __print-array-element $k $v
-            done
-        ;;
-        
-        *array*)
-            n=( {1..$var_size} )
-            for v i in ${(P)var_id:^n}; do
-                __print-array-element $i $v
-            done
-        ;;
-        
-        *)
-            error "Variable '$(Bad "$var_id")' (${var_type}) is not an array."
-            return 1
-        ;;
+    # Array to print
+    typeset id=$1
+    case ${(Pt)id} in
+        (*'association'*) index_color='%F{2}' ;;
+              (*'array'*) index_color='%F{4}' ;;
+                      (*) error -1 'not an array: $id.' ;;
     esac
     
-    print-line
-    printf 'Printed %d elements\n' $var_size
+    # Append [index]=value pairs to a list
+    typeset -a list
+    for value in ${(Pv)id}; do
+        index=${(k)${(P)id}[(r)$value]}
+        list+=("[${index_color}${index}%f]='%U${value}%u'")
+    done
     
-    unfunction -m "__${0}-*"
+    ${0}_${out_format}
     return 0
-}
+)}

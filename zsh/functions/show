@@ -9,6 +9,12 @@
 
 # <#Function description#>
 function show() {
+    typeset -R3 -i last_status=$?
+    export c_true='2'
+    export c_false='9'
     
-    
+    # Prepend prefix offset and symbol
+    typeset prefix
+    zformat -f prefix ' %F{%0(p.$c_true.$c_false)} %B>%b%f ' p:$last_status
+    print -P  -- "${prefix}${argv}"
 }

@@ -1,9 +1,9 @@
 # Input/output styles.
 
 
-function fg_color() tput setaf ${1:?}
-function bg_color() tput setab ${1:?}
-function boldtext() tput bold
+function fg_color() { tput setaf ${1:?} }
+function bg_color() { tput setab ${1:?} }
+function boldtext() { tput bold }
 
 
 
@@ -200,32 +200,10 @@ typeset -aH __COLOR_NAMES__=(
 error_color=9
 logf_color=4
 
-# Colored symbols and labels
-LB='\e[1;31m'{'\e[0m'
-RB='\e[1;31m'}'\e[0m'
-undefined_label=$'\033\[33m'undefined$'\033\[39m'
-null_label=$'\033\[31m'null$'\033\[39m'
-not_set_label=$'\033\[31m''variable is not set'$'\033\[39m'
 
 
 
 
-
-
-function color_seq() {(
-    typeset -a color_codes
-    local color_name
-    for color_name in $=argv; do
-        local c=${color[$color_name]}
-        if [[ -n $c ]]; then
-            color_codes+=($c)
-        else
-            error -0 'Color $color_name is not recognized'
-        fi
-    done
-    printf '%s' "\e[${(j.;.)color_codes}m"
-    return 0
-)}
 
 function __style_print() {(
     typeset style_formats
@@ -239,6 +217,24 @@ function __style_print() {(
 )}
 
 
+
+
+function color_seq() {(
+    typeset -a color_codes
+    local color_name
+    for color_name in $=argv; do
+        local c=${color[$color_name]}
+        if [[ -n $c ]]; then
+            color_codes+=($c)
+        else
+            color_codes+=(0)
+            error -0 +R 'Color $color_name is not recognized'
+        fi
+    done
+    printf '%s' "\e[${(j.;.)color_codes}m"
+    return 0
+)}
+
 typeset -AHx text_labels
 set -A text_labels $((
     typeset reset_seq='\e[0m'
@@ -246,35 +242,45 @@ set -A text_labels $((
         seq="$(color_seq $=style)"
         for name in ${=${(s:,:)label}}; do
             style="${seq}${name}${reset_seq}"
-            print -- "$name" "$style"
+            printf '%s %b\n' "$name" "$style"
         done
-    done <${1:-$zterm/etc/labels}
+    done <${1:-$zterm/etc/labels} 2>/dev/null
 ))
 
 
-#MARK: - Tests
-pink=$MAGENTA
-function pink() {
-    fmt=($fmt magenta) __style_print "$*"
-}
-function pink2() {
-    ( fmt='magenta'
-    __style_print "$*" )
-}
-function pink3() {(
-    export fmt='magenta'
-    __style_print "$*"
+
+
+
+
+# Print ANSI escape sequences; if '-t' option is
+# set, print the given text and reset style
+function esc() {(
+    typeset -a numbers
+    numbers=(${argv:#[0-9]})
+    ${(M)arr:#[0-9]*}
+    #
+    typeset text
+    if [[ $1 == '-t' ]] &&
+       [[ -n $2 ]]; then
+        text=$2
+        shift 2
+    fi
+    printf '\e[%sm' "${(j.;.)argv:-0}"
+    if [[ -n $text ]]; then
+        printf '%s%b\n' "$text" $(esc 0)
+    fi
+    return 0
 )}
 
 
-
-#
-#typeset cmd=$1
-#if [[ -z $functions[$0_$cmd] ]]; then
-#    error -127 'Command not found: \$cmd.'
-#fi
-#
-#$0_$cmd $argv
-#return $?
-
-
+function print-control-char() {
+    typeset -i10 -Z2 code
+    for code in $argv; do
+        typeset hex=0x${code[1,2]}
+        if [[ -t 1 ]]; then
+            printf '%s:  ' "${hex}"
+        fi
+        printf '%b\n' "\\${hex}"
+    done
+    return 0
+}

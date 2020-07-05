@@ -1,0 +1,35 @@
+#!/bin/zsh
+
+#  xparams
+#  Z-Function (83)
+#
+#  Created by Maxim Puchkov on 2020-07-03.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function xparams() {
+    
+    typeset -a xparams_flags=($1)
+    typeset -a xparams_mods=($2)
+    xparams_flags=('P' 'k' 'o')
+    xparams_mods=('a')
+    
+    
+    if [[ -n $xparams_flags ]]; then
+        flags="(${(j::)xparams_flags})"
+    fi
+    if [[ -n $xparams_mods ]]; then
+        mods=":${(j::)xparams_mods}"
+    fi
+    
+    
+    () {
+        while read -E name; do
+            [[ ! -v $name ]] && print "Unset parameter: '$name'" >&2
+            ident="\${${flags}${name}${mods}}"
+#            print -- "\nParam: <$name> id=<$ident>"
+            print -- $ident
+        done <$1
+    } =(<&0)
+}

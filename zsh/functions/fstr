@@ -15,7 +15,7 @@ function fstr() {
     
     # String and directory
     local search_directory="${${1:-.}:a}"
-    local string="${2:-.}"
+    local string="${(q)2:-.}"
     shift 2
     
     # Search options for grep
@@ -51,6 +51,6 @@ function fstr() {
     done
     
     # Display number of matches and files
-    logf 'String $string is found in $n_matches out of $n_files files.'
+    notify "String $string is found in $n_matches out of $n_files files."
     return 0
 }

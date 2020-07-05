@@ -1,0 +1,69 @@
+#!/bin/zsh
+
+#  ztest-get
+#  Terminal
+#
+#  Created by Maxim Puchkov on 2020-06-20.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+
+
+
+fpath+=(/usr/local/Terminal/zsh/functions)
+autoload print-line
+print-line
+
+# set -- -F
+# get -f F
+
+# set -- -a -b -c -x x1 -y y1 -z z1
+# get -f a b c -o x y z -- $argv
+#typeset -a SET GET
+
+
+argv=(-a -b -c -x x1 -y y1 -z z1 'arg 1' 'arg 2' 'arg 3' )
+get_opts=(-A fn_args -f a b c -o x y z -- $argv)
+
+typeset delim
+typeset -i pos
+
+delim='--'
+let pos=${get_opts[(i)$delim]}
+#set -- ${argv:1:$pos}
+
+print -l -- $get_opts
+
+exit 0
+
+#get -A fn_args $GET -- $argv
+
+
+
+
+
+function test_get {
+    typeset -A fn_args
+    
+    
+    
+    function test_get
+    
+    #MARK: - Function Arguments
+    # Lists of 'run-t' flags and options
+    typeset -a test_flags test_options
+    test_flags=()
+    test_options=()
+    # Parse arguments
+    builtin autoload -Uz get-arguments
+    typeset -A optlist
+    get-arguments -A optlist \
+                  -f $test_flags \
+                  -o $test_options
+    
+    #MARK: -
+    typeset shell=$(builtin whence zsh)
+    typeset dir="$ZDOTDIR/Tests"
+#    for test_script in $dir/*
+    
+}

@@ -7,32 +7,53 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
+# vars=(X Y) X=(1 2) Y=(3 4) iff 'X -lt Y'
+# 1<3, 1<4, 2<3, 2<4
+
+# iff -v X Y Z
+
 # Evaluate and display the result of conditional expressions.
 function iff() {(
-    typeset expr
-    typeset -i expr_value
-    # Map int return codes to strings
-    typeset -A labels
-    if [[ -t 1 ]]; then
-        labels=( [0]=$(green 'True') [1]=$(red 'False') )
-    else
-        labels=( [0]='True' [1]='False' )
+    export prog=$0
+    
+    if [[ $1 == '-i' ]]; then
+        typeset -a vars=(${argv:2:${${argv:2}[(i)-*]}})
+        shift ${#vars}+1
     fi
+    [[ $1 == '--' ]] && shift
     
-    # Evaluate each argument
-    for expr in $argv; do
-        expr_cmd="[[ $expr ]]"
-        eval '[[ '$expr' ]]; expr_value=$?;'
-        if [[ -t 1 ]]; then
-            notify -Pl -aC2 -- \
-                "[[ $expr ]]" \
-                "${labels[$expr_value]}"
-        else
-            print -- \
-                "${(qqq)expr}" \
-                "${labels[$expr_value]}"
-        fi
+    print-pvar vars
+    
+    for v in $vars; do
+        red Var=$v
+        for vexp in ${(M)argv:#(|* )$~v( *|)}; do
+            print $vexp
+        done
     done
+
+    # Evaluate each argument
+    local -i result
+    local result_label
+    print-var argv
     
+    
+    if [[ $# -eq 0 ]]; then
+        usage 'Bad input.' '$prog "1 -lt 2"' '$prog -v X "X -gt 0"'
+    fi
+    while [[ -n $1 ]]; do
+#        if [[ $1 =~ '' ]]; then
+            
+#        fi
+        
+        builtin eval "[[ $1 ]]" &>/dev/null
+        let result=$?
+        case $result in
+            0) result_label='%F{2}true%f'  ;;
+            1) result_label='%F{1}false%f' ;;
+            *) result_label='%F{3}invalid expression%f' ;;
+        esac
+        builtin print -P -- "[[ $1 ]]:  $result_label"
+        shift
+    done
     return 0
 )}

@@ -21,6 +21,7 @@ function letters() {
     #   'letters 1'  ~>  A
     #   'letters Z'  ~>  26
     function letters_position() {
+        typeset -a A=({A..Z})
         local arg=$1
         local value=''
         if [[ $arg =~ '^[0-9]+$' ]]; then

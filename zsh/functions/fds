@@ -20,7 +20,7 @@ function fds() {
     #MARK: - Terminal file descriptors
     typeset -a terminal_fds=()
     # Set default list of file descriptor numbers
-    typeset -a fds=( 0 1 2 )
+    typeset -a fds=({0..20})
     if [[ $# -ne 0 ]]; then
         fds=($@)
     fi

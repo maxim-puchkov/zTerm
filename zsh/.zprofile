@@ -2,36 +2,14 @@
 
 
 #MARK: - Z-Terminal
-function txtf() {
-    typeset txtf_file="${zterm}/etc/${0}"
-    typeset -A txtf_list
-    readfile lines <$txtf_file
-    
-#    set -A txtf_list
-    
-    while [[ -n $1 ]]; do
-        case $1 in
-            -e) ${=EDITOR} $txtf_file ;;
-            *)
-        esac
-        shift
-    done
-    
-    typeset -A text_files;
-    text_files=(
-        [lf]=~/var/files/linesf
-        [tf]=~/var/files/textf
-        [pf]=~/var/files/patternsf
-        [lbf]=/usr/local/Terminal/etc/labels
-    )
-        
-    builtin print -- $text_files[
-}
-export lf=$F[lf]
-export tf=$F[tf];
-export pf=$F[pf]
-export lbf=$F[lbf]
 
+export lf=~/var/files/linesf
+export tf=~/var/files/textf
+export pf=~/var/files/patternsf
+export sf=~/var/files/'f i l e'
+export bf=~/var/files/brackets
+export lbf=/usr/local/Terminal/etc/labels
+export pmf=~/var/files/params
 
 
 # Open Z-Terminal Xcode project.
@@ -64,13 +42,7 @@ function zload()    { open -a Xcode "$ZDOTDIR/.zload" }
 
 
 
-function xexpn() {
-    typeset expansion=$argv
-    S "$expansion"
-    while read param; do
-        print ${param:t}
-    done <&0
-}
+
 function xxargs() {
     set +A $argv[6] 1 2 3 4
     xargs ${=argv}

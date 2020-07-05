@@ -7,8 +7,6 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# Read a file and save its
-
 # Read every line of a file and store it
 # in an array
 function readfile() {
@@ -16,30 +14,41 @@ function readfile() {
     typeset delim=$'\n'
     typeset -i input_fd=0
     typeset -i echo_input=0
-    typeset -i assign_input=0
-    while [[ -n $1 ]] && [[ $1 =~ '^[+-]' ]]; do
-        blue "\$1 is $1 with arg \$2 = $2."
+    typeset -i assign_input=1
+    typeset -i verbose=0
+    while [[ $1 =~ '^[+-]' ]] &&
+          [[ $1 != '--' ]]; do
+        #blue "\$1 is $1 with arg \$2 = $2."
         case $1 in
-            -d)  delim=$2       ;;
+            -d)  delim=${2[1]}  ;;
             -u)  input_fd=$2    ;;
             -E)  echo_input=1   ;;
             -e)  echo_input=1
                  assign_input=0 ;;
+            -v)  verbose=1      ;;
             *)   ;;
         esac
         shift
     done
+    [[ $1 == '--' ]] && shift
+    
     
     typeset -a lines
-    lines=(${(f)"$(<&$input_fd})"})
+    lines=(${(f)"$(<&$input_fd)"})
     exec ${myfd}
     if [[ $echo_input -eq 1 ]]; then
-        echo "$lines"
+        printf '%s\n' "$lines" >&2
     fi
     
-    typeset reply=${1:-reply}
-    typeset -ag $reply
-    set -A $reply $lines
+    if [[ $assign_input -eq 1 ]]; then
+        typeset reply=${1:-reply}
+        typeset -ag $reply
+        set -A $reply $lines
+    fi
+    
+    if [[ $verbose -eq 1 ]]; then
+        printf 'Read %d lines from %d read into array %s.\n' $#lines $input_fd "$reply" >&2
+    fi
     return 0
 }
 

@@ -283,58 +283,88 @@ EOF
         return 0
     }
     
+    function fn_t() {
+        typeset -ft $fn_name
+        $fn_name 
+    }
+    
+    function fn_edit() {
+        local fn_file=$(fn_src $fn_name 2>/dev/null)
+        if [[ ! -r $fn_file ]]; then
+            error -1 'Cannot read source file for function $fn_name.'
+        fi
+        ${=EDITOR} -- $fn_file
+        return 0
+    }
+    function fn_xedit() {
+        local fn_file=$(fn_src $fn_name 2>/dev/null)
+        if [[ ! -r $fn_file ]]; then
+            error -1 'Cannot read source file for function $fn_name.'
+        fi
+        /usr/bin/open -F -a Xcode -- $fn_file
+        return 0
+    }
+    function fn_x() {
+        funct
+    }
+    
+    
+    
     #MARK: - Options
+    # Parse
     typeset -A optlist
     autoload -Uz get-arguments
     get-arguments -A optlist \
                   --flags 'h' 'y' \
                   -- $argv
+    # Set compgen overwrite response (-y)
+    typeset response=${optlist[-y]:+'yes'}
     
-    typeset show_help response
-    show_help=${optlist[-h]}            # -h
-    if [[ $optlist[-y] -eq 1 ]]; then   # -y
-        response='yes'
-    fi
-    
-    
-    
-    if [[ $# -eq 0 ]]; then
-        warning 'Command needs arguments.'
-        $0 print-commands $0
-        return 2
-    fi
-    
-    # Show help message
-    if [[ $show_help -eq 1 ]]; then
+    # Show help message (-h)
+    if [[ $optlist[-h] -eq 1 ]] ||
+       [[ $# -eq 0 ]]; then
         $0 print-commands $0
         return 0
     fi
     
-    # Check argument count
-    case $# in
-        0)  warning 'Command needs arguments.'
-            $0 print-commands $0
-            return 2 ;;
-        1)  error -2 'Function name is not specified.'
-            return 2 ;;
-    esac
     
     
     
     # Command name
     typeset cmd=$1
+    if [[ ${+functions[${0}_${cmd}]} -ne 1 ]]; then
+        error -127 'Unknown command: $cmd.'
+    fi
     shift
     # Command argument
     typeset fn_name="${argv}"
+    if [[ $# -eq 0 ]]; then
+        error -1 'Missing command argument: function name.'
+    fi
+    # Return if function is not defined
+    if [[ ${+functions[$fn_name]} -eq 0 ]]; then
+        error -1 "Function '\$fn_name' is not defined."
+    fi
+    
+    
+    # Source file
     typeset fn_file
     # Function name prefix
-    [[ -n $fn_prefix ]] || fn_prefix=${fn_name%%[_-]*}
-    export fn_prefix
-    
-    
-    if [[ ${+functions[${0}_${cmd}]} -ne 1 ]]; then
-        error -127 "Unknown command: '\$cmd'."
+    if [[ ! -v fn_prefix ]]; then
+        export fn_prefix=${fn_name%%[_-]*}
     fi
+    
+    
+    
+    
+#    # Check argument count
+#    case $# in
+#        0)  warning 'Command needs arguments.'
+#            $0 print-commands $0
+#            return 2 ;;
+#        1)  error -2 'Function name is not specified.'
+#            return 2 ;;
+#    esac
     
     
     if [[ $cmd == 'isdef' ]]; then
@@ -342,11 +372,6 @@ EOF
         return $?
     fi
 
-    # Return if function is not defined
-    if [[ ${+functions[$fn_name]} -eq 0 ]]; then
-        error -1 "Function '\$fn_name' is not defined."
-    fi
-    
     # Execute the command
     autoload +X $fn_name
     ${0}_${cmd} $fn_name

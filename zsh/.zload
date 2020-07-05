@@ -44,6 +44,7 @@ source "$ZUTIL"
 source "$ZNET"
 source "$ZMISC"
 source "$ZCOMP"
+source "$ZTEST"
 
 source '/usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh'
 source '/usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh'

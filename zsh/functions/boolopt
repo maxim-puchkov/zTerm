@@ -16,6 +16,7 @@
 #   boolopt +o T F       ~>  prints "F", returns 1
 #   boolopt --no-option  ~>  returns 1
 function boolopt() {(
+    autoload +Uz error
     if [[ $# -ne 1 ]] && [[ $# -ne 3 ]]; then
         error -2 -u "'$0 [-+]opt' or '$0 [-+]opt True False'."
         return 2

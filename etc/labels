@@ -1,3 +1,4 @@
 null: red
-undefined, unset: yellow bold
+undefined, unset: red bold
 OK: green bold
+{, }: bold

@@ -1,0 +1,27 @@
+#!/bin/zsh
+
+#  it2
+#  Z-Function (81)
+#
+#  Created by Maxim Puchkov on 2020-07-03.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function it2() {
+    function it2_profile() {(
+        action='SetProfile'
+        profile_name=$1
+        show "Setting iTerm2 profile to $profile_name"
+        printf '%b\n' "\e]1337;$action=$profile_name\a"
+        return $?
+    )}
+    
+    
+    cmd=$1
+    if [[ -z $cmd ]]; then
+        usage 'e'
+    fi
+    shift
+    ${0}_${cmd} $argv
+}

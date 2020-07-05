@@ -8,7 +8,7 @@
 
 
 # View or edit local zsh functions.
-function zfc() {
+function zfc() {(
     function __find() {
         local fdir="$1"
         local fname=$2
@@ -28,7 +28,7 @@ function zfc() {
     
     ## dir: go to z-functions directory [default] ##
     function zfc_dir() {
-        cdp -- $zfunc
+        cd -- $zfunc
         return $?
     }
     
@@ -150,6 +150,11 @@ function zfc() {
         return $?
     }
     
+    function zfc_fstr() {
+        typeset pattern="$argv"
+        (GREP_COLOR='1;98;103' egrep -E "$pattern" -r $zdot/{{,site-}functions,completions})
+    }
+    
     
     # Options
     typeset -A optlist
@@ -157,12 +162,21 @@ function zfc() {
     shift $optlist[length]
     
     # Show help
-    if [[ -n $optlist[h] ]]; then
+    if [[ $# -eq 0 ]] || [[ -n $optlist[h] ]]; then
         fn print-commands $0
         return 0
     fi
     
-    local cmd=$1
+    typeset cmd=$1
+    if [[ ${+functions[${0}_${cmd}]} -ne 1 ]]; then
+        error -127 'Unknown command '$cmd'.'
+    fi
+    shift
+    
+    ${0}_${cmd} $argv
+    return $?
+    
+    
     case $# in
         0)  cmd='dir' ;;
         1)  if ( ! fn isdef ${0}_${1} ); then
@@ -174,10 +188,31 @@ function zfc() {
     esac
     
     # Execute a zfc command
-    if ! ( fn isdef ${0}_${cmd} ); then
+#    if ! ( fn isdef ${0}_${cmd} ); then
+    if [[ ${+functions[${0}_${cmd}]} -eq 1 ]]; then
         error "Unknown command: %F{1}$cmd%f."
         return 127
     fi
     ${0}_${cmd} "$@"
     return $?
-}
+    
+#    local cmd=$1
+#    case $# in
+#        0)  cmd='dir' ;;
+#        1)  if ( ! fn isdef ${0}_${1} ); then
+#                cmd='open'
+#            else
+#                shift
+#            fi ;;
+#        *)  shift ;;
+#    esac
+#
+#    # Execute a zfc command
+##    if ! ( fn isdef ${0}_${cmd} ); then
+#    if [[ ${+functions[${0}_${cmd}]} -eq 1 ]]; then
+#        error "Unknown command: %F{1}$cmd%f."
+#        return 127
+#    fi
+#    ${0}_${cmd} "$@"
+#    return $?
+)}

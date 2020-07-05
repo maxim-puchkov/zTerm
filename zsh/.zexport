@@ -12,6 +12,14 @@ export GPG_TTY
 
 
 
+
+# Package Managers
+export HOMEBREW='/usr/local/Homebrew'
+export CELLAR='/usr/local/Cellar'
+
+
+
+
 # User directories
 export DEV="$HOME/Developer"
 export PROJ="$DEV/Projects"
@@ -22,7 +30,6 @@ export devlib="$DEV/Library"
 export tempdir="${TMPDIR}tempfiled"
 
 export iCloud="$HOME/Library/Mobile Documents/com~apple~CloudDocs"
-
 
 # Projects
 export zterm='/usr/local/Terminal'
@@ -39,11 +46,6 @@ export zcomp="$zdot/completions"
 export ztest="$zdot/Tests"
 export zcust="$zdot/custom"
 
-# Package Managers
-export HOMEBREW='/usr/local/Homebrew'
-export CELLAR='/usr/local/Cellar'
-
-
 # SFU Files
 export SFU="$ICLOUD/SFU"
 export SFU_USER='mpuchkov'
@@ -55,10 +57,24 @@ export A473="$SFU_TERM/473/assignments"
 export A310="$SFU_TERM/PHIL 310/assignments"
 
 
-# Misc. variables
-export SETOPT='set'
-export -H TRUE=${(%):-'%F{2}True ✔︎%f'}
-export -H FALSE=${(%):-'%F{1}False ✘%f'}
+
+#
+## Misc. variables
+#export -H TRUE=${(%):-'%F{2}True ✔︎%f'}
+#export -H FALSE=${(%):-'%F{1}False ✘%f'}
+#
+## Pass/Fail symbols.
+#function pass() {
+#    printf '%s\n' "$(b_green '✔︎')" && return 0
+#}
+#function fail() {
+#    printf '%s\n' "$(b_bred '✘')" && return 1
+#}
+#function T0() green "True ($?)"
+#function F1() red "False ($?)"
+
+
+
 
 
 #export LDFLAGS='-L/usr/local/opt/openssl@1.1/lib'

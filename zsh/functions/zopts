@@ -34,15 +34,7 @@ function zopts() {
     printf '%-20s %c %-9s\n' 'Option' '|' 'Status'
     printf '%-30s\n' "${(l:30::-:)}"
     print -PN -- '%b'
-#
-#    local B='%B%U'
-#    local E='%u%b'
-#    local col_1='%B%UOption%u%b'
-#    local col_2='%B%UStatus%u%b'
-#    printf '%-20s%*s%5s\n' "${(%)col_1}" 20 "${(%)col_2}"
-#
     
-#    print -Pf '%s%-20s%s %+10s%s%s\n' "$B" 'Option' "$E" "$B" 'Status' "$E"
     for k v in ${(kv)list}; do
         local option_name_label=$k
         local option_value_label=$OFF

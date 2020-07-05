@@ -11,20 +11,7 @@ typeset -a args=()
 args=(
     "-n[create an empty filename (the disk blocks aren't allocated until data is written to them)]"
     "-v[report the names and sizes of created files]"
-    '+a[do not capitalize first letter]'
-'--no-autocapitalize[do not capitalize first letter]'
-'-t[set error message title]'
-'--title[set error message title]'
-'-n[try to silence output messages]'
-'--null[try to silence output messages]'
-'-D[do not format description]'
-'--plain-description[do not format description]'
-'-a[capitalize first letter]'
-'--autocapitalize[capitalize first letter]'
-'-u[set title to '''Usage''']'
-'--usage[set title to '''Usage''']'
-'-c[show error exit code]'
-'--code[show error exit code]'
+    ''
 )
 
 #_arguments -s -S $args

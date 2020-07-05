@@ -15,6 +15,7 @@ alias -g _F='; do print-var x; done;'
 
 
 
+
 #MARK: - Regular Aliases
 # Command 'ls'
 alias ls='command ls -BFGHhk'
@@ -39,7 +40,6 @@ alias E='() ( print -P -- "%K{1}%F{15}%B${argv}%b%f%k"; )'
 alias fns='functions'
 
 # Builtin 'print'
-#alias print='builtin print -P'
 alias printp='builtin print -P'
 alias printl='builtin print -l'
 alias printn='builtin print -n'
@@ -69,6 +69,7 @@ alias mang='grepman'
 alias {h,help}='run-help'
 
 # Command 'launchctl'
+alias cdef='compdef'
 alias lctl='command launchctl'
 
 # Command 'mv'
@@ -77,6 +78,7 @@ alias mv='/bin/mv -i'
 # Command 'open'
 alias o='open "$PWD"'
 alias xopen='open -a Xcode'
+alias xbopen='open -a /Applications/Xcode-beta.app'
 alias textopen='open -a TextEdit'
 alias webopen='open -a Safari'
 alias scriptopen='open -a "Script Editor"'
@@ -84,11 +86,6 @@ alias vb='open -a VirtualBox'
 
 # Command 'openssl'
 alias sha256='openssl sha256'
-
-# Builtin 'set'
-alias set1='set -- -a -b -c'
-alias set2='set -- -a -b -c -d D -e E -f F'
-alias set3='set -- -a -b -c -d D -e E -f F --long LONG args "hello world"'
 
 # Python
 alias python='command python3'
@@ -99,8 +96,15 @@ alias idle='command idle3'
 # Command 'rm'
 alias rm='/bin/rm -i'
 
+# Builtin 'set'
+alias set1='set -- -a -b -c'
+alias set2='set -- -a -b -c -d D -e E -f F'
+alias set3='set -- -a -b -c -d D -e E -f F --long LONG args "hello world"'
+
 # Command 'strings'
 alias str='command strings'
+
+alias ts='typeset'
 
 # Builtin 'whence'
 alias wh='builtin whence -av'
@@ -110,30 +114,15 @@ alias wh='builtin whence -av'
 
 #MARK: - Extended Commands
 alias cd='cdp'
-#alias ln='lnp'
 
 
-alias ts='typeset'
 
-function Array array() {
-    typeset type=${0[1]}
-    typeset id=$1
-    shift
-    if [[ -v $id ]]; then
-        unset $id
-    fi
-    typeset $type -g $id
-    set -A $id $argv
-    if [[ -n ${(P)id} ]]; then
-        notify -P -- "%F{4}%U${id}%u%f[${#}] = "\
-            "{ ${(j:, :)argv} }" >&2
-    fi
-}
-#function Array() {
-#    typeset id=$1
-#}
+
 
 #MARK: - Custom Commands
+# Highlight brackets
+alias brk='brackets'
+
 # List
 alias ltc='list tc'
 alias lta='list ta'
@@ -147,6 +136,9 @@ alias limg='imgls'
 # Brew
 alias bb='brew_browse'
 alias bi='brew info'
+
+# Print last return code
+alias C='retc'
 
 # 'cd'
 alias cfd='cd -- "$(pfd)"'
@@ -162,10 +154,13 @@ alias pdb='print-debug'
 
 # Show command source
 alias ss='showsrc'
+alias sx='print -P --'
+alias s='show'
 
 # Type
 alias i='infocmd'
 #alias t='print-var -t'
+
 
 
 
@@ -178,19 +173,3 @@ alias rt='zsh "$DEV/bin/run-tests.zsh"'
 
 alias my-phone='print -P "%F{14}+1 %B(778) 512-7614‬%b%f"'
 alias my-postal='print -P "%F{14}V3T 2S5%f"'
-
-
-alias C='retc'
-
-
-function print-control-char() {
-    typeset -i10 -Z2 code
-    for code in $argv; do
-        typeset hex=0x${code[1,2]}
-        if [[ -t 1 ]]; then
-            printf '%s:  ' "${hex}"
-        fi
-        printf '%b\n' "\\${hex}"
-    done
-    return 0
-}

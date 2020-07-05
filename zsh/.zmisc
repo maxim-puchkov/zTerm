@@ -18,6 +18,10 @@ export varb="%BMy new bold variable%b"    # varb: 07 Jun 19:13
 function bitflip() {
     
 }
+function findfunc() {(
+    typeset pattern=${1:-'error-replace-variables\(\) \{'}
+    awk '/'$pattern'/, /[[:space:]]+\}/' < ${2:-$zfunc/error}
+)}
 
 function newlines() {
     typeset -a nl=(\n \\n '\n' '\\n' $'\n' "\n" "\\n" $(echo) $(printf '\n') '
@@ -27,4 +31,165 @@ function newlines() {
         printf '--> %d:\nS:<%s>,\tB:<%b>,\tH:<\n%s>\n' $i "${nl[$i]}" "${nl[$i]}" "$(hexyl <<< $nl[$i])"
         let i=$i+1
     done
+}
+
+
+
+
+
+function def_misc() {
+
+
+
+
+#MARK: - Incomplete functions
+# Write $1 lines of $2 random characters
+function write-lines() {
+    local line_count text_length
+    line_count=${1:-1}
+    text_length=${2}
+    local line pad length
+    for line in {1..$line_count}; do
+        pad=$(( ${#line_count} + 1 ))
+        length=${text_length:-$line}
+        text=$( printf '%s' $(dd if=/dev/random bs=1 count=$length 2>/dev/null |
+            xxd -p) )
+        print ":${(r:$pad:)line}   ${text:0:$length}   ${(l:$pad:)line}:"
+    done
+}
+
+# Compress a file N(3) times
+function compress3 {
+    local file=$1
+    local filename=${file:r}
+    local fileext=${file:e}
+    
+    if [[ -z $file ]]; then
+        error 'No file to compress'
+        return 2
+    fi
+    if [[ $file != $filename ]]; then
+        mv -- $file $filename
+    fi
+    
+    local tools=(
+        "zip -1 ${filename:r}.zip1 $filename"
+        "zip -9 ${filename:r}.zip9 $filename"
+        "gzip -1 -k ${filename:t}"
+        
+    )
+    for t in $tools; do
+        echo $t
+    done
+    
+    if [[ $file != $filename ]]; then
+        mv -- $filename $file
+    fi
+}
+
+
+
+#MARK: File Descriptors
+function fdw() {
+#    typeset filepath=/tmp/$0.txt
+    typeset file="$0_$$_$(date -j +'%H:%M').txt"
+    exec 3<>/tmp/$file
+    
+    print -- "$0" >&3
+    print -P -- "Arguments[$#]: {$argv}" >&3
+    print -P -- "fds 0..10:" >&3
+    fds {0..10} >&3
+    
+    exec 3>&-
+    return $?
+}
+
+function fdc() {
+    function fdc_open() {
+        exec {ifd}<&0 {ofd}>&1 {efd}>&2
+    }
+    function fdc_close() {
+        exec {ifd}>&- {ofd}>&- {efd}>&-
+    }
+    function fdc_show() {
+        for id in {i,o,e}fd; do
+            
+            if [[ -v $id ]]; then
+            
+            fi
+        done
+#        [[ -v ifd ]] && [[ -v ofd ]] && [[ -v efd ]]
+    }
+    
+    typeset -ig {i,o,e}fd
+    typeset cmd
+    if [[ $# -eq 0 ]]; then
+        cmd='show'
+    else
+        cmd=$1
+        shift
+    fi
+    
+    if ! fn isdef ${0}_${cmd}; then
+        error err
+    fi
+    OK ok
+}
+
+
+#
+#fdc_foo() {
+#    count=$1
+#    repeat $count; do
+#        local delay=$(( $RANDOM % 10 ))
+#        if [[ $delay -gt 2 ]]; then
+#            print -P "Error: sleep delay is too long: i=%F{3}${delay}%f" >&2
+#        else
+#            print -P "OK: sleeping for i=%F{3}${delay}%f seconds..." >&1
+#            sleep ${delay:-0}
+#        fi
+#    done
+#}
+#
+#function fdc() {
+#    exec 3<&0
+#    exec 4>&1
+#    exec 5>&2
+#    count=${1:-1}
+#    result=$( { time (fdc_foo $count 1>&4 2>&5); } 2>&1 )
+#
+#    read -t -u0 args0;
+#    red "FD0: $args0"
+#    echo
+#    read -t -u3 args3;
+#    blue "FD3: $args3"
+#    echo
+#
+##    cat <&3
+##    cat <&4
+##    cat <&5
+#
+#    exec 3>&- 4>&- 5>&-
+#    redbg "Result = $result"
+#}
+
+
+
+
+
+expT='1 -le 1'
+expF='1 -eq 2'
+expB='-3'
+
+ev() {
+    for exp in $expT $expF $expB; do
+        evexp $exp
+    done
+}
+
+evexp() {
+    eval "[[ ${1:?} ]]"
+    print ExpRet: $?
+}
+
 }

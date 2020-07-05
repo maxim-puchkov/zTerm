@@ -1,0 +1,96 @@
+#!/bin/zsh
+
+#  brackets
+#  Z-Function (82)
+#
+#  Created by Maxim Puchkov on 2020-07-03.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+
+
+function brackets() {(
+    function g() {
+        GREP_COLOR="$1" egrep --color=always -E "($2|\$)" <$3
+    }
+    
+    
+    g '91' '[\{\}]' \
+        <(g '1;33' '[\(\)]' \
+        <(g '96' '(\[|\])' \
+        <(print -- $argv) \
+        ))
+)}
+#function brackets() {(
+#    setopt extendedglob
+#    typeset c_brack=$(esc 1 36)
+#    typeset c_paren=$(esc 92)
+#    typeset c_brace=$(esc 91)
+#    typeset c_reset=$(esc 0)
+#
+#    # Function options
+#    while [[ $1 =~ '^[-]' ]] && [[ $1 != '--' ]]; do
+#        case $1 in
+#            (-(brack|paren|brace))
+#                typeset "c_${1#-}"=$2
+#                shift
+#            ;;
+#        esac
+#        shift
+#    done
+#    [[ $1 == '--' ]] && shift
+#
+#
+#    typeset -a o_brack=('[' ']')
+#    typeset -a o_paren=('(' ')')
+#
+#
+#
+#    typeset str="$argv"
+#    # [ ]
+#    str=${str//(#m)(\[|\])/${c_brack}${MATCH[1]}${c_reset}}
+#    # ( )
+#    str=${str//\(/${c_paren}\(}
+#    str=${str//\)/${c_paren}\)${c_reset}}
+#    # { }
+#    str=${str//\{/${c_brace}\{${c_reset}}
+#    str=${str//\}/${c_brace}\}${c_reset}}
+#
+#    () (
+#        groups=(
+#        typeset c_reset=$(esc 0)
+#        for group color in '[]' $c_brack '()' $c_paren '{}' $c_brace; do
+#
+#            print GRO $group
+#        done
+#    ) =(print -- "$argv")
+#
+#    print -- "'$str'"
+#    return 0
+#)}
+#    () {
+#
+#        brack=$1
+#        brace=$2
+#        paren=$3
+#        typeset -a old_chars=${(s::):-"$brack$brace$paren"}
+#
+#        typeset -a new_chars=${(s::):-"$brack$brace$paren"}
+#
+#        for old in ${(s::)chars}; do
+#        red $old
+#            str=${str//$old/$new}
+#        done
+#    } $bcyan '[]' '{}' '()'
+#
+#    return 1
+#
+#    typeset -a find_replace
+#    find_replace=('[' $(bcyan '[') ']' $(bcyan ']') '(' $(b_green '(') ')' $(b_green ')') '{' $(b_bred '{') '}' $(b_bred '}'))
+#    for k v in ${(kv)find_replace}
+#    do
+#        text=${text//$k/$v}
+#    done
+#    print -- ${text}
+#}

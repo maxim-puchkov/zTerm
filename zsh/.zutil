@@ -18,17 +18,18 @@ function edit() {
 function calc() {
     noglob expr "$@"
 }
+alias calc='noglob calc'
 
 #
 function themes() {
-    ${=EDITOR} $zdot/etc/themes.oh-my-zsh
+    ${=EDITOR} $zterm/etc/themes.oh-my-zsh
 }
 #
 function plugins() {
-    ${=EDITOR} $zdot/etc/plugins.oh-my-zsh
+    ${=EDITOR} $zterm/etc/plugins.oh-my-zsh
 }
 
-
+# Highlight grep matches with backgroud color
 function hgrep hegrep hfgrep() {
     (GREP_COLOR='01;30;42' ${0:1} --color='always' $argv)
 }
@@ -148,44 +149,6 @@ function next-theme() {
 
 
 
-function pygments-styles() {
-    local list=($( pygmentize -L 'styles' ))
-    printf '%s' "$list" | grep -E '\* [[:alnum:]-]*' -o | sed -E 's/\* //g'
-}
-
-
-# Pass/Fail symbols.
-function pass() {
-    printf '%s\n' "$(b_green '✔︎')"
-    return 0
-}
-function fail() {
-    printf '%s\n' "$(b_bred '✘')"
-    return 1
-}
-
-
-# Hex print.
-function hexpr() {
-    printf '%s' $(xxd -p "${@:?}")
-}
-function hexprl() {
-    echo ${#$(hexpr "$@")}
-}
-function hexprline() {
-    echo $(hexpr "$@")
-}
-
-
-# Uppercase.
-function uc() {
-    printf '%s' "${(U)@}"
-}
-# Remove whitespaces.
-function nosp() {
-    printf '%s' "${@// /}"
-}
-
 # function
 # date
 function date_list_formats() {
@@ -251,39 +214,6 @@ function print-q() {
     builtin print -- "${(qqqq)argv}"
 }
 
-alias f30='fds {0..30}'
-function fdc() {
-    function fdc_open() {
-        exec {ifd}<&0 {ofd}>&1 {efd}>&2
-    }
-    function fdc_close() {
-        exec {ifd}>&- {ofd}>&- {efd}>&-
-    }
-    function fdc_show() {
-        for id in {i,o,e}fd; do
-            
-            if [[ -v $id ]]; then
-            
-            fi
-        done
-#        [[ -v ifd ]] && [[ -v ofd ]] && [[ -v efd ]]
-    }
-    
-    typeset -ig {i,o,e}fd
-    typeset cmd
-    if [[ $# -eq 0 ]]; then
-        cmd='show'
-    else
-        cmd=$1
-        shift
-    fi
-    
-    if ! fn isdef ${0}_${cmd}; then
-        error err
-    fi
-    OK ok
-}
-
 
 #
 function lorem() {
@@ -326,74 +256,6 @@ function docsets() {
     printf "  $(yellow '%s')\n" ${(o)dsets:t}
 }
 
-function h~old() {
-    local n=100; n=${@:+$HISTCMD}
-    history -${n} | fgrep "${@:-''}"
-}
-
-
-
-
-function write-lines() {
-    local line_count text_length
-    line_count=${1:-1}
-    text_length=${2}
-    local line pad length
-    for line in {1..$line_count}; do
-        pad=$(( ${#line_count} + 1 ))
-        length=${text_length:-$line}
-        text=$( printf '%s' $(dd if=/dev/random bs=1 count=$length 2>/dev/null |
-            xxd -p) )
-        print ":${(r:$pad:)line}   ${text:0:$length}   ${(l:$pad:)line}:"
-    done
-}
-
-function ndo() {
-    local n cmd i
-    n=${1:-1}
-    shift
-    cmd=$@
-    for i in {1..$n}; do
-        ${=cmd}
-    done
-}
-
-
-function compress3 {
-    local file=$1
-    local filename=${file:r}
-    local fileext=${file:e}
-    
-    if [[ -z $file ]]; then
-        error 'No file to compress'
-        return 2
-    fi
-    if [[ $file != $filename ]]; then
-        mv -- $file $filename
-    fi
-    
-    local tools=(
-        "zip -1 ${filename:r}.zip1 $filename"
-        "zip -9 ${filename:r}.zip9 $filename"
-        "gzip -1 -k ${filename:t}"
-        
-    )
-    for t in $tools; do
-        echo $t
-    done
-    
-    if [[ $file != $filename ]]; then
-        mv -- $filename $file
-    fi
-}
-
-function txt() {
-    name=${1:t}
-    files list .
-    if [[ -n ${(M)files:#*/$name.*} ]]; then
-        echo "there are ${(M)#files:#*/$name-?*.*} files named '$name'"
-    fi
-}
 
 
 
@@ -402,16 +264,6 @@ function txt() {
 
 
 
-
-
-
-function te() {
-    a='11 22'
-    b=(a b)
-    c='z z z'
-    echo $a $b "$c" | highlight
-    highlight $a $b "$c" 
-}
 
 function test-cdp() {
     dir=$PWD
@@ -433,16 +285,6 @@ function test-cdp() {
 }
 
 
-# Associative arrays
-function k() {
-    print -P -- "%U$argv keys%u:   %B%F{4}${(Pkj:%f%b, %B%F\{4\}:)argv}%f%b"
-}
-function v() {
-    print -P -- "%U$argv values%u: %B%F{6}${(Pvj:%f%b, %B%F\{6\}:)argv}%f%b";
-}
-function kv() {
-    print -C2 -P -- "${(Pkv)argv}"
-}
 
 function env0() {
     /usr/bin/env -i "${(@f)$(< $zterm/etc/zsh/env0)}" \
@@ -456,55 +298,6 @@ function env1() {
 
 
 
-function fdw() {
-#    typeset filepath=/tmp/$0.txt
-    typeset file="$0_$$_$(date -j +'%H:%M').txt"
-    exec 3<>/tmp/$file
-    
-    print -- "$0" >&3
-    print -P -- "Arguments[$#]: {$argv}" >&3
-    print -P -- "fds 0..10:" >&3
-    fds {0..10} >&3
-    
-    exec 3>&-
-    return $?
-}
-
-#
-#fdc_foo() {
-#    count=$1
-#    repeat $count; do
-#        local delay=$(( $RANDOM % 10 ))
-#        if [[ $delay -gt 2 ]]; then
-#            print -P "Error: sleep delay is too long: i=%F{3}${delay}%f" >&2
-#        else
-#            print -P "OK: sleeping for i=%F{3}${delay}%f seconds..." >&1
-#            sleep ${delay:-0}
-#        fi
-#    done
-#}
-#
-#function fdc() {
-#    exec 3<&0
-#    exec 4>&1
-#    exec 5>&2
-#    count=${1:-1}
-#    result=$( { time (fdc_foo $count 1>&4 2>&5); } 2>&1 )
-#
-#    read -t -u0 args0;
-#    red "FD0: $args0"
-#    echo
-#    read -t -u3 args3;
-#    blue "FD3: $args3"
-#    echo
-#
-##    cat <&3
-##    cat <&4
-##    cat <&5
-#
-#    exec 3>&- 4>&- 5>&-
-#    redbg "Result = $result"
-#}
 
 
 
@@ -543,6 +336,12 @@ function print-br() {(
     typeset linebr="${2:-\n}"
     repeat $n { printf '%b' "$linebr" }
     return 0
+)}
+
+function print-ln() {(
+    typeset -i width=${1:-$COLUMNS}
+    typeset char=${2:-'*'}
+    print -- ${(pr:$width::$char:)}
 )}
 
 
@@ -857,7 +656,8 @@ function test_print-var() {
 
 
 
-#MARK: - Misc Functions
+#MARK: - Keep 
+# Misc Functions
 # Move a file to iCloud.
 function icmv() {
     # Create 'MovedFiles' directory
@@ -884,6 +684,9 @@ function thesaurus() {
 }
 
 
+
+
+
 function word() {
     function word_thesaurus() {
         base='https://www.thesaurus.com/browse'
@@ -893,28 +696,24 @@ function word() {
         base='https://www.wordhippo.com/what-is/sentences-with-the-word/'
     }
     
-    case $# in
-        0)  fn print-commands $0
-            return 22
-        ;;
-        1)  error -1 'Word is not specified.'
-            
-        ;;
-    esac
-    
-    if [[ $# -lt 2 ]]; then
-        error -1 'Bad input.'
+    if [[ $# -eq 0 ]]; then
+        fn print-commands $0
+        return 2
     fi
+    
     typeset cmd=$1
     shift
-    
-    typeset word
-    word=${argv// /+}
-    
-    typeset base url
     if [[ ${+functions[${0}_${cmd}]} -eq 0 ]]; then
         error -127 'Command not found: $cmd.'
     fi
+    
+    typeset base url
+    typeset word
+    word=${argv// /+}
+    if [[ -z $word ]]; then
+        error -1 'Word not set.'
+    fi
+    ${0}_${cmd} $word
     
 }
 
@@ -980,6 +779,7 @@ function webloc() {
 }
 
 
+
 # Initialize an array of letters A-Z and a-z.
 #
 #   1) ABC
@@ -1028,26 +828,6 @@ function ABC() {
     return 0
 }
 
-function rvar() {
-    typeset -i count=${1:-1}
-
-    typeset -a rvars=()
-    while [[ ${#rvars} -lt $count ]]; do
-    redbg $#rvars ' -- ' $count
-        rindex=$(( $RANDOM % ${#ABC} ))
-        rvalue=${ABC[$rindex]}
-        blue "ADD $rvalue @ $rindex"
-        rvars+=($rvalue)
-        
-        yellowbg $rvars
-        echo;echo
-    done
-    print -l $rvars
-
-
-
-    return 0
-}
 
 
 function setget() {
@@ -1095,30 +875,6 @@ function setget() {
     done
 }
 
-
-
-
-function one-by-one() {
-    typeset -a commands
-    commands=($argv)
-    local argc=$#
-    
-#    while [[ -n $1 ]] && [[ $? -eq 0 ]]; do
-#        () { green $1; return $1 } $1
-#        shift
-#    done
-#    done
-#
-#    for cmd in $commands; do
-    while [[ -n $1 ]]; do
-        $=1
-#        $=cmd
-        
-        printf '%d/%d  -  continue? (y/n)  ' $# $argc
-        read -q do_next
-        shift
-    done
-}
 
 
 function get-arguments-t() {
@@ -1175,16 +931,19 @@ function get-arguments-t() {
 
 
 
-function cat() {
-    if [[ ! -v cc ]]; then
-        /bin/cat ${argv}
-    else
-        print -P -- "$0: setting output color to %F{${cc}}Color #${cc}%f."
-        tput setaf $cc
-        /bin/cat ${argv}
-        tput sgr0 
+function cat() {(
+    if [[ -v cc ]]; then
+        print -P -- "%S%K{${cc}}${0}%f%s"
+        esc $cc
     fi
-}
+    $(which -p $0) $argv
+    typeset -i code=$?
+    esc 0
+    return $code
+)}
+
+
+
 #
 #
 #    typeset input=${argv:-/dev/stdin}
@@ -1249,18 +1008,16 @@ function cat() {
 #typeset -A arrxyz
 #arrxyz=( [x1]=100 [y1]=500 )
 
+
+
+# All 'print -P' prompts
 function all-prompts() {
-    
     typeset -A result
     result=()
-    
     typeset -a list
     list=($(< $zterm/etc/prompt-sequences.txt))
-    
-    
     typeset file="$zterm/etc/prompt-sequences.txt"
     typeset reset='\e[0m'
-    
     () {
         while [[ -n $1 ]]; do
             cmd=(print -P "'%${1}' ")
@@ -1269,48 +1026,10 @@ function all-prompts() {
             shift
         done
     } $(<$file)
-    
-    
-#    for seq in $list; do
-#        cmd=(print -P "'%${seq}' ")
-#        value=$($cmd)
-#        result+=("$cmd" "${(Q)value}${reset}")
-#    done
-#
-#
-#    () {
-#        while [[ -n $1 ]]; do
-#        print $1
-#        shift
-#        done
-#    } <(<$zterm/etc/prompt-sequences.txt)
-    
     print -aC2 -- ${(kv)result}
     return 0
 }
 
-export texpr="100 -eq 100"
-export fexpr="\! -n 'not empty'"
-
-
-function get_exit_code() {
-    typeset -i ofd
-    exec {ofd}>/tmp/EXIT_CODE
-    # Run a command with arguments
-    typeset cmd=$1
-    shift
-    (eval '$cmd $argv' &>/dev/null)
-    # Get the exit code
-    typeset exit_code=$?
-    
-    
-    
-#    $( $cmd $argv )
-    print -- "Exit code: $exit_code" >&$ofd
-    print -P -- "Written to %Bfd $ofd%b by %m"
-    exec {ofd}>&-
-#    print-array this
-}
 
 
 
@@ -1325,11 +1044,6 @@ function findf() {
         done
     ) 2>/dev/null
 }
-
-
-
-
-
 function mapf() {
     zmodload zsh/mapfile
     typeset -ag map
@@ -1344,43 +1058,80 @@ function mapf() {
 }
 
 
-function print-input() {
-    typeset name=$1
-    shift
-    typeset count=${#}
-    typeset values=${(j:, :)argv}
+function dir() {
+    typeset dirpath=${1:-$PWD}
+    find $dirpath/* -prune
     
-    if [[ -t 1 ]]; then
-        name="%F{4}%U${name}%u%f"
-        count="%F{4}${count}%f"
-        values=
-    fi
-    
-    print -P -- "${name}: argv[${count}] = {${values}}"
-    
-#    print -P -- "${0}: argv[${#}]="
-#    trap 'print -P -- "${0}: in (%x %N)"' EXIT
 }
+
+# Initialize an array or associative Array
+function Array array() {
+    # Get array name
+    typeset reply=$1
+    [[ -z $reply ]] && usage 'Bad input' '$0 name [value, ...]'
+    shift
+    #
+    [[ -v $reply ]] && unset $reply
+    typeset type="-${0[1]}g"
+    
+    # Set array values
+    typeset $type -g $reply
+    case $1 in
+        ## [Aa]rray -c: set array elements to output of command ##
+        -c) shift
+            set -A $reply ${(@f)"$(${=argv})"}
+        ;;
+        ## [Aa]rray: set array elements to arguments ##
+        *)  set -A $reply $argv
+        ;;
+    esac
+        
+    # Print array
+    [[ -t 1 ]] && print-var $reply
+}
+
+
+function print-input() {
+    print -P -- "%F{5}>%f %BInput of %F{5}%U${0}%u%f:%b"
+    print-var -1 argv
+}
+
+
+
+
+
+function jb() {
+    typeset -i ifd
+    exec {ifd}
+    while read arg; do
+        notify -- $arg
+    done
+}
+
+#function print-input() {
+#    typeset name=$1
+#    shift
+#    typeset count=${#}
+#    typeset values=${(j:, :)argv}
+#
+#    if [[ -t 1 ]]; then
+#        name="%F{4}%U${name}%u%f"
+#        count="%F{4}${count}%f"
+#        values=
+#    fi
+#
+#    print -P -- "${name}: argv[${count}] = {${values}}"
+#
+##    print -P -- "${0}: argv[${#}]="
+##    trap 'print -P -- "${0}: in (%x %N)"' EXIT
+#}
 
 function inp() {
     print-input $0 $argv
 }
 
 
-function date_at() {
-    typeset -a settings=(y m w d H M S)
-#    -v 0H
-}
-
-#date_at() {}
-
-function calcdate() {
-    start=$(date -j)
-#    end=$(date -j -v '+
-}
-
-
-funcstat() {
+function funcstat() {
     bred 'Function Trace'
     print -l -x2 -- '\t'${^functrace}
     echo
@@ -1391,6 +1142,31 @@ funcstat() {
 
 
 
+        # sed -E -e 's/'$1'/'$2'/g'
+
+function find_replace() {
+    file=$1
+    shift
+    () (
+        file=$1
+        shift
+        while [[ -n $2 ]]; do
+            perl -pe "s/${(q)1}/'${(q)2}/g" -i $file
+            shift 2
+        done
+        cat <$file
+    ) =(<&0) $argv
+    return 0
+}
+
+function hsym() {
+    typeset -A map
+    map=( ['{']=$(red '{')     ['}']=$(red '}')
+          ['[']=$(blue '[')   [']']=$(blue ']')
+          ['(']=$(green '(')  [')']=$(green ')') )
+    find_replace ${(kv)map} <$1
+}
+
 function notify() {
     typeset program=${${functrace[1]%:*}:-$0}
     if [[ -t 1 ]]; then
@@ -1398,7 +1174,7 @@ function notify() {
     fi
     
     # Print
-    builtin print -Pn -X2 "${program}:\t"
+    builtin print -Pn -X2 -- "${program}:\t"
     builtin print ${argv}
     return 0
 }
@@ -1418,5 +1194,3 @@ typeset -a iff_exprs=(
 
 
 
-function T0() green "True ($?)"
-function F1() red "False ($?)"

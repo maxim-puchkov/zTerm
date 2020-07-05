@@ -7,10 +7,67 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
+#function print-header() {(
+#
+##    autoload -Uz get
+##    get -o w:$COLUMNS b:13 f:15
+#
+#    typeset -A fargs
+#    set -A fargs -w ${2:-$COLUMNS} -b ${3:-13} -f ${4:-15}
+#
+#    typeset title=$1
+#    typeset -i width=${fargs[-w]}
+#    typeset -i bg_color=${fargs[-b]}
+#    typeset -i fg_color=${fargs[-f]}
+#
+#    print -P -- "${(pr:$width:)title}"
+#)}
+
 # <#Function description#>
-function print-line() {
-    local character="${1[1]:-*}"
-    local width=${2:-$(tput cols)}
-    tput sgr0
-    lgrey $( printf '%*s%s\n' $width '' | tr ' ' "$character" )
-}
+function print-line() {(
+    autoload -Uz get-arguments
+    typeset -A fn_opts
+    get-arguments -A fn_opts -o w t c t f b -- $argv
+    print-var fn_opts
+#    fn_opts=( [width]=$COLUMNS [title]='' [char]='*' [tab]=1 [fg]=7 [bg]=0 )
+    
+    
+    typeset title
+    typeset -i tab=${fn_opts[tab]}
+    if [[ -n $fn_opts[-t] ]]; then
+        title=$(expand -t $tab <<< $fn_opts[-t])
+#        title=$(expand -t $tab "${fn_opts[title]}")
+    fi
+    
+    
+    
+    # Colors and widths
+    typeset -i bg fg w tab
+    bg=$fn_opts[-b]
+    fg=$fn_opts[-f]
+    w=$fn_opts[-w]
+    tab=$fn_opts[-t]
+    # Line character and title
+    typeset c=$fn_opts[-c]
+    # Print line
+    echoti setaf $fg
+    echoti setab $bg
+    print -P -- "${(pr:$w::$c:)title}"
+    echoti sgr0
+
+    
+    return $?
+)}
+
+
+#function print-line() {(
+#    function line() {
+#        print -- ${(l:$width::$char:)}
+#    }
+#
+#
+#    local character="${1[1]:-*}"
+#    local width=${2:-$(tput cols)}
+#    tput sgr0
+#    lgrey $( printf '%*s%s\n' $width '' | tr ' ' "$character" )
+#)}

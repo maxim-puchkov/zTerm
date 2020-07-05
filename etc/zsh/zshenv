@@ -20,14 +20,4 @@ export ZUTIL="$ZDOTDIR/.zutil"          # 12    ##: ref
 export ZNET="$ZDOTDIR/.znetwork"        # 13    ##: ref
 export ZMISC="$ZDOTDIR/.zmisc"          # 14    ##: ref
 export ZCOMP="$ZDOTDIR/.zcomp"          # 17    ##: ref
-
-
-
-
-#print -l -P -- "%SArgs:%s ($#)=[${@}]"
-
-#if [[ ! -e ~/etc/env0 ]]; then
-#  /bin/mkdir -p  -- ~/etc      &&
-#  /usr/bin/touch -- ~/etc/env0 &&
-#  /usr/bin/env    > ~/etc/env0
-#fi
+export ZTEST="$ZDOTDIR/.ztest"

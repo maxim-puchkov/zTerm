@@ -1,0 +1,35 @@
+#!/bin/zsh
+
+#  usage
+#  Z-Function (80)
+#
+#  Created by Maxim Puchkov on 2020-07-02.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Print an error message and
+# program usage description.
+function usage() {(
+    # No input
+    if [[ -z $1 ]]; then
+        error -1
+        return 1
+    fi
+    
+    # Set error description
+    typeset error_desc=$1
+    shift
+    
+    # Usage color and line prefix
+    typeset -i color=6
+    typeset prefix='  %F{'${color}'}>%f '
+    # Append 'Usage' label to description
+    typeset -a usage_desc=('')
+    usage_desc+=('%F{'${color}'}%U''Usage''%u%f:')
+    # Append arguments
+    usage_desc+=(${prefix}${^argv})
+    
+    # Print error
+    error -T +. $error_desc ${(@F)usage_desc}
+    return $?
+)}

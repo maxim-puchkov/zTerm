@@ -17,8 +17,10 @@
 #     and continue without returning any value.
 #       warning  'description...'
 #       error -0 'description...'
-function error() {(
+function error() {
     #MARK: - Data
+    typeset default_title=${(C)0}
+    typeset -x prog
     # Error message
     typeset message
     typeset message_title
@@ -27,36 +29,36 @@ function error() {(
     typeset -i exit_code=1
     typeset exit_code_label
     # Output format options
-    typeset -i output_color=${error_color:-1}
-    typeset -i output_color_2=${warning_color:-3}
-    typeset split_lines='false'
-    typeset autocapitalize='true'
-    typeset remove_trailing_space='true'
-    typeset trailing_period='true'
-    typeset highlight_variables='true'
-    typeset return_on_exit='true'
+    typeset -i c_error=${error_color:-1}
+    typeset -i c_warning=${warning_color:-3}
+    typeset -i split_lines=0
+    typeset -i autocapitalize=1
+    typeset -i remove_trailing_space=1
+    typeset -i trailing_period=1
+    typeset -i highlight_variables=1
+    typeset -i return_on_exit=1
+    typeset -i print_description=1
+    typeset -i print_funcstat=0
+    typeset -i always_default=0
     
     
     
     
     #MARK: - Functions
     # Highlight all shell '$variables' in description
-    function error-replace-variables() {
-        # Find and replace variables
-        typeset find replace
-        find='[$]([{(])?(([A-Za-z_][^ ]*)?[A-Za-z0-9!@#$%^&*=?_])([})])?'
-        replace="%F{1}\${\${\2}:-$text_labels[null]}%f"
-        # Highlight variables in description
-        message_desc=$(/usr/bin/sed -E -e "s/${find}/${replace}/g" <<< "${argv}")
-    }
+    autoload -Uz syntaxf
+    function error-replace-variables() syntaxf -c 1 $argv
+    
+    
+    
     
     #MARK: Format
     # Title - text, color, and exit code
     function error-format-title() {
         if [[ $exit_code -ne 0 ]]; then
-            message_title="%F{${output_color}}${prog}%f"
+            message_title="%F{${c_error}}${prog}%f"
         else
-            message_title="%F{$output_color_2}${prog}%f"
+            message_title="%F{${c_warning}}${prog}%f"
         fi
         return 0
     }
@@ -67,23 +69,21 @@ function error() {(
     
     # Description - capitalization, trailing period, highlight
     function error-format-description() {
-        message_desc="${message_desc:-No description.}"
-        [[ $autocapitalize == 'true' ]] &&
+        message_desc="${message_desc:-No description}"
+        if [[ $autocapitalize -eq 1 ]]; then
             message_desc="${(C)message_desc[1]}${${message_desc:1}}"
-        if [[ $remove_trailing_space == 'true' ]]; then
-            
-            if [[ $message_desc[-1] == ' ' ]]; then
-                message_desc="${message_desc% *}"
-            fi
         fi
-        if [[ $trailing_period == 'true' ]]; then
-            if [[ ! "${(q)message_desc}" =~ $'\n' ]] &&
-               [[ ! "${(q)message_desc}" =~ '^.*\.$' ]]; then
-                message_desc="${message_desc}."
-            fi
+        if [[ $remove_trailing_space -eq 1 ]] &&
+           [[ $message_desc[-1] == ' ' ]]; then
+            message_desc="${message_desc% *}"
         fi
-        if [[ $highlight_variables == 'true' ]]; then
-            error-replace-variables $message_desc
+        if [[ $trailing_period -eq 1 ]] &&
+           [[ ! "${(q)message_desc}" =~ $'\n' ]] &&
+           [[ ! "${(q)message_desc}" =~ '^.*\.$' ]]; then
+            message_desc="${message_desc}."
+        fi
+        if [[ $highlight_variables -eq 1 ]]; then
+            message_desc=$(error-replace-variables $message_desc)
         fi
         return 0
     }
@@ -92,22 +92,19 @@ function error() {(
         function error-format-description() { return 0; }
     }
     
-    # Message - title, description, and return status
-    function error-format-message() {
-        message="${message_title}${exit_code_label}"
-        if [[ -n $message_desc ]]; then
-            message="${message}: ${message_desc}"
-        else
-            message="${message}."
-        fi
-        return 0
-    }
     # Format and print the error/warning message
     function error-format() {
+        if [[ $always_default -eq 1 ]]; then
+            prog=${default_title}
+        fi
         error-format-title
         error-format-description
-        error-format-message
-#        print -P -- "$message" >&2
+        local prefix="${message_title}${exit_code_label}"
+        if [[ -n $message_desc ]]; then
+            print "${prefix}: ${message_desc}"
+        else
+            print "${prefix}."
+        fi
         return 0
     }
     
@@ -126,66 +123,80 @@ function error() {(
           [[ $1 != '--' ]]; do
         case $1 in
             ## error -h,--help: show help message ##
-            -h|--help)
+            (-h|--help)
                 fn print-commands $0
                 return 0
             ;;
             ## error -e: set the exit code ##
-            -e) if [[ -n $2 ]] && [[ $2 =~ '^[0-9]+$' ]]; then
-                    exit_code=$2
+            (-e)
+                typeset val=$2
+                if [[ $val =~ '^[0-9]+$' ]]; then
+                    exit_code=$val
                     shift
                 else
-                    ( new_code=$2 error -1 'Exit code $new_code is invalid' )
+                    ( error -1 'Exit code $val is invalid' )
                     return $?
                 fi
             ;;
+            ## error -T: always display message title as "Error" ##
+            (-T)
+                let always_default=1
+            ;;
             ## error -c,--code: display exit code with error message ##
-            -c|--code)
+            (-c|--code)
                 exit_code_label="%f [${exit_code}]"
             ;;
-            ## error -D,--plain-description: do not format description ##
-            -D|--plain-description)
-                error-plain-description
-            ;;
-            ## error -u,--usage: set title to 'Usage' ##
-            -u|--usage)
-                error-plain-title
-                error-plain-description
-                message_title='%F{4}Usage%f'
-            ;;
             ## error -t,--title: set error message title ##
-            -t|--title)
+            (-t|--title)
                 if [[ -z $2 ]]; then
                     error -1 'Error title is not set'
                 fi
-                error-plain-title
-                message_title="%F{${output_color}}${2}%f"
+                prog="${2}"
                 shift
             ;;
             
             
-            # Additional formatting options
-            ## error -S,--split-lines: capitalize first letter ##
-            ## error +S,--no-split-lines: do not capitalize first letter ##
-            -S|--split-lines)       split_lines='true'      ;;
-            +S|--no-split-lines)    split_lines='false'     ;;
             
+            
+            # Additional formatting options
+            ## error -L,--split-lines: split arguments ##
+            ## error +L,--no-split-lines: do not split arguments ##
+            ([-+]L|--(no-|)line-split)
+                let split_lines=$(boolopt $1 1 0)
+            ;;
             ## error -A,--autocapitalize: capitalize first letter ##
             ## error +A,--no-autocapitalize: do not capitalize first letter ##
-            -A|--autocapitalize)    autocapitalize='true'    ;;
-            +A|--no-autocapitalize) autocapitalize='false'   ;;
-            
-            ## error -P,--trailing-period: add trailing period ##
-            ## error +P,--no-trailing-period: do not add trailing period ##
-            -P|--trailing-period)    trailing_period='true'  ;;
-            +P|--no-trailing-period) trailing_period='false' ;;
-            
+            ([-+]A|--(no-|)autocapitalize)
+                let autocapitalize=$(boolopt $1 1 0)
+            ;;
+            ## error -.,--trailing-period: add trailing period ##
+            ## error +.,--no-trailing-period: do not add trailing period ##
+            ([-+].|--(no-|)trailing-period)
+                let trailing_period=$(boolopt $1 1 0)
+            ;;
             ## error -H,--highlight: enable syntax highlighting ##
             ## error +H,--no-highlight: disable syntax highlighting ##
-            -H|--highlight)    highlight_variables='true'    ;;
-            +H|--no-highlight) highlight_variables='false'   ;;
-            
-            [-+]R|--(no-|)return) return_on_exit=$(boolopt $1 'true' 'false') ;;
+            ([-+]H|--(no-|)highlight)
+                let highlight=$(boolopt $1 1 0)
+            ;;
+            ## error -R,--return: set exit trap ##
+            ## error +R,--no-return: continue after error ##
+            ([-+]R|--(no-|)return)
+                let return_on_exit=$(boolopt $1 1 0)
+            ;;
+            ## error -F,--funcstat: display 'funcstat' ##
+            ## error +F,--no-funcstat: do not display 'funcstat' ##
+            ([-+]F|--(no-|)funcstat)
+                let print_funcstat=$(boolopt $1 1 0)
+            ;;
+            ## error -D,--description: print error description ##
+            ## error +D,--no-description: do not print error description ##
+            ([-+]D|--(no-|)description)
+                let print_description=$(boolopt $1 1 0)
+                if [[ $print_description -eq 0 ]]; then
+                    error-plain-description
+                fi
+            ;;
             
             # Stop parsing options
             *)  break ;;
@@ -195,33 +206,34 @@ function error() {(
     [[ $1 == '--' ]] && shift
     
     
-    # Set display name
-    if [[ ! -v prog ]]; then
-        prog=${funcstack[2]:-${(C)0}}
-    fi
     
-    if [[ $exit_code -eq 0 ]]; then
-        default prog 'Warning'
+    # Set program display name
+    if [[ -z $prog ]]; then
+        prog=${funcstack[2]:-$default_title}
     fi
     
     # Set message description to the remaining arguments
-    if [[ $split_lines == 'true' ]]; then
+    if [[ $split_lines -eq 1 ]]; then
         message_desc=${(@F)argv}
     else
         message_desc=${argv}
     fi
     
-    # Print and exit
-    error-format
-    print -P -- $message >&2
-#    if [[ $return_on_exit == 'true' ]]; then
-#        print trap 'exit '${exit_code}';' EXIT
-#        trap 'return '${exit_code}';' EXIT
-#    fi
+    # Format and print
+    if [[ $print_description -eq 1 ]]; then
+        message=$(error-format)
+        print -P -- "${message}" >&2
+    fi
+    if [[ $print_funcstat -eq 1 ]]; then
+        funcstat
+    fi
     
+    # Set exit return trap
+    if [[ $return_on_exit -eq 1 ]] &&
+       [[ $exit_code -ne 0 ]]; then
+        trap 'return '${exit_code}';' EXIT
+    fi
+    
+    unset -fm 'error_*'
     return $exit_code
-)
-    typeset -i code=$?
-    trap '{return '$code'}' EXIT
-    return $code
 }
