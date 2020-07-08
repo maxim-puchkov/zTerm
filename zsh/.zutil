@@ -306,104 +306,6 @@ function list-services() {
         /usr/bin/fgrep -e 'com.maximpuchkov'
 }
 
-function print-quotes() {
-    typeset arg="$argv"
-    printf "%-4s: ${lb}%s${rb}\n"  "q"    "${(q)arg}"
-    printf "%-4s: ${lb}%s${rb}\n"  "qq"   "${(qq)arg}"
-    printf "%-4s: ${lb}%s${rb}\n"  "qqq"  "${(qqq)arg}"
-    printf "%-4s: ${lb}%s${rb}\n"  "qqqq" "${(qqqq)arg}"
-}
-
-function print-debug() {
-    local c='%F{4}'
-    local args="$argv"
-    local value="${c}${args}%f"
-    local length="${c}${#args}%f"
-    local label='%B%UValue%u%b'
-    builtin printf "%s(length: %s) = <%s>\n" \
-                    "${(%)label}" "${(%)length}" "${(%)value}"
-}
-
-
-# Print
-function print-br() {(
-    # Number of line breaks to print
-    typeset n=${1:-0}
-    if [[ ! $n =~ '^[1-9][0-9]*$' ]]; then
-        error -1 'invalid number of line breaks: $n.'
-    fi
-    # Default line break is '\n'
-    typeset linebr="${2:-\n}"
-    repeat $n { printf '%b' "$linebr" }
-    return 0
-)}
-
-function print-ln() {(
-    typeset -i width=${1:-$COLUMNS}
-    typeset char=${2:-'*'}
-    print -- ${(pr:$width::$char:)}
-)}
-
-
-
-#function untab() {
-#    typeset find replace out
-#    find='^[[:space:]]+'
-#    replace=''
-#    out=$(sed -n -E "s/${find}/${replace}/p" <<< "$argv")
-#    print -- ${out:-$argv}
-#}
-
-
-
-
-
-
-
-#MARK: - TEMP
-#export TEMP_THEME_N=${$(< ~/var/TEMP_THEME_N):-1}
-#
-#function theme_dislike() {
-#    local f=$HOME/var/Themes/disliked.txt
-#    echo $ZSH_THEME >> $f
-#    logf "Disliked oh-my-zsh theme '\$ZSH_THEME'."
-#    logf "Theme name is written to \$f."
-#    theme_n; sleep 3; re;
-#}
-#function theme_like() {
-#    local f=$HOME/var/Themes/liked.txt
-#    local i=$(( ${=$(wc -l < $f)} + 1 ))
-#    echo $ZSH_THEME >> $f
-#
-#    local outf=$HOME/var/Themes/"Like ${i} - $ZSH_THEME"
-#    theme_example > $outf
-#    logf "Liked oh-my-zsh theme '\$ZSH_THEME'."
-#    logf "Theme name is written to '\$f'."
-#    logf "Theme example is written to '\$outf'."
-#    theme_n; sleep 3; re;
-#}
-##
-#function theme_n() {
-#    local -i next=$1
-#    if [[ $next -eq 0 ]]; then
-#        next=$(( $TEMP_THEME_N + 1 ))
-#    fi
-#    echo $next > ~/var/TEMP_THEME_N
-#}
-#function theme_example() (
-#    cd $zterm
-#    for p in PS{1..4}; do
-#        print -P -x4 -- "\tPrompt '$p' = <${(P)p}>"
-#    done
-#    echo;echo;
-#    ls -lFGHah
-#)
-#
-#alias dislike='theme_dislike'
-#alias like='theme_like'
-#alias example='theme_example'
-#alias next='theme_n'
-#MARK:   TEMP -
 
 function unwrap() {
     tput rmam
@@ -413,50 +315,6 @@ function unwrap() {
 }
 
 
-#function tap() {
-#    pv@
-#    while [[ $1 =~ '^[-+]' ]]; do
-#        D "Shifting 1=$1"
-#        shift
-#    done
-#    pv@
-#    builtin set -- "${(@)argv}"
-#    pv@
-#}
-
-
-
-
-
-
-
-
-
-
-
-#function cleanf() {
-#    local bytes=256
-#    local file=$1
-#    local size=$(stat -f '%z' < $file)
-#    print -a -C2 -Pl -- "%UFile:%u:" "$file" "%USize%u:" "$size bytes"
-#
-#    hexyl -n $bytes < $file
-#
-#    # ...
-#}
-#
-#
-#function f () {
-#    integer a b c
-#     #{1,2}
-#    #=${1:3}
-#    exec {a}>&0 {b}>&1 {c}>&2
-##    exec
-##    exec {
-#    print 'This is a log message.' >&$a >&1
-#    S a: $a,   b: $b,   c: $c
-#    exec {a}>&- {b}>&- {c}>&-
-#}
 
 
 
@@ -483,12 +341,41 @@ function randbytes() {
 }
 
 
-function ow() {
-    stat -f "%Sp -> owner=%SHp group=%SMp other=%SLp"
+function print-quotes() {
+    typeset arg="$argv"
+    printf "%-4s: ${lb}%s${rb}\n"  "q"    "${(q)arg}"
+    printf "%-4s: ${lb}%s${rb}\n"  "qq"   "${(qq)arg}"
+    printf "%-4s: ${lb}%s${rb}\n"  "qqq"  "${(qqq)arg}"
+    printf "%-4s: ${lb}%s${rb}\n"  "qqqq" "${(qqqq)arg}"
 }
-function recent_files() {
-    stat -f "%m%t%Sm %N" ${argv:-$PWD}/* | sort -rn | head -3 | cut -f2-
+
+function print-debug() {
+    local c='%F{4}'
+    local args="$argv"
+    local value="${c}${args}%f"
+    local length="${c}${#args}%f"
+    local label='%B%UValue%u%b'
+    builtin printf "%s(length: %s) = <%s>\n" \
+                    "${(%)label}" "${(%)length}" "${(%)value}"
 }
+# Print
+function print-br() {(
+    # Number of line breaks to print
+    typeset n=${1:-0}
+    if [[ ! $n =~ '^[1-9][0-9]*$' ]]; then
+        error -1 'invalid number of line breaks: $n.'
+    fi
+    # Default line break is '\n'
+    typeset linebr="${2:-\n}"
+    repeat $n { printf '%b' "$linebr" }
+    return 0
+)}
+
+function print-ln() {(
+    typeset -i width=${1:-$COLUMNS}
+    typeset char=${2:-'*'}
+    print -- ${(pr:$width::$char:)}
+)}
 
 
 function tprof() {
@@ -506,17 +393,6 @@ function GetProfile() {
 
 
 
-function testpyg() {
-    for style in xcode{dark,light}; do
-        pygmentize -O style=$style $argv
-        print-line
-    done
-}
-function pyg-rtf() {
-    local file=$1
-    shift
-    pygmentize -f 'rtf' ${=argv}
-}
 
 
 
@@ -525,42 +401,6 @@ function pyg-rtf() {
 
 
 
-function le() {
-    unfunction _$0
-cat >"$zdot/completions/_$0" <<EOF
-#compdef $0
-
-# _$0
-#
-#
-# zsh function completion
-#
-
-typeset -a args=()
-
-args=(
-    "-n[create an empty filename (the disk blocks aren't allocated until data is written to them)]"
-    "-v[report the names and sizes of created files]"
-    $(print -Pl -- ${(qq)argv};)
-)
-
-#_arguments -s -S \$args
-_arguments -s \$args \
-    '-E[specify EOF marker]:end-of-file marker' \
-    '(-x -i)-I[specify replacement string for command line]:replacement string' \
-    '(-n -l)-L[call program for every number of lines]:number of input lines' \
-    '(-)1: :(b k m g)' \
-    '*::args: _normal'
-
-
-return 0
-EOF
-    OK ; pass
-    
-    compdef _$0 $0
-    autoload -Uz _$0
-    return 0
-}
 
 
 #MARK: - Manual Pages
@@ -714,7 +554,6 @@ function word() {
         error -1 'Word not set.'
     fi
     ${0}_${cmd} $word
-    
 }
 
 
@@ -758,6 +597,8 @@ function rand() {
     ${0}_${cmd} "$@"
     return $?
 }
+
+
 
 
 # Create a .webloc shortcut file
@@ -942,71 +783,12 @@ function cat() {(
     return $code
 )}
 
+function test_autoload() {
+    (cd -q $zdot
+    print-line -c '*' -w
+    zsh -fivx)
+}
 
-
-#
-#
-#    typeset input=${argv:-/dev/stdin}
-#    if [[ -n $c ]]; then
-#        (
-#            local program="%B${0}%b"
-#            print -P -- "%B>  Setting %F{${c}}color%f of %U${0}%u%b"
-#
-##            printf '>  ' &&
-##            /usr/bin/tput smul &&
-##            printf '%s color is set to %d\n' "${(%)program}" $c &&
-##            /usr/bin/tput rmul
-#        )
-#        /usr/bin/tput setaf $c
-#    fi
-#    cat <<EOF
-#
-#EOF
-#    /bin/cat <$input
-#    /usr/bin/tput sgr0
-#)}
-
-
-
-
-#
-#
-#function iff() {
-#    function iff_result() {
-#        eval "[[ $argv ]]"
-#        print $?
-#    }
-#    
-#    local cond res
-#    for cond in $argv; do
-#        let res=$(iff_result $cond)
-#        printf 'if [[ %s ]]:  %s\n' "${cond}" "${res}"
-#    done
-#    return 0
-#    
-#    
-#    typeset condition
-#    for condition in $argv; do
-#        eval "[[ ${condition} ]]; result=\$?"
-#        
-##        let bool=$(iff_result $1)
-#        print $bool
-#        printf 'if [[ %s ]]:  %s' "${condition}" $bool
-#        shift
-#    done
-##    [[ $argv ]]
-#}
-
-
-    # Format files
-#    typeset -A iofmt_files
-#    iofmt_files=( [labels]="$zterm/etc/iofmt/labels" )
-#    /usr/bin/touch -- ${(k)iofmt_files}
-    
-    #
-
-#typeset -A arrxyz
-#arrxyz=( [x1]=100 [y1]=500 )
 
 
 
@@ -1034,16 +816,6 @@ function all-prompts() {
 
 
 
-function findf() {
-    typeset name=$1
-    typeset -a dirs=($PWD)
-    () (
-        for d in $dirs; do
-            ( /usr/bin/cd -- $d &&
-              /usr/bin/find . -name $name )
-        done
-    ) 2>/dev/null
-}
 function mapf() {
     zmodload zsh/mapfile
     typeset -ag map
@@ -1058,12 +830,23 @@ function mapf() {
 }
 
 
-function dir() {
-    typeset dirpath=${1:-$PWD}
-    find $dirpath/* -prune
-    
-}
 
+#MARK: - Find in Directory
+function dir() {
+    typeset dirpath='.'
+    if [[ -d $1 ]]; then
+        dirpath=${1%/}
+        shift
+    fi
+    typeset -a flags
+    flags=(-mindepth 1 -maxdepth 1 $argv)
+    find $dirpath $flags 2>/dev/null
+    return $?
+}
+compdef _find dir
+
+
+#MARK: - Arrays
 # Initialize an array or associative Array
 function Array array() {
     # Get array name
@@ -1091,9 +874,21 @@ function Array array() {
 }
 
 
+
+function show_prog() {
+    funcstat
+    if [[ -z $1 ]]; then
+        error -1 'Missing program name'
+    fi
+    printf '%s\n' $(esc -t $1 '1;95')
+    return 0
+}
+
 function print-input() {
-    print -P -- "%F{5}>%f %BInput of %F{5}%U${0}%u%f:%b"
-    print-var -1 argv
+#    print -P -- "%F{5}>%f %BInput of %F{5}%U${0}%u%f:%b"
+#    print-var -1 argv
+    print-line
+    show 'Function: %U%F{5}'$0'%f'
 }
 
 
@@ -1125,24 +920,20 @@ function jb() {
 ##    print -P -- "${0}: argv[${#}]="
 ##    trap 'print -P -- "${0}: in (%x %N)"' EXIT
 #}
-
-function inp() {
-    print-input $0 $argv
-}
-
+#
+#function inp() {
+#    print-input $0 $argv
+#}
+#
 
 function funcstat() {
-    bred 'Function Trace'
+    esc '1;91' -t 'Function Trace'
     print -l -x2 -- '\t'${^functrace}
     echo
     
-    bred 'Function Stack'
+    esc '1;91' -t 'Function Stack'
     print -l -x2 -- '\t'${^funcstack}
 }
-
-
-
-        # sed -E -e 's/'$1'/'$2'/g'
 
 function find_replace() {
     file=$1
@@ -1159,13 +950,6 @@ function find_replace() {
     return 0
 }
 
-function hsym() {
-    typeset -A map
-    map=( ['{']=$(red '{')     ['}']=$(red '}')
-          ['[']=$(blue '[')   [']']=$(blue ']')
-          ['(']=$(green '(')  [')']=$(green ')') )
-    find_replace ${(kv)map} <$1
-}
 
 function notify() {
     typeset program=${${functrace[1]%:*}:-$0}
@@ -1182,15 +966,10 @@ function notify() {
 
 
 
-typeset -a iff_exprs=(
-    '-n A'
-    '[ -n B ]'
-    '[[ -n C ]]'
-    '[[ -n D1 ]] && [[ -n D2 ]]'
-    '-n E1 && -n E2 || -n E3'
-    "$texpr"
-    "$fexpr"
-)
+function declare() {
+    declare ${argv}
+}
+#alias declare='() functions[declare]="; $functions[declare]; print ALIAS;"'
 
-
-
+alias declare='() ${(z)$(echo "echo $@; $functions[declare]")}'
+alias bob='() { declare $argv; } '

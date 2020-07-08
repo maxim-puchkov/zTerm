@@ -47,7 +47,7 @@ export ztest="$zdot/Tests"
 export zcust="$zdot/custom"
 
 # SFU Files
-export SFU="$ICLOUD/SFU"
+export SFU="$iCloud/SFU"
 export SFU_USER='mpuchkov'
 export SFU_CSIL='csil-cpu4.cs.surrey.sfu.ca'
 export SFU_MNT="/usr/local/mnt/${SFU_USER}@${SFU_CSIL}"

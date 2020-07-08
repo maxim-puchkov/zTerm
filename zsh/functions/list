@@ -9,8 +9,8 @@
 
 # <#Function description#>
 function list() {
-    default base_options 'BFGHhk'
-    default time_regex $(< $zdot/etc/ls-time.regex)
+    default base_options $(alias_value ls | cut -d '-' -f2)
+    default time_regex $(< $zterm/etc/ls-time.regex)
     
     (
         function header() {
@@ -38,7 +38,6 @@ function list() {
         function list_tch() {
             flags="-lTcrt${base_options}"
             header 'File change time'
-#            do_ls -lFGHTchrt "$@" |
             do_ls $flags "$@" |
                 do_grep --regexp $time_regex
         }
@@ -46,7 +45,6 @@ function list() {
         function list_tm() {
             flags="-lTrt${base_options}"
             header 'Modification time'
-#            do_ls -lFGHThrt "$@" |
             do_ls $flags "$@" |
                 do_grep --regexp $time_regex
         }
@@ -54,7 +52,6 @@ function list() {
         function list_ta() {
             flags="-lTrtu${base_options}"
             header 'File access time'
-#            do_ls -lFGHThrtu "$@" |
             do_ls $flags "$@" |
                 do_grep --regexp $time_regex
         }
@@ -88,8 +85,8 @@ function list() {
         
         
         typeset -A optlist
-        autoload -Uz get-arguments
-        get-arguments -A optlist -f 'h' -- $argv
+        autoload -Uz get
+        get -A optlist -f 'h' -- $argv
         
         if [[ $optlist[-h] -eq 1 ]]; then
             fn print-commands $0

@@ -13,7 +13,6 @@ function usage() {(
     # No input
     if [[ -z $1 ]]; then
         error -1
-        return 1
     fi
     
     # Set error description

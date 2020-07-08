@@ -1,0 +1,32 @@
+#!/bin/zsh
+
+#  caller
+#  Z-Function (85)
+#
+#  Created by Maxim Puchkov on 2020-07-05.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function caller() {
+    if [[ $# -ne 0 ]]; then
+      error -1
+    fi
+        
+    typeset caller_id=${funcstack[3]:-$SHELL}
+#    if [[ -t 1 ]]; then
+      show $caller_id
+#    else
+#      print $caller_id
+#    fi
+    return 0
+    
+    typeset fn=$1
+    () (
+        functions[$fn]="caller; $functions[$fn]"
+        functions $fn
+        read -q
+        $fn
+    )
+    
+}

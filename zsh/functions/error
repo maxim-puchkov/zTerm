@@ -20,7 +20,7 @@
 function error() {
     #MARK: - Data
     typeset default_title=${(C)0}
-    typeset -x prog
+    typeset prog
     # Error message
     typeset message
     typeset message_title
@@ -47,6 +47,8 @@ function error() {
     #MARK: - Functions
     # Highlight all shell '$variables' in description
     autoload -Uz syntaxf
+    
+    
     function error-replace-variables() syntaxf -c 1 $argv
     
     
@@ -82,9 +84,9 @@ function error() {
            [[ ! "${(q)message_desc}" =~ '^.*\.$' ]]; then
             message_desc="${message_desc}."
         fi
-        if [[ $highlight_variables -eq 1 ]]; then
-            message_desc=$(error-replace-variables $message_desc)
-        fi
+#        if [[ $highlight_variables -eq 1 ]]; then
+#            message_desc=$(error-replace-variables $message_desc)
+#        fi
         return 0
     }
     function error-plain-description() {
@@ -221,6 +223,7 @@ function error() {
     
     # Format and print
     if [[ $print_description -eq 1 ]]; then
+        message_desc=$(syntaxf $message_desc)
         message=$(error-format)
         print -P -- "${message}" >&2
     fi

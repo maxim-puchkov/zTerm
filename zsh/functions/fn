@@ -16,6 +16,8 @@
 ## arg1: vars ##
 ## arg2: ##
 function fn() {(
+    autoload -Uz print-line
+    
     ## def: print function source code ##
     function fn_def() {
         local label="function %U%B${fn_name}%b%u () {"
@@ -40,7 +42,6 @@ function fn() {(
     ## show: display function definition and source file ##
     function fn_show() {
         local fn_code=$(fn def $fn_name)
-        local fn_file=$(fn_src $fn_name)
         local fn_line=${(%):-"%F{8}${(l:$COLUMNS::-:)}%f"}
         builtin print -f '%s\n%s\n%s\n\n%s\n' \
             "$fn_line" "$fn_code" "$fn_line" "${(D)fn_file}"
@@ -48,7 +49,6 @@ function fn() {(
     }
     ## open: open function source file ##
     function fn_open() {
-        local fn_file=$(fn_src $fn_name 2>/dev/null)
         if [[ ! -r $fn_file ]]; then
             error -1 'Cannot read source file for function $fn_name.'
         fi
@@ -64,22 +64,28 @@ function fn() {(
     }
     ## sub: list functions defined within a function ##
     function fn_sub() {
-        if ! fn_file=$(fn_src $fn_name); then
-            return 1
-        fi
         typeset fn_syntax fn_pattern
-        fn_syntax="${fn_prefix}_((?:\w|-)+)"
+        fn_syntax='function ('${fn_prefix}'|\$0|\$\{(\(.*\))?0\})_((?:\w|-)+)'
         fn_pattern="^[^#]*(function\s+${fn_syntax}|${fn_syntax}\s*\(\))\s*"
+        
         typeset -a list
         list=($( egrep -o -i -E "${fn_pattern}" -- $fn_file ))
         list=(${${list#'function'*}%*'()'})
+        
+        typeset -a result
         local f
         for f in $list; do
             typeset subfn_name=${f%'('*')'}
+            subfn_name=$(sed -E -e 's/\$(\{0\}|0)/'${fn_prefix}'/g' <<< $subfn_name)
             if [[ ${+functions[$subfn_name]} ]]; then
-                printf '%s\n' "$subfn_name"
+                result+=($subfn_name)
             fi
         done
+        if [[ -z $result ]]; then
+            error -2 'BOB'
+            return 1
+        fi
+        print -l -- $result
         return 0
     }
     ## commands: list function commands ##
@@ -105,9 +111,6 @@ function fn() {(
     }
     ## options: list function flags and options ##
     function fn_options() {
-        if ! fn_file=$(fn_src $fn_name); then
-            return 1
-        fi
         typeset grep_pattern='^[ ]*##[ ]*[\-\+][^ ]+: .* ##[ ]*$'
         typeset sed_pattern='s/## ([\-\+].*): (.*) ##/\1: \2/p'
         typeset -A reply
@@ -126,9 +129,6 @@ function fn() {(
     
     # Completion for flags and options
     function fn_completion-arguments() {
-        if ! fn_file=$(fn_src $fn_name); then
-            return 1
-        fi
         typeset -A reply
         typeset grep_pattern='^[ ]*##[ ]* (.+) [-+][^ ]+[^:]*: .* ##[ ]*$'
         typeset sed_pattern='s/## (.+) ([-+][^ ]+)[^:]*: (.+) ##/\2: \3/p'
@@ -152,10 +152,6 @@ function fn() {(
     
     # Completion for commands
     function fn_completion-commands() {
-        typeset fn_file
-        if ! fn_file=$(fn_src $fn_name); then
-            return 1
-        fi
         typeset -A reply
         typeset -a fn_commands=($(fn commands ${fn_file:t}))
         # Parse commands
@@ -283,30 +279,26 @@ EOF
         return 0
     }
     
-    function fn_t() {
-        typeset -ft $fn_name
-        $fn_name 
-    }
+    ## d: debug function ##
+    function fn_d() {(
+        typeset -fT $fn_name
+        print-line
+        $fn_name $argv
+        print-line
+    )}
     
-    function fn_edit() {
-        local fn_file=$(fn_src $fn_name 2>/dev/null)
-        if [[ ! -r $fn_file ]]; then
-            error -1 'Cannot read source file for function $fn_name.'
-        fi
+    function fn_edit() {(
         ${=EDITOR} -- $fn_file
         return 0
-    }
-    function fn_xedit() {
-        local fn_file=$(fn_src $fn_name 2>/dev/null)
-        if [[ ! -r $fn_file ]]; then
-            error -1 'Cannot read source file for function $fn_name.'
-        fi
+    )}
+    function fn_xedit() {(
         /usr/bin/open -F -a Xcode -- $fn_file
         return 0
-    }
-    function fn_x() {
-        funct
-    }
+    )}
+    
+    function fn_modify() {(
+        cat <$fn_file
+    )}
     
     
     
@@ -319,10 +311,9 @@ EOF
                   -- $argv
     # Set compgen overwrite response (-y)
     typeset response=${optlist[-y]:+'yes'}
-    
     # Show help message (-h)
-    if [[ $optlist[-h] -eq 1 ]] ||
-       [[ $# -eq 0 ]]; then
+    if [[ $# -eq 0 ]] ||
+       [[ $optlist[-h] -eq 1 ]]; then
         $0 print-commands $0
         return 0
     fi
@@ -333,53 +324,35 @@ EOF
     # Command name
     typeset cmd=$1
     if [[ ${+functions[${0}_${cmd}]} -ne 1 ]]; then
-        error -127 'Unknown command: $cmd.'
+        error -127 'Command not found: ${cmd}.'
     fi
     shift
-    # Command argument
-    typeset fn_name="${argv}"
-    if [[ $# -eq 0 ]]; then
-        error -1 'Missing command argument: function name.'
+    
+    # Command arguments
+    typeset fn_name=$1
+    if [[ -z $fn_name ]]; then
+        error -1 'Missing function name.'
     fi
+    shift
     # Return if function is not defined
-    if [[ ${+functions[$fn_name]} -eq 0 ]]; then
-        error -1 "Function '\$fn_name' is not defined."
+    if [[ ${+functions[$fn_name]} -ne 1 ]]; then
+        error -127 'Function not found: ${fn_name}.'
     fi
     
+    
+    # Function name prefix
+    if [[ -z $fn_prefix ]]; then
+        typeset fn_prefix=${fn_name%%[_-]*}
+    fi
     
     # Source file
-    typeset fn_file
-    # Function name prefix
-    if [[ ! -v fn_prefix ]]; then
-        export fn_prefix=${fn_name%%[_-]*}
-    fi
-    
-    
-    
-    
-#    # Check argument count
-#    case $# in
-#        0)  warning 'Command needs arguments.'
-#            $0 print-commands $0
-#            return 2 ;;
-#        1)  error -2 'Function name is not specified.'
-#            return 2 ;;
-#    esac
-    
-    
-    if [[ $cmd == 'isdef' ]]; then
-        ${0}_${cmd} $fn_name
-        return $?
-    fi
-
-    # Execute the command
     autoload +X $fn_name
-    ${0}_${cmd} $fn_name
-    local -i cmd_status=$?
-    if [[ $cmd_status -ne 0 ]]; then
-        error -$cmd_status -c -- \
-            '\$cmd: command failed to complete (error code \${cmd_status}).'
+    typeset fn_file=$functions_source[$fn_name]
+    if [[ -z $fn_file ]]; then
+        error -1 'Cannot read source file for function ${fn_name}.'
     fi
     
-    return 0
+    # Execute the command
+    ${0}_${cmd} $fn_name $argv
+    return $?
 )}

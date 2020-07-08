@@ -15,30 +15,32 @@
 # Evaluate and display the result of conditional expressions.
 function iff() {(
     export prog=$0
-    
+    ## iff -i var: specify variable names ##
     if [[ $1 == '-i' ]]; then
-        typeset -a vars=(${argv:2:${${argv:2}[(i)-*]}})
-        shift ${#vars}+1
+        typeset -a vars=(${(s:,:)2})
+        shift 2
     fi
     [[ $1 == '--' ]] && shift
     
-    print-pvar vars
-    
     for v in $vars; do
-        red Var=$v
-        for vexp in ${(M)argv:#(|* )$~v( *|)}; do
+        show "Var is $v"
+        for m in ${(M)argv:#$v}; do
+            show 'Matching element: $m'
+            argv[(i)$m]=$
+#        set -- ${argv//$v/$REPL}
+        for vexp in ${(M)argv:#(|* )${v}( *|)}; do
             print $vexp
         done
     done
-
+    
     # Evaluate each argument
     local -i result
     local result_label
     print-var argv
-    
-    
     if [[ $# -eq 0 ]]; then
-        usage 'Bad input.' '$prog "1 -lt 2"' '$prog -v X "X -gt 0"'
+        usage 'Bad input.' \
+            '$prog "1 -lt 2"' \
+            '$prog -v X "X -gt 0"'
     fi
     while [[ -n $1 ]]; do
 #        if [[ $1 =~ '' ]]; then

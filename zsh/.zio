@@ -85,7 +85,7 @@ B_CYANBG="$( bg_color 14 )"
 function normal() { __style_print "$NORMAL$*" }
 function dim() { __style_print "$DIM$*" }
   D() dim $@
-function bold() { __style_print "$BOLD$*" }
+function bold() { __style_print "$*" }
   B() bold $@
 function italic() { __style_print "$ITALIC$*" }
   em() italic $@
@@ -249,28 +249,6 @@ set -A text_labels $((
 
 
 
-
-
-
-# Print ANSI escape sequences; if '-t' option is
-# set, print the given text and reset style
-function esc() {(
-    typeset -a numbers
-    numbers=(${argv:#[0-9]})
-    ${(M)arr:#[0-9]*}
-    #
-    typeset text
-    if [[ $1 == '-t' ]] &&
-       [[ -n $2 ]]; then
-        text=$2
-        shift 2
-    fi
-    printf '\e[%sm' "${(j.;.)argv:-0}"
-    if [[ -n $text ]]; then
-        printf '%s%b\n' "$text" $(esc 0)
-    fi
-    return 0
-)}
 
 
 function print-control-char() {

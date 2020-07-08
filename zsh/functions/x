@@ -7,12 +7,13 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# Trace a command.
-function xtrace() {
-#    print-header ""
-    print-line "Begin xtrace"
-    (setopt xtrace; $=argv)
-}
+# Trace command execution
+function x() {(
+    setopt xtrace verbose
+    $argv
+)}
+
+
 
 #
 ## Trace a command.

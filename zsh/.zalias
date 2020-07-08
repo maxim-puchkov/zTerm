@@ -26,34 +26,40 @@ alias lll='ls -la'
 alias llll='ls -laR'
 
 # Command 'chflags'
-alias lock='command chflags uchg'
-alias unlock='command chflags nouchg'
+alias lock='/usr/bin/chflags uchg'
+alias unlock='/usr/bin/chflags nouchg'
 
 # Command 'cp'
 alias cp='/bin/cp -i'
 
 # Builtin 'echo'
 alias e='builtin echo -'
-alias E='() ( print -P -- "%K{1}%F{15}%B${argv}%b%f%k"; )'
+alias E='esc 1 38 45 -r 0 -t'
 
 # Builtin 'functions'
 alias fns='functions'
 
 # Builtin 'print'
 alias printp='builtin print -P'
-alias printl='builtin print -l'
-alias printn='builtin print -n'
-alias printd='builtin print -P -D'
-alias p='print'
 alias pp='printp'
+alias p='printp'
+
+alias printl='builtin print -l'
 alias pl='printl'
+
+alias printn='builtin print -n'
 alias pn='printn'
 
+alias print-='builtin print -P --'
+alias p-='print-'
+
+alias printd='builtin print -P -D'
+
+# Pygments
 alias pyg='pygmentize'
 
 # Builtin 'exit'
-alias q='builtin exit'
-
+alias q='builtin exit 0;'
 
 # Command 'git'
 alias gs='git status'
@@ -100,6 +106,7 @@ alias rm='/bin/rm -i'
 alias set1='set -- -a -b -c'
 alias set2='set -- -a -b -c -d D -e E -f F'
 alias set3='set -- -a -b -c -d D -e E -f F --long LONG args "hello world"'
+alias ext='setopt extendedglob'
 
 # Command 'strings'
 alias str='command strings'
@@ -115,6 +122,19 @@ alias wh='builtin whence -av'
 #MARK: - Extended Commands
 alias cd='cdp'
 
+
+fns_begin() {(
+    print -- $argv
+    ${(z)argv}
+    eval $argv
+    functions[$1]="$functions[$1]; $end"
+    pv end @
+)}
+
+alias fninput='printf "$0 %d arguments:       %s." "$0" $# "${(j:, :)@:1}";'
+alias prin='printf "%d" 12345;'
+
+alias print-input='print -P -- "%U$0 arguments%u($#): ${(j:, :)@}.";'
 
 
 

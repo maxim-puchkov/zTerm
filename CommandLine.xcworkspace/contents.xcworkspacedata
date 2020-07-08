@@ -26,19 +26,25 @@
       location = "group:zsh/functions/show">
    </FileRef>
    <FileRef
+      location = "group:zsh/functions/snip">
+   </FileRef>
+   <FileRef
       location = "group:zsh/functions/it2">
    </FileRef>
    <FileRef
       location = "group:zsh/functions/xparams">
    </FileRef>
    <FileRef
-      location = "group:zsh/functions/xtrace">
+      location = "group:zsh/functions/caller">
    </FileRef>
    <FileRef
       location = "group:zsh/functions/error">
    </FileRef>
    <FileRef
       location = "group:zsh/functions/usage">
+   </FileRef>
+   <FileRef
+      location = "group:Services.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Terminal.xcodeproj">

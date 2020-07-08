@@ -16,7 +16,7 @@ function typeof() {(
     typeset var_{id,type}
     for var_id in $argv; do
         if [[ ! -v $var_id ]]; then
-            warning 'variable $var_id is not set.'
+            warning 'variable ${var_id} is not set.'
             continue
         fi
         var_type=${(Pt)var_id}

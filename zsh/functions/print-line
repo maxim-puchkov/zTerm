@@ -25,34 +25,37 @@
 
 # <#Function description#>
 function print-line() {(
-    autoload -Uz get-arguments
+    autoload -Uz get
     typeset -A fn_opts
-    get-arguments -A fn_opts -o w t c t f b -- $argv
-    print-var fn_opts
+    get -A fn_opts \
+      --options w:$COLUMNS c:'*' t T f b: \
+      -- $argv
+    print-array fn_opts
+#    print-var fn_opts
 #    fn_opts=( [width]=$COLUMNS [title]='' [char]='*' [tab]=1 [fg]=7 [bg]=0 )
     
     
     typeset title
-    typeset -i tab=${fn_opts[tab]}
-    if [[ -n $fn_opts[-t] ]]; then
-        title=$(expand -t $tab <<< $fn_opts[-t])
+    typeset -i tab=${fn_opts[-t]}
+    if [[ -n $fn_opts[-T] ]]; then
+        title=$(expand -t $tab <<< $fn_opts[-T])
 #        title=$(expand -t $tab "${fn_opts[title]}")
     fi
     
     
     
-    # Colors and widths
-    typeset -i bg fg w tab
-    bg=$fn_opts[-b]
-    fg=$fn_opts[-f]
-    w=$fn_opts[-w]
-    tab=$fn_opts[-t]
+    # Colors and width
+    typeset -i bg fg w
+    bg=${fn_opts[-b]:-48}
+    fg=${fn_opts[-f]:-38}
+    w=${fn_opts[-w]:-$COLUMNS}
     # Line character and title
     typeset c=$fn_opts[-c]
     # Print line
-    echoti setaf $fg
-    echoti setab $bg
-    print -P -- "${(pr:$w::$c:)title}"
+#    echoti setaf $fg
+#    echoti setab $bg
+    
+    print -P -- "${(pr:$w::$c:)argv}"
     echoti sgr0
 
     

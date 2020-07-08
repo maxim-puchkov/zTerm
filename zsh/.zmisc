@@ -10,14 +10,23 @@ export enckey1="f978c11e9a04fbda0ad2bbcd20ca8274ec2daa6f776b2192b8e20a060b765492
 export enciv1="be87368daada310f928cbbc33591a125"    # enciv1: 13 May 22:00
 export var="My new variable"    # var: 04 Jun 15:49
 export varb="%BMy new bold variable%b"    # varb: 07 Jun 19:13
+
+export REPL=$(esc '3;93' -t 'REPL')
+export REST=$(esc '1;3;91' -r 0 -t 'REST' -t 'arg 1' -t 'arg N')
+export PARAM='param'
+export -a iff_exprs=(
+    '-n A' '[ -n B ]' '[[ -n C ]]'
+    '[[ -n D1 ]] && [[ -n D2 ]]'
+    '-n E1 && -n E2 || -n E3'
+    "$texpr" "$fexpr"
+)
 # <#Insertion Point: addexp#>
+
+
 
 
 #MARK: - Functions
 # <#Insertion Point: addfunc#>
-function bitflip() {
-    
-}
 function findfunc() {(
     typeset pattern=${1:-'error-replace-variables\(\) \{'}
     awk '/'$pattern'/, /[[:space:]]+\}/' < ${2:-$zfunc/error}
@@ -37,13 +46,31 @@ function newlines() {
 
 
 
+
+
+
+
+
+
+
+
+
+#MARK: - Misc
 function def_misc() {
 
 
 
 
 #MARK: - Incomplete functions
-# Write $1 lines of $2 random characters
+
+function ow() {
+    stat -f "%Sp -> owner=%SHp group=%SMp other=%SLp"
+}
+function recent_files() {
+    stat -f "%m%t%Sm %N" ${argv:-$PWD}/* | sort -rn | head -3 | cut -f2-
+}
+
+# Write '$1' lines of '$2' random characters
 function write-lines() {
     local line_count text_length
     line_count=${1:-1}
@@ -86,6 +113,67 @@ function compress3 {
         mv -- $filename $file
     fi
 }
+
+
+
+
+#MARK: Completion
+function le() {
+    unfunction _$0
+cat >"$zdot/completions/_$0" <<EOF
+#compdef $0
+
+# _$0
+#
+#
+# zsh function completion
+#
+
+typeset -a args=()
+
+args=(
+    "-n[create an empty filename (the disk blocks aren't allocated until data is written to them)]"
+    "-v[report the names and sizes of created files]"
+    $(print -Pl -- ${(qq)argv};)
+)
+
+#_arguments -s -S \$args
+_arguments -s \$args \
+    '-E[specify EOF marker]:end-of-file marker' \
+    '(-x -i)-I[specify replacement string for command line]:replacement string' \
+    '(-n -l)-L[call program for every number of lines]:number of input lines' \
+    '(-)1: :(b k m g)' \
+    '*::args: _normal'
+
+
+return 0
+EOF
+    OK ; pass
+    
+    compdef _$0 $0
+    autoload -Uz _$0
+    return 0
+}
+
+
+
+
+
+
+#MARK: Pygments
+function testpyg() {
+    for style in xcode{dark,light}; do
+        pygmentize -O style=$style $argv
+        print-line
+    done
+}
+function pyg-rtf() {
+    local file=$1
+    shift
+    pygmentize -f 'rtf' ${=argv}
+}
+
+
 
 
 

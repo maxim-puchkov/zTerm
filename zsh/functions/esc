@@ -1,0 +1,59 @@
+#!/bin/zsh
+
+#  esc
+#  Z-Function (88)
+#
+#  Created by Maxim Puchkov on 2020-07-07.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# esc - print ANSI escape sequences and text.
+function esc() {(
+  setopt extendedglob
+  typeset -a ansi
+  typeset -a reset
+  local -i last
+  while [[ -n $1 ]]; do
+    case $1 in
+      (-0)
+        reset+=(0)
+        shift
+      ;;
+      (-r|--reset)
+        reset+=(${2:?})
+        shift 2
+      ;;
+      (-s|-t|--text)
+        printf '%s' "${2:=}"
+        shift 2
+      ;;
+      (-q)
+        printf '%q' "${2:=}"
+        shift 2
+      ;;
+      ([0-9][0-9\;]#)
+        let -i last=${(u)argv[(i)[^0-9]*]}-1
+        printf '%b' "\e[${(j.;.)${(u)argv[1,$last]}}m"
+        shift $last
+      ;;
+      (-##)
+      shift
+      break
+      ;;
+      (*)
+        printf 'Bad ANSI color code: %s.\n' "$1"
+        shift
+      ;;
+    esac
+#    shift
+  done
+  
+#  if [[ -n $ansi ]]; then
+#    printf '%b%s' "\e[${(j.;.)ansi}m" "$text"
+#  fi
+  if [[ -n $reset ]]; then
+    printf '%b\n' "\e[${(j.;.)${(u)reset}}m"
+  fi
+  
+  return 0
+)}

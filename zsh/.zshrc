@@ -7,7 +7,7 @@ zmodload zsh/zprof
 
 
 # User's history file
-export HISTFILE="$ZTERM/var/hist/$USER"=
+export HISTFILE="$ZTERM/var/hist/$USER"
 
 
 #MARK: - Oh-my-zsh
@@ -37,26 +37,12 @@ export REF_ZDOT=($(< $ZTERM/etc/source.zsh))
 preexec_functions+=(ref)
 
 
-arr_imatch() {(
-    typeset -a flags=($1)
-    typeset -a subscripts=($2)
-    shift 2
-    typeset -ax arr
-    if [[ -z $arr ]]; then
-        arr=($argv)
-    fi
-    eval 'print -- ${arr[('$flags')'$subscripts']}'
-)}
+#disable declare
+#source $ZTERM/zsh/custom/commands/declare
 
-arr_split() {
-    typeset sym=$1
-    
-    shift
-    typeset -i index=${argv[(i)$~sym]}
-    typeset -ag left right
-    left=(${argv[1,$index]})
-    right=(${argv[$index+1,#]})
-    print -- "left=($left)"
-    print -- "right=($right)"
+function preexec_test() {
+    print -- $'\n\n'
+    print-var @
+    print "$0. [${#}]=$@"
+    print -- $'\n\n'
 }
-

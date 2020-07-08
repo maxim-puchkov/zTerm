@@ -4,25 +4,29 @@
 # ~/Developer/Projects/Terminal/zsh/functions/error
 #
 # zsh function completion
-# Updated on 2020-06-25 at 06:59 pm
+# Updated on 2020-07-07 at 01:58 am
 
 
 _arguments -C \
+  {+.,--no-trailing-period}"[do not add trailing period]" \
   {+A,--no-autocapitalize}"[do not capitalize first letter]" \
+  {+D,--no-description}"[do not print error description]" \
+  {+F,--no-funcstat}"[do not display 'funcstat']" \
   {+H,--no-highlight}"[disable syntax highlighting]" \
-  {+P,--no-trailing-period}"[do not add trailing period]" \
-  {+S,--no-split-lines}"[do not capitalize first letter]" \
+  {+L,--no-split-lines}"[do not split arguments]" \
+  {+R,--no-return}"[continue after error]" \
+  {-.,--trailing-period}"[add trailing period]" \
   {-A,--autocapitalize}"[capitalize first letter]" \
-  {-D,--plain-description}"[do not format description]" \
+  {-D,--description}"[print error description]" \
+  {-F,--funcstat}"[display 'funcstat']" \
   {-H,--highlight}"[enable syntax highlighting]" \
-  {-P,--trailing-period}"[add trailing period]" \
-  {-S,--split-lines}"[capitalize first letter]" \
+  {-L,--split-lines}"[split arguments]" \
+  {-R,--return}"[set exit trap]" \
+              -T"[always display message title as "Error"]" \
   {-c,--code}"[display exit code with error message]" \
               -e"[set the exit code]" \
   {-h,--help}"[show help message]" \
-  {-n,--null}"[try to silence output messages]" \
   {-t,--title}"[set error message title]" \
-  {-u,--usage}"[set title to 'Usage']" \
   ":command:->command" \
   "*::arg:->arg"
 
@@ -44,3 +48,4 @@ case $state in
 esac
 
 return 0
+[0m[0m

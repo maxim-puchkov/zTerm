@@ -1,0 +1,19 @@
+#!/bin/zsh
+
+#  argn
+#  Z-Function (89)
+#
+#  Created by Maxim Puchkov on 2020-07-07.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function argn() {
+  value=$1
+  shift
+  if [[ $# -gt 0 ]]; then
+    print -m "<-$#>" -- "${argv[(i)$value]}"
+  else
+    trap 'print -m "<-$#>" -- "${argv[(i)$value]}"' EXIT
+  fi
+}

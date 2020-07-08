@@ -7,14 +7,47 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# <#Function description#>
+# Show and describe various kinds of objects
 function show() {
-    typeset -R3 -i last_status=$?
-    export c_true='2'
-    export c_false='9'
-    
+    typeset -i -L3 last_status=$?
+    typeset -ix c_true=2
+    typeset -ix c_false=9
+
+
     # Prepend prefix offset and symbol
     typeset prefix
-    zformat -f prefix ' %F{%0(p.$c_true.$c_false)} %B>%b%f ' p:$last_status
-    print -P  -- "${prefix}${argv}"
+    if [[ -t 1 ]]; then
+      zformat -f prefix \
+          '%F{%0(p.$c_true.$c_false)}%B>%b%f ' \
+          p:$last_status
+    fi 
+    
+    while [[ -n $1 ]]; do
+        case $1 in
+          -v) print -P -- \
+                "${prefix}%F{2}${2}%f=<${${(P)2}:-null}>"
+              shift
+          ;;
+          *) print -P  -- "${prefix}${argv}"
+          ;;
+        esac
+        shift
+    done
+    return 0
+    
+    
+    
+    if [[ $opts[-t] -eq 1 ]]; then
+        print -P  -- "${prefix}${argv}"
+        return 0
+    fi
+    
+    if [[ -v $1 ]]; then
+        print -P -- "${prefix}%F{2}${1}%f=<${${(P)1}:-null}>"
+        return 0
+    fi
 }
+
+
+
+
