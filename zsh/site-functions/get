@@ -1,407 +1,200 @@
 #!/bin/zsh
 
 #  get
-#  zsh
 #
-#  Created by Maxim Puchkov on 2020-08-02.
+#
+#  Created by Maxim Puchkov on 2020-07-09.
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# Name:   get
-# Usage:  get [-A array] [-f flag [...]]
-#             [-o option[:default_value] [...]] -- argv
+# Name:
+#   get
+#
+# Description:
+#   Parse names and values of options. Store arguments
+#   of each option in an array '<prefix><option_name>'.
+#   Duplicated options append to the existing array.
 emulate -L zsh
-# Print usage
-if [[ $# -eq 0 ]]; then
-  usage 'No input' \
-    "${0} -f flag -o opt -- -flag -opt optval"
-  return 2
-fi
-# Load required zsh builtin commands
-if ! zmodload -F zsh/zutil b:zparseopts &>/dev/null; then
-  error -1 'Unable to load zsh module'
-  return 1
-fi
-
-
-
-#MARK: - Functions
-typeset -x CALLER=$(caller)
-if [[ $CALLER == $SHELL ]]; then
-  # Log recognized option names and values
-  function get_wlog() {
-    if [[ $1 == '-T' ]]; then
-      builtin print -Pn -- '$$ [%D %*]\t'
-      shift
-    fi
-    /usr/bin/sed -E \
-      -e 's/<([^>]+)>/<'$(esc 33 -t '\1' -r 0)'>/g' \
-      < <(print -- $argv) \
-      >&2
-    return 0
-  }
-else
-  typeset -f get_wlog() return 0
-fi
-
-
-# Split array in two arrays 'left_split' and 'right_split' at
-# next occurrence of 'str':
-#   array(1..n)  ~>  left_split(1..i), right_split(i+1,n)
-function get_split_arrays() {
-  [[ $# -eq 0 ]] && error -1 'No input.'
-  local str="$1"
-  shift
-  # Get position of the string in 'argv'
-  local -i index=${argv[(i)${~str}]}
-  typeset -ag left_split right_split
-  left_split=(${argv[1,$index]})
-  right_split=(${argv[$index+1,#]})
-  return 0
-}
-
-# Split positional arguments at '--'
-typeset delim='--'
-if [[ $argv[(wi)$delim] -gt $# ]]; then
-  error -1 'Delimiter ${delim} was not found.'
-fi
-get_split_arrays $delim $argv
-options_desc=($left_split)
-options_spec=($right_split)
-
-get_wlog "Splitting argv=<$argv> at delim=<$delim>"
-get_wlog "Left Split=<$left_split>; Right Split=<$right_split>"
+set -o extendedglob
 
 
 
 
-
-#MARK: - get
-# Options of 'get' (all arguments up to '--')
-function get_names() {
-  # Find arguments with prefix '-' ('-f', '-o', etc.)
-  typeset -a matches=(${(M)argv:#--*})
-  if [[ -z $matches ]]; then
-    error -1 'Bad option names.'
-  fi
-  
-  typeset -aU opt_args
-  local arg default_value
-  # Find names in 'argv' starting with a '-'
-  # and select all arguments between them
-  local -i max_index i
-  let max_index=${#matches}-1
-  for i in {1..$max_index}; do
-    # Current and next options of 'get'
-    current=${matches[$i]}
-    next=${matches[$(( $i + 1 ))]}
-    # Select arguments from 'argv' for current option
-    #   --flags [begin..end] --opts [begin..end]
-    let begin=${argv[(wi)$current]}+1
-    let end=${argv[(wi)$next]}-1
-    opt_args=(${argv[$begin,$end]})
+#MARK: - Options
+typeset -i echo_options append_lists get_all_names
+while [[ $1 =~ '^[-]' ]]; do
+  case $1 in
+    # Show help message
+    (-h|--help)
+      usage 'set -- -X x1 x2 x3 -Y y1 y2 -- other args' \
+        - 'get -- \$argv' \
+        + 'echo \$option_list       '$(comment 'prints \"-X -Y\"') \
+        + 'echo \$option_arg_lists  '$(comment 'prints \"option_X option_Y\"') \
+        + 'echo \$option_Y[2]       '$(comment 'prints \"y2\"') \
+        - 'get --prefix o -n X -- \$argv' \
+        + 'echo \$oX[3]             '$(comment 'prints \"x3\"')
+      return 0
+    ;;
     
-    #
-    for arg in $opt_args; do
-      name="${arg%%,*}"
-      # Default value
-      if [[ $arg =~ '.:=.' ]]; then
-        value=${arg##*:=}
-        opt_args[(i)$arg]=${arg%:=*}
-        arg=${arg%:=*}
-        default_values+=( [$name]="$value" )
-      fi
-      # Alias names
-      if [[ $arg =~ '.,.' ]]; then
-        name_aliases="${arg#*,}"
-        greenbg $name $name_aliases
-        alias_names+=([$name]=${name_aliases})
-      fi
-    done
+    # Echo recognized options
+    (-e|--echo)
+      echo_options=1
+      shift
+      print -P -- "%F{6}%u${0}%u%f: ${argv}" >&2
+    ;;
+    # Do not overwrite argument lists
+    (-a|--append)
+      append_lists=1
+      shift
+    ;;
+    
+    # Default value for options without arguments
+    (-d|--default)
+      GET_DEFAULT="$2"
+      shift 2
+    ;;
+    # Prefix for variables
+    (-p|--prefix)
+      GET_PREFIX="$2"
+      shift 2
+    ;;
+    
+    # List of specific names to get
+    (-n|--names)
+      typeset -a GET_NAMES=(${(s:,:)2})
+      shift 2
+    ;;
+    # Get all option names
+    (-A|--all)
+      get_all_names=1
+      shift
+    ;;
+    
+    (-1)
+      GET_LENGTH=1
+      shift
+    ;;
+    (-L|--length)
+      GET_LENGTH=$2
+      shift 2
+    ;;
+    
+    (--) shift; break ;;
+    (*)  break ;;
+  esac
+done
 
-    # Pass arguments to current option
-    case $current in
-      (--F|--flags)
-        flag_names+=($opt_args)
-      ;;
-      (--O|--options)
-        opt_names+=($opt_args)
-      ;;
-      (--A)
-        reply_array_id=${opt_args[1]}
-      ;;
-      (--*)
-        warning 'Bad option ${current}.'
-      ;;
-    esac
-  done
-  
-  get_wlog "Output array identifier is <${reply_array_id}>."
-  get_wlog "Flag names are <${flag_names}>."
-  get_wlog "Option names are <${opt_names}>."
-  get_wlog "Option default values are <${(kv)default_values}>."
-  get_wlog "Alias names are <${(kv)alias_names}>."
-  return $?
-}
 
 
-# Get names of flags and options
-typeset reply_array_id='reply'
-typeset -aU flag_names opt_names
-flag_names=()
-opt_names=()
-get_names $options_desc
-# Exit if no flag or option names were recognized
-if [[ -z $flag_names ]] &&
-   [[ -z $opt_names ]]; then
-  error -1 'Missing option descriptions.'
+
+#MARK: - Environmental variables
+# Variable prefix
+if [[ ! -v GET_PREFIX ]]; then
+  export GET_PREFIX='option_'
+fi
+# Default value
+if [[ ! -v GET_DEFAULT ]]; then
+  export GET_DEFAULT=''
+fi
+if [[ ! -v GET_NAMES ]]; then
+  let get_all_names=1
 fi
 
 
 
+# Store names in '*list' array
+local opt_names_id="${GET_PREFIX}list"
+# Store names of argument arrays in '*arg_lists'
+local opt_arg_lists_id="${GET_PREFIX}arg_lists"
+if [[ $append_lists -ne 1 ]]; then
+  unset $opt_names_id $opt_arg_lists_id
+fi
+
+typeset -ag $opt_names_id
+typeset -Ag $opt_arg_lists_id
 
 
-#MARK: - zparseopts
-# Options of 'zparseopts' (all arguments after '--')
-function get_values() {
-  # Set 'specs' for the 'zparseopts' builtin
-  local -a specs
-  specs=(${^flag_names}'=flags' ${^opt_names}':=opts')
-  # Parse parameters
-  builtin zparseopts -D -E -K -M -- $specs &>/dev/null
-  if [[ $? -ne 0 ]]; then
-    error -1 +A 'zparseopts failed to parse option specs.'
+
+
+#MARK: - Loop
+local -i more_args=1
+local -i {,next_}opt_index
+local opt_name
+local -a opt_args
+# Select all arguments between current and next options:
+#   -opt [arg1 ... argN] -nextopt ...
+while [[ $more_args -eq 1 ]]; do
+  # If an option contains an equal sign, then
+  # split current argument on equal sign:
+  #   '-option=value'  ~>  '-option' 'value'
+  if [[ ${argv[$opt_index]} =~ '.=.' ]]; then
+    argv[$opt_index]=(
+      ${${argv[$opt_index]}%%=*}
+      ${${argv[$opt_index]}#*=}
+    )
   fi
-  if [[ ${argv[-1]} == '--' ]]; then
-    shift -p
+  
+  
+  # Set option name
+  let opt_index=${argv[(in:1:)[-+]*]}
+  opt_name="${argv[$opt_index]}"
+  
+  
+  # If there is no next option or it is '--', then stop
+  if [[ $opt_index -gt ${#argv} ]] ||
+     [[ ${${(s::u)argv[$opt_index]}} == '-' ]]; then
+      let more_args=0
+  else
+    # Set option arguments array
+    local optargs_array_id="${GET_PREFIX}${opt_name##[-+]#}"
+    if [[ -v $optargs_array_id ]] &&
+       [[ $append_lists -ne 1 ]]; then
+      unset $optargs_array_id
+    fi
+    typeset -ag $optargs_array_id
+    
+    # Select all arguments until the next option in the array
+    if [[ -v GET_LENGTH ]]; then
+      let next_opt_index=$opt_index+$GET_LENGTH+1
+    else
+      let next_opt_index=${argv[(in:2:)[-+]*]}
+    fi
+    
+    opt_args=(${argv[$opt_index+1,$next_opt_index-1]})
+    if [[ ${GET_NAMES[(I)${opt_name##[-+]#}]} -ne 0 ]] ||
+       [[ $get_all_names -eq 1 ]]; then
+      # Store option Names in array '<prefix>list'
+      set -A $opt_names_id \
+        ${(P)opt_names_id} $opt_name
+      # Store option Arguments in array named '<prefix><option_name>'
+      set -A $optargs_array_id \
+        ${(P)optargs_array_id} ${opt_args:=$GET_DEFAULT}
+      # Store (option Name, option Argument List) pair in '<prefix>lists'
+      set -A $opt_arg_lists_id \
+        ${(Pkv)opt_arg_lists_id} "${opt_name}" "${optargs_array_id}"
+    fi
+    
+    local -i N
+    let N=$next_opt_index-$opt_index
+    if [[ $N -gt $# ]]; then
+      return 1
+    fi
+    shift $N
   fi
-  set -A rest $argv
-  return 0
-}
-
-
-# Parse and store recognized option values in an array
-# Recognized flags/options
-typeset -A alias_names;     alias_names=()
-typeset -A default_values;  default_values=()
-typeset -ag flags;          flags=()
-typeset -Ag opts;           opts=()
-typeset -a rest;            rest=()
-get_values $options_spec
-
-
-# Initialize output array
-# Recognized options and options with default values
-typeset -a {opts,def}_keys
-opts_keys=(${(k)opts})
-def_keys=(${(Mk)defaults:#--*})
-# Non-recognized flags/options
-typeset -a unset_{flags,opts}
-unset_opts=(${${:-'-'${^opt_names}}:|opts_keys})
-unset_flags=(${${:-'-'${^flag_names}}:|flags})
-# Set remaining arguments of the caller
-trap '{ set -- '${(q)rest}'; [[ $1 == "--" ]] && shift; }' EXIT
-
-
-
-
-
-#MARK: - Result Array
-# Initialize the result array
-typeset -A result
-result=()
-# Append recognized flags as (name, 1) pairs
-for name in $flags; do
-  result+=( [$name]=1 )
-done
-# Append recognized options as (name, value) pairs
-for name value in ${(kv)opts}; do
-  result+=( [$name]=$value )
 done
 
 
-# If an option is not set but has a default value,
-# set option to its default value
-#local {default,given}_value
-#for name in $def_keys; do
-#  default_value=${defaults[(k)$name]}
-#  given_value=${result[(k)$name]}
-#  if [[ -n $default_value ]] &&
-#     [[ -z $given_value ]]; then
-#      result+=( [$name]=$default_value )
-#  fi
-#done
-
-# Set the output associative array to the
-# (name, value) pairs of result array
-typeset -Ag $reply_array_id
-set -A ${reply_array_id} ${(kv)result}
-
-return 0
 
 
+# Print result (-e)
+if [[ $echo_options -eq 1 ]]; then
+    typeset -a arr
+    for parameter in $opt_names_id $opt_arg_lists_id ${(P)opt_arg_lists_id}; do
+      arr+=("%F{2}${parameter}%f" "${(Pj:, :)parameter}")
+    done
+    builtin print -aC2 -Pr -- $arr >&2
+  
+fi
 
-
-#
-#
-#    #MARK: - Parameters for 'get-arguments'
-#    # Names of flags and options
-#    typeset -aU flag_names option_names
-#    flag_names=()
-#    option_names=()
-#    # Default values
-#    typeset -A defaults
-#    defaults=( [opt-unset]="''"
-#               [flag-set]=1
-#               [flag-unset]=0 )
-#    # Result array name and type
-#    typeset array_{id,type}
-#    array_id='optlist'
-#    array_type='-A'
-#
-#
-#    typeset -a cmds
-#    cmds=()
-#    while [[ $1 =~ '^-' ]] && [[ $1 != '--' ]]; do
-#        typeset -a option_args=(${argv:2:${${argv:2}[(i)-*]}})
-#        print-var last_arg args
-#        case $1 in
-#            (-o|--order) cmds+=(cutline_ordered) ;;
-#            (-u|--unordered) cmds+=(cutline_unordered) ;;
-#        esac
-#        shift $#args
-#    done
-#
-#
-#
-#    #MARK: - Set 'get-arguments' Options
-#    # Parse arguments which begin with '-'
-#    # or '+' (command options)
-#    while [[ $1 =~ '^[-+]' ]] &&
-#          [[ $1 != '--' ]]; do
-#        # Arguments until the next command option
-#        # are parameters for the current option
-#        local -a list=()
-#        let last_index=${${argv:2}[(i)[-+]*]}
-#        set -A list ${argv[2,$last_index]}
-#
-#        case $1 in
-#            # Flags
-#            -f|--flags)
-#                shift
-#                flag_names+=($list)
-#                shift ${#list}
-#            ;;
-#
-#            # Options
-#            -o|--opts|--options)
-#                shift
-#                local opt_spec=''
-#                for opt_spec in $list; do
-#                    case $opt_spec in
-#                        *:*)
-#                            name=${opt_spec%:*}
-#                            value=${opt_spec#*:}
-#                            defaults+=( [-$name]=$value )
-#                        ;;
-#                        *)  name=$opt_spec
-#                        ;;
-#                    esac
-#                    option_names+=($name)
-#                done
-#                shift ${#list}
-#            ;;
-#
-#            # Specify output array name and type
-#            -A|-a)
-#                array_type=$1
-#                array_id=$2
-#                shift 2
-#            ;;
-#
-#            # Stop parsing parameters
-#            *)  break ;;
-#        esac
-#    done
-#    [[ $1 == '--' ]] && shift
-#
-#
-#    # Exit if no flag or option names were recognized
-#    if [[ -z $flag_names ]] &&
-#       [[ -z $option_names ]]; then
-#        error -1 'Missing descriptions of flags and/or options.'
-#    fi
-#
-#
-#
-#
-#
-#    #MARK: - Parse Arguments
-#    # Recognized flags/options
-#    typeset -a flags
-#    typeset -A opts
-#    flags=()
-#    opts=()
-#    # Set 'specs' for the 'zparseopts' builtin
-#    typeset -a specs
-#    specs=( ${^flag_names}'=flags' ${^option_names}':=opts' )
-#
-#    # Parse parameters
-#    builtin zparseopts -D -E -- $specs &>/dev/null
-#    local -i parse_status=$?
-#    if [[ $parse_status -ne 0 ]] then
-#        ( name='zparseopts' \
-#            error -$parse_status -c "Invalid '%U\${name}%u' specs: {\${specs}}." )
-#    fi
-
-#    # Recognized options and options with default values
-#    typeset -a {opts,def}_keys
-#    opts_keys=(${(k)opts})
-#    def_keys=(${(Mk)defaults:#-*})
-#    # Non-recognized flags/options
-#    typeset -a unset_{flags,opts}
-#    unset_opts=(${${:-'-'${^option_names}}:|opts_keys})
-#    unset_flags=(${${:-'-'${^flag_names}}:|flags})
-#
-#    # Set remaining arguments of the caller
-#    trap '{ set -- '"$argv"'; [[ $1 == "--" ]] && shift; }' EXIT
-#
-#
-#
-#
-#    #MARK: - Result Array
-#    # Initialize the result array
-#    typeset -A result
-#    result=()
-#    # Append recognized 'flags' to 'result'
-#    # as (flag_name, 1) pairs
-#    for name in $flags; do
-#        result+=( [$name]=$defaults[flag-set] )
-#    done
-#    # Append recognized 'opts' to 'result' as
-#    # (option_name, option_value) pairs
-#    for name value in ${(kv)opts}; do
-#        result+=( [$name]=$value )
-#    done
-#
-#
-#    # If an option is not set but has a default value,
-#    # set option to its default value
-#    local {default,given}_value
-#    for name in $def_keys; do
-#        default_value=${defaults[(k)$name]}
-#        given_value=${result[(k)$name]}
-#        if [[ -n $default_value ]] &&
-#           [[ -z $given_value ]]; then
-#            result+=( [$name]=$default_value )
-#        fi
-#    done
-#
-#
-#    # Set the output [associative] array to the
-#    # (name, value) pairs of result array
-#    unset $array_id
-#    typeset $array_type -g $array_id
-#    set -A $array_id ${(kv)result}
-#    return 0
-#}
+# Return 0 if any arguments were
+return ${(P)#opt_arg_lists_id}==0

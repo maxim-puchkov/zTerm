@@ -2,11 +2,25 @@
 
 
 
-_arguments -C \
-  '(-h --help)'{-h,--help}'[display help text]' \
-  "-bob[display help]:->_nothing" \
-  ":command:->command" \
-  "*::arg:->arg"
+#  typeset -a reply
+#  reply=($(ls ~/var))
+#  _arguments \
+#    "1: :_zfc_command" \
+#    "*:*:($reply)"
+#}
+#_foo
+function _foo() {
+local -a found
+local expl
+found=( $ZTERM/zsh/**/*(.:t) )
+_wanted zfunctions expl 'z-function' compadd -a found
+}
+
+#_arguments -C \
+#  '(-h --help)'{-h,--help}'[display help text]' \
+#  "-bob[display help]:->_nothing" \
+#  ":command:->command" \
+#  "*::arg:->arg"
 
 
 # _arguments -C \

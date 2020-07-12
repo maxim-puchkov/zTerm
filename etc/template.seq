@@ -48,3 +48,10 @@
 /usr/local/Terminal/zsh/functions/param
 /usr/local/Terminal/zsh/functions/esc
 /usr/local/Terminal/zsh/functions/argn
+/usr/local/Terminal/zsh/functions/cats
+/usr/local/Terminal/zsh/functions/mkpl
+/usr/local/Terminal/zsh/functions/printw
+/usr/local/Terminal/zsh/functions/update.zsh
+/usr/local/Terminal/zsh/functions/0x
+/usr/local/Terminal/zsh/functions/rand
+/usr/local/Terminal/zsh/functions/report

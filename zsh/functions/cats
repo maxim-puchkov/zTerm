@@ -1,0 +1,21 @@
+#!/bin/zsh
+
+#  cats
+#  Z-Function (90)
+#
+#  Created by Maxim Puchkov on 2020-07-08.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function cats() {
+  local input
+  while [[ -n $1 ]]; do
+    print-line "TEXT"
+    cat <$1
+    printf '\n(Press return to continue...\n'
+    read -sk input
+    if [[ $input != $'\n' ]]; then break; fi
+    shift
+  done
+}

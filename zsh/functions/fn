@@ -52,7 +52,7 @@ function fn() {(
         if [[ ! -r $fn_file ]]; then
             error -1 'Cannot read source file for function $fn_name.'
         fi
-        /usr/bin/open -a Xcode -- $fn_file
+        gui-edit -- $fn_file
         return 0
     }
     ## isdef: check if a function is defined ##
@@ -82,7 +82,6 @@ function fn() {(
             fi
         done
         if [[ -z $result ]]; then
-            error -2 'BOB'
             return 1
         fi
         print -l -- $result
@@ -189,8 +188,6 @@ function fn() {(
             arg_completion=(${(@f)"$(fn_completion-arguments $fn_file)"})
             cmd_completion=(${(@f)"$(fn_completion-commands $fn_file)"})
         done
-        
-        
 cat <<EOF
 #compdef ${fn_name}
 
@@ -228,8 +225,6 @@ esac
 
 return 0
 EOF
-        
-        
         return 0
     }
     
@@ -316,7 +311,7 @@ EOF
        [[ $optlist[-h] -eq 1 ]]; then
         $0 print-commands $0
         return 0
-    fi
+    fi 
     
     
     

@@ -1,0 +1,41 @@
+#!/bin/zsh
+
+#  mkpl
+#  Z-Function (91)
+#
+#  Created by Maxim Puchkov on 2020-07-08.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# mkpl - create a property list
+typeset output_file=${1:=/dev/stdout}
+() (
+  #MARK: - Create empty file
+  typeset tmp=$1
+  shift
+cat >$tmp <<-EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  $output_file
+  Property List
+  
+  Created by Maxim Puchkov on $(date -j +"%F").
+  Copyright (c) $(date -j +"%Y") Maxim Puchkov. All rights reserved.
+-->
+<plist version="1.0">
+  <dict>
+  
+  </dict>
+</plist>
+EOF
+#MARK: - Modify property list with 'plutil'
+while [[ -n $3 ]]; do
+  plutil -insert $1 $2 $3 $tmp
+  shift 3
+done
+) =() $argv
+
+
+
+#    plutil -insert URL -string 'https://google.com' $tmp

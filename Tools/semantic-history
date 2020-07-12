@@ -16,6 +16,7 @@ typeset file=$1
     fi
 } ${file} ${file%.}
 
+
 # Open regular files in Xcode
 if [[ -f $file ]]; then
     open -a Xcode $file

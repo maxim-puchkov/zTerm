@@ -7,16 +7,19 @@ ls_format=($( echo $LSCOLORS | grep -o -e '..' ))
 
 typeset -i bold fg_color bg_color
 for format in $ls_format; do
-  hex=$(python3 -c 'print(bytes.hex(str("'${format}'").encode("ascii")))')
-  
   let bold=0 fg_color=0 bg_color=0
+  hex=$(python3 -c 'print(bytes.hex(str("'${format}'").encode("ascii")))')
   # Foreground
-  [[ $format[1] == ${format[1]:u} ]] && let bold=1
-  let fg_color=29+$hex[2]
+  if [[ ${format[1]} == ${format[1]:u} ]]; then
+    let bold=1
+  fi
+  let fg_color=29+${hex[2]}
   # Background
-  [[ ! $format[2] =~ '[Xx]' ]] && let bg_color=39+$hex[4]
+  if [[ ! ${format[2]} =~ '[Xx]' ]]; then
+    let bg_color=39+${hex[4]}
+  fi
   
-  print "> format=$format, bold=$bold, fg_color=$fg_color, bg_color=$bg_color"
+  print "> format=$format, hex=$hex, bold=$bold (${format[1]} == ${format[1]:u}), fg_color=$fg_color (29 + ${hex[2]}), bg_color=$bg_color (39+${hex[4]})"
 done
 
 

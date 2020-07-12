@@ -83,17 +83,6 @@ function list() {
         }
         
         
-        
-        typeset -A optlist
-        autoload -Uz get
-        get -A optlist -f 'h' -- $argv
-        
-        if [[ $optlist[-h] -eq 1 ]]; then
-            fn print-commands $0
-            return 0
-        fi
-        
-        
         # When 'list' is run without arguments,
         # run the 'list all' command
         typeset cmd

@@ -6,9 +6,13 @@ source "$ZEXPORT"
 
 # Python path
 export PYTHONSTARTUP="$ZTERM/Python/.pyenv"
-export PYTHONPATH="$HOME/Library/Application Support/iTerm2/Scripts"
-PYTHONPATH="$PYTHONPATH:$ZTERM/Python"
-typeset -T PYTHONPATH pythonpath
+typeset -aTx PYTHONPATH pythonpath
+pythonpath=(
+  "$HOME/Library/Application Support/iTerm2/Scripts"
+  "$HOME/Library/Application Support/iTerm2/iterm2env/"**"/python3.7/site-packages"
+  $ZTERM/Python
+  /usr/local/lib/python3.7/site-packages/Cryptodome
+)
 
 # Command path
 path=(
@@ -25,8 +29,9 @@ path=(
 # Function path
 fpath=(
   /usr/local/share/zsh-completions
-  $PROJ/Terminal/zsh/functions
-  $PROJ/Terminal/zsh/completions
+  $ZDOTDIR/functions
+  $ZDOTDIR/completions
+  $ZDOTDIR/custom
   $fpath
 )
 

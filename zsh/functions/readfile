@@ -41,13 +41,14 @@ function readfile() {
     fi
     
     if [[ $assign_input -eq 1 ]]; then
-        typeset reply=${1:-reply}
-        typeset -ag $reply
-        set -A $reply $lines
+        typeset reply_id=${1:-reply}
+        typeset -ag $reply_id
+        set -A $reply_id $lines
     fi
     
     if [[ $verbose -eq 1 ]]; then
-        printf 'Read %d lines from %d read into array %s.\n' $#lines $input_fd "$reply" >&2
+        printf 'Read %d lines from %d read into array %s.\n' \
+          $#lines $input_fd "$reply" >&2
     fi
     return 0
 }

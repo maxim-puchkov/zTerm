@@ -9,6 +9,6 @@
 from Cryptodome.Util.number import getPrime, isPrime, inverse
 import random
 
-from cfin import *
+# from cfin import *
 
 # from SETS import *

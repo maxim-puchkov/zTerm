@@ -1,15 +1,21 @@
 # User-specific profile for interactive zsh(1) shells.
 
 
-# Environment variables
-export GREP_COLOR='01;95'
+#MARK: - Environment variables
+# du
+export -i BLOCKSIZE=1024
+# grep
+export GREP_COLOR='1;95'
 export PCREGREP_COLOUR="$GREP_COLOR"
-# Command-line editor
-export EDITOR='/usr/local/bin/nano --mouse'
+
+# File editor
+export EDITOR=$(< $ZTERM/etc/editor)
+export GUI_EDITOR=$(< $ZTERM/etc/gui-editor)
+
+
 # GPG
 GPG_TTY=$(tty)
 export GPG_TTY
-
 
 
 
@@ -23,12 +29,10 @@ export CELLAR='/usr/local/Cellar'
 # User directories
 export DEV="$HOME/Developer"
 export PROJ="$DEV/Projects"
-
 export desk="$HOME/Desktop"
 export testdir="$DEV/Test"
 export devlib="$DEV/Library"
 export tempdir="${TMPDIR}tempfiled"
-
 export iCloud="$HOME/Library/Mobile Documents/com~apple~CloudDocs"
 
 # Projects
@@ -44,7 +48,7 @@ export zsitefunc="$zdot/site-functions"
 export zdisabled="$zdot/disabled"
 export zcomp="$zdot/completions"
 export ztest="$zdot/Tests"
-export zcust="$zdot/custom"
+export zcustom="$zdot/custom"
 
 # SFU Files
 export SFU="$iCloud/SFU"
@@ -58,8 +62,17 @@ export A310="$SFU_TERM/PHIL 310/assignments"
 
 
 
-#
-## Misc. variables
+
+# Misc. variables
+export -a ALL_PARAMETERS=(
+  options commands functions builtins reswords
+  patchars aliases galiases saliases parameters
+  modules dirstack history historywords jobdirs
+  jobtexts jobstates nameddirs userdirs usergroups
+  funcfiletrace funcsourcetrace funcstack functrace
+)
+
+
 #export -H TRUE=${(%):-'%F{2}True ✔︎%f'}
 #export -H FALSE=${(%):-'%F{1}False ✘%f'}
 #
@@ -72,10 +85,6 @@ export A310="$SFU_TERM/PHIL 310/assignments"
 #}
 #function T0() green "True ($?)"
 #function F1() red "False ($?)"
-
-
-
-
 
 #export LDFLAGS='-L/usr/local/opt/openssl@1.1/lib'
 #export CPPFLAGS='-I/usr/local/opt/openssl@1.1/include'

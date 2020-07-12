@@ -11,9 +11,6 @@ export enciv1="be87368daada310f928cbbc33591a125"    # enciv1: 13 May 22:00
 export var="My new variable"    # var: 04 Jun 15:49
 export varb="%BMy new bold variable%b"    # varb: 07 Jun 19:13
 
-export REPL=$(esc '3;93' -t 'REPL')
-export REST=$(esc '1;3;91' -r 0 -t 'REST' -t 'arg 1' -t 'arg N')
-export PARAM='param'
 export -a iff_exprs=(
     '-n A' '[ -n B ]' '[[ -n C ]]'
     '[[ -n D1 ]] && [[ -n D2 ]]'
@@ -27,25 +24,6 @@ export -a iff_exprs=(
 
 #MARK: - Functions
 # <#Insertion Point: addfunc#>
-function findfunc() {(
-    typeset pattern=${1:-'error-replace-variables\(\) \{'}
-    awk '/'$pattern'/, /[[:space:]]+\}/' < ${2:-$zfunc/error}
-)}
-
-function newlines() {
-    typeset -a nl=(\n \\n '\n' '\\n' $'\n' "\n" "\\n" $(echo) $(printf '\n') '
-')
-    typeset -i i=1
-    while [[ $i -lt $#nl ]]; do
-        printf '--> %d:\nS:<%s>,\tB:<%b>,\tH:<\n%s>\n' $i "${nl[$i]}" "${nl[$i]}" "$(hexyl <<< $nl[$i])"
-        let i=$i+1
-    done
-}
-
-
-
-
-
 
 
 

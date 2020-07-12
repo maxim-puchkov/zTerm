@@ -2,16 +2,39 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:/Users/admin/Developer/Projects/Terminal/zsh/functions/printc">
+   </FileRef>
+   <Group
+      location = "container:"
+      name = "zshenv">
+   </Group>
+   <FileRef
+      location = "group:../../../private/zsh">
+   </FileRef>
+   <FileRef
       location = "group:zsh/functions/iff">
    </FileRef>
    <FileRef
       location = "group:zsh/functions/syntaxf">
    </FileRef>
    <FileRef
+      location = "group:zsh/functions/mkpl">
+   </FileRef>
+   <FileRef
       location = "group:zsh/functions/brackets">
    </FileRef>
    <FileRef
-      location = "group:zsh/site-functions/get">
+      location = "group:zsh/site-functions/get"
+      assignedFileDataType = "public.shell-script">
+   </FileRef>
+   <FileRef
+      location = "group:Tools">
+   </FileRef>
+   <FileRef
+      location = "group:/Users/admin/Developer/Projects/Terminal/zsh/functions/update_preexec">
+   </FileRef>
+   <FileRef
+      location = "group:zsh/site-functions/get-parse-next">
    </FileRef>
    <FileRef
       location = "group:zsh/functions/print-line">
@@ -42,6 +65,9 @@
    </FileRef>
    <FileRef
       location = "group:zsh/functions/usage">
+   </FileRef>
+   <FileRef
+      location = "group:zsh/functions/esc">
    </FileRef>
    <FileRef
       location = "group:Services.xcodeproj">

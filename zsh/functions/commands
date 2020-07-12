@@ -11,7 +11,7 @@
 function commands() {
     typeset pattern=$1
     () (
-        GREP_COLOR='01;96'
+        GREP_COLOR='1;30;103'
         egrep --color='always' --regexp "$pattern" $1
     ) =(print -l ${commands:t})
 }

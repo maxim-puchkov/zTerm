@@ -9,21 +9,43 @@ alias -g quiet='&>/dev/null'  # redirect stdout and stderr
 alias -g NIL='&>/dev/null'
 
 # 'if [[ ... ]] _T'
-alias -g _T='; then print -P -- $TRUE; else print -P -- $FALSE; fi;'
+alias -g _T='; then print -P -- TRUE; else print -P -- FALSE; fi;'
 # 'for x in $array _F', 'while read x _F'
 alias -g _F='; do print-var x; done;'
 
 
+function substitution() {
+  typeset x=' x ' y=' y '
+  typeset -a ops=(+ :+ - :-)
+  local op expr
+  typeset -a reply
+  print-h 'Substitution'
+  for op in $ops; do
+    expr='${x'${op}'$y}'
+    reply+=("%B%F{5}${op}%f%b" "${expr}" "${(e)expr}")
+  done
+  print -aC3 -- ${(%)reply}
+#  echo ${x:-$y}
+#  echo ${x+$y}
+#  echo ${x:+$y}
+  return 0
+  
+}
+
 
 
 #MARK: - Regular Aliases
+# Builtin 'autoload'
+alias al-='builtin autoload'
+alias al='builtin autoload -Uz'
+# Builtin
+alias bltn='builtin builtin'
 # Command 'ls'
 alias ls='command ls -BFGHhk'
 alias la='ls -la'
 alias l='ls -l'
 alias ll='ls -la'
-alias lll='ls -la'
-alias llll='ls -laR'
+alias lll='ls -laR'
 
 # Command 'chflags'
 alias lock='/usr/bin/chflags uchg'
@@ -52,7 +74,7 @@ alias pn='printn'
 
 alias print-='builtin print -P --'
 alias p-='print-'
-
+alias pi='print-input'
 alias printd='builtin print -P -D'
 
 # Pygments
@@ -65,6 +87,8 @@ alias q='builtin exit 0;'
 alias gs='git status'
 alias grs='git restore --staged'
 alias gt='() { cd "$zterm" && git status; };'
+
+alias int='integer'
 
 # Command 'grep'
 alias gr='grep'
@@ -89,6 +113,7 @@ alias textopen='open -a TextEdit'
 alias webopen='open -a Safari'
 alias scriptopen='open -a "Script Editor"'
 alias vb='open -a VirtualBox'
+alias music='open -a Music'
 
 # Command 'openssl'
 alias sha256='openssl sha256'
@@ -122,20 +147,8 @@ alias wh='builtin whence -av'
 #MARK: - Extended Commands
 alias cd='cdp'
 
-
-fns_begin() {(
-    print -- $argv
-    ${(z)argv}
-    eval $argv
-    functions[$1]="$functions[$1]; $end"
-    pv end @
-)}
-
-alias fninput='printf "$0 %d arguments:       %s." "$0" $# "${(j:, :)@:1}";'
-alias prin='printf "%d" 12345;'
-
 alias print-input='print -P -- "%U$0 arguments%u($#): ${(j:, :)@}.";'
-
+alias print-input='builtin print -P -- "$0:"'
 
 
 

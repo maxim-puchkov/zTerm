@@ -7,70 +7,21 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-#function print-header() {(
-#
-##    autoload -Uz get
-##    get -o w:$COLUMNS b:13 f:15
-#
-#    typeset -A fargs
-#    set -A fargs -w ${2:-$COLUMNS} -b ${3:-13} -f ${4:-15}
-#
-#    typeset title=$1
-#    typeset -i width=${fargs[-w]}
-#    typeset -i bg_color=${fargs[-b]}
-#    typeset -i fg_color=${fargs[-f]}
-#
-#    print -P -- "${(pr:$width:)title}"
-#)}
-
 # <#Function description#>
 function print-line() {(
-    autoload -Uz get
-    typeset -A fn_opts
-    get -A fn_opts \
-      --options w:$COLUMNS c:'*' t T f b: \
-      -- $argv
-    print-array fn_opts
-#    print-var fn_opts
-#    fn_opts=( [width]=$COLUMNS [title]='' [char]='*' [tab]=1 [fg]=7 [bg]=0 )
-    
-    
-    typeset title
-    typeset -i tab=${fn_opts[-t]}
-    if [[ -n $fn_opts[-T] ]]; then
-        title=$(expand -t $tab <<< $fn_opts[-T])
-#        title=$(expand -t $tab "${fn_opts[title]}")
-    fi
-    
-    
-    
-    # Colors and width
-    typeset -i bg fg w
-    bg=${fn_opts[-b]:-48}
-    fg=${fn_opts[-f]:-38}
-    w=${fn_opts[-w]:-$COLUMNS}
-    # Line character and title
-    typeset c=$fn_opts[-c]
-    # Print line
-#    echoti setaf $fg
-#    echoti setab $bg
-    
-    print -P -- "${(pr:$w::$c:)argv}"
-    echoti sgr0
-
-    
-    return $?
+  autoload -Uz get
+  get -L 1 -p 'opt_' -- $argv
+  
+  typeset escape_seq=${opt_e}
+  typeset -i width=${opt_w:-$COLUMNS}
+  typeset char=${opt_c:-'*'}
+  typeset text
+  if [[ ${+opt_t} -eq 1 ]]; then
+    text="  ${opt_t}  "
+  fi
+  
+  esc -n $=escape_seq
+  builtin print -P -- "${(pr:$width::$char::$text:)}"
+  esc -n -0
+  return 0
 )}
-
-
-#function print-line() {(
-#    function line() {
-#        print -- ${(l:$width::$char:)}
-#    }
-#
-#
-#    local character="${1[1]:-*}"
-#    local width=${2:-$(tput cols)}
-#    tput sgr0
-#    lgrey $( printf '%*s%s\n' $width '' | tr ' ' "$character" )
-#)}

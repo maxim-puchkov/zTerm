@@ -27,8 +27,8 @@ if [[ -e "$ZDOTDIR/.iterm2_shell_integration.zsh" ]]; then
     source "$ZDOTDIR/.iterm2_shell_integration.zsh"
 fi
 
-if [[ -e "$HOME/private/uconf.zsh" ]]; then
-    source "$HOME/private/uconf.zsh" 
+if [[ -e "$HOME/private/zsh/functions" ]]; then
+    source "$HOME/private/zsh/functions"
 fi
 
 
@@ -37,8 +37,6 @@ export REF_ZDOT=($(< $ZTERM/etc/source.zsh))
 preexec_functions+=(ref)
 
 
-#disable declare
-#source $ZTERM/zsh/custom/commands/declare
 
 function preexec_test() {
     print -- $'\n\n'

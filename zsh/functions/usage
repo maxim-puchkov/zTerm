@@ -7,28 +7,61 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# Print an error message and
-# program usage description.
+# Print command usage
 function usage() {(
+  setopt extendedglob
+  case $1 in
     # No input
-    if [[ -z $1 ]]; then
-        error -1
-    fi
-    
-    # Set error description
-    typeset error_desc=$1
+    '')
+      error -1
+      return
+    ;;
+    # Print an error message before usage
+    '-e')
+      typeset error_desc=$2
+      shift 2
+    ;;
+  esac
+  
+  # Usage color and line prefix
+  typeset -i color=6
+  typeset prefix='\t %F{'${color}'}>%f'
+  
+  # Append 'Usage' label to description
+  typeset -a usage_desc=()
+  usage_desc+=('%F{'${color}'}%U''Usage''%u%f:')
+  
+  # Append arguments
+  typeset -i i=1
+  autoload -Uz get
+  while [[ -n $1 ]]; do
+    case $1 in
+      (?[\!])
+        usage_desc[$i]+=" ${1%'!'}"
+      ;;
+      (+)
+        [[ -z $2 ]] && error 'Missing argument'
+        shift
+        usage_desc[$i]+="\n\t   $1"
+      ;;
+      (-)
+        [[ -z $2 ]] && error 'Missing argument'
+        shift
+        let i=$i+1
+        usage_desc[$i]+="${prefix} $1"
+      ;;
+      (*)
+        usage_desc[$i]+=" $1"
+      ;;
+    esac
     shift
-    
-    # Usage color and line prefix
-    typeset -i color=6
-    typeset prefix='  %F{'${color}'}>%f '
-    # Append 'Usage' label to description
-    typeset -a usage_desc=('')
-    usage_desc+=('%F{'${color}'}%U''Usage''%u%f:')
-    # Append arguments
-    usage_desc+=(${prefix}${^argv})
-    
-    # Print error
-    error -T +. $error_desc ${(@F)usage_desc}
-    return $?
+  done
+  
+  # Print error
+  if [[ -n $error_desc ]]; then
+    error -T +. "$error_desc\n" ${(@F)usage_desc}
+  else
+    builtin print -- ${(@F%)usage_desc}
+  fi
+  return $?
 )}

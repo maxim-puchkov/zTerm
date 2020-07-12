@@ -1,0 +1,17 @@
+#!/bin/zsh
+
+#  0x
+#  Z-Function (94)
+#
+#  Created by Maxim Puchkov on 2020-07-10.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function 0x() {
+  for file; do
+    print-h "File: $file ($(sizeof $file))"
+    hexyl <$file
+    echo
+  done
+}

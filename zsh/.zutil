@@ -2,23 +2,19 @@
 
 
 # Open default macOS Terminal
-function term1() {
-    open -a '/System/Applications/Utilities/Terminal.app' -g -n
-}
+function term1() { open -a '/System/Applications/Utilities/Terminal.app' -g -n; }
 # Open iTerm2
-function term2() {
-    open -a '/Applications/iTerm.app' -g -n
-}
+function term2() { open -a '/Applications/iTerm.app' -g -n; }
 
 # Open in editor
-function edit() {
-    ${=EDITOR} "$@"
-}
+function edit()     { ${=EDITOR} "$argv"; }
+function gui-edit() { ${=GUI_EDITOR} "$argv"; }
+
 # Calculate
-function calc() {
-    noglob expr "$@"
-}
+function calc() { noglob expr "$argv"; }
 alias calc='noglob calc'
+
+
 
 #
 function themes() {
@@ -32,6 +28,22 @@ function plugins() {
 # Highlight grep matches with backgroud color
 function hgrep hegrep hfgrep() {
     (GREP_COLOR='01;30;42' ${0:1} --color='always' $argv)
+}
+
+# 
+function testenv() {
+  (ZDOTDIR=$ZDOTDIR/Tests zsh)
+  return $?
+}
+
+# Create a .webloc shortcut file
+function webloc() {
+  typeset -A options
+  get -A options --option o -- $argv
+  output_file=${options[-o]}
+#  touch $output_file
+  plutil -insert 'URL' 'https://google.com' -o $output_file
+  return 0
 }
 
 
@@ -542,10 +554,10 @@ function word() {
     fi
     
     typeset cmd=$1
-    shift
     if [[ ${+functions[${0}_${cmd}]} -eq 0 ]]; then
         error -127 'Command not found: $cmd.'
     fi
+    shift
     
     typeset base url
     typeset word
@@ -557,67 +569,12 @@ function word() {
 }
 
 
-function rand() {
-    function rand_str() {
-        local n_bytes=${1:-1}
-        local output_file=${2:-/dev/stdout}
-        {
-            builtin print -- \
-                    "Writing ${n_bytes} random bytes" \
-                    "to ${output_file}." \
-                    >&2
-            /bin/dd  if=/dev/random  \
-                     of=$output_file \
-                     bs=8            \
-                     count=$n_bytes  \
-                     2>/dev/null
-        }
-    }
-    
-    case $# in
-        0)  fn print-commands $0
-            return 22
-        ;;
-        1)  error -1 ' is not specified.'
-            
-        ;;
-    esac
-    
-    if [[ $# -lt 2 ]]; then
-        error -1 'Bad input.'
-    fi
-    typeset cmd=$1
-    shift
-    
-    
-    typeset value
-    if [[ ${+functions[${0}_${cmd}]} -eq 0 ]]; then
-        error -127 'Command not found: $cmd.'
-    fi
-    ${0}_${cmd} "$@"
-    return $?
-}
 
 
 
 
-# Create a .webloc shortcut file
-function webloc() {
-    if [[ -z $1 ]]; then
-        error -1 'URL is not set.'
-    fi
-    local url=${${1#*://}//\//:}
-    local filename=${2:-$url}
-    if [[ -d $filename ]]; then
-        filename="${filename%/}/${url}"
-    fi
-    
-#    filename="${filename//\//:}"
-    
-    # ${2:-$url}
-    pv url filename
-#    https://coursys.sfu.ca/history
-}
+
+
 
 
 
@@ -783,13 +740,6 @@ function cat() {(
     return $code
 )}
 
-function test_autoload() {
-    (cd -q $zdot
-    print-line -c '*' -w
-    zsh -fivx)
-}
-
-
 
 
 # All 'print -P' prompts
@@ -883,13 +833,13 @@ function show_prog() {
     printf '%s\n' $(esc -t $1 '1;95')
     return 0
 }
-
-function print-input() {
-#    print -P -- "%F{5}>%f %BInput of %F{5}%U${0}%u%f:%b"
-#    print-var -1 argv
-    print-line
-    show 'Function: %U%F{5}'$0'%f'
-}
+#
+#function print-input() {
+##    print -P -- "%F{5}>%f %BInput of %F{5}%U${0}%u%f:%b"
+##    print-var -1 argv
+#    print-line
+#    show 'Function: %U%F{5}'$0'%f'
+#}
 
 
 
@@ -964,12 +914,37 @@ function notify() {
 }
 
 
+#typeset -i ofd
+#exec {ofd}>${1:-/dev/stdout}
+##$filename
+##print -- $ofd >&${ofd}
+#print -u $ofd -- $ofd
+#print -u $ofd -- file: $filename
+#
+##plutil -insert list.0 -string 'list item 1' test.plist
+#exec {ofd}>&-
 
 
-function declare() {
-    declare ${argv}
+
+function setx() {
+  function random_value() {
+    rand str 2 2>/dev/null | xxd -p | cut -b -6
+  }
+  
+  typeset -ag args
+  local -i count=${1:=3}
+  repeat $count; do
+    args+=($random_value)
+  done
+  
+  
+  set -- {
 }
-#alias declare='() functions[declare]="; $functions[declare]; print ALIAS;"'
 
-alias declare='() ${(z)$(echo "echo $@; $functions[declare]")}'
-alias bob='() { declare $argv; } '
+function setget() {
+  set -- -X ox1 ox2 ox3 -Y 'oy : a1 a1' a2 -Z oz -0 -- -oa rest1 rest2 rest3 -- '...'
+  get $argv
+  
+  
+#  get-parse-next opt optargs
+}

@@ -9,7 +9,7 @@
 
 # <#Function description#>
 function argn() {
-  value=$1
+  value=${1:=}
   shift
   if [[ $# -gt 0 ]]; then
     print -m "<-$#>" -- "${argv[(i)$value]}"

@@ -160,31 +160,38 @@ function b_cyanbg() { __style_print "$B_CYANBG$*" }
 
 #MARK: - Old Styles
 function OK() {
-    b_green "${*:-$0}"
+  b_green "${*:-$0}"
 }
 function Warn() {
-    yellow "${*:-$0}"
+  yellow "${*:-$0}"
 }
 function InfoSection() {
-    b_bcyan $(underline "$*")
+  b_bcyan $(underline "$*")
 }
 function Info() {
-    cyan "${*:-$0}"
+  cyan "${*:-$0}"
 }
 function Bad() {
-    b_red "${*:-$0}"
+  b_red "${*:-$0}"
+}
+function comment() {
+  esc 92 -t "# ${*:-$0}" -0
 }
 function group() {
-    local color=$1
-    local lt=$2
-    local rt=$3
-    local text=$4
-    echo "$($color $lt)${text}$($color $rt)"
+  local color=$1
+  local lt=$2
+  local rt=$3
+  local text=$4
+  echo "$($color $lt)${text}$($color $rt)"
 }
 
-function print_h1() {
-    print -P -- "%B%K{11}%F{16} ${(U)argv} %f%k%b"
+function print-h() {
+  print-line -e 1,30,103 -c ' ' -t ${argv}; return 0
 }
+function print_h1() {
+  builtin print -P -- "%B%K{11}%F{16} ${(U)argv} %f%k%b"
+}
+
 
 
 
@@ -196,11 +203,12 @@ typeset -aH __COLOR_NAMES__=(
     'RED'  'GREEN'   'YELLOW'
     'BLUE' 'MAGENTA' 'CYAN'
 )
+export REPL=$(esc '3;93' -t 'REPL' -0)
+export REST=$(esc '1;3;91' -t 'REST' -t 'arg 1' -t 'arg N' -0)
+
 
 error_color=9
 logf_color=4
-
-
 
 
 

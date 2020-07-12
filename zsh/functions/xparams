@@ -9,7 +9,6 @@
 
 # <#Function description#>
 function xparams() {
-    
     typeset -a xparams_flags=($1)
     typeset -a xparams_mods=($2)
     xparams_flags=('P' 'k' 'o')

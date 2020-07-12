@@ -4,7 +4,7 @@
 # ~/Developer/Projects/Terminal/zsh/functions/fn
 #
 # zsh function completion
-# Updated on 2020-06-24 at 06:20 pm
+# Updated on 2020-07-08 at 01:18 am
 
 
 _arguments -C \
@@ -21,15 +21,18 @@ case $state in
       completion:"generate function command completion"
       completion-arguments:"''"
       completion-commands:"''"
-      def:"print function definition"
+      d:"debug function"
+      def:"print function source code"
+      edit:"''"
       isdef:"check if a function is defined"
+      modify:"''"
       open:"open function source file"
       options:"list function flags and options"
       print-commands:"format and list function commands"
       show:"display function definition and source file"
       src:"find function source file"
       sub:"list functions defined within a function"
-      versions:"''"
+      xedit:"''"
     )
     _describe -t commands command commands
   ;;
@@ -43,3 +46,4 @@ case $state in
 esac
 
 return 0
+[0m[0m

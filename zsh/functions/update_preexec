@@ -1,0 +1,22 @@
+#!/bin/zsh
+
+#  update_preexec
+#  Z-Function (93)
+#
+#  Created by Maxim Puchkov on 2020-07-08.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+dirs=($zdot/functions)
+
+if [[ ! -v last_update ]]; then
+  last_update=$(date -j)
+fi
+
+typeset -gix {i,o}fd
+typeset -gx  file=$ZDOTDIR/
+exec {ofd}>$file {ifd}<$file
+
+
+find $dirs -newerct "$last_update"

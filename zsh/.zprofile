@@ -2,7 +2,6 @@
 
 
 #MARK: - Z-Terminal
-
 export lf=~/var/files/linesf
 export tf=~/var/files/textf
 export pf=~/var/files/patternsf
@@ -38,20 +37,6 @@ function zmisc()    { open -a Xcode "$ZMISC" }
 function zcomp()    { open -a Xcode "$ZCOMP" }
 
 function zload()    { open -a Xcode "$ZDOTDIR/.zload" }
-
-
-
-
-
-function xxargs() {
-    set +A $argv[6] 1 2 3 4
-    xargs ${=argv}
-    typeset command=$argv
-    while read arg; do
-        ($command $arg)
-    done <&0
-    
-}
 
 
 
