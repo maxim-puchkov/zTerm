@@ -1,14 +1,14 @@
 #!/bin/zsh
 
-#  0x
-#  Z-Function (94)
+#  0b
+#  Z-Function (99)
 #
-#  Created by Maxim Puchkov on 2020-07-10.
+#  Created by Maxim Puchkov on 2020-07-14.
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# Convert ASCII to hexadecimal
-function 0x() {
+# Convert ASCII to binary
+function 0b() {
   zmodload zsh/zselect
   
   # Options
@@ -32,11 +32,11 @@ function 0x() {
   # Stop if input string is empty
   [[ -z $ascii ]] && return 1
   
-  # Convert input to hexadecimal
-  typeset -a bytes
-  () {
-    bytes=($(grep -o -e '..' <$1))
-  } =(python -c 'print(bytes.hex(b"'$ascii'"));')
-  builtin print -- $bytes
+  
+  # Convert input to binary
+  typeset hex=$(0x $argv)
+  typeset -i2 binary
+  let binary="[##2]${hex}"
+  builtin print -- "$(( [##2] ${binary} ))"
   return 0
 }

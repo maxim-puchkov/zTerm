@@ -7,47 +7,120 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# Show and describe various kinds of objects
-function show() {
-    typeset -i -L3 last_status=$?
-    typeset -ix c_true=2
-    typeset -ix c_false=9
 
+# show - show information about a shell command,
+#        parameter or function
+[[ $# -eq 0 ]] && return 1
 
-    # Prepend prefix offset and symbol
-    typeset prefix
-    if [[ -t 1 ]]; then
-      zformat -f prefix \
-          '%F{%0(p.$c_true.$c_false)}%B>%b%f ' \
-          p:$last_status
-    fi 
+() (
+  # Text styles for found and not found arguments
+  function found() {
+    esc 32 ${argv:2} -t "$1" -0 -n
+  }
+  function not_found() {
+    esc 1 31 -t "$1" -0 -n
+  }
+  
+  
+  # For each argument
+  for arg; do
+    unset param not_found
     
-    while [[ -n $1 ]]; do
-        case $1 in
-          -v) print -P -- \
-                "${prefix}%F{2}${2}%f=<${${(P)2}:-null}>"
-              shift
-          ;;
-          *) print -P  -- "${prefix}${argv}"
-          ;;
-        esac
-        shift
+    # Show parameter values
+    if [[ -v $arg ]]; then
+      print -v param -- "$(found $arg 1) = $(found ${(Pkvj:, :)arg})"
+    fi
+    
+    # Show 'whence' description
+    for desc in ${(@f)"$(whence -av $arg)"}; do
+      if [[ $desc =~ "^${arg} not found" ]]; then
+        not_found=1
+        break
+      fi
+      perl -pe \
+        's/(.+) (is(?: an?)?) (.+)/'$(found '\1' 1)' \2 '$(found '\3' 4)'/g' \
+        <<< $desc
+      # Show function source
+      if [[ ${+functions[$arg]} -eq 1 ]]; then
+        print-h "%S    function ${arg}    %s"
+        functions $arg | highlight
+        print-h "%S    end ${arg}    %s"
+      fi
     done
-    return 0
     
-    
-    
-    if [[ $opts[-t] -eq 1 ]]; then
-        print -P  -- "${prefix}${argv}"
-        return 0
+    #
+    if [[ $not_found -eq 1 ]] && [[ -z $param ]]; then
+      print -- "$(not_found $arg) not found"
+    elif [[ -n $param ]]; then
+      print -- "$param"
     fi
-    
-    if [[ -v $1 ]]; then
-        print -P -- "${prefix}%F{2}${1}%f=<${${(P)1}:-null}>"
-        return 0
-    fi
-}
+  done
+) $argv
+
+return 0
 
 
-
-
+#  typeset -a kinds
+#  kinds=('alias' 'built-in command' 'external command'
+#         'shell function' 'hashed command' 'reserved word')
+#  infocmd-highlight () {
+#    typeset -a command_info
+#    mkarray command_info "whence -av $name"
+#    typeset line new_line find replace
+#    () {
+#      cat < $1
+#    } =(
+#            for line in $command_info; do
+#                new_line="$line"
+#                # Bold name
+#                name="${line[(w)1]}"
+#                replace_name="%B%U${name}%u%b"
+#                new_line="${new_line/$name/%F\{6\}$replace_name%f}"
+#                if [[ $new_line =~ 'not found' ]]; then
+#                    new_line="%F{1}${replace_name} not found%f"
+#                else
+#                    # Colored description
+#                    find="$(awk -F 'is (an? )?'  '{ print $2; }' <<< $line)"
+#                    replace="${find}"
+#                    new_line="${new_line//$find/%F\{6\}$replace%f}"
+#                fi
+#                print -P -- "$new_line"
+#            done
+#        )
+#  }
+#  local name
+#  for name in $argv
+#  do
+#    infocmd-highlight $name
+#  done
+#  return $?
+#
+## Show and describe various kinds of objects
+#function show() {
+#    typeset -i -L3 last_status=$?
+#    typeset -ix c_true=2
+#    typeset -ix c_false=9
+#
+#
+#    # Prepend prefix offset and symbol
+#    typeset prefix
+#    if [[ -t 1 ]]; then
+#      printif $last_status '2' '9'
+#      zformat -f prefix \
+#          '%F{%0(p.2.9)}%B>%b%f ' \
+#          p:$last_status
+#    fi
+#
+#    while [[ -n $1 ]]; do
+#        case $1 in
+#          -v) print -P -- \
+#                "${prefix}%F{2}${2}%f=<${${(P)2}:-null}>"
+#              shift
+#          ;;
+#          *) print -P  -- "${prefix}${argv}"
+#          ;;
+#        esac
+#        shift
+#    done
+#    return 0
+#}

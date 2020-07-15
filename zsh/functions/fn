@@ -52,7 +52,7 @@ function fn() {(
         if [[ ! -r $fn_file ]]; then
             error -1 'Cannot read source file for function $fn_name.'
         fi
-        gui-edit -- $fn_file
+        gui-edit $fn_file
         return 0
     }
     ## isdef: check if a function is defined ##
@@ -286,15 +286,10 @@ EOF
         ${=EDITOR} -- $fn_file
         return 0
     )}
-    function fn_xedit() {(
+    function fn_gui-edit() {(
         /usr/bin/open -F -a Xcode -- $fn_file
         return 0
     )}
-    
-    function fn_modify() {(
-        cat <$fn_file
-    )}
-    
     
     
     #MARK: - Options

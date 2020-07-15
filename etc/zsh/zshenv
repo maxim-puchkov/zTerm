@@ -4,20 +4,26 @@
 # Created on March 29, 2020.
 
 
-# Z-Shell main directory
+# Z-Shell directory
 export ZTERM="/usr/local/Terminal"
 export ZDOTDIR="$ZTERM/zsh"
 
 
+# Hash directories
+hash -d zterm=$ZTERM
+hash -d zdot=$ZDOTDIR
+hash -d bin=/usr/local/bin
+
+
 # Z-Shell files
-export ZSHENV="$HOME/.zshenv"           # 1
-export ZPROFILE="$ZDOTDIR/.zprofile"    # 3     ##: ref
-export ZSHRC="$ZDOTDIR/.zshrc"          # 4
-export ZIO="$ZDOTDIR/.zio"              # 9     ##: ref
-export ZALIAS="$ZDOTDIR/.zalias"        # 10    ##: ref
-export ZEXPORT="$ZDOTDIR/.zexport"      # 11    ##: ref
-export ZUTIL="$ZDOTDIR/.zutil"          # 12    ##: ref
-export ZNET="$ZDOTDIR/.znetwork"        # 13    ##: ref
-export ZMISC="$ZDOTDIR/.zmisc"          # 14    ##: ref
-export ZCOMP="$ZDOTDIR/.zcomp"          # 17    ##: ref
+export ZSHENV="$HOME/.zshenv"
+export ZPROFILE="$ZDOTDIR/.zprofile"
+export ZSHRC="$ZDOTDIR/.zshrc"
+export ZIO="$ZDOTDIR/.zio"
+export ZALIAS="$ZDOTDIR/.zalias"
+export ZEXPORT="$ZDOTDIR/.zexport"
+export ZUTIL="$ZDOTDIR/.zutil"
+export ZNET="$ZDOTDIR/.znetwork"
+export ZMISC="$ZDOTDIR/.zmisc"
+export ZCOMP="$ZDOTDIR/.zcomp"
 export ZTEST="$ZDOTDIR/.ztest"

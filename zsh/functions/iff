@@ -50,7 +50,9 @@ for opt spec in $var_specs; do
   local var_name=${spec%%=*}
   local -a var_values=(${(s:,:)${spec#*=}})
   local -a matches=(${(M)exprs:#*'$'$var_name*})
+  red $exprs
   exprs=(${exprs:|matches})
+  magenta $exprs
   for var_expr in $matches; do
     for var_value in $var_values; do
       var_exprs+=(${var_expr/\$${var_name}/${var_value}})

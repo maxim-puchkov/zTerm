@@ -8,12 +8,15 @@
 
 
 # mkpl - create a property list
-typeset output_file=${1:=/dev/stdout}
 () (
+  typeset output_file=${1:=/dev/stdout}
+  typeset tmp=$2
+  shift 2
+  
   #MARK: - Create empty file
-  typeset tmp=$1
-  shift
-cat >$tmp <<-EOF
+  () (
+    /bin/cat >$tmp \
+<<-EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <!--
@@ -29,13 +32,24 @@ cat >$tmp <<-EOF
   </dict>
 </plist>
 EOF
-#MARK: - Modify property list with 'plutil'
-while [[ -n $3 ]]; do
-  plutil -insert $1 $2 $3 $tmp
-  shift 3
-done
-) =() $argv
-
-
-
-#    plutil -insert URL -string 'https://google.com' $tmp
+  ) >$tmp
+  
+  
+  #MARK: - Modify property list with 'plutil'
+  () (
+    for keypath type value; do
+      if ! /usr/bin/plutil -insert $keypath $type $value $tmp; then
+        return 1
+      fi
+    done
+  ) $argv 2>/dev/null
+  if [[ $? -ne 0 ]]; then
+    printf '%s: plutil failed to insert property list values.\n' "$0"
+    return 1
+  fi
+  
+  # Copy temporary file to output file
+  /bin/cp $tmp $output_file
+#  /bin/cat <$tmp >$output_file
+  return 0
+) $1 =() ${argv:2}

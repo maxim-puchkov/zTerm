@@ -7,70 +7,35 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# <#Function description#>
-function param() {
-    setopt extendedglob
-    set -- ${(u)argv}
-    while [[ -n $1 ]]; do
-        case $1 in
-            ('=')
-            typeset -m '*' | grep -E '^([[:alnum:]]+)=.*'${2}'.*$' | cut -d = -f1
-                shift
-            ;;
-            (*)
-                typeset +m "$1*"
-            ;;
-        esac
-        shift
-    done
-}
-
-
-
-
-
-
-
-#function param() {
-#    set -- ${(u)argv}
-#    print -- $argv
-#    while [[ -n $1 ]]; do
-#        print -- "\$1 is currently = {$1}; $1[1]"
-#        case ${1[1]} in
-#            # Print variables which match value
-#            ('=')
-##                print -- $1
-##                arr=($(typeset -m '*' | grep -E '^([[:alnum:]]+)=.*'${1:1}'.*$' | cut -d '=' -f1))
-#                typeset -m '*' | grep -E '^([[:alnum:]]+)=.*'${1:1}'.*$' | cut -d '=' -f1
-##                redbg $arr
-##                typeset -m '*' | awk 'sub(/=.*$1.*$/,"")'
-##                1=${1#-}
-##                local -a matches=('%F{2}'${^$(typeset -m '*' |
-##                    awk '(length($0) < 100)' |
-##                    grep -w -E "(\w+)=(\W*)?${1}(\W*)?" |
-##                    cut -d '=' -f1)}'%f='${1})
-##                if [[ -z $matches ]]; then
-##                    error -1 +R -- 'Parameters matching ${'${1}'} not found.'
-##                fi
-##                print -Pl -- $matches
-#            ;;
-#            # Print value
-#            ('+')
-#                typeset -m "${1:1}*"
-##                arr=($(typeset -m "${1:1}*" ))
-##                cyanbg $arr
-##                arr=($(typeset -m '*' | grep -E '^([[:alnum:]]+)=.*'${1:1}'.*$' | cut -d '=' -f1))
-##                1=${1#-}
-##                if [[ -v $1 ]]; then
-##                    print -P -- "%F{2}$1%f=${(P)1}"
-##                else
-##                    error -1 +R -- 'Parameter ${'$1'} is not set.'
-##                fi
-#            ;;
-#        esac
-#        shift
-#    done
-##                    print-var arr
+# param - print parameters names whose name matches input argument; if
+#         $1 is '=' (equals sign), then print names of parameters with
+#         value matching input argument.
 #
-#    return 0
-#}
+# Examples:
+# param '*status'  -  status, pipestatus, ...
+# param = '/bin'   -  PATH, path, SHELL, ...
+function param() {
+  setopt extendedglob
+  if [[ $# -eq 0 ]]; then
+      return 1
+  fi
+  
+  set -- ${(u)argv}
+  while [[ -n $1 ]]; do
+    case $1 in
+      # Search for matching value
+      ('=')
+        typeset -m '*' |
+          grep -E '^([[:alnum:]]+)=.*'${2}'.*$' |
+          cut -d '=' -f1
+        shift
+      ;;
+      # Search for matching name
+      (*)
+        typeset +m "$1*"
+      ;;
+    esac
+    shift
+  done
+  return 0
+}

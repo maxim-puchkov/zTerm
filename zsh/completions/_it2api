@@ -1,0 +1,8 @@
+#compdef it2api
+
+
+local -a found
+local expl
+found=( $ZTERM/zsh/**/*(.:t) )
+_wanted zfunctions expl 'z-function' compadd -a found
+

@@ -7,16 +7,16 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# <#Function description#>
+# update_preexec
 dirs=($zdot/functions)
+#
+#if [[ ! -v last_update ]]; then
+#  last_update=$(date -j)
+#fi
 
-if [[ ! -v last_update ]]; then
-  last_update=$(date -j)
-fi
+#typeset -gix {i,o}fd
+#typeset -gx  file=$ZDOTDIR/
+#exec {ofd}>$file {ifd}<$file
 
-typeset -gix {i,o}fd
-typeset -gx  file=$ZDOTDIR/
-exec {ofd}>$file {ifd}<$file
-
-
-find $dirs -newerct "$last_update"
+$zterm/var 
+find -L $dirs -newerct "$last_update"

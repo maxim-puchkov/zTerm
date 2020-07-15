@@ -55,3 +55,6 @@
 /usr/local/Terminal/zsh/functions/0x
 /usr/local/Terminal/zsh/functions/rand
 /usr/local/Terminal/zsh/functions/report
+/usr/local/Terminal/zsh/functions/webloc
+/usr/local/Terminal/zsh/functions/read-in
+/usr/local/Terminal/zsh/functions/0b

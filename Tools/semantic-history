@@ -8,28 +8,29 @@
 
 
 # Path to the file
-typeset file=$1
-() {
-    if [[ ! -r $1 ]] &&
-       [[   -r $2 ]]; then
-        file=$2
-    fi
-} ${file} ${file%.}
+typeset filepath=$1
+print $@ >/tmp/filepath
 
+# If filepath contains extra characters
+# try to delete last character until path
+# refers to a readable file
+until [[ -r $filepath ]]; do
+  filepath=${filepath:0:-1}
+done
 
-# Open regular files in Xcode
-if [[ -f $file ]]; then
-    open -a Xcode $file
+# Open regular files in GUI editor
+if [[ -f $filepath ]]; then
+  /usr/local/bin/gui-edit $filepath
 else
-    open $file
+  open $filepath
 fi
 
 # Check exit code
 typeset exit_code=$?
 if [[ $exit_code -ne 0 ]]; then
-    typeset title="Error ($exit_code)"
-    typeset subtitle="${0:t}"
-    typeset message="Cannot open '$file'"
-    zsh "$ZTERM/Tools/do-applescript" Notify $message $title $subtitle
+  typeset title="Error (${exit_code})"
+  typeset subtitle="${0:t}"
+  typeset message="Cannot open '${filepath}'"
+  osascript ~zterm/Tools/notify "$message" "$title" "$subtitle"
 fi
 return 0

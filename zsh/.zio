@@ -203,8 +203,8 @@ typeset -aH __COLOR_NAMES__=(
     'RED'  'GREEN'   'YELLOW'
     'BLUE' 'MAGENTA' 'CYAN'
 )
-export REPL=$(esc '3;93' -t 'REPL' -0)
-export REST=$(esc '1;3;91' -t 'REST' -t 'arg 1' -t 'arg N' -0)
+#export REPL=$(esc '3;93' -t 'REPL' -0)
+#export REST=$(esc '1;3;91' -t 'REST' -t 'arg 1' -t 'arg N' -0)
 
 
 error_color=9

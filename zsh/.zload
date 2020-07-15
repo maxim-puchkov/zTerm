@@ -63,5 +63,3 @@ typeset -H ZSH_AUTOSUGGEST_CLEAR_WIDGETS
 
 unalias run-help
 autoload run-help
-
-#unalias g

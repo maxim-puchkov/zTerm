@@ -146,13 +146,13 @@ function zfc() {
     function zfc_open() {
         local fname=$1
         local files=(${(@f)"$(
-            find $ZTERM -name $fname -type f
+            find -L $ZTERM -name $fname -type f
         )"})
         if [[ ${#files} -ne 1 ]]; then
             error "Found ${#files} matching functions."
             return 1
         fi
-        open -a Xcode $files
+        gui-edit $files
         return $?
     }
     

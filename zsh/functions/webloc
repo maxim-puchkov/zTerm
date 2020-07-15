@@ -1,0 +1,37 @@
+#!/bin/zsh
+
+#  webloc
+#  Z-Function (97)
+#
+#  Created by Maxim Puchkov on 2020-07-12.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Create a .webloc Safari shortcut
+function webloc() {
+  if [[ $# -eq 0 ]]; then
+    error -2 'URL is not specified.'
+  fi
+  
+  # Website URL
+  local url=$1
+  if ! curl -s -I $url; then
+    error -1 'URL ${url} is not valid.'
+  fi
+  
+  
+  # Output .webloc file name
+  local output_file=$2
+  if [[ -z $output_file ]]; then
+    # Delete URL prefix, suffix, and all slashes as follows:
+    # [https://]example.com[/url/path/index.html]
+    output_file=${${${url#*'://'}%%'/'*}//'/'/}
+  fi
+  output_file="${output_file%.plist}.plist"
+  
+  
+  # Make .webloc property list
+  mkpl $output_file -insert 'URL' $url
+  builtin print -- ${output_file:a}
+  return 0
+}

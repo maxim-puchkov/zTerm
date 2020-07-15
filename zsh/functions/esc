@@ -14,7 +14,7 @@ function esc() {(
   fi
   
   setopt extendedglob
-  set -- ${argv:gs/','/';'}
+#  set -- ${argv:gs/','/';'}
   local output_format='%b'
   local ansi_code
   local -i last
@@ -51,9 +51,9 @@ function esc() {(
         shift 2
       ;;
       # Print ANSI color
-      ([0-9][0-9\;]#)
+      ([0-9][0-9\;\,]#)
         let -i last=${(u)argv[(i)[^0-9]*]}-1
-        ansi_code="\e[${(j.;.)${(@u)argv[1,$last]}}m"
+        ansi_code="\e[${(j.;.)${(@u)argv[1,$last]}//,/;}m"
         if [[ $output_format == '%s' ]]; then
           printf "\$'%s'" "$ansi_code"
         else

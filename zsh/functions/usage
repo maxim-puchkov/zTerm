@@ -59,7 +59,7 @@ function usage() {(
   
   # Print error
   if [[ -n $error_desc ]]; then
-    error -T +. "$error_desc\n" ${(@F)usage_desc}
+    error -T +. "$error_desc\n"${(@F)usage_desc}
   else
     builtin print -- ${(@F%)usage_desc}
   fi

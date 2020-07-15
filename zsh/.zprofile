@@ -95,19 +95,6 @@ EOF
 
 
 
-typeset -ix current_id=0
-function Beg() {
-    print -P -- "Begin %F{2}${current_id}%f"
-    print -P -- "%B%F{1}<%f%b"
-    let current_id=$current_id+1
-}
-function End() {
-    print -P -- "%B%F{1}>%f%b"
-    print -P -- "End %F{1}${current_id}%f\n"
-    let current_id=$current_id-1
-}
-
-
 function add_tests() {
     # Compdef test function.
     function foo() {

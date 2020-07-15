@@ -41,7 +41,7 @@ alias al='builtin autoload -Uz'
 # Builtin
 alias bltn='builtin builtin'
 # Command 'ls'
-alias ls='command ls -BFGHhk'
+alias ls='/bin/ls -BFGHhk'
 alias la='ls -la'
 alias l='ls -l'
 alias ll='ls -la'
@@ -60,6 +60,9 @@ alias E='esc 1 38 45 -r 0 -t'
 
 # Builtin 'functions'
 alias fns='functions'
+
+# Command 'find'
+alias findl='/usr/bin/find -L'
 
 # Builtin 'print'
 alias printp='builtin print -P'
@@ -119,8 +122,10 @@ alias music='open -a Music'
 alias sha256='openssl sha256'
 
 # Python
-alias python='command python3'
+alias python3.7='/usr/local/opt/python@3.7/bin/python3.7'
 alias python3.8='/usr/local/opt/python@3.8/bin/python3.8'
+alias python='command python3'
+alias p3='python3'
 alias pip='command pip3'
 alias idle='command idle3'
 
@@ -128,10 +133,10 @@ alias idle='command idle3'
 alias rm='/bin/rm -i'
 
 # Builtin 'set'
-alias set1='set -- -a -b -c'
+alias set1='set -x; set +x -- -x -y oy -z oz1 oz2 -- -r REST'
 alias set2='set -- -a -b -c -d D -e E -f F'
 alias set3='set -- -a -b -c -d D -e E -f F --long LONG args "hello world"'
-alias ext='setopt extendedglob'
+alias ext='set -o extendedglob'
 
 # Command 'strings'
 alias str='command strings'
@@ -147,8 +152,6 @@ alias wh='builtin whence -av'
 #MARK: - Extended Commands
 alias cd='cdp'
 
-alias print-input='print -P -- "%U$0 arguments%u($#): ${(j:, :)@}.";'
-alias print-input='builtin print -P -- "$0:"'
 
 
 
@@ -162,8 +165,9 @@ alias lta='list ta'
 alias ltch='list tch'
 alias ltm='list tm'
 alias lS='list S'
-alias lSa='list -a S'
+alias lSa='list S -a'
 alias lf='list f'
+
 alias limg='imgls'
 
 # Brew
@@ -185,21 +189,22 @@ alias pvt='print-var -t'
 alias pfs='print-fstack'
 alias pdb='print-debug'
 
+alias print-input='builtin print -P -- "$0: ${(j:, :)@}"'
+
+
 # Show command source
 alias ss='showsrc'
-alias sx='print -P --'
 alias s='show'
 
 # Type
 alias i='infocmd'
-#alias t='print-var -t'
 
 
 
 
+#MARK: Miscellaneous
 alias rre='open -a Xcode "$DEV/bin/run.sh"'
 alias rr='zsh "$DEV/bin/run.sh"'
-
 alias rte='open -a Xcode $DEV/bin/run-tests.zsh'
 alias rt='zsh "$DEV/bin/run-tests.zsh"'
 

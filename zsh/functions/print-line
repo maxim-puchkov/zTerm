@@ -21,7 +21,7 @@ function print-line() {(
   fi
   
   esc -n $=escape_seq
-  builtin print -P -- "${(pr:$width::$char::$text:)}"
-  esc -n -0
+  builtin print -Pn -- "${(pr:$width::$char::$text:)}"
+  esc -0
   return 0
 )}

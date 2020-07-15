@@ -14,7 +14,7 @@
 # Options:
 ## template -t: test run (do not create files) ##
 ## template -d DIR: output directory ##
-function template() {
+function template() {(
     # Generate unique suffixes for files which
     # already exist in Output directory.
     #   E.g.: file, file-2, ..., file-N.
@@ -77,11 +77,11 @@ function template() {
         fi
         # Substitute all template macro strings in the file
         substitute_macros "$template_new" $TEMPLATE_MACROS
-        print -P -- "Generated template file: %F{2}$template_new%f (ID: $m_template_id)."
+        print -P -- "Generated template file: %F{2}${template_new}%f (ID: ${m_template_id})."
         
         # Update 'template.seq' and 'template.id' files
         print -- $template_new   >> $template_seq_file
-        print -- $m_template_id  > $template_id_file
+        print -- $m_template_id  >  $template_id_file
         return 0
     }
     
@@ -237,6 +237,18 @@ function template() {
         print -P -- "$0: argv = {$argv}, function stack = {$(print-fstack)}"
     }
     
+    ## copyright: print standard file header with copyright notice ##
+    function template_copyright() {
+        m_filename=$1
+        m_package_name=$2
+        template_orig="$templates_dir/$0"
+        () {
+            substitute_macros $1 $TEMPLATE_MACROS
+            /bin/cat <$1
+        } =(<$template_orig)
+        return 0
+    }
+    
     
     
     
@@ -291,12 +303,11 @@ function template() {
     # Subcommand
     typeset cmd=$1
     if ! (whence ${0}_${cmd} &>/dev/null); then
-        error -127 'Function command not found: $cmd.'
+        error -127 'Function command not found: ${cmd}.'
     fi
     shift
     ${0}_${cmd} "$@"
     typeset -i exit_code=$?
     
-    logf -c $exit_code 'Template created: $template_new'
     return $exit_code
-}
+)}

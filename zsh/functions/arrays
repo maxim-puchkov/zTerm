@@ -24,7 +24,7 @@ function arrays() {
         typeset -i match_size=${#matching}
         if [[ $match_size -eq 0 ]]; then
             print 'No matches.'
-#        fi 
+        fi 
         print -P -- "%F{2}${match_size}%f of ${array_size} elements %F{1}do not match%f pattern %U$filter%u."
         print -P -l -- ${matching:-'No matches'}
     }

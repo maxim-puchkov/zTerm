@@ -32,7 +32,7 @@ case $state in
       show:"display function definition and source file"
       src:"find function source file"
       sub:"list functions defined within a function"
-      xedit:"''"
+      gui-edit:"''"
     )
     _describe -t commands command commands
   ;;

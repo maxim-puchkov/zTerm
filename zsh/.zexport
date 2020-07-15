@@ -1,30 +1,31 @@
 # User-specific profile for interactive zsh(1) shells.
 
 
-#MARK: - Environment variables
-# du
+#MARK: - Command Environment Variables
+# ls, du
 export -i BLOCKSIZE=1024
 # grep
 export GREP_COLOR='1;95'
 export PCREGREP_COLOUR="$GREP_COLOR"
-
-# File editor
-export EDITOR=$(< $ZTERM/etc/editor)
-export GUI_EDITOR=$(< $ZTERM/etc/gui-editor)
-
-
-# GPG
+# gpg
 GPG_TTY=$(tty)
 export GPG_TTY
 
+# File editors
+export EDITOR=$(< $ZTERM/etc/EDITOR)
+export GUI_EDITOR=$(< $ZTERM/etc/GUI-EDITOR)
 
 
+
+
+#MARK: - Directories
 # Package Managers
 export HOMEBREW='/usr/local/Homebrew'
 export CELLAR='/usr/local/Cellar'
 
-
-
+# Projects
+export ztermxcodeproj=~zterm/Terminal.xcodeproj
+export commandlinexcworkspace=~zterm/CommandLine.xcworkspace
 
 # User directories
 export DEV="$HOME/Developer"
@@ -35,12 +36,7 @@ export devlib="$DEV/Library"
 export tempdir="${TMPDIR}tempfiled"
 export iCloud="$HOME/Library/Mobile Documents/com~apple~CloudDocs"
 
-# Projects
-export zterm='/usr/local/Terminal'
-export ztermxcodeproj="$zterm/Terminal.xcodeproj"
-export zetc="$zterm/etc"
-export zvar="$zterm/var"
-
+# zsh
 export zdot="$ZDOTDIR"
 export zplug="$zdot/.oh-my-zsh/custom/plugins"
 export zfunc="$zdot/functions"
@@ -50,27 +46,79 @@ export zcomp="$zdot/completions"
 export ztest="$zdot/Tests"
 export zcustom="$zdot/custom"
 
+# zsh terminal
+export zterm='/usr/local/Terminal'
+export zetc="$zterm/etc"
+export zvar="$zterm/var"
+
 # SFU Files
 export SFU="$iCloud/SFU"
 export SFU_USER='mpuchkov'
 export SFU_CSIL='csil-cpu4.cs.surrey.sfu.ca'
 export SFU_MNT="/usr/local/mnt/${SFU_USER}@${SFU_CSIL}"
 export SFU_TERM="$SFU/10-Spring-2020"
-export A404="$SFU_TERM/404/assignments"
-export A473="$SFU_TERM/473/assignments"
-export A310="$SFU_TERM/PHIL 310/assignments"
 
 
 
 
-# Misc. variables
-export -a ALL_PARAMETERS=(
-  options commands functions builtins reswords
-  patchars aliases galiases saliases parameters
-  modules dirstack history historywords jobdirs
-  jobtexts jobstates nameddirs userdirs usergroups
-  funcfiletrace funcsourcetrace funcstack functrace
+#MARK: - Paths
+# Python path
+export PYTHONSTARTUP="$ZTERM/Python/.pyenv"
+export -aT PYTHONPATH pythonpath
+pythonpath=(
+  ~/Library/ApplicationSupport/iTerm2/Scripts
+  ~/Library/ApplicationSupport/iTerm2/iterm2env/**/python*/site-packages
+  ~zterm/Python
+  /usr/local/lib/python3.7/site-packages/Cryptodome
 )
+
+# Command path
+path=(
+  /usr/local/sbin
+  $path
+  $DEV/bin
+  $PROJ/Terminal/.config/bin
+  $pythonpath
+  /usr/local/opt/llvm/bin
+  /usr/local/opt/python@3/bin
+  /usr/local/opt/openssl@1.1/bin
+)
+
+# Function path
+fpath=(
+  /usr/local/share/zsh-completions
+  $ZDOTDIR/functions
+  $ZDOTDIR/completions
+  $ZDOTDIR/custom
+  $fpath
+)
+
+
+
+#MARK: - Miscellaneous
+# Shell
+typeset -a ZSH_STATE=(
+  commands       dirstack
+  funcfiletrace  funcsourcetrace
+  funcstack      functions
+  functrace      galiases
+  history        historywords
+  jobdirs        jobstates
+  jobtexts       modules
+  nameddirs      options
+  parameters     patchars
+  reswords       saliases
+  userdirs       usergroups
+)
+
+# Hide variables
+typeset -H _ZSH_AUTOSUGGEST_BIND_COUNTS
+typeset -H ZSH_HIGHLIGHT_STYLES
+typeset -H ZSH_AUTOSUGGEST_ACCEPT_WIDGETS
+typeset -H ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS
+typeset -H ZSH_AUTOSUGGEST_IGNORE_WIDGETS
+typeset -H ZSH_HIGHLIGHT_REVISION
+typeset -H ZSH_AUTOSUGGEST_CLEAR_WIDGETS 
 
 
 #export -H TRUE=${(%):-'%F{2}True ✔︎%f'}
