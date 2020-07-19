@@ -27,7 +27,7 @@ class XcodeLightStyle(Style):
         String:                 '#CC0000',
         String.Char:            '#1C00CF',
 
-        Operator:               '#666666',
+        Operator:               '#222222',
 
         Keyword:                '#CC00CC',
 

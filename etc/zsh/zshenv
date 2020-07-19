@@ -13,6 +13,7 @@ export ZDOTDIR="$ZTERM/zsh"
 hash -d zterm=$ZTERM
 hash -d zdot=$ZDOTDIR
 hash -d bin=/usr/local/bin
+hash -d var=~zterm/var
 
 
 # Z-Shell files

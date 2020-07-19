@@ -1,4 +1,7 @@
-# User-specific functions for interactive zsh(1) shells.
+#!/bin/zsh
+
+# .zutil
+# User-specific utility functions for interactive zsh(1) shells.
 
 
 # Open default macOS Terminal
@@ -12,11 +15,27 @@ function term2() {
 
 # Calculate
 function calc() {
-  noglob expr $argv
+  typeset -i result
+  let result="${argv}"
+  print -- $result
 }
 alias calc='noglob calc'
 
-
+# Pick random argument
+function any() {(
+  [[ $# -eq 0 ]] && return 1
+  typeset -i index
+  let index="($RANDOM % ${#}) + 1"
+  printf '%s' "${argv[$index]}"
+  
+  if [[ -t 1 ]]; then
+    typeset -F1 chance
+    let chance="1.0/${#}*100"
+    printf ' (%.1f)\n' $chance >&2
+  else 
+    printf '\n'
+  fi
+)}
 
 #
 function themes() {
@@ -28,13 +47,21 @@ function plugins() {
 }
 
 # Highlight grep matches with backgroud color
-function hgrep hegrep hfgrep() {
+function hegrep hfgrep() {
     (GREP_COLOR='01;30;42' ${0:1} --color='always' $argv)
 }
+function hgrep() {
+  local color
+  () {
+    local input_file=$1
+    (GREP_COLOR='1;30;42' grep $argv <$input_file)
+  } =(<&0)
+}
+
 
 # 
 function testenv() {
-  (ZDOTDIR=$ZDOTDIR/Tests zsh)
+  (ZDOTDIR=$ZDOTDIR/Tests /usr/local/bin/zsh)
   return $?
 }
 
@@ -70,8 +97,6 @@ function var()      { cd "$HOME/var/$@"; }
 function services() { cd "$HOME/Library/LaunchAgents/$@"; }
 # Go to logs.
 function logs()     { cd "$ZTERM/var/log/$@"; }
-# Go to Test Files.
-#function testdir()  { cd "$testdir/$@"; }
 
 
 
@@ -415,9 +440,31 @@ function manp() {(
     /usr/bin/man  -t -- $name > $file
     /usr/bin/open -a Preview -- $file
 )}
-function xman() {(
+function xman1() {(
     open -a Terminal -g x-man-page://"$argv"
 )}
+
+# Open manual page in a seperate tab
+function xman() {
+  # Manual page name
+  typeset name=$1
+  [[ -z $name ]] && return 1
+  
+  # iTerm2 profile
+  typeset base_profile=${${ITERM_PROFILE%:*}:='Term 3'}
+  
+  # Create an iTerm2 tab and run 'man'
+  () (
+    typeset profile="${1}: Man"
+    typeset command="/usr/bin/man $2"
+    ~zdot/.iterm2/it2api create-tab \
+      --profile "${profile}" \
+      --command "${command}"
+  ) $base_profile $name \
+    &>/dev/null &|
+  return 0
+}
+
 
 
 

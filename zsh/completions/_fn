@@ -1,16 +1,16 @@
 #compdef fn
 
 # _fn
-# ~/Developer/Projects/Terminal/zsh/functions/fn
+# ~zdot/functions/fn
 #
 # zsh function completion
-# Updated on 2020-07-08 at 01:18 am
+# Updated on 2020-07-17 at 04:15 pm
 
 
 _arguments -C \
   {-h,--help}"[show help]" \
   ":command:->command" \
-  "*::arg:->arg"
+  "*::arg:_zfunctions"
 
 case $state in
   (command)
@@ -19,20 +19,17 @@ case $state in
       commands:"list function commands"
       compgen:"generate and update function completion"
       completion:"generate function command completion"
-      completion-arguments:"''"
-      completion-commands:"''"
       d:"debug function"
       def:"print function source code"
-      edit:"''"
+      edit:"edit"
+      gui-edit:"edit in "
       isdef:"check if a function is defined"
-      modify:"''"
       open:"open function source file"
       options:"list function flags and options"
       print-commands:"format and list function commands"
       show:"display function definition and source file"
       src:"find function source file"
       sub:"list functions defined within a function"
-      gui-edit:"''"
     )
     _describe -t commands command commands
   ;;
@@ -46,4 +43,3 @@ case $state in
 esac
 
 return 0
-[0m[0m

@@ -98,17 +98,18 @@ fpath=(
 #MARK: - Miscellaneous
 # Shell
 typeset -a ZSH_STATE=(
-  commands       dirstack
-  funcfiletrace  funcsourcetrace
-  funcstack      functions
-  functrace      galiases
-  history        historywords
-  jobdirs        jobstates
-  jobtexts       modules
-  nameddirs      options
-  parameters     patchars
-  reswords       saliases
-  userdirs       usergroups
+  aliases          commands
+  dirstack         funcfiletrace
+  funcsourcetrace  funcstack
+  functions        functrace
+  galiases         history
+  historywords     jobdirs
+  jobstates        jobtexts
+  modules          nameddirs
+  options          parameters
+  patchars         reswords
+  saliases         userdirs
+  usergroups
 )
 
 # Hide variables

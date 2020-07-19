@@ -7,15 +7,21 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# esc - print ANSI escape sequences and text.
+# Function esc - print ANSI escape sequences and text
+#
+# esc code[,code...]
+#     [-n] [-0] [-r code] [-e] [-p]
+#     [-[ts] text] [-q text] [-- text]
 function esc() {(
-  if [[ $# -eq 0 ]]; then
-    return 2
-  fi
+  # Without any arguments, stop
+  [[ $# -eq 0 ]] && return 2
   
+  # Use extended glob ('#' operator)
   setopt extendedglob
-#  set -- ${argv:gs/','/';'}
+  
+  # Interpret escape sequences
   local output_format='%b'
+  # ANSI color code
   local ansi_code
   local -i last
   local -a reset_seq
@@ -28,12 +34,13 @@ function esc() {(
         new_line=''
         shift
       ;;
+      
       # Append 0 to reset_seq
       (-0)
         reset_seq+=(0)
         shift
       ;;
-      # Append a sequnce to reset_seq
+      # Append code to reset sequence
       (-r|--reset_seq)
         reset_seq+=(${2:?})
         shift 2

@@ -9,19 +9,24 @@
 
 # <#Function description#>
 function it2() {
-    function it2_profile() {(
-        action='SetProfile'
-        profile_name=$1
-        show "Setting iTerm2 profile to $profile_name"
-        printf '%b\n' "\e]1337;$action=$profile_name\a"
-        return $?
-    )}
-    
-    
-    cmd=$1
-    if [[ -z $cmd ]]; then
-        usage 'e'
-    fi
-    shift
-    ${0}_${cmd} $argv
+  typeset -a profiles
+  profiles=('Dark' 'Light')
+  
+  ## set-profile
+  function it2_set-profile() {(
+      action='SetProfile'
+      profile_name=$1
+      show "Setting iTerm2 profile to $profile_name"
+      printf '%b\n' "\e]1337;$action=$profile_name\a"
+      return $?
+  )}
+  
+  
+  
+  cmd=$1
+  if [[ -z $cmd ]]; then
+      return 1
+  fi
+  shift
+  ${0}_${cmd} $argv
 }

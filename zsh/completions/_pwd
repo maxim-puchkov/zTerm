@@ -5,6 +5,5 @@ _arguments \
   '-L[display the logical current working directory (default)]' \
   '-P[display the physical current working directory (all symbolic links resolved)]' \
   '-r[same as -P]' \
-  '-D[substitute directory names using ~ notation]' \
   '*:: :->_nothing' &&
 return 0

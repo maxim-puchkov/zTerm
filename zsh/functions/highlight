@@ -21,7 +21,15 @@ function highlight() {(
     # Flags
     typeset -a flags=()
     if [[ $# -le 1 ]]; then
-        flags=(-f 'terminal16m' -O style='xcodedark' -l 'zsh')
+        local style
+        if [[ -v ITERM_PROFILE ]]; then
+          style=${(L)ITERM_PROFILE#*: }
+        fi
+        if [[ ! $style =~ '^(dark|light)$' ]]; then
+          style='dark'
+        fi
+        style="xcode${style}"
+        flags=(-f 'terminal16m' -O style=$style -l 'zsh')
     else
         flags=(${argv:1:-1})
     fi
@@ -30,7 +38,7 @@ function highlight() {(
     cmd_name='pygmentize'
     cmd=${commands[$cmd_name]}
     if [[ -z $cmd ]]; then
-        error -127 'Command not found: $cmd_name.'
+        error -127 'Command not found: ${cmd_name}.'
     fi
     
     
@@ -40,11 +48,11 @@ function highlight() {(
     fi
     # Check input file exists
     if [[ ! -e $filename ]]; then
-        error -1 "File not found: %F{1}${filename}%f."
+        error -1 'File not found: ${filename}.'
     fi
     # Check input file is readable
     if [[ ! -r $filename ]]; then
-        error -1 "Cannot read from %F{1}${filename}%f."
+        error -1 'Cannot read from ${filename}.'
     fi
     
     

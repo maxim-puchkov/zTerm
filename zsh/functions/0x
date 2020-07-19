@@ -37,6 +37,11 @@ function 0x() {
   () {
     bytes=($(grep -o -e '..' <$1))
   } =(python -c 'print(bytes.hex(b"'$ascii'"));')
-  builtin print -- $bytes
+  
+  if [[ -t 1 ]]; then
+    print -- $bytes
+  else
+    print -f '%s' ${bytes} $'\n'
+  fi
   return 0
 }

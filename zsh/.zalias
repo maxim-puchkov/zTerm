@@ -142,6 +142,7 @@ alias ext='set -o extendedglob'
 alias str='command strings'
 
 alias ts='typeset'
+alias Float='typeset -F'
 
 # Builtin 'whence'
 alias wh='builtin whence -av'
@@ -195,9 +196,7 @@ alias print-input='builtin print -P -- "$0: ${(j:, :)@}"'
 # Show command source
 alias ss='showsrc'
 alias s='show'
-
-# Type
-alias i='infocmd'
+alias i='show'
 
 
 

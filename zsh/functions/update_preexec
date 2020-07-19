@@ -6,9 +6,9 @@
 #  Created by Maxim Puchkov on 2020-07-08.
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
-
+set -x
 # update_preexec
-dirs=($zdot/functions)
+dirs=(~zdot/functions)
 #
 #if [[ ! -v last_update ]]; then
 #  last_update=$(date -j)
@@ -18,5 +18,6 @@ dirs=($zdot/functions)
 #typeset -gx  file=$ZDOTDIR/
 #exec {ofd}>$file {ifd}<$file
 
-$zterm/var 
-find -L $dirs -newerct "$last_update"
+typeset update_file=~zterm/var/run/update-$$
+find -L $dirs -newerct $update_file
+set +x
