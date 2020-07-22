@@ -912,3 +912,7 @@ function notify() {
     builtin print ${argv}
     return 0
 }
+
+function beep() {
+  printf '\a'
+}

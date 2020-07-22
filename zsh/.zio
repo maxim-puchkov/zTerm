@@ -1,3 +1,4 @@
+#!/bin/zsh
 # Input/output styles.
 
 
@@ -83,9 +84,8 @@ B_CYANBG="$( bg_color 14 )"
 #MARK: - Aliases 
 #MARK: Styles
 function normal() { __style_print "$NORMAL$*" }
-function dim() { __style_print "$DIM$*" }
-  D() dim $@
-function bold() { __style_print "$*" }
+function dim D() { __style_print "$DIM$*" }
+function bold B() { printf __style_print "$*" }
   B() bold $@
 function italic() { __style_print "$ITALIC$*" }
   em() italic $@
