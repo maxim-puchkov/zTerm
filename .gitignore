@@ -4,8 +4,8 @@
 Library/*
 !/Library/.keep
 
-/etc/commit.*
-/etc/template.*
+etc/commit.*
+etc/template*
 
 **/__pycache__
 **/*.pyc
