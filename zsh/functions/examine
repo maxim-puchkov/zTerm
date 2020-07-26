@@ -1,0 +1,25 @@
+#!/bin/zsh
+
+#  examine
+#  Z-Function (101)
+#
+#  Created by Maxim Puchkov on 2020-07-22.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function examine() {
+#  unset -f "$0"
+#  autoload +X examine
+  
+  for file in *; do
+    if [[ -d $file ]]; then
+      print -P -- "%K{yellow}%F{black}Directory: ${file}%f%k"
+    else
+      print -P -- "%K{yellow}%F{black}File: ${file}%f%k"
+      head -n 3 $file
+      print -- $'\n\n\n'
+    fi
+  done
+  return 0
+}

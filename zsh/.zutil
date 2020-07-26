@@ -461,7 +461,7 @@ function xman() {
       --profile "${profile}" \
       --command "${command}"
   ) $base_profile $name \
-    &>/dev/null &|
+    &>/dev/null &!
   return 0
 }
 

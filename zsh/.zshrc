@@ -21,19 +21,16 @@ fi
 export HISTFILE="$ZTERM/var/hist/$USER"
 
 
-# Source files
+#MARK: - Source
+# Oh-my-zsh
 source "$ZSH/oh-my-zsh.sh"
+# Z-Shell autosuggestions & syntax highlight
 source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-
-source ~zdot/.zexport
-source ~zdot/.zio
-source ~zdot/.zalias
-source ~zdot/.zutil
-source ~zdot/.znetwork
-source ~zdot/.zmisc
-source ~zdot/.zcomp
-source ~zdot/.ztest
+# Z-Shell .z sources
+if [[ -e ~zdot/include.zsh ]]; then
+  source ~zdot/include.zsh
+fi
 # User functions
 if [[ -e ~/private/zsh/functions/include.zsh ]]; then
   source ~/private/zsh/functions/include.zsh
@@ -43,6 +40,8 @@ if [[ -e ~zdot/.iterm2/.iterm2_shell_integration.zsh ]]; then
   source ~zdot/.iterm2/.iterm2_shell_integration.zsh
 fi
 
+
+#MARK: - Autoload
 unalias run-help
 autoload -Uz run-help
 autoload -Uz ~zdot/{site-functions,functions,completions}/*
@@ -53,34 +52,23 @@ autoload -Uz ~zdot/{site-functions,functions,completions}/*
 
 
 #
-export REF_ZDOT=($(< $ZTERM/etc/source.zsh))
-preexec_functions+=(ref)
+#export REF_ZDOT=($(< $ZTERM/etc/source.zsh))
+#preexec_functions+=(ref)
 
 
 
 function preexec_test() {
-  print -- $'\n\n'
-  print-var @
-  print "$0. [${#}]=$@"
-  print -- $'\n\n'
+  typeset -a preexec_command
+  preexec_command=(${=2})
+  typeset preexec_function=${preexec_command[1]}
+  if [[ ${+functions[$preexec_function]} -eq 1 ]]; then
+    unset -f "$preexec_function"
+    autoload +X $preexec_function
+  fi
 }
-
-
-function indentation_prefix() {
-  typeset -x BEGIN='\e[36m'
-  typeset -x END='\e[0m'
-  typeset -x SYMBOL='>'
-  printf '%b%s%s %b\n' "$BEGIN" "$@" "$SYMBOL" "$END"
-}
-function prefix() {
-  typeset -x BEGIN='\e[36m'
-  typeset -x END='\e[0m'
-  typeset -x SYMBOL='>'
-  printf '%b%s%s %b\n' "$BEGIN" "$@" "$SYMBOL" "$END"
-}
+#preexec_functions+=(preexec_test)
 
 function @input() {
-  typeset INS=$(indentation_prefix $0)
   trap '{
     print -r -u2 -- "$(esc0 2,96 -t "'$0' " 22 -t "$0")>  "\
       "$(esc0 4 -t "argc"): $#, "\
