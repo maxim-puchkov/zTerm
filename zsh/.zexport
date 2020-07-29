@@ -58,6 +58,9 @@ export SFU_CSIL='csil-cpu4.cs.surrey.sfu.ca'
 export SFU_MNT="/usr/local/mnt/${SFU_USER}@${SFU_CSIL}"
 export SFU_TERM="$SFU/10-Spring-2020"
 
+# Other Files
+export testfile=~/Developer/Test/file.txt
+
 
 
 
@@ -92,6 +95,7 @@ fpath=(
   $ZDOTDIR/custom
   $fpath
 )
+
 
 
 

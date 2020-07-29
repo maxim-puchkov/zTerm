@@ -1,0 +1,43 @@
+#!/bin/zsh
+
+#  order
+#  Z-Function (103)
+#
+#  Created by Maxim Puchkov on 2020-07-27.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# order - sort and print arguments
+function order() {
+  typeset -i line_numbers=0
+  if [[ $1 == '-n' ]]; then
+    line_numbers=1
+    shift
+  fi
+  
+  # List of arguments
+  typeset -a list=($argv)
+  
+  # Read standard input if available
+  if zselect -t 0 -r 0; then
+    list+=(${(@f)"$(<&0)"})
+  fi
+  
+  if [[ -z $list ]]; then
+    builtin print -P -- '%UExample%u: order B C A   %F{green}# prints A B C%f'
+    return 0
+  fi
+  
+  # Print the list in sorted order
+  if [[ -t 1 ]]; then
+    list=($'\e[1;96m'${^list}$'\e[0m')
+  fi
+  () {
+    if [[ $line_numbers -eq 1 ]]; then
+      cat -n <$1
+    else
+      cat <$1
+    fi
+  } <(builtin print -o -i -r -l  -- $list)
+  return 0
+}

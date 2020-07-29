@@ -9,110 +9,108 @@
 
 # Change directory and print its path.
 function cdp() {
-    #MARK: - Functions
-    # Print error message
-    function ${0}-error() {
-        typeset program_name=${0%%-*}
-        typeset code=1
-        if [[ $# -gt 1 ]]; then
-            code=$1
-            shift
-        fi
-        autoload -Uz error
-        error -$code --title "$program_name" \
-                     --no-autocapitalize     \
-                     --highlight             \
-                     -- "$argv"
-        return $?
-    }
-    
-    
-    #MARK: - Options
-#    autoload -Uz get-arguments
-#    get-arguments -A optlist \
-#                  -f q s L P \
-#                  -- $argv
-    
-    zmodload zsh/zutil
-    typeset -A optlist
-    zparseopts -D -E -A optlist - q s L P
-    
-    
-    #MARK: - Arguments
-    typeset dir
-    case $# in
-        # No arguments (cd)
-        0)  dir=$HOME
-        ;;
-        # One argument (cd DIR)
-        1)  typeset arg=$1
-            if [[ $arg == '-' ]]; then
-                arg='-1'
+  #MARK: - Functions
+  # Print an error message
+  function ${0}-error() {
+      typeset program_name=${0%%-*}
+      typeset code=1
+      if [[ $# -gt 1 ]]; then
+        code=$1
+        shift
+      fi
+      autoload -Uz error
+      error -$code              \
+        --title "$program_name" \
+        --no-autocapitalize     \
+        --highlight             \
+        -- "$argv"
+      return $?
+  }
+  
+  
+  #MARK: - Options
+  zmodload zsh/zutil
+  typeset -A optlist
+  zparseopts -D -E -A optlist - q s L P
+  
+  
+  #MARK: - Arguments
+  typeset dir
+  case $# in
+      # No arguments (cd)
+      0)  dir=$HOME
+      ;;
+      # One argument (cd DIR)
+      1)  typeset arg=$1
+          if [[ $arg == '-' ]]; then
+            arg='-1'
+          fi
+          if [[ $arg =~ '^[-+][0-9]+' ]]; then
+            typeset stack_index
+            case ${arg[1]} in
+              -) stack_index=${arg:1}  ;;
+              +) stack_index=$(( ${#dirstack} - ${arg:1} ))  ;;
+            esac
+            dir=${dirstack[$stack_index]}
+            if [[ -z $dir ]]; then
+              cdp-error 1 'entry ${stack_index} is not in dir stack.'
+              return 1
             fi
-            if [[ $arg =~ '^[-+][0-9]+' ]]; then
-                typeset stack_index
-                case ${arg[1]} in
-                    -) stack_index=${arg:1}  ;;
-                    +) stack_index=$(( ${#dirstack} - ${arg:1} ))  ;;
-                esac
-                dir=${dirstack[$stack_index]}
-                if [[ -z $dir ]]; then
-                    cdp-error 1 'entry ${stack_index} is not in dir stack.'
-                    return 1
-                fi
-            else
-                dir="${arg}"
-            fi
-        ;;
-        # Two arguments (cd OLD NEW)
-        2)  typeset old new
-            old=$1
-            new=$2
-            if [[ ! $PWD =~ $old ]]; then
-                cdp-error 1 'string ${old} in not in ${PWD}.'
-                return 1
-            fi
-            dir="${PWD//$old/$new}"
-        ;;
-        # More than two arguments
-        *)  cdp-error 2 'too many arguments.'
-            return 2
-        ;;
-    esac
-    
-    
-    #MARK: - Test Errors
-    # Already in the directory
-    if [[ $dir == $PWD ]]; then
-        return 0
-    fi
-    # Directory does not exist
-    if [[ ! -e $dir ]]; then
-        cdp-error 1 'no such file or directory: ${dir}.'
-        return 1
-    fi
-    # File exists but is not a directory
-    if [[ ! -d $dir ]]; then
-        cdp-error '${dir} is not a directory.'
-        return 1
-    fi
-    # Directory is not readable
-    if [[ ! -r $dir ]]; then
-        cdp-error 'access denied: ${dir}.'
-        return 1
-    fi
-    
-    
-    #MARK: - Change Directory
-    builtin cd ${(k)=optlist} $dir &>/dev/null
-    if [[ $? -ne 0 ]]; then
-        cdp-error 'cannot change directory to ${dir}.'
-        return 1
-    fi
-    if [[ -t 1 ]] && [[ ${+optlist[-q]} -ne 1 ]]; then
-        builtin print -P -- "Directory changed to %F{2}${(D)PWD}%f."
-    fi
-    
-    unfunction -m "${0}-*"
+          else
+            dir="${arg}"
+          fi
+      ;;
+      # Two arguments (cd OLD NEW)
+      2)  typeset old new
+          old=$1
+          new=$2
+          if [[ ! $PWD =~ $old ]]; then
+            cdp-error 1 'string ${old} in not in ${PWD}.'
+            return 1
+          fi
+          dir="${PWD//$old/$new}"
+      ;;
+      # More than two arguments
+      *)  cdp-error 2 'too many arguments.'
+          return 2
+      ;;
+  esac
+  
+  
+  #MARK: - Test Errors
+  # Already in the directory
+  if [[ $dir == $PWD ]]; then
     return 0
+  fi
+  # Directory does not exist
+  if [[ ! -e $dir ]]; then
+    cdp-error 1 'no such file or directory: ${dir}.'
+    return 1
+  fi
+  # File exists but is not a directory
+  if [[ ! -d $dir ]]; then
+    cdp-error '${dir} is not a directory.'
+    return 1
+  fi
+  # Directory is not readable
+  if [[ ! -r $dir ]]; then
+    cdp-error 'access denied: ${dir}.'
+    return 1
+  fi
+  
+  
+  #MARK: - Change Directory
+  builtin cd ${(k)=optlist} $dir &>/dev/null
+  if [[ $? -ne 0 ]]; then
+    cdp-error 'cannot change directory to ${dir}.'
+    return 1
+  fi
+  if [[ -t 1 ]] && [[ ${+optlist[-q]} -ne 1 ]]; then
+    builtin print -P -- "Directory changed to %F{2}${(D)PWD}%f."
+    echo
+    /bin/ls -lBFGHhk
+  fi
+  
+  unfunction -m "${0}-*"
+  return 0
 }

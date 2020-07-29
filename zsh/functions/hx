@@ -7,18 +7,33 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
+# hx - hexdump files
 function hx() {
-    typeset -a optlist=()
-    while [[ $1 =~ '^[-]' ]]; do
-        case $1 in
-            --) shift; break  ;;
-            *)  optlist+=($1) ;;
-        esac
-        shift
-    done
-    S "hexyl $optlist <&0"
-    hexyl $optlist <&0
+  typeset -a hexyl_options
+  
+  for file; do
+    printf '%s %s\n' \
+      "$(esc0 1 -t ">")" \
+      "$(esc0 93 -t "$file")"
+    hexyl $hexyl_options <$file
+    printf '\n'
+  done
+  
+  return 0
 }
+
+#function hx() {
+#    typeset -a optlist=()
+#    while [[ $1 =~ '^[-]' ]]; do
+#        case $1 in
+#            --) shift; break  ;;
+#            *)  optlist+=($1) ;;
+#        esac
+#        shift
+#    done
+#    S "hexyl $optlist <&0"
+#    hexyl $optlist <&0
+#}
 
 
 # Hexdump files.

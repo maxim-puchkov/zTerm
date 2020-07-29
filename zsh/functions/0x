@@ -7,10 +7,8 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# Convert ASCII to hexadecimal
+# 0x - convert ASCII to hexadecimal
 function 0x() {
-  zmodload zsh/zselect
-  
   # Options
   typeset -i use_colors
   while [[ $1 =~ '^[-]' ]]; do

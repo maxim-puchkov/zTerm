@@ -7,12 +7,18 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# <#Function description#>
+# Name:
+#   it2
+# Synopsis:
+#   it2 [option...] [command]
+# Description:
+#   ...
 function it2() {
-  typeset prefix=${ITERM_PROFILE%: *}': '
-  typeset -a profiles=('Dark' 'Light')
+  typeset prefix"=${ITERM_PROFILE%: *}: "
+  typeset -a profiles
+  profiles=('Dark' 'Light')
   
-  ## set-profile
+  ## it2 set-profile
   function it2_set-profile() {
       typeset action='SetProfile'
       typeset profile_name=${1#$prefix}
@@ -22,18 +28,23 @@ function it2() {
       export ITERM_PROFILE="${prefix}${profile_name}"
       return 0
   }
+  ## it2 switch-profile
   function it2_switch-profile() {
     typeset -i i=${profiles[(i)${ITERM_PROFILE#$prefix}]}
-#    let i="1 + ${i}"
     let i="$i % ${#profiles} + 1"
     typeset profile_name=${profiles[$i]}
     it2_set-profile $profile_name
   }
   
+  ## it2 -h,--help: display help message and exit
+  function it2--help() {
+    
+  }
+  
+  
   
   typeset cmd=$1
-#  if [[ -z $cmd ]]; then
-  if [[ ${+functions[${0}_$cmd]} -ne 1 ]]; then
+  if [[ ${+functions[${0}_${cmd}]} -ne 1 ]]; then
       return 127
   fi
   shift

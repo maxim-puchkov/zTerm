@@ -25,11 +25,11 @@ function usage() {(
   
   # Usage color and line prefix
   typeset -i color=6
-  typeset prefix='\t %F{'${color}'}>%f'
+  typeset prefix=${(%):-'\t %F{'${color}'}>%f'}
   
   # Append 'Usage' label to description
   typeset -a usage_desc=()
-  usage_desc+=('%F{'${color}'}%U''Usage''%u%f:')
+  usage_desc+=(${(%):-'%F{'${color}'}%U''Usage''%u%f:'})
   
   # Append arguments
   typeset -i i=1
@@ -37,31 +37,35 @@ function usage() {(
   while [[ -n $1 ]]; do
     case $1 in
       (?[\!])
-        usage_desc[$i]+=" ${1%'!'}"
+        usage_desc[$i]+=$(syntaxf " ${1%'!'}")
       ;;
       (+)
-        [[ -z $2 ]] && error 'Missing argument'
+        [[ -z $2 ]] && error "Missing argument after ${1}"
         shift
-        usage_desc[$i]+="\n\t   $1"
+        usage_desc[$i]+=$(syntaxf "\n\t   $1")
       ;;
       (-)
-        [[ -z $2 ]] && error 'Missing argument'
+        [[ -z $2 ]] && error "Missing argument after ${1}"
         shift
         let i=$i+1
-        usage_desc[$i]+="${prefix} $1"
+        usage_desc[$i]+=$(syntaxf "${prefix} $1")
       ;;
       (*)
-        usage_desc[$i]+=" $1"
+        usage_desc[$i]+=$(syntaxf " $1")
       ;;
     esac
     shift
   done
   
+  trap '{
+    builtin print -- ${(@Fe)usage_desc}
+  }' EXIT
+  
   # Print error
-  if [[ -n $error_desc ]]; then
-    error -T +. "$error_desc\n"${(@F)usage_desc}
-  else
-    builtin print -- ${(@F%)usage_desc}
-  fi
+#  if [[ -n $error_desc ]]; then
+#    error -T +. "${error_desc}\n"${(@Fe)usage_desc}
+#  else
+#    builtin print -- ${(@Fe)usage_desc}
+#  fi
   return $?
 )}

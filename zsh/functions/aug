@@ -1,0 +1,43 @@
+#!/bin/zsh
+
+#  aug
+#  Z-Function (105)
+#
+#  Created by Maxim Puchkov on 2020-07-28.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Name:
+#   aug
+# Synopsis:
+#   aug [command]
+# Description:
+#   Read structured comments in the source file
+#   of the specified command and autogenerate
+#   completion functions or manual pages.
+function aug() {
+  # Options
+  typeset -i autogenerate_manual=0 autogenerate_completion=0
+  while [[ $1 =~ '^[-]' ]]; do
+    case $1 in
+      (-m|--man) let autogenerate_manual=1  ;;
+      (-c|--completion) let autogenerate_completion=1  ;;
+      (--) shift; break  ;;
+    esac
+    shift
+  done
+  
+  ## aug -m,--man: x y z 1 2 3
+  ## aug -c,--completion: XXXX YYYY ZZZZ
+  
+  # Return if function name is not set
+  if [[ $# -eq 0 ]]; then
+    error -1 'Function name is not specified'
+    return 1
+  fi
+  
+  typeset name=$1
+  typeset source_file=${functions_source[$name]}
+  cat <$source_file
+  
+}

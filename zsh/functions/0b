@@ -9,18 +9,6 @@
 
 # Convert ASCII to binary
 function 0b() {
-  zmodload zsh/zselect
-  
-  # Options
-  typeset -i use_colors
-  while [[ $1 =~ '^[-]' ]]; do
-    case $1 in
-      (-c|--color) let use_colors=1 ;;
-      (--) shift; break ;;
-    esac
-    shift
-  done
-  
   # Get ASCII from standard input or
   # positional parameters
   typeset ascii

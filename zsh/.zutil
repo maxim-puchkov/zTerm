@@ -822,28 +822,30 @@ compdef _find dir
 #MARK: - Arrays
 # Initialize an array or associative Array
 function array Array {
-    # Get array name
-    typeset reply=$1
-    [[ -z $reply ]] && usage 'Bad input' '$0 name [value, ...]'
-    shift
-    #
-    [[ -v $reply ]] && unset $reply
-    typeset type="-${0[1]}g"
-    
-    # Set array values
-    typeset $type -g $reply
-    case $1 in
-        ## [Aa]rray -c: set array elements to output of command ##
-        -c) shift
-            set -A $reply ${(@f)"$(${=argv})"}
-        ;;
-        ## [Aa]rray: set array elements to arguments ##
-        *)  set -A $reply $argv
-        ;;
-    esac
-        
-    # Print array
-    [[ -t 1 ]] && print-var $reply
+  # Get array name
+  typeset output_array_name="${1:=reply}"
+  [[ -z $output_array_name ]] &&
+    usage "Specify associative `Array' or `array' parameter name  input." \
+      '${0} name [value...]'
+  shift
+  #
+  [[ -v $reply ]] && unset $reply
+  typeset -a flags=(-${0[1]} -g)
+  typeset $flags $reply
+  
+  # Set array values
+  case $1 in
+    ## [Aa]rray -c: set array elements to output of command ##
+    -c) shift
+        set -A $reply ${(@f)"$(${=argv})"}
+    ;;
+    ## [Aa]rray: set array elements to arguments ##
+    *)  set -A $reply $argv
+    ;;
+  esac
+  
+  # Print array
+  [[ -t 1 ]] && print-var $reply
 }
 
 

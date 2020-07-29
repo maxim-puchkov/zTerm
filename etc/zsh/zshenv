@@ -4,23 +4,11 @@
 # Created on March 29, 2020.
 
 
-# Z-Shell directory
+#MARK: - Z-Shell Files
+export ZSHENV="$HOME/.zshenv"
 export ZTERM="/usr/local/Terminal"
 export ZDOTDIR="$ZTERM/zsh"
 
-
-# Hash directories
-hash -d zterm=$ZTERM
-hash -d zdot=$ZDOTDIR
-hash -d bin=/usr/local/bin
-hash -d var=~zterm/var
-hash -d zf=~zdot/functions
-hash -d zs=~zdot/site-functions
-hash -d zc=~zdot/completions
-
-
-# Z-Shell files
-export ZSHENV="$HOME/.zshenv"
 export ZPROFILE="$ZDOTDIR/.zprofile"
 export ZSHRC="$ZDOTDIR/.zshrc"
 export ZIO="$ZDOTDIR/.zio"
@@ -31,3 +19,26 @@ export ZNET="$ZDOTDIR/.znetwork"
 export ZMISC="$ZDOTDIR/.zmisc"
 export ZCOMP="$ZDOTDIR/.zcomp"
 export ZTEST="$ZDOTDIR/.ztest"
+
+
+
+
+#MARK: - Hashed Directories
+# zsh
+hash -d zterm=$ZTERM
+hash -d zdot=$ZDOTDIR
+hash -d bin=/usr/local/bin
+hash -d var=~zterm/var
+# zsh subdirectories
+hash -d zs=~zdot/site-functions
+hash -d zf=~zdot/functions
+hash -d zc=~zdot/completions
+# Documents
+hash -d docs=~/Documents
+hash -d dev=~/Developer
+hash -d saved=~/Documents/Saved\ Files
+# Library
+hash -d scripts=~/Library/Scripts
+hash -d iCloud=~/Library/Mobile\ Documents/com~apple~CloudDocs
+hash -d Access=~iCloud/Access
+hash -d sfu=~iCloud/SFU

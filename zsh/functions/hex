@@ -1,0 +1,13 @@
+#!/bin/zsh
+
+#  hex
+#  Z-Function (109)
+#
+#  Created by Maxim Puchkov on 2020-07-28.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# hex - print ASCII input as hex
+function hex() {
+  python -c 'print(bytes.hex(b"'$ascii'"));'
+}

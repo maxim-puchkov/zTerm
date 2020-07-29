@@ -10,37 +10,43 @@
 
 # show - show information about a shell command,
 #        parameter or function
-[[ $# -eq 0 ]] && return 1
+if [[ $# -eq 0 ]]; then
+  return 1
+fi
 
+local desc
+local not_found
 
 # For each argument, show description
-local desc not_found
 for arg; do
-  print -Pr -- "%B%F{10}>%f ${arg}%b"
-  local desc=''
+  builtin print -Pr -- "%B%F{10}>%f ${arg}%b"
+  
+  desc=''
   case 1 in
     ${+aliases[$arg]})
-      desc+="alias for $(esc0 4,34 -t "${aliases[$arg]}")\n"
+      desc+="alias for $(esc0 4,34 -t "${aliases[$arg]}")"$'\n'
     ;|
     ${+commands[$arg]})
-      desc+="command $(esc0 4,36 -t "${commands[$arg]}")\n"
+      desc+="command $(esc0 4,36 -t "${commands[$arg]}")"$'\n'
     ;|
     ${+functions[$arg]})
       autoload +X $arg
-      desc+="$(esc0 1,35 -t 'function') $(functions $arg | highlight)\n"
+      desc+="$(esc0 1,35 -t 'function') $(functions $arg | highlight)"$'\n'
     ;|
     ${+nameddirs[$arg]})
-      desc+="directory $(esc0 4,33 -t "${nameddirs[$arg]}")\n"
+      desc+="directory $(esc0 4,33 -t "${nameddirs[$arg]}")"$'\n'
+    ;|
+    ${+builtins[$arg]})
+      desc+="builtin $(esc 4,32 -t "${arg}")"$'\n'
     ;|
     ${+parameters[$arg]})
-      typeset -a arr
+      local -a arr
       set -A arr \'$'\e[92m'${(Pkv)^arg}$'\e[0m'\'
-      desc+="${parameters[$arg]} $(esc0 1,4,32 -t "${arg}") = ${(kvj:, :)arr}\n"
+      desc+="${parameters[$arg]} $(esc0 1,4,32 -t "${arg}") = ${(kvj:, :)arr}"$'\n'
     ;|
   esac
   not_found=$(esc0 1,91 -t "${arg}" 22,31 -t 'not found')
-  print -n -- ${(%)desc:=%B$arg%b' %F{1}not found%f\n'}
+  builtin print -nr -- ${(%)desc:=%B$arg%b' %F{1}not found%f'$'\n'}
 done
-
 
 return 0

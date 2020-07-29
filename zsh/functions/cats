@@ -10,12 +10,20 @@
 # <#Function description#>
 function cats() {
   local input
-  while [[ -n $1 ]]; do
-    print-line "TEXT"
-    cat <$1
-    printf '\n(Press return to continue...\n'
+  local file
+  for file; do
+    printf 'File: %s\n' "$(bold $file)"
+    cat <$file
+    
+    if [[ $file == ${argv[-1]} ]]; then
+      break
+    fi
+    
+    yellow $(em 'Press return to continue...')
     read -sk input
-    if [[ $input != $'\n' ]]; then break; fi
-    shift
+    
+    if [[ $input != $'\n' ]]; then
+      break
+    fi
   done
 }

@@ -16,7 +16,7 @@ function syntaxf() {(
     fi
     
     typeset find replace
-    find='([^\\])?\$\{((\(.+\))?([!@#$%^&*-]|[[:alnum:]]+)(:.+)?)\}'
+    find='([^\\])?\$\{((\(.+\))?([!@#$%^&*-]|[[:alnum:]_]+)(:.+)?)\}'
     replace='\1${${\2:+'$(esc 4 -t '${\2}' -r 0)'}:-"'$(esc 4 31 -t '\2' -r 0)'(null)"}'
     /usr/bin/sed -E -e 's/'$find'/'$replace'/g' <<< "$argv"
     return 0

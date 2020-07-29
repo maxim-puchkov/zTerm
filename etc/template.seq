@@ -60,3 +60,11 @@
 /usr/local/Terminal/zsh/functions/0b
 /usr/local/Terminal/zsh/functions/cg
 /usr/local/Terminal/zsh/functions/examine
+/usr/local/Terminal/zsh/functions/acomp_args
+/usr/local/Terminal/zsh/functions/order
+/usr/local/Terminal/zsh/functions/youtube-hd
+/usr/local/Terminal/zsh/functions/aug
+/usr/local/Terminal/zsh/functions/set-system-appearance
+/usr/local/Terminal/zsh/functions/get-system-appearance
+/usr/local/Terminal/zsh/functions/corrupt
+/usr/local/Terminal/zsh/functions/hex

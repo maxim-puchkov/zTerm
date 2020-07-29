@@ -5,9 +5,12 @@
 bindkey '^X\x7f' backward-kill-line  # (⌘⌫)Command-Delete
 
 # Load modules
-zmodload zsh/zprof
-zmodload zsh/zutil
-zmodload zsh/zselect
+if ! zmodload zsh/zutil \
+              zsh/zprof \
+              zsh/zselect; then
+  printf 'Failed to load zsh modules.\n'
+  return 1
+fi
 
 
 
@@ -54,6 +57,36 @@ autoload -Uz ~zdot/{site-functions,functions,completions}/*
 #
 #export REF_ZDOT=($(< $ZTERM/etc/source.zsh))
 #preexec_functions+=(ref)
+
+
+
+
+# preexec_reload - reload autoloaded zsh functions
+function preexec_reload() {
+  # Get the name executed command
+  typeset command_name="${2[(w)1]}"
+  
+  # Find autoload function definition files
+  typeset -a files
+  files=(${(@f)"$(/usr/bin/find  \
+    -L ~zdot/{,site-}functions   \
+    -name $command_name          \
+    2>/dev/null
+  )"})
+  
+  # For each definition file found, reload
+  local file fn_name
+  for file in $files; do
+    fn_name=${file:t}
+    unset -f $fn_name
+    autoload $fn_name
+  done 2>/dev/null
+  
+  return 0
+}
+preexec_functions+=(preexec_reload)
+
+
 
 
 
