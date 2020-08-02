@@ -72,16 +72,16 @@ pythonpath=(
   ~/Library/ApplicationSupport/iTerm2/Scripts
   ~/Library/ApplicationSupport/iTerm2/iterm2env/**/python*/site-packages
   ~zterm/Python
-  /usr/local/lib/python3.7/site-packages/Cryptodome
+#  /usr/local/lib/python3.7/site-packages/Cryptodome
 )
 
 # Command path
 path=(
+  /usr/local/opt/curl/bin
   /usr/local/sbin
   $path
-  $DEV/bin
-  $PROJ/Terminal/.config/bin
-  $pythonpath
+  ~/Developer/bin
+#  $pythonpath
   /usr/local/opt/llvm/bin
   /usr/local/opt/python@3/bin
   /usr/local/opt/openssl@1.1/bin
@@ -89,6 +89,7 @@ path=(
 
 # Function path
 fpath=(
+  /usr/local/opt/curl/share/zsh/site-functions
   /usr/local/share/zsh-completions
   $ZDOTDIR/functions
   $ZDOTDIR/completions

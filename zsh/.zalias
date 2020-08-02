@@ -147,7 +147,7 @@ alias Float='typeset -F'
 # Builtin 'whence'
 alias wh='builtin whence -av'
 
-
+alias hd='hexdump'
 
 
 #MARK: - Extended Commands

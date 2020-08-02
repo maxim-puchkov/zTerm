@@ -27,6 +27,8 @@ export ZTEST="$ZDOTDIR/.ztest"
 # zsh
 hash -d zterm=$ZTERM
 hash -d zdot=$ZDOTDIR
+hash -d zsh=$ZDOTDIR
+
 hash -d bin=/usr/local/bin
 hash -d var=~zterm/var
 # zsh subdirectories

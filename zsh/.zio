@@ -156,6 +156,12 @@ function b_magentabg() { __style_print "$B_MAGENTABG$*" }
 function b_cyanbg() { __style_print "$B_CYANBG$*" }
 
 
+#function orange() { }
+
+
+
+
+
 
 
 #MARK: - Old Styles

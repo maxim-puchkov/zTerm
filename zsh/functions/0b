@@ -7,24 +7,33 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# Convert ASCII to binary
-function 0b() {
-  # Get ASCII from standard input or
-  # positional parameters
-  typeset ascii
-  if zselect -t 0 -r 0; then
-    ascii=${(@f)"$(<&0)"}
-  else
-    ascii=${argv}
-  fi
-  # Stop if input string is empty
-  [[ -z $ascii ]] && return 1
+
+## Convert ASCII to binary
+function 0b() {(
+  typeset binary
   
+#  # Options
+#  while [[ $1 =~ '^[-]' ]]; do
+#    case $1 in
+#      # Revert binary input to ASCII
+#      (-r|--revert)
+#        
+#      ;;
+#      (--) shift
+#      ;&
+#      # Convert ASCII to binary
+#      (*)
+#        break
+#      ;;
+#    esac
+#    shift
+#  done
+#  
   
-  # Convert input to binary
-  typeset hex=$(0x $argv)
-  typeset -i2 binary
-  let binary="[##2]${hex}"
-  builtin print -- "$(( [##2] ${binary} ))"
+  () {
+    printf -v binary '%s' $(xxd -g8 -b <$1 | awk '{ print $2; }')
+  } =( if zselect -t 1 -r 0; then cat <&0; fi; printf '%s' "$@"; )
+  
+  printf '%s\n' "$binary"
   return 0
-}
+)}

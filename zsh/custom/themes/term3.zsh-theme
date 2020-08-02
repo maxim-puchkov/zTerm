@@ -10,7 +10,7 @@
 
 # settings
 typeset +H return_code="%(?..%{$fg[red]%}%? ↵%{$reset_color%})"
-typeset +H my_gray="$FG[237]"
+typeset +H my_gray="$FG[245]"
 typeset +H my_orange="$FG[214]"
 
 # separator dashes size

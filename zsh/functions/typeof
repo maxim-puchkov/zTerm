@@ -46,13 +46,13 @@ function typeof() {
     parameter_type="${${(t)${(P)parameter_name}}:-$undefined}"
     # Set output file descriptor to 1 (stdout). If parameter
     # is undefined, set to 2 (stderr) instead.
-    outfd=1
+    let outfd=1
     if [[ "$parameter_type" == "$undefined" ]]; then
       let exit_code=$exit_code+1
       if [[ $hide_errors -eq 1 ]]; then
         continue
       fi
-      outfd=2
+      let outfd=2
     fi
     if [[ $quiet -eq 1 ]]; then
       continue
