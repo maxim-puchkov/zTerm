@@ -4,8 +4,10 @@
 # Created on March 29, 2020.
 
 
-#MARK: - Z-Shell Files
 export ZSHENV="$HOME/.zshenv"
+export PYENV="$HOME/.pyenv"
+
+#MARK: - Z-Shell Files
 export ZTERM="/usr/local/Terminal"
 export ZDOTDIR="$ZTERM/zsh"
 

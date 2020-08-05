@@ -14,24 +14,6 @@ alias -g _T='; then print -P -- TRUE; else print -P -- FALSE; fi;'
 alias -g _F='; do print-var x; done;'
 
 
-function substitution() {
-  typeset x=' x ' y=' y '
-  typeset -a ops=(+ :+ - :-)
-  local op expr
-  typeset -a reply
-  print-h 'Substitution'
-  for op in $ops; do
-    expr='${x'${op}'$y}'
-    reply+=("%B%F{5}${op}%f%b" "${expr}" "${(e)expr}")
-  done
-  print -aC3 -- ${(%)reply}
-#  echo ${x:-$y}
-#  echo ${x+$y}
-#  echo ${x:+$y}
-  return 0
-  
-}
-
 
 
 #MARK: - Regular Aliases
@@ -169,7 +151,7 @@ alias lS='list S'
 alias lSa='list S -a'
 alias lf='list f'
 
-alias limg='imgls'
+alias lsimg='imgls'
 
 # Brew
 alias bb='brew_browse'
@@ -178,8 +160,12 @@ alias bi='brew info'
 # Print last return code
 alias C='retc'
 
-# 'cd'
+# cd
 alias cfd='cd -- "$(pfd)"'
+
+# set-system-appearance
+alias darks='set-system-appearance dark'
+alias lights='set-system-appearance light'
 
 # Print
 alias pv='print-var'
