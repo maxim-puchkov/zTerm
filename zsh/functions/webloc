@@ -16,7 +16,7 @@ fi
 
 # Website URL
 local url=$1
-if ! curl -s -I $url; then
+if ! curl -s -I $url &>/dev/null; then
   error -1 'URL ${url} is not valid.'
 fi
 
