@@ -30,3 +30,11 @@ fi
 
 logf 'Service stopped.'
 return $return_code
+
+
+
+#MARK: - Diagram:
+
+#   1. True
+#   2. (1) is False
+#   3. Therefore, True
