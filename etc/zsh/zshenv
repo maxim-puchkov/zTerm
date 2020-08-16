@@ -5,7 +5,7 @@
 
 
 export ZSHENV="$HOME/.zshenv"
-export PYENV="$HOME/.pyenv"
+#export PYTHONENV="$HOME/.pythonenv"
 
 #MARK: - Z-Shell Files
 export ZTERM="/usr/local/Terminal"

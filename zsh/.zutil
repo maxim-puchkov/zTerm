@@ -918,3 +918,11 @@ function notify() {
 function beep() {
   printf '\a'
 }
+
+function openjpg() {
+  open -a Preview $(find . -name '*.jpg' 2>/dev/null)
+}
+
+function openpng() {
+  open -a Preview $(find . -name '*.png' 2>/dev/null)
+}

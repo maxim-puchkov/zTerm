@@ -13,7 +13,8 @@ alias -g _T='; then print -P -- TRUE; else print -P -- FALSE; fi;'
 # 'for x in $array _F', 'while read x _F'
 alias -g _F='; do print-var x; done;'
 
-
+alias it2s='it2 switch-profile'
+alias 2s='it2s'
 
 
 #MARK: - Regular Aliases

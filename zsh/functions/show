@@ -44,9 +44,16 @@ for arg; do
       set -A arr \'$'\e[92m'${(Pkv)^arg}$'\e[0m'\'
       desc+="${parameters[$arg]} $(esc0 1,4,32 -t "${arg}") = ${(kvj:, :)arr}"$'\n'
     ;|
+    
   esac
   not_found=$(esc0 1,91 -t "${arg}" 22,31 -t 'not found')
   builtin print -nr -- ${(%)desc:=%B$arg%b' %F{1}not found%f'$'\n'}
 done
 
 return 0
+
+
+
+
+
+ca
