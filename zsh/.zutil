@@ -67,6 +67,13 @@ function testenv() {
 
 
 
+function zsh0() {
+  /usr/bin/env -i TERM=$TERM /usr/local/bin/zsh -f -d
+}
+function bash0() {
+  /usr/bin/env -i TERM=$TERM /usr/local/bin/bash
+}
+
 
 
 
