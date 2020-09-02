@@ -46,3 +46,14 @@ hash -d scripts=~/Library/Scripts
 hash -d iCloud=~/Library/Mobile\ Documents/com~apple~CloudDocs
 hash -d Access=~iCloud/Access
 hash -d sfu=~iCloud/SFU
+
+hash -d sfu1=~sfu/01-Fall-2016
+hash -d sfu2=~sfu/02-Spring-2017
+hash -d sfu3=~sfu/03-Summer-2017
+hash -d sfu4=~sfu/04-Fall-2017
+hash -d sfu5=~sfu/05-Spring-2018
+hash -d sfu6=~sfu/06-Summer-2018
+hash -d sfu7=~sfu/07-Fall-2018
+hash -d sfu8=~sfu/08-Spring-2019
+hash -d sfu9=~sfu/09-Fall-2019
+hash -d sfu10=~sfu/10-Spring-2020
