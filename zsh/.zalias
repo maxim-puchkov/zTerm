@@ -1,5 +1,9 @@
 # User-specific profile for interactive zsh(1) shells
 
+alias it2l='it2 set-profile Light'
+alias it2d='it2 set-profile Dark'
+alias gcm='git commit -m'
+alias p2='python2'
 
 #MARK: - Global Aliases
 # Shell output
@@ -122,7 +126,7 @@ alias set3='set -- -a -b -c -d D -e E -f F --long LONG args "hello world"'
 alias ext='set -o extendedglob'
 
 # Command 'strings'
-alias str='command strings'
+alias str='/usr/bin/strings'
 
 alias ts='typeset'
 alias Float='typeset -F'
