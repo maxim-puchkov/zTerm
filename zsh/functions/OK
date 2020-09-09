@@ -1,0 +1,16 @@
+#!/bin/zsh
+
+#  OK
+#  Z-Function (112)
+#
+#  Created by Maxim Puchkov on 2020-09-07.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Function description
+function OK() {
+  typeset empty
+  empty="$(esc0 3,37 -t 'empty')"
+  builtin print -P -- "%F{green}ok%f: ${@:-$empty}."
+  return 0
+}

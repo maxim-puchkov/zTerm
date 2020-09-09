@@ -1,0 +1,10 @@
+#compdef twitch
+
+#  _twitch
+
+local -a found
+readfile found <~/private/etc/twitch.zsh.conf
+local expl
+_wanted twitch expl 'twitch' compadd -a found
+
+return 0

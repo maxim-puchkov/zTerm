@@ -1,0 +1,32 @@
+#!/bin/zsh
+
+#  sfuc
+#  Z-Function (111)
+#
+#  Created by Maxim Puchkov on 2020-09-07.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+if [[ $# -eq 0 ]]; then
+  usage 'sfuc <course_name>'
+  return 1
+fi
+
+
+typeset root_dir
+root_dir=~sfu/Courses
+
+typeset course_name
+course_name=${1:t}
+
+typeset course_dir
+course_dir=$root_dir/$course_name
+
+if [[ ! -d $course_dir ]]; then
+  error -1 'Bad SFU course name: ${course_name}.'
+  return 1
+fi
+
+open -- $course_dir
+return 0

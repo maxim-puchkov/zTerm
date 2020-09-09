@@ -4,6 +4,8 @@ alias it2l='it2 set-profile Light'
 alias it2d='it2 set-profile Dark'
 alias gcm='git commit -m'
 alias p2='python2'
+alias arc='tar zcvf'
+
 
 #MARK: - Global Aliases
 # Shell output

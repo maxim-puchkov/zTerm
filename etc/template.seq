@@ -68,3 +68,6 @@
 /usr/local/Terminal/zsh/functions/get-system-appearance
 /usr/local/Terminal/zsh/functions/corrupt
 /usr/local/Terminal/zsh/functions/hex
+/usr/local/Terminal/zsh/functions/twitch
+/usr/local/Terminal/zsh/functions/sfuc
+/usr/local/Terminal/zsh/functions/OK

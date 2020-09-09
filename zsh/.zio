@@ -165,9 +165,9 @@ function b_cyanbg() { __style_print "$B_CYANBG$*" }
 
 
 #MARK: - Old Styles
-function OK() {
-  b_green "${*:-$0}"
-}
+#function OK() {
+#  b_green "${*:-$0}"
+#}
 function Warn() {
   yellow "${*:-$0}"
 }
