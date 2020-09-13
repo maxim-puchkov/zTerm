@@ -37,4 +37,4 @@ compdef _sln            sln
 compdef _nothing        update.sh  spectrum  color_scheme
 
 # Variables
-compdef _vars           try  tryregex  typeof
+compdef _vars           try  tryregex

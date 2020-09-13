@@ -14,14 +14,14 @@ function term2() {
 }
 
 # Calculate
-function calc() {
-  typeset -i result
-  let result="${argv}"
-  print -- $result
-}
-alias calc='noglob calc'
+#function calc() {
+#  typeset -i result
+#  let result="${argv}"
+#  print -- $result
+#}
+#alias calc='noglob calc'
 
-# Pick random argument
+# any - pick a random argument
 function any() {(
   [[ $# -eq 0 ]] && return 1
   typeset -i index
@@ -37,17 +37,10 @@ function any() {(
   fi
 )}
 
-function echoes() {
-  local -i N=1
-  if [[ $1 =~ '^[-][1-9][0-9]*' ]]; then
-    N=${1#-}
-    shift
-  fi
-  local text=$1
-  repeat $N; do
-    echo "$text"
-  done
-}
+## shlvl - print shell command path and shell level
+function shlvl lvl() {(
+  typeset -m -- 'SHELL' 'SHLVL'
+)}
 
 #
 function themes() {
@@ -120,7 +113,8 @@ function logs()     { cd "$ZTERM/var/log/$@"; }
 
 
 
-#MARK: - Oh-my-zsh Plugins
+#MARK: - Oh-my-zsh
+# Oh-my-zsh: Plugins
 # Open oh-my-zsh root directory.
 function myzsh() {
     open "$ZSH"
@@ -168,7 +162,7 @@ function next-plugin() {
 }
 
 
-#MARK: - Oh-my-zsh Themes
+# Oh-my-zsh: Themes
 # List themes.
 function list-themes() {
     local themes=(${$( command ls "$ZSH/themes" )%.zsh-theme})
@@ -265,24 +259,39 @@ function print-q() {
 }
 
 
-#
+# lorem - print lorem ipsum text
 function lorem() {
-    typeset -a lines=(
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
-        'Suspendisse nec convallis neque, eget interdum diam.'
-        'Donec sit amet arcu faucibus, lobortis lacus sed, molestie massa.'
-        'Vestibulum eget cursus ligula.'
-        'Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.'
-        'Integer sit amet diam rutrum, dictum eros at, dignissim orci.'
-        'Nullam pulvinar pellentesque mollis.'
-        'Etiam ultrices fermentum augue, vitae imperdiet mi.'
-        'Nullam nec lectus nec sem eleifend pharetra.'
-        'Cras congue orci vel aliquam fermentum.'
-        'Ut quis metus quis mauris dapibus cursus ac vitae leo.'
-    )
-    set -A fmt ${fmt} ${argv}
-    builtin print ${fmt} -- "${(@)lines}" >&1
+  typeset -a lines=(
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+    'Suspendisse nec convallis neque, eget interdum diam.'
+    'Donec sit amet arcu faucibus, lobortis lacus sed, molestie massa.'
+    'Vestibulum eget cursus ligula.'
+    'Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.'
+    'Integer sit amet diam rutrum, dictum eros at, dignissim orci.'
+    'Nullam pulvinar pellentesque mollis.'
+    'Etiam ultrices fermentum augue, vitae imperdiet mi.'
+    'Nullam nec lectus nec sem eleifend pharetra.'
+    'Cras congue orci vel aliquam fermentum.'
+    'Ut quis metus quis mauris dapibus cursus ac vitae leo.'
+  )
+  # Set number of text repetitions, N
+  typeset -i N
+  let N="${${1#-}:-1}"
+  if [[ $N -lt 1 ]]; then
+    let N='1'
+  fi
+  # Print N times
+  typeset -i i=1
+  while [[ $i -le $N ]]
+  do
+    print -- "${i}: ${(@)lines}"
+    let i="($i + 1)"
+  done
+  return 0
 }
+
+
+
 
 # ls format
 function datels() {
@@ -295,6 +304,8 @@ function statls() {
     fi
     $cmd
 }
+
+
 
 
 # Dash
@@ -346,8 +357,29 @@ function env1() {
 }
 
 
+# Run both 'tldr' and 'tealdeer' commands
+function tldrs() {(
+  /usr/local/bin/tldr $argv
+  /usr/local/bin/tealdeer $argv
+)}
 
 
+function wloc() {
+  #
+  typeset webloc_url="$1"
+  if [[ -z $webloc_url ]]; then
+    printf '%s: missing website URL.\n' "$0" >&2
+  fi
+  
+  # Create a property list and
+  () {
+    typeset tmp_file="$1"
+    plutil -insert 'URL' -string "$webloc_url" $tmp_file
+    plutil -convert binary1 $tmp_file
+    cat <$tmp_file
+  } =(mkpl)
+  return 0
+}
 
 
 
@@ -391,6 +423,7 @@ function randbytes() {
 }
 
 
+#FIXME: Deprecated
 function print-quotes() {
     typeset arg="$argv"
     printf "%-4s: ${lb}%s${rb}\n"  "q"    "${(q)arg}"
@@ -398,7 +431,7 @@ function print-quotes() {
     printf "%-4s: ${lb}%s${rb}\n"  "qqq"  "${(qqq)arg}"
     printf "%-4s: ${lb}%s${rb}\n"  "qqqq" "${(qqqq)arg}"
 }
-
+#FIXME: Deprecated
 function print-debug() {
     local c='%F{4}'
     local args="$argv"
@@ -409,6 +442,7 @@ function print-debug() {
                     "${(%)label}" "${(%)length}" "${(%)value}"
 }
 # Print
+#FIXME: Deprecated
 function print-br() {(
     # Number of line breaks to print
     typeset n=${1:-0}
@@ -423,14 +457,18 @@ function print-br() {(
 
 
 
+
+#FIXME: Deprecated
 function tprof() {
     local name=${1:-'Light'}
     printf '%b\n' "\e]1337;SetProfile=Term 3: $name\a"
 }
+#FIXME: Deprecated
 function SetProfile() {
     local name=${1:-'Light'}
     printf '%b\n' "\e]1337;$0=Term 3: $name\a"
 }
+#FIXME: Deprecated
 function GetProfile() {
     printf '%b\n' "\e]1337;$0\a"
 }
@@ -449,6 +487,7 @@ function GetProfile() {
 
 
 #MARK: - Manual Pages
+#FIXME: Deprecated
 function manp() {(
     local name="$argv"
     local dir="${zterm}/share/man"
@@ -487,7 +526,7 @@ function xman() {
 
 
 
-
+#FIXME: Deprecated
 function test_print-var() {
     # Test 0
     (
@@ -564,8 +603,7 @@ function test_print-var() {
 
 
 #MARK: - Keep 
-# Misc Functions
-# Move a file to iCloud.
+# Move a file to iCloud Drive.
 function icmv() {
     # Create 'MovedFiles' directory
     local directory=$iCloud/MovedFiles
@@ -589,7 +627,7 @@ function thesaurus() {
     local url="${base}/${word}"
     /usr/bin/open -a 'Safari' -- $url
 }
-
+#MARK: -
 
 
 
@@ -922,26 +960,63 @@ function find_replace() {
 }
 
 
+#FIXME: Deprecated
+# notify - print name of the command or function from which
+#          `notify' is invoked and then print all arguments
+#          same as `print' builtin.
 function notify() {
     typeset program=${${functrace[1]%:*}:-$0}
     if [[ -t 1 ]]; then
         program="%F{4}${program}%f"
     fi
-    
     # Print
     builtin print -Pn -X2 -- "${program}:\t"
     builtin print ${argv}
     return 0
 }
 
-function beep() {
+# Bell sound
+function bell beep {
   printf '\a'
 }
 
+#TODO: Test file names with spaces can open
 function openjpg() {
   open -a Preview $(find . -name '*.jpg' 2>/dev/null)
 }
-
 function openpng() {
   open -a Preview $(find . -name '*.png' 2>/dev/null)
+}
+
+
+
+
+function whencef() {
+cat <<EOF
+-S  -- show steps in the resolution of symlinks
+-a  -- print all occurrences in path
+-c  -- csh-like output
+-f  -- output contents of functions
+-m  -- treat the arguments as patterns
+-p  -- always do a path search
+-s  -- print symlink free path as well
+-v  -- verbose output
+-w  -- print command type
+EOF
+  return 0
+}
+
+function whences() {
+  typeset -a names
+  names=('echo' "${0}" 'lll' 'paths' 'error' )
+  
+  greenbg '-- Begin --'
+  for name in $names; do
+    redbg "Name: '${name}'"
+    red "Command: 'whence $@ -- \"$name\"'"
+    whence $@ -- "$name"
+    redbg '-'
+    echo; echo; echo; echo;
+  done
+  greenbg '-- Done --'
 }

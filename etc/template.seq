@@ -71,3 +71,10 @@
 /usr/local/Terminal/zsh/functions/twitch
 /usr/local/Terminal/zsh/functions/sfuc
 /usr/local/Terminal/zsh/functions/OK
+/usr/local/Terminal/zsh/functions/perm
+/usr/local/Terminal/zsh/functions/mod
+/usr/local/Terminal/zsh/functions/ctime
+/usr/local/Terminal/zsh/functions/paths
+/usr/local/Terminal/zsh/functions/tests
+/usr/local/Terminal/zsh/functions/print-line
+/usr/local/Terminal/zsh/completions/_typeof

@@ -7,82 +7,126 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# typeof - print the type of a shell parameter
-function typeof() {
-  # Set options
-  typeset -i verbose=0 quiet=0 hide_errors=0
-  while [[ $1 =~ '^[-]' ]]; do
+# typeof - print the type of a command, function, shell
+#          parameter, or other object.
+function typeof() {(
+  #MARK: - Functions
+  function typeof-issetopt() {
+    
+  }
+  
+  # typeof-print - format and print an object's type
+  function typeof-print() {(
+    # If 'verbose' is set, print object's name
+#    [[ ${(P):-${y%%-*}_verbose} -eq 1 ]];
+    typeset res="${(P):-${${0%%-*}}_verbose}}"
+    echo "RES: ${res}"
+    
+    blue "PROG {0%%-*}: 	${0%%-*}"
+    ident="${0%%-*}_verbose"
+    blue "IDENT {0%%-*}_verbose: 	${ident}"
+    yellow "EXPANDED: 	${(P)ident}"
+    
+    
+    if [[ ${(P)${:-${n}_verbose}} -eq 1 ]]; then
+      printf '%s: ' "${1:=$name}"
+    fi
+    # If 'verbose' is set, print object's name
+    if [[ ${(P)ident} ]]
+    
+    
+    # Print object's type
+    printf '%s\n' "${2:=$typename}"
+    return 0
+  )}
+  
+  # typeof-not-found - display typename as 'not found'
+  function typeof-not-found() {(
+    typeof-print "$name" 'not found'
+    return $?
+  )}
+  
+  # typeof-commands - display typename of a command
+  function typeof-commands() {(
+    typeset typename="${$(type -w -- $name)#*: }"
+    if [[ "$typename" == 'none' ]]; then
+      return 1
+    fi
+    typeof-print "$name" "$typename"
+    return $?
+  )}
+  
+  # typeof-parameters - display typename of a parameter
+  function typeof-parameters() {(
+    typeset typename="${parameters[$name]}"
+    if [[ -z "$typename" ]]; then
+      return 1
+    fi
+    typeof-print "$name" "$typename"
+    return $?
+  )}
+  
+  
+  
+  
+  #MARK: - Options
+#  # Verbose output option is set for stdout
+#  typeset -i ${0}_verbose=0
+#  if [[ -t 1 ]]; then
+#    let ${0}_verbose=1
+#  fi
+  
+  
+  # Parse user's option values
+  while [[ $1 =~ '^[-+]' ]]; do
     case $1 in
-      (-v|--verbose) let verbose=1  ;;
-      (-q|--quiet) let quiet=1  ;;
-      (-e|--hide-errors) let hide_errors=1 ;;
-      (--) shift; break  ;;
+      # {-v,--verbose}: enable verbosity
+      (-v|--verbose)
+        let ${0}_verbose=1
+      ;;
+      # {+v,--no-verbose}: disable verbosity
+      (+v|--no-verbose)
+        let ${0}_verbose=0
+      ;;
+      
+      # Skip '--'
+      (--)
+        shift; break
+      ;;
+      (*)
+        (name="$1" \
+          error -1 +R -- 'invalid option ${name} was ignored.')
+      ;;
     esac
     shift
   done
   
+#  export "${0}_verbose"
   
-  # Print function usage if no parameter names are specified
+  
+  #MARK: - Arguments
+  # If names are not given, return code 1
   if [[ $# -eq 0 ]]; then
-    autoload -Uz usage
-    local function_name="$0"
-    usage 'Specify at least one name.' - \
-          '${function_name} [name...]'
     return 1
   fi
   
-  
-  # Set default exit code
-  typeset -i exit_code=0
-  # Set default label for undefined parameters
-  typeset undefined=$'\e[33m''parameter not set'$'\e[0m'
-  # Output file descriptor number (default: 1)
-  typeset -i outfd
-  
-  # For each parameter name
-  local parameter_name parameter_type
-  for parameter_name; do
-    # Determine parameter type
-    parameter_type="${${(t)${(P)parameter_name}}:-$undefined}"
-    # Set output file descriptor to 1 (stdout). If parameter
-    # is undefined, set to 2 (stderr) instead.
-    let outfd=1
-    if [[ "$parameter_type" == "$undefined" ]]; then
-      let exit_code=$exit_code+1
-      if [[ $hide_errors -eq 1 ]]; then
-        continue
-      fi
-      let outfd=2
-    fi
-    if [[ $quiet -eq 1 ]]; then
+  # Find the command or parameter to which the
+  # name refers to, and print its type
+  typeset name
+  for name; do
+    # If name is a command or parameter,
+    # set 'found' to 1
+    local -i found=0
+    typeof-commands "$name" && let found=1
+    typeof-parameters "$name" && let found=1
+    
+    # If name is not found, print
+    # 'not found' message instead
+    if [[ $found -eq 0 ]]; then
+      typeof-not-found "$name"
       continue
     fi
-    # If verbose option is set, parameter name is also printed
-    if [[ $verbose -eq 1 ]]; then
-      print -nr -u $outfd -- "${parameter_name}: "
-    fi
-    # Print parameter type
-    print -r -u $outfd -- "${parameter_type}"
   done
   
-  return $exit_code
-}
-
-#
-## <#Function description#>
-#function typeof() {(
-#    if [[ $# -eq 0 ]]; then
-#        error -1 'No input.'
-#        return 1
-#    fi
-#    typeset var_{id,type}
-#    for var_id in $argv; do
-#        if [[ ! -v $var_id ]]; then
-#            warning 'variable ${var_id} is not set.'
-#            continue
-#        fi
-#        var_type=${(Pt)var_id}
-#        builtin print -- "$var_id" "$var_type"
-#    done
-#    return 0
-#)}
+  return 0
+)}

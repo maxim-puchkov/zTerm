@@ -15,7 +15,7 @@ export GPG_TTY
 export EDITOR=$(< $ZTERM/etc/EDITOR)
 export GUI_EDITOR=$(< $ZTERM/etc/GUI-EDITOR)
 
-
+export TEST_ROOT_DIR=~/Developer/Test
 
 
 #MARK: - Directories

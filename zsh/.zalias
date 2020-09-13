@@ -1,34 +1,35 @@
-# User-specific profile for interactive zsh(1) shells
+#!/bin/zsh
 
-alias it2l='it2 set-profile Light'
-alias it2d='it2 set-profile Dark'
-alias gcm='git commit -m'
-alias p2='python2'
-alias arc='tar zcvf'
+# User-specific profile for interactive zsh(1) shells
 
 
 #MARK: - Global Aliases
-# Shell output
+# Redirect shell output
 alias -g noerr='2>/dev/null'  # redirect stderr
 alias -g 2NIL='2>/dev/null'
 alias -g quiet='&>/dev/null'  # redirect stdout and stderr
 alias -g NIL='&>/dev/null'
 
-# 'if [[ ... ]] _T'
+# Conditional:  'if [[ ... ]] _T'
 alias -g _T='; then print -P -- TRUE; else print -P -- FALSE; fi;'
-# 'for x in $array _F', 'while read x _F'
+# Loops:  'for ... _F' or 'while ... _F'
 alias -g _F='; do print-var x; done;'
 
-alias it2s='it2 switch-profile'
-alias 2s='it2s'
+
+
 
 
 #MARK: - Regular Aliases
 # Builtin 'autoload'
 alias al-='builtin autoload'
 alias al='builtin autoload -Uz'
+
+# Command 'tar'
+alias arc='/usr/bin/tar zcvf'
+
 # Builtin
 alias bltn='builtin builtin'
+
 # Command 'ls'
 alias ls='/bin/ls -BFGHhk'
 alias la='ls -la'
@@ -37,8 +38,10 @@ alias ll='ls -la'
 alias lll='ls -laR'
 
 # Command 'chflags'
-alias lock='/usr/bin/chflags uchg'
-alias unlock='/usr/bin/chflags nouchg'
+alias hide='chflags hidden'
+alias unhide='chflags nohidden'
+alias lock='chflags uchg'
+alias unlock='chflags nouchg'
 
 # Command 'cp'
 alias cp='/bin/cp -i'
@@ -47,40 +50,48 @@ alias cp='/bin/cp -i'
 alias e='builtin echo -'
 alias E='esc 1 38 45 -r 0 -t'
 
+# Command 'find'
+alias findl='/usr/bin/find -L'
+
 # Builtin 'functions'
 alias fns='functions'
 
-# Command 'find'
-alias findl='/usr/bin/find -L'
+# Command 'hexdump'
+alias hd='hexdump'
+
+# Command 'ln'
+alias lns='ln -s'
+alias sln='ln -s'
+alias uln='unlink'
+
 
 # Builtin 'print'
 alias printp='builtin print -P'
 alias pp='printp'
 alias p='printp'
-
 alias printl='builtin print -l'
 alias pl='printl'
-
 alias printn='builtin print -n'
 alias pn='printn'
-
 alias print-='builtin print -P --'
 alias p-='print-'
 alias pi='print-input'
 alias printd='builtin print -P -D'
 
 # Pygments
-alias pyg='pygmentize'
+alias pyg='/usr/local/bin/pygmentize'
 
 # Builtin 'exit'
 alias q='builtin exit 0;'
 
 # Command 'git'
+alias gcm='git commit -m'
 alias gs='git status'
 alias grs='git restore --staged'
 alias gt='() { cd "$zterm" && git status; };'
 
-alias int='integer'
+# Command 'google'
+alias ggl='/usr/local/bin/google'
 
 # Command 'grep'
 alias gr='grep'
@@ -88,11 +99,13 @@ alias grepa='egrep --color=always --text --regexp ".*"'
 alias mang='grepman'
 
 # Help
-alias {h,help}='run-help'
+alias help='run-help'
 
 # Command 'launchctl'
-alias cdef='compdef'
 alias lctl='command launchctl'
+
+# Completion definition
+alias cdef='compdef'
 
 # Command 'mv'
 alias mv='/bin/mv -i'
@@ -114,33 +127,40 @@ alias sha256='openssl sha256'
 alias python3.7='/usr/local/opt/python@3.7/bin/python3.7'
 alias python3.8='/usr/local/opt/python@3.8/bin/python3.8'
 alias python='command python3'
-alias p3='python3'
 alias pip='command pip3'
 alias idle='command idle3'
+alias p2='python2'
+alias p3='python3'
 
 # Command 'rm'
 alias rm='/bin/rm -i'
 
 # Builtin 'set'
+alias setx='set -o extendedglob'
 alias set1='set -x; set +x -- -x -y oy -z oz1 oz2 -- -r REST'
 alias set2='set -- -a -b -c -d D -e E -f F'
 alias set3='set -- -a -b -c -d D -e E -f F --long LONG args "hello world"'
-alias ext='set -o extendedglob'
+
+# Command 'sqlite3'
+alias s3='/usr/bin/sqlite3'
 
 # Command 'strings'
 alias str='/usr/bin/strings'
 
+# Builtin 'typeset'
 alias ts='typeset'
 alias Float='typeset -F'
+alias int='typeset -i'
 
 # Builtin 'whence'
 alias wh='builtin whence -av'
 
-alias hd='hexdump'
+
 
 
 #MARK: - Extended Commands
 alias cd='cdp'
+
 
 
 
@@ -167,12 +187,18 @@ alias bi='brew info'
 # Print last return code
 alias C='retc'
 
-# cd
+# Change to current Finder directory
 alias cfd='cd -- "$(pfd)"'
 
-# set-system-appearance
+# Set system appearance
 alias darks='set-system-appearance dark'
 alias lights='set-system-appearance light'
+
+# Set iTerm profile
+alias it2s='it2 switch-profile'
+alias it2l='it2 set-profile Light'
+alias it2d='it2 set-profile Dark'
+alias 2s='it2s'
 
 # Print
 alias pv='print-var'
@@ -194,7 +220,8 @@ alias i='show'
 
 
 
-#MARK: Miscellaneous
+
+#MARK: - Miscellaneous
 alias rre='open -a Xcode "$DEV/bin/run.sh"'
 alias rr='zsh "$DEV/bin/run.sh"'
 alias rte='open -a Xcode $DEV/bin/run-tests.zsh'

@@ -14,14 +14,20 @@ if [[ $# -eq 0 ]]; then
   return 1
 fi
 
-local desc
-local not_found
+
+#local desc
+#local not_found 
+
 
 # For each argument, show description
+local arg desc
 for arg; do
   builtin print -Pr -- "%B%F{10}>%f ${arg}%b"
-  
   desc=''
+  
+#  if [[ ${+aliases[$arg]} -eq 1 ]]; then
+#  fi
+  
   case 1 in
     ${+aliases[$arg]})
       desc+="alias for $(esc0 4,34 -t "${aliases[$arg]}")"$'\n'

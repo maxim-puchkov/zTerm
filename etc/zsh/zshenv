@@ -4,13 +4,15 @@
 # Created on March 29, 2020.
 
 
+#MARK: - Z-Shell
+# Shell environment
 export ZSHENV="$HOME/.zshenv"
-#export PYTHONENV="$HOME/.pythonenv"
 
-#MARK: - Z-Shell Files
+# Directories of scripts & functions
 export ZTERM="/usr/local/Terminal"
 export ZDOTDIR="$ZTERM/zsh"
 
+# Shell startup files
 export ZPROFILE="$ZDOTDIR/.zprofile"
 export ZSHRC="$ZDOTDIR/.zshrc"
 export ZIO="$ZDOTDIR/.zio"
@@ -25,28 +27,41 @@ export ZTEST="$ZDOTDIR/.ztest"
 
 
 
-#MARK: - Hashed Directories
+#MARK: Python
+# Python environment
+export PYTHONENV="$HOME/.pythonenv"
+
+
+
+
+#MARK: Hashed Directories
 # zsh
 hash -d zterm=$ZTERM
 hash -d zdot=$ZDOTDIR
 hash -d zsh=$ZDOTDIR
+hash -d zvar=~zterm/
 
-hash -d bin=/usr/local/bin
+hash -d ulb=/usr/local/bin
 hash -d var=~zterm/var
+
 # zsh subdirectories
 hash -d zs=~zdot/site-functions
 hash -d zf=~zdot/functions
 hash -d zc=~zdot/completions
+
 # Documents
-hash -d docs=~/Documents
 hash -d dev=~/Developer
+hash -d test=~/Developer/Test
+hash -d docs=~/Documents
 hash -d saved=~/Documents/Saved\ Files
+
 # Library
 hash -d scripts=~/Library/Scripts
+# iCloud
 hash -d iCloud=~/Library/Mobile\ Documents/com~apple~CloudDocs
 hash -d Access=~iCloud/Access
+# SFU
 hash -d sfu=~iCloud/SFU
-
 hash -d sfu1=~sfu/01-Fall-2016
 hash -d sfu2=~sfu/02-Spring-2017
 hash -d sfu3=~sfu/03-Summer-2017
