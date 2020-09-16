@@ -1,4 +1,0 @@
-#compdef testdir
-
-
-_files -/ -W $HOME/Developer/Test

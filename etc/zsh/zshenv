@@ -9,9 +9,9 @@
 export ZSHENV="$HOME/.zshenv"
 
 # Directories of scripts & functions
-export ZTERM="/usr/local/Terminal"
-export ZDOTDIR="$ZTERM/zsh"
-
+export ZTERM='/usr/local/Terminal'
+export ZDOTDIR="$ZTERM/Library/zsh"
+ 
 # Shell startup files
 export ZPROFILE="$ZDOTDIR/.zprofile"
 export ZSHRC="$ZDOTDIR/.zshrc"
@@ -27,48 +27,39 @@ export ZTEST="$ZDOTDIR/.ztest"
 
 
 
-#MARK: Python
+
+#MARK: - Python
 # Python environment
 export PYTHONENV="$HOME/.pythonenv"
 
 
 
 
-#MARK: Hashed Directories
+
+#MARK: - Hashed Directories
 # zsh
-hash -d zterm=$ZTERM
-hash -d zdot=$ZDOTDIR
-hash -d zsh=$ZDOTDIR
-hash -d zvar=~zterm/
-
-hash -d ulb=/usr/local/bin
-hash -d var=~zterm/var
-
-# zsh subdirectories
-hash -d zs=~zdot/site-functions
-hash -d zf=~zdot/functions
-hash -d zc=~zdot/completions
+hash -d zterm="$ZTERM"
+hash -d zdot="$ZDOTDIR"
+hash -d zsh="$ZDOTDIR"
+# zdot subdirectories
+hash -d zs=~zdot/'site-functions'
+hash -d zf=~zdot/'functions'
+hash -d zc=~zdot/'completions'
 
 # Documents
-hash -d dev=~/Developer
-hash -d test=~/Developer/Test
-hash -d docs=~/Documents
-hash -d saved=~/Documents/Saved\ Files
+hash -d dev=~/'Developer'
+hash -d test=~/'Developer/Test'
+hash -d docs=~/'Documents'
+hash -d saved=~/'Documents/Saved Files'
 
 # Library
-hash -d scripts=~/Library/Scripts
+hash -d scripts=~/'Library/Scripts'
 # iCloud
-hash -d iCloud=~/Library/Mobile\ Documents/com~apple~CloudDocs
-hash -d Access=~iCloud/Access
+hash -d iCloud=~/'Library/Mobile Documents/com~apple~CloudDocs'
+hash -d Access=~iCloud/'Access'
+
 # SFU
-hash -d sfu=~iCloud/SFU
-hash -d sfu1=~sfu/01-Fall-2016
-hash -d sfu2=~sfu/02-Spring-2017
-hash -d sfu3=~sfu/03-Summer-2017
-hash -d sfu4=~sfu/04-Fall-2017
-hash -d sfu5=~sfu/05-Spring-2018
-hash -d sfu6=~sfu/06-Summer-2018
-hash -d sfu7=~sfu/07-Fall-2018
-hash -d sfu8=~sfu/08-Spring-2019
-hash -d sfu9=~sfu/09-Fall-2019
-hash -d sfu10=~sfu/10-Spring-2020
+hash -d sfu=~iCloud/'SFU'
+
+hash -d lb='/usr/local/bin'
+hash -d t='/usr/local/Terminal'

@@ -1,0 +1,53 @@
+#!/bin/zsh
+
+#  semantic-history
+#  Terminal
+#
+#  Created by Maxim Puchkov on 2020-04-17.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+() {
+  # Path to the file
+  typeset filepath=$1
+  # If filepath contains extra characters
+  # try to delete last character until path
+  # refers to a readable file
+  while [[ ! -r $filepath ]]; do
+    if [[ -z $filepath ]]; then
+      return 1
+    fi
+    filepath=${filepath:0:-1}
+  done
+
+  # Open regular files in GUI editor
+  if [[ -f $filepath ]]; then
+    /usr/local/bin/gui-edit $filepath
+  else
+    open $filepath
+  fi
+  return $?
+} $1
+
+
+
+
+# Check exit code
+typeset -i exit_code=$?
+if [[ $exit_code -ne 0 ]]; then
+  typeset title="Error (${exit_code})"
+  typeset subtitle="${0:t}"
+  typeset message="Cannot open '${1}'"
+  
+  
+  # Display UI notification if `notify' is intalled
+  # or print the message to console
+  typeset notification_cmd='notify'
+  if ! hash $notification_cmd; then
+    $notification_cmd "$message" "$title" "$subtitle"
+  else
+    printf '%s\n%s\n%s\n\n' "$message" "$title" "$subtitle" >&2
+  fi
+fi
+
+return 0

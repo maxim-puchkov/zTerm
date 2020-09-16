@@ -1,4 +1,0 @@
-#compdef zterm
-
-
-_files -/ -W $ZTERM

@@ -1,4 +1,0 @@
-#compdef var
-
-
-_files -/ -W $HOME/var

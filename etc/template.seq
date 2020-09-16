@@ -78,3 +78,8 @@
 /usr/local/Terminal/zsh/functions/tests
 /usr/local/Terminal/zsh/functions/print-line
 /usr/local/Terminal/zsh/completions/_typeof
+/usr/local/Terminal/zsh/functions/dir
+/usr/local/Terminal/zsh/functions/findt
+/usr/local/Terminal/zsh/completions/_findt
+/usr/local/Terminal/zsh/functions/ord-2
+/usr/local/Terminal/Library/zsh/functions/sizeof
