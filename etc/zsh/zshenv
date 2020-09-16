@@ -7,16 +7,16 @@
 #  Created on March 29, 2020.
 
 
-#MARK: - Z shell
-# zsh shell environment
+# Z shell environment
 export ZSHENV="$HOME/.zshenv"
 
-# Terminal scripts & functions
+
+# Terminal scripts and functions
 export ZTERM='/usr/local/Terminal'
 export ZDOTDIR="$ZTERM/Library/zsh"
 
 
-# history
+# Interactive history
 if [[ -d $zterm/var/log ]]; then
   HISTFILE=$zterm/var/log/$USER.zsh_history
 else
@@ -25,8 +25,5 @@ fi
 export HISTFILE
 
 
-
-
-#MARK: - Python
 # Python environment
 export PYTHONENV="$HOME/.pythonenv"
