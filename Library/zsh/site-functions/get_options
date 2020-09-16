@@ -1,0 +1,55 @@
+#!/bin/zsh
+
+#  get_options
+#  Z-Function
+#
+#  Created by admin on 2020-04-15.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+ 
+
+# Read all command options and store in an array with
+# the specified identifier.
+function get_options() {
+#    print -P -- "Function '%U${0}%u' is deprecated."
+#    print -P -- "Did you mean: '%F{2}get-arguments%f'?"
+#    print
+#    return 2
+    
+    local identifier=$1
+    local optstring="$2"
+    local arguments=${@:3}
+    
+    local SYNTAX="$0 identifier optstring arguments*"
+    syntax_check "$SYNTAX" ||
+        return 2
+    
+    typeset -A result
+    local opt=''
+    local length=0
+    
+    if [[ ${#arguments} -eq 0 ]]; then
+        result=( length 0 command_arguments "''" )
+    else
+        while getopts "$optstring" opt ${(z)arguments[@]}; do
+            if [[ $opt == '?' ]]; then
+                length=$(( $length + 1 ))
+                continue;
+            fi
+            if [[ -n $OPTARG ]]; then
+                result[$opt]=${(Q)OPTARG}
+                length=$(( $length + 2 ))
+            else
+                result[$opt]='0'
+                length=$(( $length + 1 ))
+            fi
+        done 2>/dev/null
+        
+        local arg_list=(${(z)arguments})
+        result[length]=$length
+        result[command_arguments]="${${arg_list:$length}:-''}"
+    fi
+    
+    typeset -Ag $identifier
+    set -A $identifier ${(kv)result}
+    return 0
+}

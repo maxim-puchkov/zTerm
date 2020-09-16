@@ -1,0 +1,27 @@
+#!/bin/zsh
+
+#  ref
+#  Quick shell reload
+#
+#  Created by mpuchkov on 2020-04-21.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Print environmental variables with varying __colors__.
+function rainbow() {
+    # Check syntax.
+    SYNTAX=(rainbow 'variable_identifier*')
+    if [[ $# -eq 0 ]]; then
+        serror 'str' "$SYNTAX"
+    fi
+    # Alternate __colors__ for every variable.
+    local __colors__=(red b_yellow green cyan b_blue magenta)
+    local __i__
+    for __i__ in {1..$#}; do
+        local __ci__=$(( $__i__ % ${#__colors__} ))
+        if [[ $__ci__ -eq 0 ]]; then
+            __ci__=${#__colors__}
+        fi
+        echo "$( ${__colors__[$__ci__]} ${@[$__i__]}: ${(P)@[$__i__]} )"
+    done
+}

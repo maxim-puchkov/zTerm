@@ -1,0 +1,68 @@
+#!/bin/zsh
+
+#  0x
+#  Z-Function (94)
+#
+#  Created by Maxim Puchkov on 2020-07-10.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# 0x - convert ASCII to hexadecimal
+function 0x() {
+  typeset input
+  read-input input
+  
+  # Options
+  case $1 in
+    (-b|--binary)
+      redbg $@ - $2
+      greenbg "bin=$binary"
+      typeset binary="${input}${2}"
+      
+    ;;
+    (*)
+      typeset ascii="${input}${argv}"
+      hex=$(python -c 'print(bytes.hex(b"'${ascii}'"));')
+      print -- $hex
+    ;;
+  esac
+  
+  return 0
+}
+
+
+#function 0x() {
+#  # Options
+#  typeset -i use_colors
+#  while [[ $1 =~ '^[-]' ]]; do
+#    case $1 in
+#      (-c|--color) let use_colors=1 ;;
+#      (--) shift; break ;;
+#    esac
+#    shift
+#  done
+#
+#  # Get ASCII from standard input or
+#  # positional parameters
+#  typeset ascii
+#  if zselect -t 0 -r 0; then
+#    ascii=${(@f)"$(<&0)"}
+#  else
+#    ascii=${argv}
+#  fi
+#  # Stop if input string is empty
+#  [[ -z $ascii ]] && return 1
+#
+#  # Convert input to hexadecimal
+#  typeset -a bytes
+#  () {
+#    bytes=($(grep -o -e '..' <$1))
+#  } =(python -c 'print(bytes.hex(b"'$ascii'"));')
+#
+#  if [[ -t 1 ]]; then
+#    print -- $bytes
+#  else
+#    print -f '%s' ${bytes} $'\n'
+#  fi
+#  return 0
+#}

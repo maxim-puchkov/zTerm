@@ -1,0 +1,126 @@
+#!/bin/zsh
+
+#  fdctl
+#  Z-Shell Configuration
+#
+#  Created by mpuchkov on 2020-02-20.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#FILL#>
+function fdctl() {
+    
+    # Primary script properties: function base,
+    # sub-command, and options.
+    typeset BASE                # ___FILENAME___
+    typeset -A opts     # -flag, --option [option_value]
+    typeset COMMAND             # Command of ___FILEMNAME___ to invoke
+    
+    # File Directories.
+    declare -Ax FDIRS=()
+    FDIRS[arc]="$arcd"
+    FDIRS[out]="$outd"
+    FDIRS[bak]="$backd"
+    FDIRS[temp]="$tempd"
+    FDIRS[test]="$testd"
+    
+    
+    
+    # <#FILL#>
+    function directory_syntax() {
+        local required=$( _bblue "$1" )
+        local optional=$( _darkgrey "$2" )
+        echo "${required}${optional}"
+    }
+    # Show all designated directories.
+    function print_file_dirs() {
+        for key in ${(k)FDIRS}; do
+            local value=${FDIRS[$key]:t}
+            required="${key}"
+            optional="${${value:l}#$key}"
+            syntax=$( directory_syntax "$required" "$optional" )
+            dir=${value:t}
+            print -C 2 "$dir:" "${syntax}"
+        done
+    }
+    # <#FILL#>
+    function move_file() {
+        export SYNTAX=( 'fcdtl' 'command' '/path/to/file' )
+        local target=${1:A}
+        local dst=$2
+        local wd=$( pwd -P )
+        local filename=${target:t}
+        
+        # Abort modifying files if an error occurrs.
+        if [[ -z $target ]]; then
+            serror "/path/to/file" "$SYNTAX"
+        fi
+        errif "'$dst' =~ '$target'" "Target '$target' is subpath of '$dst'."
+        errif "! -e '$target'"      "Target file/directory '$target' does not exist."
+        errif "! -e '$dst'"         "Destination directory '$dst' does not exist."
+        errif "-e '$dst/$filename'" "Already exists: '$filename'."
+        
+        # Move file to destination.
+        echo $target > "$dst/.etc/$filename"
+        mv $target "$dst/$filename"
+        
+        printf "> $0 "
+        echo "Moved $( _bred "$target" )";
+        echo "To $( _bgreen $dst/$filename )"
+    }
+    
+
+    
+    #MARK: - Public
+    # List all functions.
+    function fdctl_help() {
+        echo "$( U "$src commands:" )"
+        print_file_dirs
+    }
+    
+
+    # Move to test files.
+    function fdctl_test() {
+        move_file $1 $FDIRS[test]
+    }
+    
+    function fdctl_bak() {
+        echo "Not implemeted: Backups."
+        Info "Will invoke 'move_file $1 $FDIRS[bak]'."
+    }
+    
+    # Move to the Archives.
+    function fdctl_arc() {
+        echo "Not implemeted: Archives."
+        Info "Will invoke 'move_file $1 $FDIRS[arcd]'."
+    }
+    
+    # Move to program output.
+    function fdctl_out() {
+        echo "Not implemeted: Output."
+        Info "Will invoke 'move_file $1 $FDIRS[out]'."
+    }
+    
+    
+    BASE=$( basename $0 )
+    get_options opts "$@"
+    COMMAND=$1
+    
+    
+    case $COMMAND in
+        "")
+            print "Usage:"
+            print -x2 "\t$(Bc $BASE) $(Uc 'name'): open documentation"
+            print -x2 "\t$(Bc $BASE) $(c 'help'): view available commands"
+            ;;
+        *)
+            shift
+            ${BASE}_${COMMAND} "$@"
+            local ecode=$?
+            if [ $ecode = 127 ]; then
+                echo "Unknown command: $(r $cmd) (Exit code $ecode)." >&2
+            fi
+            ;;
+    esac
+    
+}

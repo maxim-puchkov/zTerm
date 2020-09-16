@@ -1,0 +1,135 @@
+#!/bin/zsh
+
+#  typeof
+#  Z-Function (71)
+#
+#  Created by Maxim Puchkov on 2020-06-21.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# typeof - print the type of a command, function, shell
+#          parameter, or other object.
+function typeof() {(
+  #MARK: - Functions
+  # typeof-issetopt - check if a command's option is set.
+  #
+  # Option value is stored in parameter '<Command name>_<Option name>'.
+  # If the value is "1",  return 0 (true: option is set).
+  # Otherwise,            return 1 (false: option is not set).
+  function typeof-issetopt() {
+    # Name of command
+    if [[ ! -v CMD_NAME ]]; then
+      CMD_NAME="${0%%-*}"
+    fi
+    # Command option name, identifier, and value
+    OPT_NAME="$1"
+    OPT_ID="${CMD_NAME}_${OPT_NAME}"
+    OPT_VAL="${(P)OPT_ID}"
+    # Return true (0) if option value is 1.
+    # Else, return false (1).
+    return "(${OPT_VAL} == 1) ? 0 : 1"
+  }
+  
+  # typeof-print - format and print an object's type
+  function typeof-print() {(
+    # If verbose is set, print object's name
+    if typeof-issetopt 'verbose'; then
+      printf '%s: ' "${1:=$name}"
+    fi
+    # Print object's type
+    printf '%s\n' "${2:=$typename}"
+    return 0
+  )}
+  
+  # typeof-not-found - display typename as 'not found'
+  function typeof-not-found() {(
+    typeof-print "$name" 'not found'
+    return $?
+  )}
+  
+  # typeof-commands - display typename of a command
+  function typeof-commands() {(
+    typeset typename="${$(type -w -- $name)#*: }"
+    if [[ "$typename" == 'none' ]]; then
+      return 1
+    fi
+    typeof-print "$name" "$typename"
+    return $?
+  )}
+  
+  # typeof-parameters - display typename of a parameter
+  function typeof-parameters() {(
+    typeset typename="${parameters[$name]}"
+    if [[ -z "$typename" ]]; then
+      return 1
+    fi
+    typeof-print "$name" "$typename"
+    return $?
+  )}
+  
+  
+  
+  
+  #MARK: - Options
+  # Verbose output option is set for stdout
+  typeset -i ${0}_verbose=0
+  if [[ -t 1 ]]; then
+    let ${0}_verbose=1
+  fi
+  
+  
+  # Parse user's option values
+  while [[ $1 =~ ^[-+] ]]; do
+    case $1 in
+      # {-v,--verbose}: enable verbosity
+      (-v|--verbose)
+        let ${0}_verbose=1
+      ;;
+      # {+v,--no-verbose}: disable verbosity
+      (+v|--no-verbose)
+        let ${0}_verbose=0
+      ;;
+      
+      # Skip '--'
+      (--)
+        shift
+        break
+      ;;
+      # Bad options
+      (*)
+        (name="$1" \
+          error -1 +R -- 'invalid option ${name} was ignored.')
+      ;;
+    esac
+    shift
+  done
+  
+  
+  
+  
+  #MARK: - Arguments
+  # If names are not given, return code 1
+  if [[ $# -eq 0 ]]; then
+    return 1
+  fi
+  
+  # Find the command or parameter to which the
+  # name refers to, and print its type
+  typeset name
+  for name; do
+    # If name is a command or parameter,
+    # set 'found' to 1
+    local -i found=0
+    typeof-commands "$name" && let found=1
+    typeof-parameters "$name" && let found=1
+    
+    # If name is not found, print
+    # 'not found' message instead
+    if [[ $found -eq 0 ]]; then
+      typeof-not-found "$name"
+      continue
+    fi
+  done
+  
+  return 0
+)}

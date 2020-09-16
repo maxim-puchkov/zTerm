@@ -1,0 +1,74 @@
+#!/bin/zsh
+
+#  inout
+#  Z-Function (59)
+#
+#  Created by Maxim Puchkov on 2020-06-08.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Display standard input, output, and error.
+function inout() {
+    exec 3<&0;
+    # Print function
+    function print-inout() {
+        while [[ -n $1 ]]; do
+            print -P -x2 -- "\t$1"
+            shift
+        done
+    }
+    
+    # Devices
+    typeset -a std{in,out,err}
+    
+    # Determine input source
+    typeset input_source
+    if [[ -p /dev/stdin ]];             then input_source='pipe';       fi
+    if [[ -t 0 ]];                      then input_source='terminal';   fi
+    if [[ ! -t 0 && ! -p /dev/stdin ]]; then input_source='redirected'; fi
+    
+    # Read /dev/stdin
+    local arg
+    while read -t -u0 arg; do stdin+=($arg); done
+    # Read fd3
+    while read -t -u3 arg; do S $arg; done
+    
+    # Add positional arguments to input
+    stdin+=($argv)
+    set -- $stdin
+    
+    # Output header
+    typeset header
+    # Standard input, output, and error
+    typeset IN OUT ERR
+    IN="%F{2}Standard input%f (source: %F{4}${input_source}%f) [${#stdin}] = {${(j:, :)stdin}}"
+    OUT="%F{3}Standard output%f [${#stdout}] = {${(j:, :)stdout}}"
+    ERR="%F{1}Standard error%f  [${#stderr}] = {${(j:, :)stderr}}"
+    # File descriptors and named pipes
+    typeset FDS
+    FDS="$(fds {0..10})"
+    
+    
+    
+    header='%BInput/Output%b:'
+    print-inout $header $IN $OUT $ERR
+    
+    header="%BFile Descriptors%b:"
+    print-inout $header "$FDS"
+    
+    
+    # Process input and output
+#    print -P -- "\t"
+#    print -P -- "\t"
+#    print -P -- "\t"
+#    print -P -- "\t" >/dev/stderr
+    
+    # File descriptors
+#    print -P -- "\t%BFile Descriptors%b:"
+#    print -P -- "$(fds)"
+    
+    echo;echo;
+    
+    unfunction print-inout
+    return 0
+}

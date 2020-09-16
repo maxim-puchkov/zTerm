@@ -1,0 +1,65 @@
+# User-specific zsh script loader.
+
+
+source "$ZEXPORT"
+
+
+# Python path
+export PYTHONSTARTUP="$ZTERM/Python/.pyenv"
+typeset -aTx PYTHONPATH pythonpath
+pythonpath=(
+  "$HOME/Library/Application Support/iTerm2/Scripts"
+  "$HOME/Library/Application Support/iTerm2/iterm2env/"**"/python3.7/site-packages"
+  $ZTERM/Python
+  /usr/local/lib/python3.7/site-packages/Cryptodome
+)
+
+# Command path
+path=(
+  /usr/local/sbin
+  /usr/local/opt/python@3/bin
+  /usr/local/opt/llvm/bin
+  /usr/local/opt/openssl@1.1/bin
+  $path
+  $DEV/bin
+  $PROJ/Terminal/.config/bin
+  $pythonpath
+)
+
+# Function path
+fpath=(
+  /usr/local/share/zsh-completions
+  $ZDOTDIR/functions
+  $ZDOTDIR/completions
+  $ZDOTDIR/custom
+  $fpath
+)
+
+
+
+
+# Load functions
+autoload fload
+fload
+
+# Source files
+source "$ZIO"
+source "$ZALIAS"
+source "$ZUTIL"
+source "$ZNET"
+source "$ZMISC"
+source "$ZCOMP"
+source "$ZTEST"
+
+source '/usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh'
+source '/usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh'
+typeset -H _ZSH_AUTOSUGGEST_BIND_COUNTS
+typeset -H ZSH_HIGHLIGHT_STYLES
+typeset -H ZSH_AUTOSUGGEST_ACCEPT_WIDGETS
+typeset -H ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS
+typeset -H ZSH_AUTOSUGGEST_IGNORE_WIDGETS
+typeset -H ZSH_HIGHLIGHT_REVISION
+typeset -H ZSH_AUTOSUGGEST_CLEAR_WIDGETS
+
+unalias run-help
+autoload run-help

@@ -1,0 +1,29 @@
+#!/bin/zsh
+
+#  report
+#  Z-Function (96)
+#
+#  Created by Maxim Puchkov on 2020-07-11.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function report() {
+  typeset output_dir=${${1:=.}:a}
+  if [[ ! -d $output_dir ]]; then
+    error -1 'Directory ${output_dir} does not exist.'
+  fi
+  
+  builtin print -v report_dir -P -- "${output_dir}/Report-%D_%T"
+  mkdir -p -- $report_dir
+  
+  for p in $ZSH_STATE; do
+    () {
+      print-h "$p"
+      builtin print -- "${(Pkv)p}\n\n\n"
+    } > "$report_dir/$p"
+  done
+  
+  print -P -- "Report saved to %F{4}${report_dir}%f"
+  return 0
+}

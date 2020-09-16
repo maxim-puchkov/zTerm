@@ -1,0 +1,51 @@
+#!/bin/zsh
+
+#  colored
+#  Z-Function (14)
+#
+#  Created by Maxim Puchkov on 2020-05-01.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# LESS color
+function colored() {
+    # Options
+    typeset -A optlist
+    get_options optlist 't:T' "$@" 2>/dev/null
+    shift $optlist[length]
+    # Color Theme
+    local default_theme='dark'
+    local color_theme=${optlist[t]:-$default_theme}
+    case $color_theme in
+        # Display on dark background.
+        dark)
+            command env \
+                LESS_TERMCAP_mb=$(printf "\e[1;36m") \
+                LESS_TERMCAP_md=$(printf "\e[1;36m") \
+                LESS_TERMCAP_me=$(printf "\e[0m")    \
+                LESS_TERMCAP_se=$(printf "\e[0m")    \
+                LESS_TERMCAP_so=$(printf "\e[1;7m")  \
+                LESS_TERMCAP_ue=$(printf "\e[0m")    \
+                LESS_TERMCAP_us=$(printf "\e[4;32m") \
+                PAGER="${commands[less]:-$PAGER}"    \
+                _NROFF_U=1 \
+                    "$@"
+            ;;
+        
+        # Dispay on light background.
+        light)
+            command env \
+                LESS_TERMCAP_mb=$(printf "\e[1;35m") \
+                LESS_TERMCAP_md=$(printf "\e[1;35m") \
+                LESS_TERMCAP_me=$(printf "\e[0m")    \
+                LESS_TERMCAP_se=$(printf "\e[0m")    \
+                LESS_TERMCAP_so=$(printf "\e[1;7m")  \
+                LESS_TERMCAP_ue=$(printf "\e[0m")    \
+                LESS_TERMCAP_us=$(printf "\e[4;94m") \
+                PAGER="${commands[less]:-$PAGER}"    \
+                _NROFF_U=1 \
+                    "$@"
+            ;;
+    esac
+    return $?
+}

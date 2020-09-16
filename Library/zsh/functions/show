@@ -1,0 +1,78 @@
+#!/bin/zsh
+
+#  show
+#  Z-Function (77)
+#
+#  Created by Maxim Puchkov on 2020-06-30.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# show - describe a shell command or parameter
+#
+# Examples:
+#   1. `show pax'   -->  "command /bin/pax"
+#   2. `show HOME'  -->  "scalar-export-special HOME = '/Users/admin'"
+
+#MARK: - show (version 2)
+export -a ZSH_PARAMETER=(${(@f)"$(<~zterm/etc/zsh/parameter.module)"})
+#function show() {(
+#  setopt extendedglob
+#
+#  for name; do
+#    for group in $ZSH_PARAMETER; do
+#  #    red "$group"
+#      typename="${group%%e#s}"
+#      value="${${(P)group}[$name]}"
+#      print -P -- "$(esc0 3,5 -t $typename) ${value}"
+##      print -P -- "%F{3}${typename}%f ${value}"
+#    done
+#  done
+#
+#)}
+
+#for arg; so
+#  if [[ ${+aliases[$arg]}) -eq 1 ]]; then fi ; done
+
+
+
+
+#MARK: - show (version 1)
+if [[ $# -eq 0 ]]; then
+  return 1
+fi
+
+# For each argument, show description
+local arg desc
+for arg; do
+  builtin print -Pr -- "%B%F{10}>%f ${arg}%b"
+  desc=''
+
+  case 1 in
+    ${+aliases[$arg]})
+      desc+="alias for $(esc0 4,34 -t "${aliases[$arg]}")"$'\n'
+    ;|
+    ${+commands[$arg]})
+      desc+="command $(esc0 4,36 -t "${commands[$arg]}")"$'\n'
+    ;|
+    ${+functions[$arg]})
+      autoload +X $arg
+      desc+="$(esc0 1,35 -t 'function') $(functions $arg | highlight)"$'\n'
+    ;|
+    ${+nameddirs[$arg]})
+      desc+="directory $(esc0 4,33 -t "${nameddirs[$arg]}")"$'\n'
+    ;|
+    ${+builtins[$arg]})
+      desc+="builtin $(esc 4,32 -t "${arg}")"$'\n'
+    ;|
+    ${+parameters[$arg]})
+      local -a arr
+      set -A arr \'$'\e[92m'${(Pkv)^arg}$'\e[0m'\'
+      desc+="${parameters[$arg]} $(esc0 1,4,32 -t "${arg}") = ${(kvj:, :)arr}"$'\n'
+    ;|
+  esac
+  
+  not_found=$(esc0 1,91 -t "${arg}" 22,31 -t 'not found')
+  builtin print -nr -- ${(%)desc:=%B$arg%b' %F{1}not found%f'$'\n'}
+done
+
+return 0

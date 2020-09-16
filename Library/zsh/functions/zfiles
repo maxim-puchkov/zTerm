@@ -1,0 +1,60 @@
+#!/bin/zsh
+
+#  zfiles
+#  Z-Function
+#
+#  Created by Maxim Puchkov on 2020-04-06.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Display z-shell environment files.
+function zfiles() {
+    # Styles.
+    function H1() {
+        echo "$(b_green "$(underline "$1")")"
+    }
+    function H2() {
+        echo "$(b_bmagenta $1)"
+    }
+    function H3() {
+        echo "$(b_blue $1)"
+    }
+    
+    # Table of primary sourced files.
+cat <<-EOF
+   $(H1 "***")        $(H1 "ZSHENV: Z-SHELL FILES IN ORDER OF LOADING")        $(H1 "***")
+
+  ╭ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ╮
+  |  $(H2 '#N')  |   $(H2 'ZTERM')   |          $(H2 'SCRIPT PATH')          |   $(H2 'LOADER')   |
+  | ---- | --------- | ----------------------------- | ---------- |
+  |      |           |                               |            |
+  |   1  |  $(H3 'zenv')     |   ~/.zshenv                   | zsh        |
+  |   2  | · · · · · |   /etc/zprofile               | zsh        |
+  |   3  |  $(H3 'zprofile') |   \$zdot/.zprofile             | zsh        |
+  |   4  | · · · · · |   /etc/zshrc                  | zsh        |
+  |   5  | · · · · · |   /etc/zshrc_Apple_Terminal   | zsh        |
+  |   6  |  $(H3 'zrc')      |   \$zdot/.zshrc                | zsh        |
+  |   7  |  $(H3 'myzsh')    |   oh-my-zsh/.oh-my-zsh.sh     | zshrc      |
+  |      |           |                               |            |
+  | ---- | --------- | ------ <   Plugins   > ------ | oh-my-zsh  |
+  |      |           |                               |            |
+  |   8  | · · · · · |   \$zdot/.zload                | zshrc      |
+  |   9  |  $(H3 'zio')      |   \$zdot/.zio                  | zload      |
+  |  10  |  $(H3 'zalias')   |   \$zdot/.zalias               | zload      |
+  |  11  |  $(H3 'zexport')  |   \$zdot/.zexport              | zload      |
+  |  12  |  $(H3 'zutil')    |   \$zdot/.zutil                | zload      |
+  |  13  |  $(H3 'znet')     |   \$zdot/.znetwork             | zload      |
+  |  14  |  $(H3 'zmisc')    |   \$zdot/.zmisc                | zload      |
+  |  15  | · · · · · |   \$zfunc/finclude             | zload      |
+  |  16  | · · · · · |   \$zfunc/fload                | finclude   |
+  |      |           |                               |            |
+  | ---- | --------- | ------ < Z-Functions > ------ | fload      |
+  |      |           |                               |            |
+  |  17  |  $(H3 'zcomp')    |   \$zdot/.zcomp                | zload      |
+  |      |           |                               |            |
+  | ---- | --------- | ------ < Completions > ------ | zcomp      |
+  |      |           |                               |            |
+  ╰ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ╯
+EOF
+
+}

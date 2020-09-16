@@ -1,0 +1,58 @@
+#!/bin/zsh
+
+
+typeset -a ls_format
+ls_format=($( echo $LSCOLORS | grep -o -e '..' ))
+
+
+typeset -i bold fg_color bg_color
+for format in $ls_format; do
+  let bold=0 fg_color=0 bg_color=0
+  hex=$(python3 -c 'print(bytes.hex(str("'${format}'").encode("ascii")))')
+  # Foreground
+  if [[ ${format[1]} == ${format[1]:u} ]]; then
+    let bold=1
+  fi
+  let fg_color=29+${hex[2]}
+  # Background
+  if [[ ! ${format[2]} =~ '[Xx]' ]]; then
+    let bg_color=39+${hex[4]}
+  fi
+  
+  print "> format=$format, hex=$hex, bold=$bold (${format[1]} == ${format[1]:u}), fg_color=$fg_color (29 + ${hex[2]}), bg_color=$bg_color (39+${hex[4]})"
+done
+
+
+return 0
+
+
+#function find() {
+typeset -a reply
+reply=$(/usr/bin/find $argv)
+
+local file
+for file in $reply; do
+  if [[ -L $file ]]; then
+    print
+  fi
+  print File is $file
+done
+
+
+
+
+
+
+
+#}
+#
+#(
+#  while [[ -n $1 ]] && [[ ! $1 =~ '^[-]' ]]; do
+#  if [[ -L $1 ]]; then
+#    echo "Directory $1 is a symlink"
+#  fi
+#  shift
+#  done
+#)
+#
+#find $@

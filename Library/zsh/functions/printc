@@ -1,0 +1,42 @@
+#!/bin/zsh
+
+#  printc
+#
+#
+#  Created by admin on 2020-08-05.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Print with color
+function printc() {(
+  print-input $@
+  typeset -a arr
+  arr=()
+#  zparseopts -D -E -a arr - e+:
+  () (
+    typeset -i i=1;
+    while [[ $# -ne 0 ]]; do
+      redbg $#: $@
+      set -- ${@[(r)-e,#]}
+      greenbg $#: $@
+      [[ $# -eq 0 ]] && break
+      value=${2:=0}
+      argv[2]=("escape sequence $value")
+      shift 1
+    done
+  ) $argv
+  
+
+  builtin print $argv
+  return 0
+
+
+
+  autoload -Uz get
+  local name='e'
+  get -L 1 -n $name -- $argv
+  
+  local -a list=( '-'$name $option_e )
+  set -- ${argv:|list}
+  builtin print $argv
+)}

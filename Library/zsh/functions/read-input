@@ -1,0 +1,50 @@
+#!/bin/zsh
+
+#  read-input
+#  Z-Function (98)
+#
+#  Created by Maxim Puchkov on 2020-07-12.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# read-input
+#
+# Read every line of input from /dev/stdin into an array
+
+# Options
+typeset reply_id='input'
+typeset -i verbose echo_output
+while [[ $1 =~ '^[-]' ]]; do
+  case $1 in
+    (-v|--verbose) let verbose=1 ;;
+    (-e|--echo) let echo_output=1 ;;
+    (-a) reply_id=$2; shift ;;
+    (--) shift; break ;;
+  esac
+  shift
+done
+
+# Output array
+unset $reply_id
+typeset -ag $reply_id
+
+# Read from fd0
+zmodload zsh/zselect
+if zselect -t 10 -r 0; then
+  set -A $reply_id ${(@f)"$(<&0)"}
+  # Echo output (-e)
+  if [[ $echo_output -eq 1 ]]; then
+    builtin print -- ${(P)reply_id}
+  fi
+  # Print number of lines read (-v)
+  if [[ $verbose -eq 1 ]]; then
+    builtin print -P -- "%F{2}${(P)#reply_id}%f lines read from"\
+      "%F{2}/dev/stdin%f into %F{2}${reply_id}%f."
+  fi
+  return 0
+else
+  if [[ $verbose -eq 1 ]]; then
+    error -1 'Input is not available.'
+  fi
+  return 1
+fi

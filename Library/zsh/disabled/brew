@@ -1,0 +1,25 @@
+#!/bin/zsh
+
+#  brew
+#  Z-Function (65)
+#
+#  Created by Maxim Puchkov on 2020-06-11.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Homebrew wrapper
+function brew() {(
+    local brew_command=$1
+    case $brew_command in
+        'install')
+            local log=$ZTERM/var/log/Homebrew/install.log
+            for formula in ${argv:2}; do
+                echo $formula >> $log
+            done
+        ;;
+    esac
+    command brew ${=argv}
+    if [[ -t 1 ]]; then
+        logf $argv
+    fi
+)}

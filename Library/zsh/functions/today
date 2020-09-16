@@ -1,0 +1,13 @@
+#!/bin/zsh
+
+#  today
+#  zfc+ (99)
+#
+#  Created by Maxim Puchkov on 2020-07-13.
+#  Copyright (c) 2020 Maxim Puchkov. All rights reserved.
+
+
+# today - print today's date 
+today () {
+  builtin print -P -x2 -- $'>\tToday  is  %F{6}%U%D{%F}%u%f  (%D{%A, %B %d})'
+}

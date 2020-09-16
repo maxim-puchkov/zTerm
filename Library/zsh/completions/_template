@@ -1,0 +1,42 @@
+#compdef template
+
+# _template
+# ~/Developer/Projects/Terminal/zsh/functions/template
+#
+# zsh function completion
+# Updated on 2020-06-22 at 10:45 pm
+
+
+_arguments -C \
+  -d"[output directory]" \
+  -t"[test run (do not create files)]" \
+  ":command:->command" \
+  "*::arg:->arg"
+
+case $state in
+  (command)
+    typeset -a commands
+    commands=(
+      launchd:"launchd agent property list and zsh script"
+      null:"do nothing"
+      plugin:"oh-my-zsh plugin"
+      pygment:"pygments style"
+      python:"python3 script"
+      zcompletion:"zsh function completion"
+      zfunction:"zsh autoload function"
+      zsh:"zsh script"
+      ztest:"zsh test script"
+      ztool:"standalone zsh script"
+    )
+    _describe -t commands command commands
+  ;;
+  (arg)
+    typeset -a args
+    args=(
+      # Completion for commands' arguments
+    )
+    _describe -t args arg args
+  ;;
+esac
+
+return 0

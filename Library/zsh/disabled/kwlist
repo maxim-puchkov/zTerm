@@ -1,0 +1,22 @@
+#!/bin/zsh
+
+#  kwlist
+#  devx
+#
+#  Created by admin on 2020-03-02.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Print input arguments as a list of
+# enumerated keywords.
+function kwlist() {
+    if [[ $# -eq 0 ]]; then
+        red "No keywords"
+        return 1
+    fi
+    
+    for i in {1..$#}; do
+        echo "$i. ${@[$i]}"
+    done
+    return 0
+}

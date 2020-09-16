@@ -1,0 +1,75 @@
+#!/bin/zsh
+
+#  to-bin
+#  Z-Function (69)
+#
+#  Created by Maxim Puchkov on 2020-06-21.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function to-bin() {
+    function print-error() {
+        error --title "$0"
+    }
+    if [[ $# -eq 0 ]]; then
+        typeset -a args
+        typeset arg
+        while read arg; do
+            args+=($arg)
+        done <&0
+        set -- $args
+    fi
+    
+    typeset -l digit
+    
+#    while [[ -n $1 ]]; do
+    for digit in $argv; do
+        if [[ ! $digit =~ '^[0-9a-f]+$' ]]; then
+            print -P -- "Invalid hex digit: %F{1}${digit}%f."
+            continue
+        fi
+    done
+    
+    
+    redbg 'ret 2'
+    return 2
+
+
+
+
+
+
+    typeset -l digit
+    case $# in
+        0) digit=$argv ;;
+        *) read -t digit <&0 ;;
+    esac
+    blue $digit
+    redbg $argv
+    
+    if [[ ! $digit =~ '^[0-9a-z]+' ]]; then
+        error -1 'Bad digit...'
+    fi
+    
+    return 22
+    
+    
+    digit=$argv
+    if [[ $# -eq 0 ]]; then
+        read -t digit <&0
+    fi
+    
+    digit=$(sed -E -e 's/[^0-9a-f]//g' <<< ${(L)digit})
+#    () {
+#        num=$(sed -E -e 's/[^0-9a-f]//g' <$1)
+#    } <(print $argv)
+    if [[ -z $digit ]]; then
+        error -1 'Bad input.'
+    fi
+    
+#    typeset -i num
+#    read num <&0
+    echo $digit
+    
+}

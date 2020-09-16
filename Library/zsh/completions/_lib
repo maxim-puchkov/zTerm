@@ -1,0 +1,4 @@
+#compdef lib
+
+
+_files -/ -W $HOME/Library

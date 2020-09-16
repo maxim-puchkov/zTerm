@@ -1,0 +1,67 @@
+#compdef it2api
+
+#  _it2api
+#  Z shell completion
+#
+#  Generated on 2020-07-16.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+function _it2api_commands() {
+  typeset -a it2api_commands
+  it2api_commands=(
+    list-sessions:"List sessions"
+    show-hierarchy:"Show all windows, tabs, and sessions"
+    send-text:"Send text as though the user had typed it"
+    create-tab:"Create a new tab or window"
+    split-pane:"Split a pane into two"
+    get-buffer:"Get screen contents"
+    get-prompt:"Gives either the current prompt or the last prompt if a command is being run"
+    get-profile-property:"Get a session's profile settings"
+    set-profile-property:"Set a session's profile setting"
+    read:"Wait for a input"
+    get-window-property:"Get a property of a window"
+    set-window-property:"Set a property of a window"
+    inject:"Inject a string as though it were program output"
+    activate:"Activate a session, tab, or window"
+    activate-app:"Activate the app"
+    set-variable:"Set a user-defined variable in a session"
+    get-variable:"Get a variable in a session"
+    list-variables:"Lists variable names available in a session"
+    saved-arrangement:"Saves and restores window arrangements"
+    show-focus:"Show active windows, tabs, and panes"
+    list-profiles:"List profiles"
+    set-grid-size:"Set size of session"
+    list-tmux-connections:"List tmux integration connections"
+    send-tmux-command:"Send a tmux command to a tmux integration connection"
+    set-tmux-window-visible:"Show or hide a tmux integration window (represented as a tab in iTerm2)"
+    sort-tabs:"Sort tabs alphabetically by name"
+    list-color-presets:"Lists names of color presets"
+    set-color-preset:"Set a color preset"
+    monitor-variable:"Monitor changes to a variable"
+    monitor-focus:"Monitor changes to focus"
+    set-cursor-color:"Set cursor color"
+    monitor-screen:"Monitor screen contents"
+    show-selection:"Shows the selected text in a session"
+  )
+  _describe command it2api_commands
+  return 0
+}
+
+function _it2api_sessions() {
+  typeset -a it2api_sessions
+  it2api_sessions=(${(@f)"$(/usr/local/Terminal/zsh/.iterm2/it2api list-sessions |
+      grep -e 'id=' |
+      perl -pe 's/Session \"(.+)\" id=(.+?) (.*)$/\2:\1,\ \3/g')"}
+  )
+  _describe session it2api_sessions
+}
+
+function _it2api() {
+  _arguments \
+    '(-h --help)'{-h,--help}'[show help and exit]' \
+    '1: :_it2api_commands' \
+    '2: :_it2api_sessions'
+}
+
+_it2api "$@"

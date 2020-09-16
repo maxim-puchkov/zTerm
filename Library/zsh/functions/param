@@ -1,0 +1,41 @@
+#!/bin/zsh
+
+#  param
+#  Z-Function (87)
+#
+#  Created by Maxim Puchkov on 2020-07-05.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# param - print parameters names whose name matches input argument; if
+#         $1 is '=' (equals sign), then print names of parameters with
+#         value matching input argument.
+#
+# Examples:
+# param '*status'  -  status, pipestatus, ...
+# param = '/bin'   -  PATH, path, SHELL, ...
+function param() {
+  setopt extendedglob
+  if [[ $# -eq 0 ]]; then
+      return 1
+  fi
+  
+  set -- ${(u)argv}
+  while [[ -n $1 ]]; do
+    case $1 in
+      # Search for matching value
+      ('=')
+        typeset -m '*' |
+          grep -E '^([[:alnum:]]+)=.*'${2}'.*$' |
+          cut -d '=' -f1
+        shift
+      ;;
+      # Search for matching name
+      (*)
+        typeset +m "$1*"
+      ;;
+    esac
+    shift
+  done
+  return 0
+}

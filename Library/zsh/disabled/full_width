@@ -1,0 +1,36 @@
+#!/bin/zsh
+
+#  full_width
+#  devx
+#
+#  Created by mpuchkov on 2020-02-14.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Set width of text be the same as width of line.
+# If text line is shorter than Terminal window line,
+#   pad the text with spaces.
+function full_width() {
+    # Input text to print.
+    local text="$@"
+    local text_length=${#text}
+    
+    # Number of characters that can fit on a line.
+    local line_length=$( tput cols )
+    
+    # Padding added to last line of the text.
+    local padding_length=$(( line_length - (text_length % line_length) ))
+    local padding_char=' '
+    local padding="$( charlines $padding_char $padding_length )"
+    
+    # Final text length and number of lines.
+    local total_length=$(( $text_length + $padding_length ))
+    local lines=$(( $total_length / $line_length ))
+    text="${text}${padding}"
+    
+    # Print text line by line.
+    for i in {1..$lines}; do
+        local line_start=$(( ($i - 1) * $line_length ))
+        echo "${text:$line_start:$line_length}"
+    done
+}

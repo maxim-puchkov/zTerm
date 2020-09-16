@@ -1,0 +1,33 @@
+#!/bin/zsh
+
+#  findt
+#  Z-Function (121)
+#
+#  Created by Maxim Puchkov on 2020-09-14.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# findt
+function findt() {
+  if [[ $# -lt 2 ]]; then
+    usage 'Specify allowed file types and directory path.' \
+        + 'findt [bcdflps] /dir/path' \
+        - 'Find named pipe and socket files in /dev:' \
+        + 'findt ps /dev'
+    return 1
+  fi
+  
+  typeset -a specs types
+  set -A specs  "${(s::)1}"
+  set -A allowed_types  '-type '${^specs}
+  shift
+  
+  typeset type_options
+  type_options="( ${(j: -or :)allowed_types} )"
+  
+  /usr/bin/find -- \
+    ${argv:1} \
+    ${=type_options} \
+    -mindepth 1 \
+    -maxdepth 1
+}

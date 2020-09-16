@@ -1,0 +1,4 @@
+#compdef sfu
+
+
+_files -/ -W "$HOME/Library/Mobile Documents/com~apple~CloudDocs/SFU"

@@ -1,0 +1,27 @@
+#!/bin/zsh
+
+#  zcomp
+#  zcfg
+#
+#  Created by admin on 2020-02-22.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Directories
+compdef _cd         cdp
+
+# Homebrew
+compdef _brew       brew_quick_search
+compdef _brew       brew_quick_list
+compdef _brew       brew_quick_relink
+
+# OpenSSL
+compdef _openssl    openssl
+
+# Variables
+compdef _vared      vdebug
+
+
+compdef _command    which_which
+compdef _command    syntax
+compdef _command    brief

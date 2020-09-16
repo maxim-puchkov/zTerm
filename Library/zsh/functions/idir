@@ -1,0 +1,85 @@
+#!/bin/zsh
+
+#  idir
+#  Z-Function
+#
+#  Created by mpuchkov on 2020-04-07.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+#
+function idir() {
+    # Test if directory is empty.
+    function idir_isempty() {
+        local n_files=$( files count "$dirpath" )
+        if [[ $n_files -gt 0 ]]; then
+            printf 'Directory %s is not empty.\n' "'$dirpath'" >&2
+            return 1
+        fi
+        return 0
+    }
+    
+    # Display file access permissions for every
+    #   file in the directory.
+    # Alias: 'dm'.
+    function idir_mod() {
+        # Header-1 style.
+        function H1() {
+            printf '%s' $(bold $(underline $1))
+        }
+        local files=($( command ls $flags "$dirpath" ))
+        local file_permissions=( $(H1 'File') $(H1 'Permissions')  $(H1 'Type') )
+        for f in $files; do
+            local filepath="$dirpath/${(q)f}"
+            local t=$( file -b "${(q)filepath}" )
+            local p=$( whichmod "${(q)filepath}" )
+            file_permissions+=( $f $p $t )
+        done
+        print -aC 3 $file_permissions
+    }
+    
+    function idir_new() {
+        
+    }
+    
+    local src
+    typeset -A opts
+    local cmd
+    local exitcode=0
+    
+    src=$( basename $0 )
+    get_options opts "$@"
+    shift $opts[shift_distance]
+    if [[ $# -gt 0 ]]; then
+        cmd=$1
+        shift
+    fi
+    
+    
+    # Directory path
+    local dirpath="${(q)2:-.}"
+    if [[ ! -d $dirpath ]]; then
+        printf 'Not a directory %s.\n' "$(Bad $dirpath)" >&2
+        return 1
+    fi
+    
+    local flags=''
+    if [[ $opts[A] ]]; then
+        flags='-A'
+    fi
+
+    case $cmd in
+        '')
+            pwd -P
+            ;;
+        *)
+            ${src}_${cmd} "$@"
+            exitcode=$?
+            if [[ $exitcode = 127 ]]; then
+                printf 'Unknown command: %s (Exit code: %u).\n' "$(Bad $cmd)" "$exitcode" >&2
+            fi
+            ;;
+    esac
+    
+    return $exitcode
+}

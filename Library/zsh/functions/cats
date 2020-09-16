@@ -1,0 +1,60 @@
+#!/bin/zsh
+
+#  cats
+#  Z-Function (90)
+#
+#  Created by Maxim Puchkov on 2020-07-08.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# cats - `cat' files one by one
+function cats() {
+  #MARK: - Options
+  typeset -a cat_options=()
+  # Parse additional `cat' options
+  while [[ "$1" =~ ^[-] ]]; do
+    case "$1" in
+      # Stop at '--'
+      ('--') shift && break ;;
+      
+      # Add `cat' option to list
+      (*) cat_options+=("$1") ;;
+    esac
+    shift
+  done
+  
+  #
+  if [[ $# -eq 0 ]]; then
+    if autoload -Uz usage; then
+      usage 'Print files one by one' \
+          - 'cats [file...]'
+    fi
+  fi
+  
+  
+  #MARK: -
+  typeset file size descs
+  typeset -i  i=1 exit_code=0
+  for file; do
+    ## Current/Total file number
+    printf '%b[%i]%b  ' '\e[1;30;103m' $i '\e[0m'
+    let i="$i + 1"
+    
+    ## File header
+    size="$(simplify-size $(stat -f '%z' -- $file))"  # ="$(sizeof $file)" too long
+    desc="$(file -Ib -- $file)"
+    printf '%b%s%b (%s; %s)\n' \
+      '\e[1;4m' "$file" '\e[0m' \
+      "$size" "$desc"
+    
+    ## Contents of file
+    /bin/cat -n $cat_options -- "$file"
+    let exit_code="$exit_code+$status"
+    
+    ## File footer
+    printf '%b[EOF] %s%b\n\n\n\n' \
+      '\e[2m' "$file" '\e[0m'
+  done
+  
+  return $exit_code
+}

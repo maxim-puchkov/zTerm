@@ -1,0 +1,47 @@
+___SHEBANG___
+
+#  ___FILENAME___
+#  ___PACKAGE_NAME___
+#
+#  Created by ___USERNAME___ on ___DATE_FULL___.
+#  Copyright © ___DATE_YEAR___ ___OWNER___. All rights reserved.
+
+
+# <#Brief description...#>
+function ___FILENAME___() {
+    ## help: print command help ##
+    function ___FILENAME___-help() {
+        print -- "$0"
+        return 0 
+    }
+    
+    
+    
+    
+    # Command
+    typeset cmd=$1
+    shift 
+    if ! (whence ${0}-${cmd}); then
+        error -127 "Invalid command: %F{1}$cmd%f."
+    fi
+    
+    ${0}_${cmd} "$@"
+    return $?
+    
+    
+    case $cmd in
+        '')
+            ___FILENAME____help
+        ;;
+        *)
+            shift
+            ${src}_${cmd} "$@"
+            ecode=$?
+            if [[ $ecode = 127 ]]; then
+                printf 'Unknown command: %s (Exit code: %u).\n' "$(Bad $cmd)" "$ecode" >&2
+            fi
+        ;;
+    esac
+    
+    return $ecode
+}

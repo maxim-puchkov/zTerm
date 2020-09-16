@@ -1,0 +1,25 @@
+#!/bin/zsh
+
+#  brackets
+#  Z-Function (82)
+#
+#  Created by Maxim Puchkov on 2020-07-03.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# brackets - highlight brackets, braces, and parentheses
+function brackets() {(
+    function g() {
+        GREP_COLOR="$1" egrep --color=always -E "($2|\$)" <$3
+    }
+    # In order, highlight [], (), and {}
+    g '91' '[\{\}]' <(
+        g '1;33' '[\(\)]' <(
+        g '96' '(\[|\])' \
+        <(if [[ $# -gt 0 ]]; then
+            print -- $argv
+        else
+            cat <&0
+        fi)
+    ))
+)}

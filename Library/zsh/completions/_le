@@ -1,0 +1,21 @@
+#compdef le
+
+# _le
+#
+#
+# zsh function completion
+#
+
+typeset -a args=()
+
+args=(
+    "-n[create an empty filename (the disk blocks aren't allocated until data is written to them)]"
+    "-v[report the names and sizes of created files]"
+    ''
+)
+
+#_arguments -s -S $args
+_arguments -s $args     '-E[specify EOF marker]:end-of-file marker'     '(-x -i)-I[specify replacement string for command line]:replacement string'     '(-n -l)-L[call program for every number of lines]:number of input lines'     '(-)1: :(b k m g)'     '*::args: _normal'
+
+
+return 0

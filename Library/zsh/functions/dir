@@ -1,0 +1,30 @@
+#!/bin/zsh
+
+#  dir
+#  Z-Function (120)
+#
+#  Created by Maxim Puchkov on 2020-09-14.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+#MARK: - dir (version 2)
+# dir - describe directory
+#typeset dir_path
+
+
+
+
+#MARK: - dir (version 1)
+
+function dir() {
+    typeset dirpath='.'
+    if [[ -d $1 ]]; then
+        dirpath=${1%/}
+        shift
+    fi
+    typeset -a flags
+    flags=(-mindepth 1 -maxdepth 1 $argv)
+    find -L $dirpath $flags 2>/dev/null
+    return $?
+}
+#compdef _find dir

@@ -1,0 +1,22 @@
+#!/bin/zsh
+
+#  ztrace
+#  Z-Function
+#
+#  Created by Maxim Puchkov on 2020-04-17.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Trace command execution
+function x() {
+  local xc=$1
+  local -a xcargs=(${argv:2})
+  printf '%s:\tTracing %s (argc: %d, argv: {%s}).\n' "$0" "$xc" $#xcargs "$xcargs"
+  () (
+    setopt xtrace verbose sourcetrace
+    $argv
+  ) $xc $xcargs
+  local -i xstatus=$?
+  printf '%s:\tReturn code: %d\n' "$0" $xstatus
+  return $xstatus
+}

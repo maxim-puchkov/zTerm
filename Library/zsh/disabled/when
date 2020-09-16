@@ -1,0 +1,59 @@
+#!/bin/zsh
+
+#  whichz
+#  devx
+#
+#  Created by admin on 2020-03-03.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+function when() {
+    setopt noerrreturn
+    
+    function when_access() {
+        local file=$1
+        if [[ ! -e $file ]]; then
+            return 1
+        fi
+        local access_time=$( stat -f '%a' $file )
+        local timestamp=$( date -r $access_time )
+        echo "$timestamp"
+        return 0
+    }
+    function when_mod() {
+        local file=$1
+        if [[ ! -e $file ]]; then
+            return 1
+        fi
+        local mod_time=$( stat -f '%a' $file )
+        local timestamp=$( date -r $mod_time )
+        echo "$timestamp"
+        return 0
+    }
+    
+    # Function options
+    typeset -A opts
+    set -A opts $( read_options "$@" )
+    shift $( options_shift_distance "$@" )
+    
+    src=$( basename $0 )
+    cmd=$1
+    
+    case $cmd in
+        "")
+            print "Usage:"
+            print -x2 "\t$(Bc $src) $(c 'access') $(Uc 'file') - last time the file was accessed."
+            print -x2 "\t$(Bc $src) $(c 'mod') $(Uc 'file') - last time the file was modified."
+            ;;
+        *)
+            ${src}_${cmd} > /dev/null 2>&1
+            local ecode=$?
+            if [ $ecode = 127 ]; then
+                echo "Unknown command: $(r $cmd) (Exit code $ecode)." >&2
+            else
+                shift
+                ${src}_${cmd} "$@"
+            fi
+            ;;
+    esac
+}

@@ -1,0 +1,4 @@
+#compdef devlib
+
+
+_files -/ -W $HOME/Developer/Library

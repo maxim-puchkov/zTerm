@@ -1,0 +1,75 @@
+#!/bin/zsh
+
+#  mod
+#  Z-Function (114)
+#
+#  Created by Maxim Puchkov on 2020-09-10.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function mod() {(
+  # Print access modes of a single file
+  function ${0}-show() {
+    /usr/bin/stat -f "${1}: %Mp%Lp" "${1}"
+    return 0
+  }
+  
+  
+  # Format field specifiers for 'stat' utility:
+  typeset -a mod_sub=('M' 'L')    # Sub field (optional)
+  typeset -a mod_fmt=('')         # Output format (optional)
+  typeset -a mod_datum=('p')      # Datum
+  
+  
+  # Parse options
+  while [[ $1 =~ ^[-] ]]; do
+    case $1 in
+      (-s|--symbolic)
+        mod_fmt=('S')
+        mod_sub=('H' 'M' 'L')
+      ;;
+      ((-a|--absolute) | (-o|--octal))
+        mod_fmt=('')
+        mod_sub=('M' 'L')
+      ;;
+      (--)
+        shift
+        break
+      ;;
+    esac
+    shift
+  done
+  
+  
+  
+  # Generate full format string
+  typeset format
+  format="%N: $(builtin print -Nr -- '%'${^mod_fmt}${^mod_sub}${^mod_datum})"
+#  echo "Format string = ${format}" >&2
+    
+  # Show file mode
+  typeset filepath
+  for filepath; do
+    stat -f "$format" -- "$filepath"
+#    echo "/usr/bin/stat -f \"$format\" -- \"$filepath\""
+  done
+  
+#  magentabg "$1 ::: $@ (${#})"
+#  red "Sub: $mod_sub"
+#  blue "Fmt: $mod_fmt"
+#  green "Datum: $mod_datum"
+  
+#  for file; do
+#    mod-show "$file"
+#  done
+  
+  
+  return 0
+)}
+
+
+#  red "Sub: $mod_sub"
+#  blue "Fmt: $mod_fmt"
+#  green "Datum: $mod_datum"
+#  yellowbg ' -- -- -- '

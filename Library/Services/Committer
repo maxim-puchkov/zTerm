@@ -1,0 +1,68 @@
+#!/bin/zsh
+
+#  Committer
+#  Terminal (33)
+#
+#  Created by Maxim Puchkov on 2020-05-09.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+log_prefix="$(date -j +'%b %d %T') $(hostname -s) ${0:t}[$$]:\t"
+echo "${log_prefix} Service started."
+
+# Options
+typeset -a opts
+opts=()
+if [[ $1 == '-d' ]]; then
+  echo "${log_prefix} Dry-run enabled"
+  opts+='--dry-run'
+  shift
+fi
+
+# Commit ID
+typeset id_file=etc/commit.id
+if [[ ! -r $id_file ]]; then
+  echo "${log_prefix} ID file missing ${id_file}." >&2
+  exit 1
+fi
+typeset -i -Z3 commit_id
+commit_id=$(( $(< $id_file) + 1 ))
+
+# Changes
+git add .
+typeset -a commit_diff
+commit_diff=($(git diff --shortstat --cached))
+if [[ -z $commit_diff ]]; then
+  echo "${log_prefix} Diff error." >&2
+  exit 1
+fi
+
+# MMDD date
+typeset commit_date
+commit_date=$(date -j +'%m%d')
+
+# Full commit message
+typeset commit_message
+commit_message="[CS${commit_id}-${commit_date}] ${commit_diff}."
+
+# Commit and push
+git commit --message="$commit_message" --signoff --no-gpg-sign $opts
+if [[ $? -ne 0 ]]; then
+    echo "${log_prefix} Failed to commit." >&2
+fi
+git push $opts
+
+
+# Save ID
+echo "$commit_id" > $id_file
+
+
+#echo $commit_message
+
+#
+
+#echo "${log_prefix} [0] OK."
+
+echo "${log_prefix} Service exited."
+echo
+exit 0

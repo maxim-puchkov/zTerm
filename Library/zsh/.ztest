@@ -1,0 +1,78 @@
+#!/bin/zsh
+
+# .ztest
+# Z-Shell Tests
+
+function testfunc() {
+    echo 'Print to standard output' >&1
+    echo 'Print to standard error' >&2
+    return 100
+}
+
+
+function ztest() {
+    if [[ $# -eq 0 ]]; then
+        error -1 'No input'
+    fi
+    
+    
+    
+}
+
+
+#    typeset suite="$1"
+#    typeset -i -Z3 return_code
+#    typeset -i pass
+#
+#    notify -- 'Test suite: $suite'
+#    for test_function in $(typeset +fm "$suite?*"); do
+#        printf "  ----  Test $(cyan '%s')\n" "${test_function#$suite}"
+#        $test_function
+#        let return_code=$?
+#        let pass=$return_code!=0
+#        printf "%s %s%d  pass or fail\n\n" '>' "E"
+#    done
+
+
+function retc-t() {(
+    function retc-t1() {
+        (true); retc
+    }
+    function retc-t2() {
+        (false); retc
+    }
+    function retc-t3() {
+        (true | false); retc
+    }
+    function retc-t4() {
+        (false | true); retc
+    }
+    ztest $0
+)}
+
+
+function print-var-t() {(
+    function print-var-t1() {
+        typeset str="Hello, World!"
+        typeset -i int=1234567890
+        typeset -a arr; arr=( 'a1' 'b2' 'c3' )
+        typeset -A Arr; Arr=( [x]=1 [y]=2 )
+        print-var str int arr Arr
+        return 0
+    }
+    function print-var-t2() {
+        typeset -a arr
+        arr=('element '{1..3})
+        print-var arr
+        print-var -1 arr
+        return 0
+    }
+    function print-var-t4() {
+        typeset -A Arr
+        Arr=([var_id]='Array' [empty]='' [test_number]=4 )
+        print-var Arr
+        print-var -1 Arr
+        return 0
+    }
+    ztest $0
+)}

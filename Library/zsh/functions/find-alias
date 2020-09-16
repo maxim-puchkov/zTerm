@@ -1,0 +1,34 @@
+#!/bin/zsh
+
+#  find-alias
+#  Z-Function
+#
+#  Created by Maxim Puchkov on 2020-04-18.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function find-alias() {
+    local alias_id="$1"
+    local alias_val=$( alias_value $alias_id )
+    if [[ -z "$alias_id" ]]; then
+        return 2
+    fi
+    
+    if [[ -z "$alias_val" ]]; then
+        error "'$(Bad $alias_id)' is not an alias."
+        return 1
+    fi
+    
+    typeset -a result
+    for fsrc in $functions_source; do
+        if ( fgrep "alias $alias_id" -- "$fsrc" ); then
+            result+=( "$alias_id" "$(blue $fsrc)" )
+            break
+        fi
+    done
+    
+    print $result | column -t 
+    
+    return 0
+}

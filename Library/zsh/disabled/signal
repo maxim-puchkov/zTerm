@@ -1,0 +1,46 @@
+#!/bin/zsh
+
+#  Config
+#  
+#
+#  Created by mpuchkov on 2020-01-28.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+typeset -AHx signal_numbers
+for i in {1..${#signals}}; do
+    name=$signals[$i]
+    signal_numbers[$name]="$i"
+done
+
+function signal() {
+
+    SRC=$(basename $0)
+    subcommand=$1
+    subcommand_alias=${subcommand:0:3}
+    
+    function signal_exit() {
+        grey 'WIP: sig_exit'
+    }
+    
+    function signal_interrupt() {
+        local pid=${1:-$$}
+        print "$(red '130'): command interrupted."
+        kill -s INT $pid
+        return 130
+    }
+    
+    
+    case $subcommand in
+        "")
+            print "$(yellow Signal): no instruction."
+            ;;
+        *)
+            shift
+            ${SRC}_${subcommand} $@
+            if [ $? = 127 ]; then
+                echo "Unknown command: $subcommand" >&2
+            fi
+            ;;
+    esac
+}

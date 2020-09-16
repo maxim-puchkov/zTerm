@@ -1,0 +1,89 @@
+#!/bin/zsh
+
+#  SLN
+#  Z-Function
+#
+#  Created by admin on 2020-02-21.
+#  Copyright © 2020 Maxim Punderlinehkov. All rights reserved.
+
+
+
+function sln() {
+    
+    #
+    function make_symbolic_link() (
+        local link_source="${1:A}"
+        local link_name="${optlist[n]:-${link_source:t}}"
+        
+        local link_target_dir="${2:A}"
+        local link_target="$link_target_dir/$link_name"
+        
+        
+        if [[ -z $link_source ]] || [[ -z $link_target_dir ]]; then
+            error "Link source and target directory are required."
+            return 2
+        fi
+        if [[ ! -e $link_source ]]; then
+            error "Link source file not found: '$(red $link_source)'."
+            return 1
+        fi
+        if [[ -e $link_target ]]; then
+            error "Link target '$(red $link_target)' already exists."
+            return 1
+        fi
+        
+        ln -s ${link_source} $link_target
+        echo "Created symbolic link '$(green $link_name)' in '$(green $link_target_dir)'."
+    )
+    
+    
+    #MARK: - Commands
+    ## desk: create a symbolic link on desktop ##
+    function sln_desk() {
+        local src=$1
+        local dir="$HOME/Desktop"
+        make_symbolic_link "$src" "$dir"
+    }
+    
+    ## .: create a symbolic link in the current directory ##
+    function sln_.() {
+        local src=$1
+        local dir=$( pwd -P )
+        make_symbolic_link "$src" "$dir"
+    }
+    
+    ## bin: create a symbolic link in /usr/local/bin ##
+    function sln_bin() {
+        local src=$1
+        local dir='/usr/local/bin'
+        make_symbolic_link "$src" "$dir"
+    }
+    
+    # Function options
+    typeset -A optlist
+    get_options optlist 'n:N' "$@"
+    shift $optlist[length]
+    
+    if [[ $# -eq 0 ]]; then
+        fn print-commands 'sln'
+        return 2
+    fi
+    
+    cmd=$1
+    shift
+    
+    if ( ! fn isdef ${0}_${cmd} ); then
+        error 2
+        return 2
+    fi
+    
+    ${0}_${cmd} "$@"
+    local code=$?
+    if [[ $? = 127 ]]; then
+        error "Unknown command: '$(Bad $cmd)'."
+        return 127
+    fi
+    
+    
+    return $code
+}

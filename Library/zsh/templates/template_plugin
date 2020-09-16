@@ -1,0 +1,15 @@
+___SHEBANG___
+
+#  ___FILENAME___
+#  ___PACKAGE_NAME___ (___TEMPLATE_ID___)
+#
+#  Created by ___USERNAME___ on ___DATE_FULL___.
+#  Copyright © ___DATE_YEAR___ ___OWNER___. All rights reserved.
+
+
+# ___FILENAME___
+## -h,--help: display help ##
+function ___FILENAME___() {
+    print-var @
+    return 0
+}

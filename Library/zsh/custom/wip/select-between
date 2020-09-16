@@ -1,0 +1,33 @@
+#!/bin/zsh
+
+#  select-between
+#  zsh functions
+#
+#  Created by Maxim Puchkov on 2020-07-13.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+(
+  if [[ $# -lt 1 ]]
+  then
+    error -2 'Input file not specified'
+  fi
+  typeset file=$1 
+  if [[ ! -f $file ]] || [[ ! -r $file ]]
+  then
+    error -1 'Cannot read input file: ${file}'
+  fi
+  typeset -a lines
+  lines=(${(@f)"$(<$file)"}) 
+  print -P -- "Select lines of file %F{2}${file:t}%f"
+  print -Pn -- "%Ufrom%u: "
+  read -r l1
+  print -Pn -- "%Uto%u:    "
+  read -r l2
+  () {
+    (
+      set -s -- $@
+      echo "Selected lines $1 to $2"
+    )
+  } $l1 $l2
+)

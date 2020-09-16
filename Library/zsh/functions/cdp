@@ -1,0 +1,104 @@
+#!/bin/zsh
+
+#  cdp
+#
+#
+#  Created by mpuchkov on 2020-01-30.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Change directory and print its path.
+function cdp() {
+  #MARK: - Options
+  zmodload zsh/zutil
+  typeset -A optlist
+  zparseopts -D -E -A optlist - q s L P
+  
+  
+  
+  
+  #MARK: - Arguments
+  typeset dir
+  case $# in
+      # No arguments (`cd')
+      0)  dir=$HOME
+      ;;
+      # One argument (`cd DIR')
+      1)  typeset arg=$1
+          if [[ $arg == '-' ]]; then
+            arg='-1'
+          fi
+          if [[ $arg =~ '^[-+][0-9]+' ]]; then
+            typeset stack_index
+            case ${arg[1]} in
+              -) stack_index=${arg:1}  ;;
+              +) stack_index=$(( ${#dirstack} - ${arg:1} ))  ;;
+            esac
+            dir=${dirstack[$stack_index]}
+            if [[ -z $dir ]]; then
+              error -1 'entry ${stack_index} is not in dir stack.'
+              return 1
+            fi
+          else
+            dir="${arg}"
+          fi
+      ;;
+      # Two arguments (`cd OLD NEW')
+      2)  typeset old new
+          old=$1
+          new=$2
+          if [[ ! $PWD =~ $old ]]; then
+            error -1 'string ${old} in not in ${PWD}.'
+            return 1
+          fi
+          dir="${PWD//$old/$new}"
+      ;;
+      # More than two arguments
+      *)  error -2 'too many arguments.'
+          return 2
+      ;;
+  esac
+  
+  
+  
+  
+  #MARK: - Test Errors
+  # Already in the directory
+  if [[ $dir == $PWD ]]; then
+    return 0
+  fi
+  # Directory does not exist
+  if [[ ! -e $dir ]]; then
+    error -1 'no such file or directory: ${dir}.'
+    return 1
+  fi
+  # File exists but is not a directory
+  if [[ ! -d $dir ]]; then
+    error -1 '${dir} is not a directory.'
+    return 1
+  fi
+  # Directory is not readable
+  if [[ ! -r $dir ]]; then
+    error -1 'access denied: ${dir}.'
+    return 1
+  fi
+  
+  
+  
+  
+  #MARK: - Change Directory
+  builtin cd ${(k)=optlist} $dir &>/dev/null
+  
+  if [[ $? -ne 0 ]]; then
+    error -1 'cannot change directory to ${dir}.'
+    return 1
+  fi
+  
+  if [[ -t 1 ]] && [[ ${+optlist[-q]} -ne 1 ]]; then
+    builtin print -P -- "Directory changed to %F{2}${PWD}%f."
+    echo
+    /bin/ls -lBFGHhk
+  fi
+  
+  return 0
+}

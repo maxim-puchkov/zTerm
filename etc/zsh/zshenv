@@ -1,29 +1,28 @@
-# User-specific zsh environment for interactive
-# and non-interactive shells.
+#!/bin/zsh
+
+#  zshenv
+#  User-specific environment for zsh(1) shells.
 #
-# Created on March 29, 2020.
+#
+#  Created on March 29, 2020.
 
 
-#MARK: - Z-Shell
-# Shell environment
+#MARK: - Z shell
+# zsh shell environment
 export ZSHENV="$HOME/.zshenv"
 
-# Directories of scripts & functions
+# Terminal scripts & functions
 export ZTERM='/usr/local/Terminal'
 export ZDOTDIR="$ZTERM/Library/zsh"
- 
-# Shell startup files
-export ZPROFILE="$ZDOTDIR/.zprofile"
-export ZSHRC="$ZDOTDIR/.zshrc"
-export ZIO="$ZDOTDIR/.zio"
-export ZALIAS="$ZDOTDIR/.zalias"
-export ZEXPORT="$ZDOTDIR/.zexport"
-export ZUTIL="$ZDOTDIR/.zutil"
-export ZNET="$ZDOTDIR/.znetwork"
-export ZMISC="$ZDOTDIR/.zmisc"
-export ZCOMP="$ZDOTDIR/.zcomp"
-export ZTEST="$ZDOTDIR/.ztest"
 
+
+# history
+if [[ -d $zterm/var/log ]]; then
+  HISTFILE=$zterm/var/log/$USER.zsh_history
+else
+  HISTFILE=$HOME/.zsh_history
+fi
+export HISTFILE
 
 
 
@@ -31,35 +30,3 @@ export ZTEST="$ZDOTDIR/.ztest"
 #MARK: - Python
 # Python environment
 export PYTHONENV="$HOME/.pythonenv"
-
-
-
-
-
-#MARK: - Hashed Directories
-# zsh
-hash -d zterm="$ZTERM"
-hash -d zdot="$ZDOTDIR"
-hash -d zsh="$ZDOTDIR"
-# zdot subdirectories
-hash -d zs=~zdot/'site-functions'
-hash -d zf=~zdot/'functions'
-hash -d zc=~zdot/'completions'
-
-# Documents
-hash -d dev=~/'Developer'
-hash -d test=~/'Developer/Test'
-hash -d docs=~/'Documents'
-hash -d saved=~/'Documents/Saved Files'
-
-# Library
-hash -d scripts=~/'Library/Scripts'
-# iCloud
-hash -d iCloud=~/'Library/Mobile Documents/com~apple~CloudDocs'
-hash -d Access=~iCloud/'Access'
-
-# SFU
-hash -d sfu=~iCloud/'SFU'
-
-hash -d lb='/usr/local/bin'
-hash -d t='/usr/local/Terminal'

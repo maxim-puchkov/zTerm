@@ -1,0 +1,26 @@
+#!/bin/zsh
+
+#  aliases
+#  Z-Function (22)
+#
+#  Created by Maxim Puchkov on 2020-05-05.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function aliases() {
+    function aliases_source() {
+        fgrep -R "alias $id='$value'" -- $fpath
+    }
+    
+    
+    local id=$1
+    local value=$aliases[$id]
+   
+    if [[ -z $value ]]; then
+        error "$id is not an alias."
+        return 1
+    fi
+    ${0}_source $id
+    return $?
+}

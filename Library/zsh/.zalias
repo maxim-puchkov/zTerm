@@ -1,0 +1,286 @@
+#!/bin/zsh
+
+# User-specific profile for interactive zsh(1) shells
+
+alias nano='nano --mouse'
+
+alias diff='diff -y'
+alias zt='open -a Xcode-beta /usr/local/Terminal/Library/Xcode/CommandLine.xcworkspace'
+
+
+#MARK: - Global Aliases
+# Redirect shell output
+alias -g noerr='2>/dev/null'  # redirect stderr
+alias -g 2NIL='2>/dev/null'
+alias -g quiet='&>/dev/null'  # redirect stdout and stderr
+alias -g NIL='&>/dev/null'
+
+# Conditional:  'if [[ ... ]] _T'
+alias -g _T='; then print -P -- TRUE; else print -P -- FALSE; fi;'
+# Loops:  'for ... _F' or 'while ... _F'
+alias -g _F='; do print-var x; done;'
+
+alias tl='tldrs'
+
+
+
+#MARK: - Regular Aliases
+# Builtin 'autoload'
+alias al='builtin autoload -Uz'
+alias al-='builtin autoload'
+
+# Command 'tar'
+alias arc='/usr/bin/tar zcvf'
+
+# Builtin
+alias bltn='builtin builtin'
+
+
+# Command 'ls'
+alias ls='/bin/ls -BFGHhk'
+alias lsa='ls -a' \
+      la='ls -la'
+alias l='ls -l' \
+      ll='ls -lA' \
+      lll='ls -lAO' \
+      llll='ls -lAOR'
+# Function 'list'
+alias ltc='list tc' \
+      ltca='list tc -a'
+alias lta='list ta' \
+      ltaa='list ta -a'
+alias ltch='list tch'
+alias ltm='list tm'
+alias lS='list S' \
+      lSa='list S -a'
+alias lf='list f'
+# iTerm2 script
+alias lsimg='imgls'
+
+
+# Command 'chflags'
+alias hide='chflags hidden' \
+      unhide='chflags nohidden'
+alias lock='chflags uchg' \
+      unlock='chflags nouchg'
+
+
+# Command 'cp'
+alias cp='/bin/cp -i'
+
+# Builtin 'echo'
+alias e='builtin echo -'
+alias E='esc 1 38 45 -r 0 -t'
+
+# Command 'find'
+alias findl='/usr/bin/find -L'
+
+# Builtin 'functions'
+alias fns='functions'
+
+# Command 'hexdump'
+alias hd='hexdump'
+
+# Command 'ln'
+alias lns='ln -s' \
+      sln='ln -s'
+# Unlink
+alias unl='unlink' \
+      uln='unlink'
+
+# Command 'mv'
+alias mv='/bin/mv -i'
+
+
+# Builtin 'print'
+alias printp='builtin print -P' \
+      pp='printp' \
+      p='printp'
+#
+alias printl='builtin print -l' \
+      pl='printl'
+#
+alias printn='builtin print -n' \
+      pn='printn'
+#
+alias printd='builtin print -P -D'
+#
+alias print-='builtin print -P --' \
+      p-='print-'
+
+
+# Shell constructs
+alias print-parsed='print -P -- "%_"'
+alias print-parsed-rev='print -P -- "%^"'
+
+# Pygments
+alias pyg='/usr/local/bin/pygmentize'
+
+# Command 'git'
+alias gcm='git commit -m'
+alias grs='git restore --staged'
+alias gs='git status'
+#alias gt='() { cd "$zterm" && git status; };'
+
+# Command 'google'
+alias ggl='/usr/local/bin/google'
+
+# Command 'grep'
+alias gr='grep'
+alias grepa='egrep --color=always --text --regexp ".*"'
+alias mang='grepman'
+
+# Help
+alias help='run-help'
+
+# Command 'launchctl'
+alias lctl='command launchctl'
+
+# Completion definition
+alias cdef='compdef'
+
+
+# Command 'open'
+alias o='open "$PWD"'
+
+alias xopen='open -a Xcode'
+alias xbopen='open -a Xcode-beta' \
+      xb='open -a Xcode-beta'
+
+alias textopen='open -a TextEdit'
+alias webopen='open -a Safari'
+alias scriptopen='open -a "Script Editor"'
+alias vb='open -a VirtualBox'
+alias music='open -a Music'
+
+
+# Python
+alias python='command python3'
+alias python3.7='/usr/local/opt/python@3.7/bin/python3.7'
+alias python3.8='/usr/local/opt/python@3.8/bin/python3.8'
+
+alias pip='command pip3'
+alias idle='command idle3'
+
+alias p2='python2'
+alias p3='python3'
+
+
+# Command 'rm'
+alias rm='/bin/rm -i'
+
+# Builtin 'exit'
+alias q='builtin exit 0;'
+
+
+# Builtin 'set'
+alias setx='set -o extendedglob'
+alias set1='set -x; set +x -- -x -y oy -z oz1 oz2 -- -r REST' \
+      set2='set -- -a -b -c -d D -e E -f F' \
+      set3='set -- -a -b -c -d D -e E -f F --long LONG args "hello world"'
+
+# 'unset'
+alias uns='unset'
+alias unf='unfunction'
+
+
+# Command 'openssl'
+alias sha256='openssl sha256'
+
+# Command 'sqlite3'
+alias s3='/usr/bin/sqlite3'
+
+# Command 'strings'
+alias str='/usr/bin/strings'
+
+
+# Builtin 'typeset'
+alias ts='typeset' \
+      tsp='typeset -p' \
+      Float='typeset -F' \
+      int='typeset -i'
+
+
+# Builtin 'whence'
+alias wh='builtin whence -av'
+
+
+
+
+
+#MARK: - Extended Commands
+alias cd='cdp'
+
+
+
+
+
+#MARK: - Custom Commands
+# Highlight brackets
+#alias brk='brackets'
+
+# Brew
+#alias bb='brew_browse'
+#alias bi='brew info'
+
+# Print last return code
+#alias C='retc'
+
+# Change to current Finder directory
+#alias cfd='cd -- "$(pfd)"'
+
+# Set system appearance
+alias darks='set-system-appearance dark'
+alias lights='set-system-appearance light'
+
+# Set iTerm profile
+alias it2s='it2 switch-profile' \
+      it2l='it2 set-profile Light' \
+      it2d='it2 set-profile Dark' \
+      2s='it2s'
+
+
+# Print
+alias pv='print-var'
+alias pv@='print-var @'
+alias pvo='print-var @ optlist'
+alias pvt='print-var -t'
+
+alias pfs='print-fstack'
+alias pdb='print-debug'
+
+alias print-input='builtin print -P -- "$0: ${(j:, :)@}"'
+alias pi='print-input'
+
+# Print file name and line number
+alias pm='print-mark'
+
+
+# Show an object
+alias s='show'
+alias i='show'
+
+# Show command source code
+alias ss='showsrc'
+
+# Print type of arguments
+alias tf='typeof +v'
+
+
+
+
+
+#MARK: - Miscellaneous
+alias rre='open -a Xcode "$DEV/bin/run.sh"'
+alias rr='zsh "$DEV/bin/run.sh"'
+alias rte='open -a Xcode $DEV/bin/run-tests.zsh'
+alias rt='zsh "$DEV/bin/run-tests.zsh"'
+
+
+alias my-phone='print -P "%F{14}+1 %B(778) 512-7614‬%b%f"'
+alias my-postal='print -P "%F{14}V3T 2S5%f"'
+
+
+
+alias c='/bin/cat'
+alias n='/usr/bin/nano'

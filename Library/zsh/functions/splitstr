@@ -1,0 +1,19 @@
+#!/bin/zsh
+
+#  splitstr
+#  Z-Function (79)
+#
+#  Created by Maxim Puchkov on 2020-06-30.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function splitstr() {(
+    typeset -i length=${1:-1}
+    shift
+    typeset str="$argv"
+    printf '%s\n' "$str" | /usr/bin/grep \
+        --only-matching \
+        -e "${(pl:$length::.:)}"
+    return $?
+)}

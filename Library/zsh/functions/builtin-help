@@ -1,0 +1,26 @@
+#!/bin/zsh
+
+#  builtin-help
+#  Dev X
+#
+#  Created by admin on 2020-03-12.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+function builtin-help() {
+    local querry=$1
+    local help_command="help $1"
+    { printf '%s' "$help_command" |
+        sh } &> /dev/null
+    local exitcode=$?
+    
+    if [[ $exitcode -ne 0 ]]; then
+        printf 'Help not found: %s.\n' "'$(Bad $help_command)'" >&2
+        return $exitcode
+    fi
+    
+    local ret=$( printf '%s\n' "$help_command" | sh )
+    local highlight_querry=$( b_magenta "$querry" )
+    printf '%s\n' "${ret//$querry/$highlight_querry}"
+    return 0
+}

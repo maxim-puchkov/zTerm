@@ -1,0 +1,77 @@
+#!/bin/zsh
+
+#  corrupt
+#  Z-Function (108)
+#
+#  Created by Maxim Puchkov on 2020-07-28.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# corrupt - corrupt a single bit in a file
+function corrupt() {
+  # Require path to input file
+  if [[ $# -lt 1 ]]; then
+    usage 'Input file is not specified.' - \
+          'corrupt input_file [output_file]'
+    return 1
+  fi
+  
+  # Options
+  typeset -i corrupt_bit_n=0
+  while [[ $1 =~ ^[-] ]]; do
+    case $1 in
+      (-n)
+        let corrupt_bit_n=$2
+        shift
+      ;;
+      (--) shift; break ;;
+    esac
+    shift
+  done
+  
+  # Input file path
+  typeset input_file=$1
+  if [[ ! -e $input_file ]]; then
+    error -1 'Input file does not exist: ${input_file}.'
+    return 1
+  fi
+  
+  # Output file path
+  typeset output_file=$2
+  if [[ -z $output_file ]]; then
+    output_file="${input_file:r}~corrupt.${input_file:e}"
+  fi
+  if [[ -e $output_file ]]; then
+    error -1 'Output file already exists: ${output_file}.'
+    return 1
+  fi
+  
+  
+  # Convert input file to binary representation
+  typeset binary
+  binary=$(0b <$input_file)
+  
+  # Set position of the corrupted bit
+  if [[ $corrupt_bit_n -eq 0 ]]; then
+    let corrupt_bit_n="$RANDOM % ${#binary}"
+  fi
+  # Error
+  if [[ $corrupt_bit_n -le 0 ]] ||
+     [[ $corrupt_bit_n -gt ${#binary} ]]; then
+    return 1
+  fi
+  
+  # Binary representation with a corrupted (flipped) bit
+  typeset corrupt_binary=$binary
+  typeset -i corrupt_bit
+  let corrupt_bit="(${binary[$corrupt_bit_n]} + 1) % 2"
+  typeset corrupt_binary[$corrupt_bit_n]=$corrupt_bit
+  
+  yellow "Position (N):  $corrupt_bit_n"
+  yellow "Bit (flipped): $corrupt_bit"
+#  printf '%s\n' "$binary" >&2
+  greenbg "$binary"
+  echo " -- -- -- "
+  redbg "$corrupt_binary"
+}
+

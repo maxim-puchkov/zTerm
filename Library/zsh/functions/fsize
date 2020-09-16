@@ -1,0 +1,79 @@
+#!/bin/zsh
+
+#  fsize
+#  Z-Function
+#
+#  Created by Maxim Puchkov on 2020-04-25.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Display sizes of files or directories.
+function fsize() {
+    trap "unfunction -m 'fsize-*'" EXIT
+    
+    # Reduce large KB sizes to MB or GB
+    function fsize-simplify-kb() {
+        local filesize=$1
+        local unit='KB'
+        if [[ $filesize -ge 1048576 ]]; then
+            convert --var filesize 'kilobyte' 'gigabyte'
+            unit='GB'
+        elif [[ $filesize -ge 1024 ]]; then
+            convert --var filesize 'kilobyte' 'megabyte'
+            unit='MB'
+        fi
+        printf '%.2f %s' $filesize "$unit"
+    }
+    
+    # Reduce large byte sizes to KB, MB, or GB
+    function fsize-simplify-b() {
+        typeset -F2 filesize=$1
+        typeset -L2 unit
+        typeset -i color
+        if [[ $filesize -ge 1073741824 ]]; then
+            convert --var filesize 'byte' 'gigabyte'
+            unit='GB'
+            color=94
+        elif [[ $filesize -ge 1048576 ]]; then
+            convert --var filesize 'byte' 'megabyte'
+            unit='MB'
+            color=34
+        elif [[ $filesize -ge 1024 ]]; then
+            convert --var filesize 'byte' 'kilobyte'
+            unit='KB'
+            color=96
+        else
+            unit='B'
+            color=36
+        fi
+        printf '\e[%dm%.2f %s\e[0m' $color $filesize "$unit"
+    }
+    
+    #
+    typeset name type
+    typeset -F2  total_size size
+    total_size=0.00
+    for file in ${${@:-*}:a}; do
+        size=0.00
+        type=$(stat -f '%HT' $file)
+        printf '%s: ' "$file"
+        case $type in
+            'Directory')
+                du -k -d0 $file 2>/dev/null |
+                read -r {size,name}
+                convert --var size 'kilobyte' 'byte'
+            ;;
+            *)  stat -f '%z %N' $file |
+                read -r {size,name}
+            ;;
+        esac
+        total_size=$(( $total_size + $size ))
+        print -P "%F{4}$(fsize-simplify-b $size)%f"
+    done
+    
+    # Print total size when given more than one argument
+    if [[ $# -ne 1 ]]; then
+        print -P "\n%BTotal size: %F{12}$(fsize-simplify-b $total_size)%f%b"
+    fi
+    return 0
+}

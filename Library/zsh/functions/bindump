@@ -1,0 +1,123 @@
+#!/bin/zsh
+
+#  bindump
+#  Z-Function
+#
+#  Created by Maxim Puchkov on 2020-04-22.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Display a file or standard input in binary format.
+# Options:
+#   c       - colorize output [default: not set]
+#   g N     - group every N hex digits (4 bits) [default: 2]
+#   r N     - display N hex digits per row [default: 16]
+function bindump() {
+    # Delete files on exit
+    function __cleanup() {
+        rm -f $1
+        return $?
+    }
+    
+    # Convert character in a group to binary.
+    # E.g., (arg1='F0', arg2=2) -> output=0000
+    function __tobin() {
+        local hexadecimal=${1[$2]}
+        local binary=${hexbin_map[$hexadecimal]}
+        if [[ $colored_output ]]; then
+            binary=$( sed -e "s/0/$(lgrey 0)/g" \
+                -e "s/1/$(bold 1)/g" \
+                <<< $binary )
+        fi
+        printf '%s' $binary
+    }
+    
+    
+    
+    
+    # Get bindump options
+    typeset -A optlist
+    get_options optlist 'pcg:Gr:R' "$@"
+    shift $optlist[length]
+    
+    local plaintext_output=$optlist[p]
+    local colored_output=$optlist[c]
+    local hex_per_group=${optlist[g]:-2}
+    local hex_per_row=${optlist[r]:-16}
+    
+    
+    # If file is not provided, read input until Ctrl+D and write it
+    # to a temporary file
+    local filepath="$1"
+    printf "%s\n" "${filepath:-'Standard Input (press Ctrl+D to end)'}"
+    if [[ -z $filepath ]]; then
+        read -d $'\x04' input
+        filepath=$( tempfile )
+        printf '%s' $input >> $filepath
+        trap "__cleanup $filepath" EXIT
+        echo
+    fi
+    echo
+    
+    if [[ ! -f $filepath ]]; then
+        error "The file: '$(Bad $filepath)' does not exist."
+        return 2
+    fi
+    
+    
+    
+    
+    # Map single blank space and hexadecimal 0-F digits to
+    # 4 blank spaces and binary 0000-1111
+    typeset -A hexbin_map
+    local hex_digits=( ' '    {0..9} {'A'..'F'} )
+    local bin_digits=( '    ' {0,1}{0,1}{0,1}{0,1} )
+    hexbin_map=( ${hex_digits:^bin_digits} )
+    
+    
+    # Hexdump of the file
+    local hexdump=${(U)$( printf '%s' $(xxd -p "$filepath") )}
+    local half_width=$(( $hex_per_row / $hex_per_group ))
+    
+    # Make hexdump length a multiple of hex_per_row
+    if [[ plaintext_output != 'true' ]]
+    local blank_space_size=$(( 2 * ($hex_per_row - (${#hexdump} % $hex_per_row) / $hex_per_group) ))
+    local blank_space=$( printf '%*s' $blank_space_size '' )
+    hexdump="${hexdump}${blank_space}"
+    
+    
+    function format_output() {
+        if [[ $plaintext_output ]]; then
+            return 0
+        fi
+        case $(( $pos % $hex_per_row )) in
+            0)  local end=$pos
+                local start=$(( $pos - $hex_per_row ))
+                local hex_row=$( printf "%s" ${hexdump:$start:$hex_per_row} |
+                                 sed "s/.\{$hex_per_group\}/& /g" )
+                printf "\t\t$(yellow %s)\n" $hex_row
+            ;;
+            $half_width)
+                printf '  '
+            ;;
+            *)  printf ' '
+            ;;
+        esac
+    }
+    
+    # Print each group of hexadecimal characters in binary
+    local output=/dev/stdout
+    local pos=0
+    while [[ $pos -lt ${#hexdump} ]]; do
+        local group=${hexdump:$pos:$hex_per_group}
+        for i in {1..${hex_per_group}}; do
+            local character=$i
+            local binary=$( __tobin $group $character )
+            printf '%s' $binary >> $output
+        done
+        pos=$(( $pos + $hex_per_group ))
+        format_output >> $output
+    done
+    
+    return 0
+}

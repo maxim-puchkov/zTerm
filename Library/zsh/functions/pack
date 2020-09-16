@@ -1,0 +1,69 @@
+#!/bin/zsh
+
+#  pack
+#  
+#
+#  Created by mpuchkov on 2020-03-04.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Create new empty subdirectory 'subdir'. Move all
+# files in the parent directory 'dir' to 'dir/subdir'.
+function pack() {
+    # Options
+    typeset -A optlist=()
+    get_options optlist 'e:Eo:Ot:Tn:N' "${(q)@}"
+    shift ${optlist[length]}
+    
+    
+    local dir="${1:-$PWD}"
+    # Name -n
+    local packname="$dir/${optlist[n]:-Pack-${#files}}"
+    if [[ -d "$packname" ]]; then
+        error "Pack already exists: '$(red "$packname")'."
+        return 1
+    fi
+    
+    
+    # Only -o
+    local only=''
+    if [[ -n ${optlist[o]} ]]; then
+        only=( '-and -name '${(z)^optlist[o]} )
+    fi
+    # Except -e
+    local except=''
+    if [[ -n ${optlist[e]} ]]; then
+        except=( '-and ! -name '${(z)^optlist[e]} )
+    fi
+    # Type -t
+    local type='-true'
+    if [[ -n ${optlist[t]} ]]; then
+        type=( '-type' ${(j: -or -type :)${(z)^optlist[t]}} )
+    fi
+    
+    
+    # Find files
+    typeset -a files
+    files=(${(@f)"$(
+        find $dir        \
+             ! -name '.*'     \
+             ! -flags hidden  \
+             -mindepth 1      \
+             -maxdepth 1      \
+             ${(z)only}       \
+             ${(z)except}   \
+             -and \( ${(z)type} \)
+        )"}) 2&>/dev/null
+    
+    if [[ ${#files} -eq 0 ]]; then
+        error 'No files.'
+        return 1
+    fi
+    
+    
+    # Move files to the subdirectory
+    mkdir -p "$packname"
+    mv "${(@f)files}" "$packname/"
+    printf "Packed $(green '%s') files: $(green '%s').\n" ${#files} $packname
+    return 0
+}

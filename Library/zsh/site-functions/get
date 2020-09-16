@@ -1,0 +1,200 @@
+#!/bin/zsh
+
+#  get
+#
+#
+#  Created by Maxim Puchkov on 2020-07-09.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Name:
+#   get
+#
+# Description:
+#   Parse names and values of options. Store arguments
+#   of each option in an array '<prefix><option_name>'.
+#   Duplicated options append to the existing array.
+emulate -L zsh
+set -o extendedglob
+
+
+
+
+#MARK: - Options
+typeset -i echo_options append_lists get_all_names
+while [[ $1 =~ '^[-]' ]]; do
+  case $1 in
+    # Show help message
+    (-h|--help)
+      usage 'set -- -X x1 x2 x3 -Y y1 y2 -- other args' \
+        - 'get -- \$argv' \
+        + 'echo \$option_list       '$(comment 'prints \"-X -Y\"') \
+        + 'echo \$option_arg_lists  '$(comment 'prints \"option_X option_Y\"') \
+        + 'echo \$option_Y[2]       '$(comment 'prints \"y2\"') \
+        - 'get --prefix o -n X -- \$argv' \
+        + 'echo \$oX[3]             '$(comment 'prints \"x3\"')
+      return 0
+    ;;
+    
+    # Echo recognized options
+    (-e|--echo)
+      echo_options=1
+      shift
+      print -P -- "%F{6}%u${0}%u%f: ${argv}" >&2
+    ;;
+    # Do not overwrite argument lists
+    (-a|--append)
+      append_lists=1
+      shift
+    ;;
+    
+    # Default value for options without arguments
+    (-d|--default)
+      GET_DEFAULT="$2"
+      shift 2
+    ;;
+    # Prefix for variables
+    (-p|--prefix)
+      GET_PREFIX="$2"
+      shift 2
+    ;;
+    
+    # List of specific names to get
+    (-n|--names)
+      typeset -a GET_NAMES=(${(s:,:)2})
+      shift 2
+    ;;
+    # Get all option names
+    (-A|--all)
+      get_all_names=1
+      shift
+    ;;
+    
+    (-1)
+      GET_LENGTH=1
+      shift
+    ;;
+    (-L|--length)
+      GET_LENGTH=$2
+      shift 2
+    ;;
+    
+    (--) shift; break ;;
+    (*)  break ;;
+  esac
+done
+
+
+
+
+#MARK: - Environmental variables
+# Variable prefix
+if [[ ! -v GET_PREFIX ]]; then
+  export GET_PREFIX='option_'
+fi
+# Default value
+if [[ ! -v GET_DEFAULT ]]; then
+  export GET_DEFAULT=''
+fi
+if [[ ! -v GET_NAMES ]]; then
+  let get_all_names=1
+fi
+
+
+
+# Store names in '*list' array
+local opt_names_id="${GET_PREFIX}list"
+# Store names of argument arrays in '*arg_lists'
+local opt_arg_lists_id="${GET_PREFIX}arg_lists"
+if [[ $append_lists -ne 1 ]]; then
+  unset $opt_names_id $opt_arg_lists_id
+fi
+
+typeset -ag $opt_names_id
+typeset -Ag $opt_arg_lists_id
+
+
+
+
+#MARK: - Loop
+local -i more_args=1
+local -i {,next_}opt_index
+local opt_name
+local -a opt_args
+# Select all arguments between current and next options:
+#   -opt [arg1 ... argN] -nextopt ...
+while [[ $more_args -eq 1 ]]; do
+  # If an option contains an equal sign, then
+  # split current argument on equal sign:
+  #   '-option=value'  ~>  '-option' 'value'
+  if [[ ${argv[$opt_index]} =~ '.=.' ]]; then
+    argv[$opt_index]=(
+      ${${argv[$opt_index]}%%=*}
+      ${${argv[$opt_index]}#*=}
+    )
+  fi
+  
+  
+  # Set option name
+  let opt_index=${argv[(in:1:)[-+]*]}
+  opt_name="${argv[$opt_index]}"
+  
+  
+  # If there is no next option or it is '--', then stop
+  if [[ $opt_index -gt ${#argv} ]] ||
+     [[ ${${(s::u)argv[$opt_index]}} == '-' ]]; then
+      let more_args=0
+  else
+    # Set option arguments array
+    local optargs_array_id="${GET_PREFIX}${opt_name##[-+]#}"
+    if [[ -v $optargs_array_id ]] &&
+       [[ $append_lists -ne 1 ]]; then
+      unset $optargs_array_id
+    fi
+    typeset -ag $optargs_array_id
+    
+    # Select all arguments until the next option in the array
+    if [[ -v GET_LENGTH ]]; then
+      let next_opt_index=$opt_index+$GET_LENGTH+1
+    else
+      let next_opt_index=${argv[(in:2:)[-+]*]}
+    fi
+    
+    opt_args=(${argv[$opt_index+1,$next_opt_index-1]})
+    if [[ ${GET_NAMES[(I)${opt_name##[-+]#}]} -ne 0 ]] ||
+       [[ $get_all_names -eq 1 ]]; then
+      # Store option Names in array '<prefix>list'
+      set -A $opt_names_id \
+        ${(P)opt_names_id} $opt_name
+      # Store option Arguments in array named '<prefix><option_name>'
+      set -A $optargs_array_id \
+        ${(P)optargs_array_id} ${opt_args:=$GET_DEFAULT}
+      # Store (option Name, option Argument List) pair in '<prefix>lists'
+      set -A $opt_arg_lists_id \
+        ${(Pkv)opt_arg_lists_id} "${opt_name}" "${optargs_array_id}"
+    fi
+    
+    local -i N
+    let N=$next_opt_index-$opt_index
+    if [[ $N -gt $# ]]; then
+      return 1
+    fi
+    shift $N
+  fi
+done
+
+
+
+
+# Print result (-e)
+if [[ $echo_options -eq 1 ]]; then
+    typeset -a arr
+    for parameter in $opt_names_id $opt_arg_lists_id ${(P)opt_arg_lists_id}; do
+      arr+=("%F{2}${parameter}%f" "${(Pj:, :)parameter}")
+    done
+    builtin print -aC2 -Pr -- $arr >&2
+  
+fi
+
+# Return 0 if any arguments were
+return ${(P)#opt_arg_lists_id}==0

@@ -1,0 +1,4 @@
+#compdef services
+
+
+_launch_agents

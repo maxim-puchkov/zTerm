@@ -1,0 +1,81 @@
+#compdef template
+
+
+_arguments -C \
+  '-d[specify output directory]:file:_files' \
+  '(-d):command:->command' && ret=0
+
+case $state in
+  (command)
+    declare -a commands
+    commands=(
+      zsh:'default zsh script template'
+      zfunction:'autoloadable zsh function template'
+      zcmdfunction:'autoloadable zsh command function template'
+    )
+    _describe -t commands command commands && ret=0
+  ;;
+esac
+
+
+
+
+function _zfc {
+  local -a line
+  function _commands {
+    local -a commands
+    commands=(
+      'dir:a command under subcommand'
+      'a:a'
+      'b:b'
+      'c:c3'
+    )
+    _describe 'command' commands
+  }
+  _arguments -C \
+    "1: :_commands" \
+    "*::arg:->args"
+  case ${line[1]} in
+    (dir)
+      _nothing
+    ;;
+    (c)
+      _zfc_complex_command
+    ;;
+    ([^\s]*)
+      _zfc_command
+    ;;
+  esac
+}
+
+function _zfc_command {
+  _arguments "1: :_zfunctions"
+}
+
+function _zfc_complex_command {
+  local -a line
+  function _commands {
+    local -a commands
+    commands=(
+      'null:no args'
+      'one:choose one directory in Documents'
+      'recur:call the caller'
+    )
+    _describe 'command' commands
+  }
+  _arguments -C "1: :_users" \
+    "2: :_mktemp" \
+    "3: :_shutdown" \
+    "4: :_commands" \
+    "5: :_commands" \
+    "*::arg->args"
+  case ${line[-1]} in
+    one)
+      _files -/ -W ~/Documents
+    ;;
+    *)
+    ;;
+  esac
+}
+
+_zfc

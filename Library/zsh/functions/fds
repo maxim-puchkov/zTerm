@@ -1,0 +1,70 @@
+#!/bin/zsh
+
+#  fds
+#  Z-Function (58)
+#
+#  Created by Maxim Puchkov on 2020-06-08.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Print terminal file descriptors
+function fds() {
+    # Print help
+    typeset program_name="%B%U${0}%u%b"
+    if [[ $1 == '-h' ]]; then
+        print -P -- "${program_name}: print file descriptors %F{2}attached%f or %F{1}not attached%f to a TTY or a pipe."
+        return 0
+    fi
+    
+    
+    #MARK: - Terminal file descriptors
+    typeset -a terminal_fds=()
+    # Set default list of file descriptor numbers
+    typeset -a fds=({0..20})
+    if [[ $# -ne 0 ]]; then
+        fds=($@)
+    fi
+    # Test if 'fd' is a terminal file descriptor
+    typeset -i fd
+    for fd in $fds; do
+        local name=''
+        case $fd in
+            0) name='stdin'  ;;
+            1) name='stdout' ;;
+            2) name='stderr' ;;
+            *) name="$fd"    ;;
+        esac
+        if [[ -t $fd ]]; then
+            terminal_fds+=("%F{2}${name}%f")
+        else
+            terminal_fds+=("%F{1}${name}%f")
+        fi
+    done
+    # FDs output label
+    typeset fds_label="Attached to ${${TTY:t}:-No TTY}:"
+    
+    
+    #MARK: - Named Pipes
+    typeset -a named_pipes=()
+    # Set default list of devices
+    typeset -a devices
+    devices=(/dev/std{in,out,err})
+    # Test if 'device' is a named pipe
+    typeset device
+    for device in $devices; do
+        if [[ -p $device ]]; then
+            named_pipes+=("%F{2}${device:t}%f")
+        else
+            named_pipes+=("%F{1}${device:t}%f")
+        fi
+    done
+    # Pipes output label
+    typeset -L $#fds_label pipes_label='FIFO named pipes:'
+    
+    
+    # Print results
+    print -P -- "\t${fds_label}  ${(j:, :)terminal_fds}"
+    print -P -- "\t${pipes_label}  ${(j:, :)named_pipes}"
+    
+    return 0
+}

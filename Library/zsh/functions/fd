@@ -1,0 +1,20 @@
+#!/bin/zsh
+
+#  fd
+#  Z-Function (64)
+#
+#  Created by Maxim Puchkov on 2020-06-09.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# fd - open and close file descriptors
+function fd() {
+    function fd-split() {
+        typeset -a string=($argv)
+        typeset arg_chars=(${argv})
+    }
+    case $1 in
+        'r'|'read')
+        ;;
+    esac
+}

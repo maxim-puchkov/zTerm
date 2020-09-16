@@ -1,0 +1,58 @@
+#!/bin/zsh
+
+#  zman
+#  Z-Function (47)
+#
+#  Created by Maxim Puchkov on 2020-06-01.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function zman() {
+    list=(
+        zsh zshroadmap zshmisc zshexpn zshparam
+        zshoptions zshbuiltins zshzle zshcompwid
+        zshcompsys zshcompctl zshmodules zshcalsys
+        zshtcpsys zshzftpsys zshcontrib zshall
+        zsh-lovers zshdb
+    )
+#    man_zsh=( ${(u)$(man -aw 'zsh*'):t:r} )
+#    print -l $man_zsh
+    
+    
+#    print-line
+#    print -l $list
+    
+    
+    if [[ $# -eq 0 ]]; then
+        local header='Z shell manual sections'
+        builtin print -Pl -x2 -- "%U%B${header}%b%u" '\t%F{4}'${^list}'%f'
+    fi
+    
+    () {
+        
+    }
+    
+    
+    () {
+        echo $?
+    } < <(/usr/bin/man ${=argv} 2>&1)
+    
+#    if ( >/dev/null); then
+        
+#    fi
+    
+#    if [[ ]]
+    
+#    man ${=argv}
+    
+    return 0
+}
+
+#
+#function zman() {
+#    if [[ $# -eq 0 ]]; then
+#
+#        return 0
+#    fi
+#}

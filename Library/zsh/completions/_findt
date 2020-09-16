@@ -1,0 +1,38 @@
+#compdef findt
+
+#  _findt
+#  zsh completion (122)
+#
+#  Created by Maxim Puchkov on 2020-09-14.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+
+
+
+_arguments -C \
+  ":type:->type" \
+  "*::arg:->arg"
+
+case $state in
+  type)
+    typeset -a types
+    types=(
+      b:"block special file"
+      c:"character special file"
+      d:"directory"
+      f:"normal file"
+      l:"symbolic link"
+      p:"named pipe"
+      s:"socket"
+    )
+    _describe -t types type types
+    return 0
+  ;;
+
+  arg)
+    _find
+  ;;
+esac
+
+return 0

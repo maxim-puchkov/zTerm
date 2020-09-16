@@ -1,0 +1,20 @@
+#!/bin/zsh
+
+#  latex
+#  Z-Function
+#
+#  Created by Maxim Puchkov on 2020-04-13.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Change directory and print its path.
+function latex() {
+    symbols=('alpha' 'beta' 'gamma' 'delta' 'epsilon'
+        'zeta' 'eta' 'theta' 'iota' 'kappa' 'lambda'
+        'mu' 'nu' 'xi' 'pi' 'rho' 'sigma' 'tau'
+        'upsilon' 'phi' 'chi' 'omaga')
+    for s in $symbols; do
+        printf '%s: %s\n' "$s" "\\$s"
+    done
+}
+

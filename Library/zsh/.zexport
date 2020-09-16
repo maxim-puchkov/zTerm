@@ -1,0 +1,52 @@
+#!/bin/zsh
+
+#  .zexport
+#  Exported zsh(1) parameters
+#
+#  
+#  User-specific profile for interactive zsh(1) shells
+
+
+#FIXME: Deprecated
+## zterm, zsh
+export zplug="$zdot/.oh-my-zsh/custom/plugins"
+export zetc="$zterm/etc"
+export zvar="$zterm/var"
+## Directories
+export desk="$HOME/Desktop"
+export testdir="$DEV/Test"
+export devlib="$DEV/Library"
+export tempdir="${TMPDIR}tempfiled"
+export ztermxcodeproj=~zterm/Terminal.xcodeproj
+export commandlinexcworkspace=~zterm/CommandLine.xcworkspace
+## Shell
+typeset -a ZSH_STATE=(
+  aliases          commands
+  dirstack         funcfiletrace
+  funcsourcetrace  funcstack
+  functions        functrace
+  galiases         history
+  historywords     jobdirs
+  jobstates        jobtexts
+  modules          nameddirs
+  options          parameters
+  patchars         reswords
+  saliases         userdirs
+  usergroups
+)
+
+#export -H TRUE=${(%):-'%F{2}True ✔︎%f'}
+#export -H FALSE=${(%):-'%F{1}False ✘%f'}
+#
+## Pass/Fail symbols.
+#function pass() {
+#    printf '%s\n' "$(b_green '✔︎')" && return 0
+#}
+#function fail() {
+#    printf '%s\n' "$(b_bred '✘')" && return 1
+#}
+#function T0() green "True ($?)"
+#function F1() red "False ($?)"
+
+#export LDFLAGS='-L/usr/local/opt/openssl@1.1/lib'
+#export CPPFLAGS='-I/usr/local/opt/openssl@1.1/include'

@@ -1,0 +1,39 @@
+#!/bin/zsh
+
+#  0b
+#  Z-Function (99)
+#
+#  Created by Maxim Puchkov on 2020-07-14.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+
+## Convert ASCII to binary
+function 0b() {(
+  typeset binary
+  
+#  # Options
+#  while [[ $1 =~ '^[-]' ]]; do
+#    case $1 in
+#      # Revert binary input to ASCII
+#      (-r|--revert)
+#        
+#      ;;
+#      (--) shift
+#      ;&
+#      # Convert ASCII to binary
+#      (*)
+#        break
+#      ;;
+#    esac
+#    shift
+#  done
+#  
+  
+  () {
+    printf -v binary '%s' $(xxd -g8 -b <$1 | awk '{ print $2; }')
+  } =( if zselect -t 1 -r 0; then cat <&0; fi; printf '%s' "$@"; )
+  
+  printf '%s\n' "$binary"
+  return 0
+)}

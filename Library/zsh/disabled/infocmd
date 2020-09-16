@@ -1,0 +1,77 @@
+#!/bin/zsh
+
+#  i
+#  Z-Function (30)
+#
+#  Created by Maxim Puchkov on 2020-05-07.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+function infocmd() {
+    typeset -a kinds
+    kinds=('alias' 'built-in command' 'external command'
+           'shell function' 'hashed command' 'reserved word' )
+    
+    function infocmd-highlight() {
+        typeset -a command_info
+        mkarray command_info "whence -av $name"
+#        print-var command_info
+#        return 2
+        typeset line new_line find replace
+        () {
+            cat <$1
+        } =(
+            for line in $command_info; do
+                new_line="$line"
+                # Bold name
+                name="${line[(w)1]}"
+                replace_name="%B%U${name}%u%b"
+                new_line="${new_line/$name/%F\{6\}$replace_name%f}"
+                if [[ $new_line =~ 'not found' ]]; then
+                    new_line="%F{1}${replace_name} not found%f"
+                else
+                    # Colored description
+                    find="$(awk -F 'is (an? )?'  '{ print $2; }' <<< $line)"
+                    replace="${find}"
+                    new_line="${new_line//$find/%F\{6\}$replace%f}"
+                fi
+                print -P -- "$new_line"
+            done
+        )
+    }
+    
+    local name
+    for name in $argv; do
+        infocmd-highlight $name
+    done
+    
+    return $?
+}
+    
+#    local desc
+#    for desc in $info; do
+#        case $desc in
+#            *'alias'*)
+#                print -P "%F{13}${desc#*alias for }%f"
+#            ;;
+#            *'autoload shell function'*)
+#                ${=print_autoload_function}
+#            ;;
+#            *'shell function'*)
+#                ${=print_function}
+#            ;;
+#            *'builtin'*)
+#                print -P "%F{4}shell builtin%f"
+#            ;;
+#            *'reserved word'*)
+#                print -P "%F{5}${name} is a reserved word%f"
+#            ;;
+#            *'not found'*)
+#                print -P "%F{9}${name} not found%f"
+#            ;;
+#            *'/'$name)
+#                print -P "%F{2}${desc#*$name is }%f"
+#            ;;
+#        esac
+#    done
+#}

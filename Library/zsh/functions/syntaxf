@@ -1,0 +1,23 @@
+#!/bin/zsh
+
+#  syntaxf
+#  Z-Function (70)
+#
+#  Created by Maxim Puchkov on 2020-06-21.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Format syntax
+function syntaxf() {(
+    typeset -i replace_color=4
+    if [[ $1 == '-c' ]]; then
+        replace_color=$2
+        shift 2
+    fi
+    
+    typeset find replace
+    find='([^\\])?\$\{((\(.+\))?([!@#$%^&*-]|[[:alnum:]_]+)(:.+)?)\}'
+    replace='\1${${\2:+'$(esc 4 -t '${\2}' -r 0)'}:-"'$(esc 4 31 -t '\2' -r 0)'(null)"}'
+    /usr/bin/sed -E -e 's/'$find'/'$replace'/g' <<< "$argv"
+    return 0
+)}

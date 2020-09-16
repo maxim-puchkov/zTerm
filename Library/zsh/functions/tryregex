@@ -1,0 +1,27 @@
+#!/bin/zsh
+
+#  tryregex
+#  Z-Function
+#
+#  Created by Maxim Puchkov on 2020-04-17.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Try to find a regex match.
+function tryregex() {
+    local str="${1}"
+    local regex="${2}"
+    
+    if [[ -z $str || -z $regex ]]; then
+        error 'Missing arguments.'
+        return 2
+    fi
+    
+    if (try "${(qqqq)str}" '=~' "${(qqqq)regex}"); then
+        printf "<%s> matches <%s>.\n" "$str" "$regex"
+        return 0
+    else
+        printf "<%s> does not match <%s>.\n" "$str" "$regex"
+        return 1
+    fi
+}

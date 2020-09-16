@@ -1,0 +1,45 @@
+#compdef fn
+
+# _fn
+# ~zdot/functions/fn
+#
+# zsh function completion
+# Updated on 2020-07-17 at 04:15 pm
+
+
+_arguments -C \
+  {-h,--help}"[show help]" \
+  ":command:->command" \
+  "*::arg:_zfunctions"
+
+case $state in
+  (command)
+    typeset -a commands
+    commands=(
+      commands:"list function commands"
+      compgen:"generate and update function completion"
+      completion:"generate function command completion"
+      d:"debug function"
+      def:"print function source code"
+      edit:"edit"
+      gui-edit:"edit in "
+      isdef:"check if a function is defined"
+      open:"open function source file"
+      options:"list function flags and options"
+      print-commands:"format and list function commands"
+      show:"display function definition and source file"
+      src:"find function source file"
+      sub:"list functions defined within a function"
+    )
+    _describe -t commands command commands
+  ;;
+  (arg)
+    typeset -a args
+    args=(
+      # Completion for commands' arguments
+    )
+    _describe -t args arg args
+  ;;
+esac
+
+return 0

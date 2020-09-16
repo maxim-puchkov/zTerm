@@ -1,0 +1,67 @@
+#!/bin/zsh
+
+#  logf
+#  Z-Function (61)
+#
+#  Created by Maxim Puchkov on 2020-06-09.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# logf - log formatted messages
+function logf() {
+    typeset -i last_status=$status
+    
+    autoload -Uz syntaxf
+    autoload -Uz get-arguments
+    
+    #MARK: - Options
+    typeset -A optlist
+    get-arguments -o 'c' -f 's' -- $argv
+    
+    ## logf -c: log a status code different from last command's ##
+    if [[ -n $optlist[-c] ]]; then
+        last_status=$optlist[-c]
+    fi
+    
+    # Log message prefix and description
+    typeset prefix description
+    if [[ -n $argv ]]; then
+        description=$(syntaxf ${argv%.})
+    else
+        case $last_status in
+            0) description='OK'     ;;
+            *) description='Error'  ;;
+        esac
+    fi
+    
+    # Message prefix components
+    typeset date host program pid
+    date='%D{%b-%d-%Y %T}'
+    user='%n'
+    program='${0:t}'
+    pid='$$'
+    
+    # Additional formatting when outputting to
+    # terminal file descriptor
+    if [[ -t 1 ]]; then
+        user="%F{4}${user}%f"
+        program="%B${program}%b"
+    fi
+   
+    # Format message prefix (default style: long)
+    ## logf -s: do not log date and hostname ##
+    if [[ -z $optlist[-s] ]]; then
+        prefix="[$pid]\t${date}\t${user}\t${program}(${last_status})"
+    else
+#        prefix="${program}[$pid] -> ${last_status}"
+        prefix="[$pid]\t${program}(${last_status})"
+    fi
+    
+    
+    # Print the log message in the environment of
+    # the parent process
+    typeset -a flags=(-P -X2)
+    typeset log="${prefix}:\t\t${description}."
+    trap "builtin print ${flags} -- \"${log}\";" EXIT
+    return 0
+}

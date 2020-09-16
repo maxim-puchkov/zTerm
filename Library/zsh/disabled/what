@@ -1,0 +1,48 @@
+#!/bin/zsh
+
+#  what
+#  devx
+#
+#  Created by admin on 2020-03-03.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+function what() {
+    setopt noerrreturn
+    
+    function what_size() {
+        local file=$1
+        if [[ ! -e $file ]]; then
+            return 1
+        fi
+        local file_size=$( stat -f '%z' $file )
+        local size_label="$file_size bytes"
+        echo "$size_label"
+        return 0
+    }
+    
+    # Function options
+    typeset -A opts
+    set -A opts $( read_options "$@" )
+    shift $( options_shift_distance "$@" )
+    
+    src=$( basename $0 )
+    cmd=$1
+    
+    case $cmd in
+        "")
+            print "Usage:"
+            print -x2 "\t$(Bc $src) $(c 'size') $(Uc 'file') - file size in bytes."
+            ;;
+        *)
+            ${src}_${cmd} > /dev/null 2>&1
+            local ecode=$?
+            if [ $ecode = 127 ]; then
+                command what "$@"
+            else
+                shift
+                ${src}_${cmd} "$@"
+            fi
+            ;;
+    esac
+}

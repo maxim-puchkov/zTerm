@@ -1,0 +1,13 @@
+#!/bin/zsh
+
+#  Shell
+#
+#
+#  Created by mpuchkov on 2020-01-30.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+function clean_shell_run() {
+    local script="$1"
+    env -i $( sh -c "$1" )
+}

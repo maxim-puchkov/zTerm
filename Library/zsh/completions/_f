@@ -1,0 +1,35 @@
+#compdef f
+
+# _f
+# /usr/local/Terminal/zsh/f
+#
+# zsh function completion
+# Updated on 2020-06-24 at 07:05 pm
+
+_arguments \
+  '(-n --length)'{-n,--length}'[desc of length]'
+
+#
+#
+#_arguments -C \
+#  ":command:->command" \
+#  "*::arg:->arg"
+#
+#case $state in
+#  (command)
+#    typeset -a commands
+#    commands=(
+#
+#    )
+#    _describe -t commands command commands
+#  ;;
+#  (arg)
+#    typeset -a args
+#    args=(
+#      # Completion for commands' arguments
+#    )
+#    _describe -t args arg args
+#  ;;
+#esac
+
+return 0

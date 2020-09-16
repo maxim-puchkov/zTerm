@@ -1,0 +1,1012 @@
+#!/bin/zsh
+
+# .zutil
+# User-specific utility functions for interactive zsh(1) shells.
+
+
+# Open default macOS Terminal
+function term1() {
+  open -a '/System/Applications/Utilities/Terminal.app' -g -n
+}
+# Open iTerm2
+function term2() {
+  open -a '/Applications/iTerm.app' -g -n
+}
+
+
+# Edit oh-my-zsh themes
+function themes() {
+  case "$1" in
+    (-e|--edit) ${=EDITOR} -- ~zterm/etc/themes.oh-my-zsh ;;
+    (*) ls -- $ZSH/themes ;;
+  esac
+}
+# Edit oh-my-zsh plugins
+function plugins() {
+  case "$1" in
+    (-e|--edit) ${=EDITOR} -- ~zterm/etc/plugins.oh-my-zsh ;;
+    (*) ls -- $ZSH/plugins ;;
+  esac
+}
+
+
+
+
+
+# any - pick a random argument
+function any() {(
+  [[ $# -eq 0 ]] && return 1
+  
+  typeset -i index
+  let index="($RANDOM % ${#}) + 1"
+  printf '%s' "${argv[$index]}"
+  
+  if [[ -t 1 ]]; then
+    typeset -F1 chance
+    let chance="1.0/${#}*100"
+    printf ' (%.1f)\n' $chance >&2
+  else
+    printf '\n'
+  fi
+)}
+
+
+
+
+#Todo: Replace 'webloc' script
+# wloc - create a .webloc bookmark
+function wloc() {
+  #
+  typeset webloc_url="$1"
+  if [[ -z $webloc_url ]]; then
+    printf '%s: missing website URL.\n' "$0" >&2
+  fi
+  
+  # Create a property list and
+  () {
+    typeset tmp_file="$1"
+    plutil -insert 'URL' -string "$webloc_url" $tmp_file
+    plutil -convert binary1 $tmp_file
+    cat <$tmp_file
+  } =(mkpl)
+  return 0
+}
+
+function list-services() {
+  /bin/launchctl list |
+      /usr/bin/fgrep -e 'com.maximpuchkov'
+}
+
+
+
+
+
+
+
+
+
+
+#MARK: - Environment 0
+# zsh0 - clean zsh shell
+function zsh0() {
+  /usr/bin/env -i TERM=$TERM /usr/local/bin/zsh -f -d
+}
+# bash0 - clean bash shell
+function bash0() {
+  /usr/bin/env -i TERM=$TERM /usr/local/bin/bash
+}
+
+#
+function testenv() {
+  (ZDOTDIR=$ZDOTDIR/Tests /usr/local/bin/zsh)
+  return $?
+}
+#
+function env0() {
+    /usr/bin/env -i "${(@f)$(< $zterm/etc/zsh/env0)}" \
+    /usr/local/bin/zsh -f "$@"
+}
+#
+function env1() {
+    /usr/bin/env -i "${(@f)$(< $zterm/etc/zsh/env1)}" \
+    /usr/local/bin/zsh -f "$@"
+}
+
+
+
+
+
+
+
+
+
+#MARK: - File Directories
+# Go to Z-Terminal directory.
+function zterm()    { cd "$ZTERM/$@"; }
+# Go to ZDOTDIR.
+function zdot()     { cd "$ZDOTDIR/$@"; }
+# Go to SFU directory.
+function sfu()      { cd "$SFU/$@"; }
+# Go to Desktop.
+function desk()     { cd "$HOME/Desktop/$@"; }
+# Go to Library.
+function lib()      { cd "$HOME/Library/$@"; }
+# Go to Development root.
+function dev()      { cd "$DEV/$@"; }
+# Go to Projects directory.
+function proj()     { cd "$DEV/Projects/$@"; }
+# Go to Developer Library.
+function devlib()   { cd "$devlib/$@"; }
+# Go to Temporary Files.
+function tmp()      { cd "/tmp/$@"; }
+#function temp()     { cd "$tempdir/$@"; }
+# Go to my var directory.
+function var()      { cd "$HOME/var/$@"; }
+# Go to launchd services.
+function services() { cd "$HOME/Library/LaunchAgents/$@"; }
+# Go to logs.
+function logs()     { cd "$ZTERM/var/log/$@"; }
+
+
+
+
+
+
+
+
+
+#MARK: - Oh-my-zsh
+# Oh-my-zsh: Plugins
+# Open oh-my-zsh root directory.
+function myzsh() {
+    open "$ZSH"
+}
+# Open oh-my-zsh/plugins.
+function myplugins() {
+    open "$ZSH/plugins"
+}
+# List plugins.
+function list-plugins() {
+    ls "$ZSH/plugins"
+}
+# Display information about an oh-my-zsh plugin.
+function info-plugin() {
+    local plugin_name="$1"
+    open -a Xcode -g "$ZSH/plugins/$plugin_name/README"*
+}
+# Print plugin's README to stdout.
+function cat-plugin() {
+    local plugin_name="$1"
+    cat "$ZSH/plugins/$plugin_name/README"*
+}
+# View next plugin's.
+function next-plugin() {
+    # Array of all plugin
+    local all_plugins=($( command ls -1 "$ZSH/plugins" ))
+    read_array arr
+    # Seen/unseen plugins
+    local seen=( $arr )
+    local notseen=( ${all_plugins:|seen} )
+    # Exit if seen all
+    if [[ ${#notseen} -eq 0 ]]; then
+        echo "<<< $(b_greenbg 'ALL PLUGINS SEEN') >>>"
+        return 1
+    fi
+    # Next plugin is the first unseen
+    local next=${notseen[1]}
+    arr+=( $next )
+    save_array arr
+    # Sizes
+    local N=${#all_plugins}
+    local n=$(( ${#seen} + 1 ))
+    echo "Opening plugin $( b_magenta "#${n} - $next"  ) out of ${N} total."
+    info-plugin $next
+}
+
+
+# Oh-my-zsh: Themes
+# List themes.
+function list-themes() {
+    local themes=(${$( command ls "$ZSH/themes" )%.zsh-theme})
+    echo $themes
+}
+# View next theme.
+function next-theme() {
+    # All themes
+    local themes=($( list-themes ))
+    # Tried themes
+    touch "$DEV/Library/Data/tried_themes.array"
+    typeset -a tried_themes
+    read_array tried_themes
+    # Not tried themes
+    local not_tried_themes=( ${themes:|tried_themes} )
+    if [[ ${#not_tried_themes} -eq 0 ]]; then
+        echo "<<< $(b_greenbg 'ALL THEMES TRIED') >>>"
+        return 1
+    fi
+    # Pick first theme which has not been tried yet
+    local next=${not_tried_themes[1]}
+    tried_themes+=( $next )
+    save_array tried_themes
+    export ZSH_THEME=$next
+    re "Current theme: $next"
+}
+
+
+
+
+# function
+# date
+function date_list_formats() {
+    typeset -ag formats
+    formats=()
+    man strftime |
+        colcrt - |
+        fgrep -- '%' |
+        awk '{ print $1; }' |
+        while read fmt; do
+            if [[ $fmt[1] == '%' ]]; then
+                formats+=($fmt);
+            fi
+        done
+    builtin print -a -C8 -- ${formats}
+}
+function date_formats_preview() {
+    for format in $( date_list_formats ); do
+        local full_command="\$( $(green "date -j +\'$format\'") )"
+        local preview="$(b_byellow \'$( date -j +$format )\')"
+        builtin print -a -C2 -- "${format}\t ${full_command}\t" "${(Q)preview}"
+    done
+}
+
+
+function magnetize() {
+    open /Applications/Magnet.app -g
+    local positions=('← Left ◧' '→ Right ◨' '↑ Up ⬒ ' '↓ Down ⬓')
+    local group1=("⇧⌘"${^positions})
+    printf "$(underline %s):\n" 'Magnet Commands'
+    for cmd in $group1; do
+        printf '%-*s' 35 "$(bold $cmd)"
+    done
+    echo
+    
+    #'Top Left ◰' 'Top Right ◳'
+    #'Bottom Left ◱' 'Bottom Right ◲'
+#    for cmd in $group2; do
+#        printf '%-*s' 35 "$(bold $cmd)"
+#    done
+}
+
+
+# Lists every executable in PATH.
+function show-executables() {
+    print -l ${^path}/*(-*N)
+}
+
+
+
+function print-q() {
+    builtin print -- "${(qqqq)argv}"
+}
+
+
+#TODO: - Keep -
+# print-mark: timestamp
+function print-mark() {
+  trap '(
+    print -v name -P -- "%N" \
+      && print -v line -P -- "%I" \
+      && print -Pn -- "%F{11}[%U${name:t}%u:${line}]%f" \
+      && print -P -- "  '${argv:-MARK}'"
+  )' EXIT
+}
+# lorem - print lines of text
+function lorem() {
+  typeset -a lines=(
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+    'Suspendisse nec convallis neque, eget interdum diam.'
+    'Donec sit amet arcu faucibus, lobortis lacus sed, molestie massa.'
+    'Vestibulum eget cursus ligula.'
+    'Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.'
+    'Integer sit amet diam rutrum, dictum eros at, dignissim orci.'
+    'Nullam pulvinar pellentesque mollis.'
+    'Etiam ultrices fermentum augue, vitae imperdiet mi.'
+    'Nullam nec lectus nec sem eleifend pharetra.'
+    'Cras congue orci vel aliquam fermentum.'
+    'Ut quis metus quis mauris dapibus cursus ac vitae leo.'
+  )
+  # Set number of text repetitions, N
+  typeset -i N
+  let N="${${1#-}:-1}"
+  if [[ $N -lt 1 ]]; then
+    let N='1'
+  fi
+  # Print N times
+  typeset -i i=1
+  while [[ $i -le $N ]]
+  do
+    print -- "${i}: ${(@)lines}"
+    let i="($i + 1)"
+  done
+  return 0
+}
+
+
+
+
+# ls format
+function datels() {
+    date -j +'%d %b %R'
+}
+function statls() {
+    local cmd=(stat -t '%d %b %R' -f '%-Sp %+2l %-Su %+Sg %-4z %.12Sm %-SN %n' "$@")
+    if [[ $# -eq 0 ]]; then
+        cmd=( echo $cmd )
+    fi
+    $cmd
+}
+
+
+
+
+# Dash
+function docsets() {
+    local dsets
+    dsets=(${(@f)"$(find "$HOME/Library/ApplicationSupport/Dash" \
+                         -name '*.docset')"})
+    printf 'Found %d docsets:\n' ${#dsets}
+    printf "  $(yellow '%s')\n" ${(o)dsets:t}
+}
+
+
+
+
+
+
+
+
+
+#FIXME: Deprecated
+function test-cdp() {
+    dir=$PWD
+    cmd=$1
+    
+    ${=cmd} ~/Developer/Projects
+    ${=cmd} ~/Documents
+    ${=cmd} ~/var
+    ${=cmd} ~/Public/Drop\ Box
+    ${=cmd} ~/Library/DES
+    
+    print-line
+    for i in {1..15}; do
+        ${=cmd} +3
+    done
+    print-line
+    
+    cd $dir
+}
+
+#FIXME: Deprecated
+function unwrap() {
+    tput rmam
+    print -P -- "%F{4}%S${(@)argv[1]}%s ${(@)argv:2}%f"
+    ${=argv}
+    tput smam
+}
+
+
+
+
+#FIXME: Deprecated
+function dgst() {
+    tput rmam
+    local file d
+    for file in $argv; do
+        builtin print -P -- "%F{4}${(l:$COLUMNS::*:)}%f"
+        local -a list=(md4 md5 md5-sha1 sha1 sha256 sha512 rmd160 blake2b512)
+        for d in $list; do
+            openssl dgst -$d $file
+        done
+    done
+    builtin print -P -- "%F{4}${(l:$COLUMNS::*:)}%f"
+    tput smam
+    return 0
+}
+
+function randbytes() {
+    local n_bytes=${1:-1}
+    local output_file=${2:-/dev/stdout}
+    builtin print "Writing ${n_bytes} random bytes to ${output_file}." >&2
+    /bin/dd if=/dev/random of=$output_file bs=8 count=$n_bytes 2>/dev/null
+}
+
+
+
+
+#FIXME: Deprecated
+function print-quotes() {
+    typeset arg="$argv"
+    printf "%-4s: ${lb}%s${rb}\n"  "q"    "${(q)arg}"
+    printf "%-4s: ${lb}%s${rb}\n"  "qq"   "${(qq)arg}"
+    printf "%-4s: ${lb}%s${rb}\n"  "qqq"  "${(qqq)arg}"
+    printf "%-4s: ${lb}%s${rb}\n"  "qqqq" "${(qqqq)arg}"
+}
+#FIXME: Deprecated
+function print-debug() {
+    local c='%F{4}'
+    local args="$argv"
+    local value="${c}${args}%f"
+    local length="${c}${#args}%f"
+    local label='%B%UValue%u%b'
+    builtin printf "%s(length: %s) = <%s>\n" \
+                    "${(%)label}" "${(%)length}" "${(%)value}"
+}
+#FIXME: Deprecated
+function print-br() {(
+    # Number of line breaks to print
+    typeset n=${1:-0}
+    if [[ ! $n =~ '^[1-9][0-9]*$' ]]; then
+        error -1 'invalid number of line breaks: $n.'
+    fi
+    # Default line break is '\n'
+    typeset linebr="${2:-\n}"
+    repeat $n { printf '%b' "$linebr" }
+    return 0
+)}
+
+
+#FIXME: Deprecated
+function tprof() {
+    local name=${1:-'Light'}
+    printf '%b\n' "\e]1337;SetProfile=Term 3: $name\a"
+}
+#FIXME: Deprecated
+function SetProfile() {
+    local name=${1:-'Light'}
+    printf '%b\n' "\e]1337;$0=Term 3: $name\a"
+}
+#FIXME: Deprecated
+function GetProfile() {
+    printf '%b\n' "\e]1337;$0\a"
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#FIXME: Deprecated
+#MARK: - Manual Pages
+function manp() {(
+    local name="$argv"
+    local dir="${zterm}/share/man"
+    if [[ ! -d $dir ]]; then
+        /bin/mkdir -p -- $dir
+    fi
+    local file="${dir}/${name}"
+    /usr/bin/man  -t -- $name > $file
+    /usr/bin/open -a Preview -- $file
+)}
+#FIXME: Deprecated
+function xman1() {(
+    open -a Terminal -g x-man-page://"$argv"
+)}
+
+# Open manual page in a seperate tab
+function xman() {
+  # Manual page name
+  typeset name=$1
+  [[ -z $name ]] && return 1
+  
+  # iTerm2 profile
+  typeset base_profile=${${ITERM_PROFILE%:*}:='Term 3'}
+  
+  # Create an iTerm2 tab and run 'man'
+  () (
+    typeset profile="${1}: Man"
+    typeset command="/usr/bin/man $2"
+    ~zdot/.iterm2/it2api create-tab \
+      --profile "${profile}" \
+      --command "${command}"
+  ) $base_profile $name \
+    &>/dev/null &!
+  return 0
+}
+
+
+
+
+#FIXME: Deprecated
+function test_print-var() {
+    # Test 0
+    (
+        print-var
+        Standout "Exit code: $?"
+    )
+    print-line
+    
+    # Test 0
+    (
+        print-var myVar
+        Standout "Exit code: $?"
+    )
+    print-line
+    
+    # Test 1
+    (
+        typeset myVar
+        myVar='One variable'
+        
+        print-var myVar
+        Standout "Exit code: $?"
+    )
+    print-line
+    
+    # Test *
+    (
+        typeset myStr
+        typeset -i10 myInt
+        typeset -a myArr
+        typeset -A myAssoc
+        myStr='my string'
+        myInt=1234567890
+        myArr=('my' 'array' 'elements')
+        myAssoc=( [name]='John' [surname]='Doe' [age]=50 )
+        
+        print-var my{Str,Int,Arr,Assoc}
+        Standout "Exit code: $?"
+    )
+    print-line
+    
+    # Test * (null values)
+    (
+        typeset myStr
+        typeset -i10 myInt
+        typeset -a myEmptyArr
+        typeset -a myArr
+        typeset -A myAssoc
+        myStr=""
+        myInt=0
+        myEmptyArr=()
+        myArr=(1 '' 3 '' 5 "" 7 "" 9 "\"\"" "''" )
+        myAssoc=( [key]='' ['']='value' )
+        
+        print-var my{Str,Int,EmptyArr,Arr,Assoc}
+        Standout "Exit code: $?"
+    )
+    print-line
+    
+    # Test * (undefined variables)
+    (
+        typeset myVar
+        myVar='my defined variable'
+        
+        print-var my{Str,Int,Arr,Var,Assoc}
+        Standout "Exit code: $?"
+    )
+    print-line
+}
+
+
+
+
+
+
+#MARK: - Keep 
+# Move a file to iCloud Drive.
+function icmv() {
+    # Create 'MovedFiles' directory
+    local directory=$iCloud/MovedFiles
+    if [[ ! -e $directory ]]; then
+        /usr/bin/mkdir -p -- $directory
+    fi
+    # Move files
+    local filepath
+    for filepath in $argv; do
+        /bin/mv -- $filepath $directory
+        local message="Moved %B%U${filepath:t}%u%b to %F{10}${directory}%f."
+        builtin print -P -- "$message"
+    done
+    return 0
+}
+
+# Show synonyms and antonyms for a given word (online).
+function thesaurus() {
+    local base='https://www.thesaurus.com/browse'
+    local word=${argv// /+}
+    local url="${base}/${word}"
+    /usr/bin/open -a 'Safari' -- $url
+}
+#MARK: Keep -
+
+
+
+
+function word() {
+  function word_thesaurus() {
+    base='https://www.thesaurus.com/browse'
+    /usr/bin/open -a Safari -- $url
+  }
+
+  function word_sentences() {
+    base='https://www.wordhippo.com/what-is/sentences-with-the-word/'
+    /usr/bin/open -a Safari -- $url
+  }
+
+  if [[ $# -eq 0 ]]; then
+    fn print-commands $0
+    return 2
+  fi
+
+  typeset cmd=$1
+  if [[ ${+functions[${0}_${cmd}]} -ne 1 ]]; then
+    error -127 'Command not found: $cmd.'
+  fi
+  shift
+
+  typeset word base url
+  word=${argv// /+}
+  if [[ -z $word ]]; then
+    error -1 'Word not set.'
+  fi
+  ${0}_${cmd} $word
+  return 0
+}
+
+
+
+
+
+
+
+
+
+
+#FIXME: Deprecated
+# Initialize an array of letters A-Z and a-z.
+#
+#   1) ABC
+#       echo $ABC[A]    # Letter 'A' is 'Alpha'
+#       echo $ABC[a]    # alpha
+#       echo $#ABC      # 52
+#   2) assign='X y z' ABC
+#       echo $X         # Letter 'X' is 'X-ray'
+#       echo $y         # yankee
+#       echo $z         # zulu
+function ABC() {
+    # Read phonetic spellings (words) from file
+    typeset alphabet=${1:-"$zterm/share/misc/phonetic-alphabet.txt"}
+    typeset abc_file=~/var/commands/abc.spellings
+    # Set result to associative array (default name: ABC)
+    typeset id=${2:-$0}
+    typeset -Ag $id
+    set -A $id
+    # Set short and long
+    local word
+    local -l lowercase
+    local -u uppercase
+    # Set variables
+    () {
+        while read -t word; do
+            lowercase="${word[1]}"
+            uppercase="${word[1]}"
+            ABC[$lowercase]="${(L)word}"
+            ABC[$uppercase]="Letter '${uppercase}' is '${word}'"
+        done <&0
+    } <$alphabet
+    # Save ABC to a file
+    () {
+        print -l -- ${(kv)ABC} >&1
+    } >$abc_file
+    # Quickly assign variables. E.g., if assign is 'a b',
+    # then a is set to ABC[a] and b is set to ABC[b]
+    export assign
+    () {
+        for var in $argv; do
+            typeset -ag $var
+            set -A $var ${(kv)ABC[$var]}
+        done
+        print -P -- "Assigned %F{2}${#argv}%f variables"
+    } $=assign
+    return 0
+}
+
+
+#FIXME: Deprecated
+function setget() {
+    unset optlist
+    typeset -A optlist
+    
+    typeset -ag opt_strings val_strings
+    opt_strings=(
+        '-f a -o x'
+        '-f a b'
+        '-o x y'
+        '-f a b c -o x y z'
+        '-f a'
+        '-o x'
+        '-o z:12345'
+    )
+    val_strings=(
+        '-a -x 100'
+        '-a -b'
+        '-x valX -y valY'
+        '-a -b -c -x x1 -y y2 -z z3'
+        '-a'
+        '-x valX'
+        '-notz abcde'
+    )
+    
+    
+    
+    local set_array_opt='-A optlist'
+    opt_flags=(${set_array_opt:^opt_strings})
+    
+    local rest='and1 other2 args3'
+    set +A val_strings ${^val_strings}' REST '${rest}
+    
+    for str val in ${opt_strings:^val_strings}; do
+        print -- "get-arguments "$(red $str)" -- "$(green $val)"\n\n"
+        typeset -A optlist
+        optlist=()
+        set -- ${=val}
+        get-arguments -A optlist ${=str} -- $argv
+        
+        printf "<<-$(magenta '%s')-  |  -$(blue '%s')->>\n" "$val" "get-arguments -A optlist ${str} -- $argv"
+        print-var optlist @
+        tput setab 2; print-line tput sgr0;
+    done
+}
+
+
+#FIXME: Deprecated
+function get-arguments-t() {
+    # Names of set flags/options
+    local -a set_{flags,opts}
+    set_flags=(${(s: :)1})
+    set_opts=(${(s: :)2})
+    # Names of wanted flags/options
+    local -a get_{flags,opts}
+    get_flags=(${(s: :)3})
+    get_opts=(${(s: :)4})
+    # Non-flag/option arguments
+    local -a other_args
+    set -A other_args 'Hello World'{1..5}
+    
+    
+    # Output option list
+    typeset -Ag optlist
+    optlist=()
+    
+    # Set positional arguments
+    set -- '-'${^set_flags} \
+           '-'${^set_opts}{,' opt-value'} \
+              ${^other_args}
+    
+    # Set and parse arguments
+    print -P -- "%F{1}BEFORE:\t{$argv} [$#]%f"
+    
+    get-arguments -A optlist    \
+                  -f $get_flags \
+                  -o $get_opts  \
+                  -- $argv
+    print -Pl -- "%Uget-arguments%u" \
+                 "-A optlist" \
+                 "-f $get_flags" \
+                 "-o $get_opts" \
+                 "-- $argv"
+    
+    print -P  -- "%F{2}AFTER:\t{$argv} [$#]%f"
+    echo; echo;
+    
+    
+    # Print results
+    print-line
+    print -P -- "Test: $0."
+    print -P -- "Set flags: {%F{2}${set_flags}%f}, options: {%F{2}${set_opts}%f}."
+    print -P -- "Get flags: {%F{4}${get_flags}%f}, options: {%F{4}${get_opts}%f}."
+    print -P -- "Optlist[${#optlist}]: {%F{3}${optlist}%f}."
+    print-var optlist defaults @
+    print-line
+    echo
+}
+
+#FIXME: Deprecated
+# All 'print -P' prompts
+function all-prompts() {
+    typeset -A result
+    result=()
+    typeset -a list
+    list=($(< $zterm/etc/prompt-sequences.txt))
+    typeset file="$zterm/etc/prompt-sequences.txt"
+    typeset reset='\e[0m'
+    () {
+        while [[ -n $1 ]]; do
+            cmd=(print -P "'%${1}' ")
+            value=$($cmd)
+            result+=("$cmd" "${(Q)value}${reset}")
+            shift
+        done
+    } $(<$file)
+    print -aC2 -- ${(kv)result}
+    return 0
+}
+
+
+
+
+
+function mapf() {
+    zmodload zsh/mapfile
+    typeset -ag map
+    typeset file=$1
+    map=(${(@f)${mapfile[$file]%$'\n'}})
+    pv map file @
+    
+    m1=(${(@f)${mapfile[$file]%\n}})
+    m2=(${${mapfile[$file]%$'\n'}})
+    m3=(${(@f)"${mapfile[$file]%$'\n'}"})
+    pv m1 m2 m3
+}
+
+
+
+
+
+#MARK: - Arrays
+# Initialize an array or associative Array
+function array Array {
+  # Check  name of the reply array
+  if [[ -z "$1" ]]; then
+    usage 'Array name is required.' \
+        - '[Aa]rray name [value...]'
+    return 1
+  fi
+  
+  # Declare new global array
+  typeset reply="${1:=reply}"
+  shift
+  if [[ -v $reply ]]; then
+    unset $reply
+  fi
+  typeset -${0[1]} -g  $reply
+  
+  # Set array values
+  case $1 in
+    ## [Aa]rray -c: set array elements to output of command ##
+    -c) shift
+        set -A $reply ${(@f)"$(${=argv})"}
+    ;;
+    
+    ## [Aa]rray: set array elements to arguments ##
+    *)  set -A $reply $argv
+    ;;
+  esac
+  
+  # Print array
+  [[ -t 1 ]] && print-array $reply
+}
+
+
+
+function show_prog() {
+    funcstat
+    if [[ -z $1 ]]; then
+        error -1 'Missing program name'
+    fi
+    printf '%s\n' $(esc -t $1 '1;95')
+    return 0
+}
+#
+#function print-input() {
+##    print -P -- "%F{5}>%f %BInput of %F{5}%U${0}%u%f:%b"
+##    print-var -1 argv
+#    print-line
+#    show 'Function: %U%F{5}'$0'%f'
+#}
+
+
+
+
+
+
+function funcstat() {
+    esc '1;91' -t 'Function Trace'
+    print -l -x2 -- '\t'${^functrace}
+    echo
+    esc '1;91' -t 'Function Stack'
+    print -l -x2 -- '\t'${^funcstack}
+}
+
+function find_replace() {
+    file=$1
+    shift
+    () (
+        file=$1
+        shift
+        while [[ -n $2 ]]; do
+            perl -pe "s/${(q)1}/'${(q)2}/g" -i $file
+            shift 2
+        done
+        cat <$file
+    ) =(<&0) $argv
+    return 0
+}
+
+
+#FIXME: Deprecated
+# notify - print name of the command or function from which
+#          `notify' is invoked and then print all arguments
+#          same as `print' builtin.
+#function notify() {
+#    typeset program=${${functrace[1]%:*}:-$0}
+#    if [[ -t 1 ]]; then
+#        program="%F{4}${program}%f"
+#    fi
+#    # Print
+#    builtin print -Pn -X2 -- "${program}:\t"
+#    builtin print ${argv}
+#    return 0
+#}
+#function jb() {
+#    typeset -i ifd
+#    exec {ifd}
+#    while read arg; do
+#        notify -- $arg
+#    done
+#}
+
+
+# Bell sound
+function bell beep {
+  printf '\a'
+}
+
+#TODO: Test file names with spaces can open
+function openjpg() {
+  open -a Preview $(find . -name '*.jpg' 2>/dev/null)
+}
+function openpng() {
+  open -a Preview $(find . -name '*.png' 2>/dev/null)
+}
+
+
+
+
+function whencef() {
+cat <<EOF
+-S  -- show steps in the resolution of symlinks
+-a  -- print all occurrences in path
+-c  -- csh-like output
+-f  -- output contents of functions
+-m  -- treat the arguments as patterns
+-p  -- always do a path search
+-s  -- print symlink free path as well
+-v  -- verbose output
+-w  -- print command type
+EOF
+  return 0
+}
+
+function whences() {
+  typeset -a names
+  names=('echo' "${0}" 'lll' 'paths' 'error' )
+  
+  greenbg '-- Begin --'
+  for name in $names; do
+    redbg "Name: '${name}'"
+    red "Command: 'whence $@ -- \"$name\"'"
+    whence $@ -- "$name"
+    redbg '-'
+    echo; echo; echo; echo;
+  done
+  greenbg '-- Done --'
+}

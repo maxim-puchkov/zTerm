@@ -1,0 +1,41 @@
+#!/bin/zsh
+
+#  download
+#  Z-Function (35)
+#
+#  Created by Maxim Puchkov on 2020-05-19.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function download() {
+    typeset -Ag optlist
+    typeset -a args=($argv)
+    get-options optlist args
+    set -- $args
+    
+    local default_server=$(< $ZTERM/etc/default.download)
+    
+    case $# in
+        0) error 'No input'
+           return 2
+        ;;
+        1) server="$default_server"
+           target="${server}:${1}"
+        ;;
+        2) server=$1
+           target="${server}:${2}"
+        ;;
+    esac
+    
+#    print -P "server %B$server%b; target %B$target%b"
+    local opts=(-r)
+    if [[ $optlist[p] ]]; then
+        opts+=(-P $optlist[p])
+    fi
+    
+    local download_dir="$HOME/Documents/scp"
+    print -P "Downloading file(s): '%F{2}$target%f'"
+    print -P "                 to: '%F{2}$download_dir%f'"
+    scp ${=opts} -- "$target" "$download_dir"
+}

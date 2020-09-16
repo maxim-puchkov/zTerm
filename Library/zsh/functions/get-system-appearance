@@ -1,0 +1,21 @@
+#!/bin/zsh
+
+#  get-system-appearance
+#  Z-Function (107)
+#
+#  Created by Maxim Puchkov on 2020-07-28.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# <#Function description#>
+function get-system-appearance() {
+  # Set available appearances (light, dark)
+  typeset -A appearances
+  appearances=('light' 'off'  'dark' 'on')
+  
+  # Print current system appearance
+  typeset current_status=$(/usr/local/bin/dark-mode status)
+  print -r -- ${(k)appearances[(r)$current_status]}
+  
+  return 0
+}

@@ -1,0 +1,53 @@
+#!/bin/zsh
+
+#  it2
+#  Z-Function (81)
+#
+#  Created by Maxim Puchkov on 2020-07-03.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Name:
+#   it2
+# Synopsis:
+#   it2 [option...] [command]
+# Description:
+#   ...
+function it2() {
+  typeset prefix"=${ITERM_PROFILE%: *}: "
+  typeset -a profiles
+  profiles=('Dark' 'Light')
+  
+  ## it2 set-profile
+  function it2_set-profile() {
+      typeset action='SetProfile'
+      typeset profile_name=${1#$prefix}
+      printf 'Setting iTerm2 profile to %s%b\n' \
+        "${prefix}${profile_name}" \
+        "\e]1337;${action}=${prefix}${profile_name}\a" >&2
+      export ITERM_PROFILE="${prefix}${profile_name}"
+      return 0
+  }
+  ## it2 switch-profile
+  function it2_switch-profile() {
+    typeset -i i=${profiles[(i)${ITERM_PROFILE#$prefix}]}
+    let i="$i % ${#profiles} + 1"
+    typeset profile_name=${profiles[$i]}
+    it2_set-profile $profile_name
+  }
+  
+  ## it2 -h,--help: display help message and exit
+  function it2--help() {
+    
+  }
+  
+  
+  
+  typeset cmd=$1
+  if [[ ${+functions[${0}_${cmd}]} -ne 1 ]]; then
+      return 127
+  fi
+  shift
+  ${0}_${cmd} $argv
+  return $?
+}

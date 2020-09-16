@@ -1,0 +1,85 @@
+#!/bin/zsh
+
+#  zfc_completion
+#  Z-Function
+#
+#  Created by Maxim Puchkov on 2020-04-17.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+## completion: autogenerate function completion ##
+function zfc_completion() (
+        
+    local fn_name="$1"
+    if [[ -z $fn_name ]]; then
+        return 1
+    fi
+    
+    typeset -A reply
+    typeset -a fn_commands
+    
+    # Find files starting with the specified 'fn_name'
+    local fn_files=($( find "$zfunc" -regex "$zfunc/$fn_name.*" ))
+    
+    # Parse each file and generate associative array 'reply[command]=description'
+    for fn_file in $fn_files; do
+        local fn=${fn_file:t}
+        autoload +X $fn
+        fn_commands=($( fn -p "$fn" commands ${fn} ))
+        for cmd in $fn_commands; do
+            local pattern="## ${cmd}: .+ ##.*function ${fn_name}_${cmd}[\s]*\(\)"
+            local description=$(
+                greps '-o' "$pattern" "$fn_file" |
+                    head -n 1 |
+                    sed -e "s/## ${cmd}: //g" -e "s/ ##.*//g"
+            )
+            reply[$cmd]="${description:-''}"
+        done
+    done
+    
+    # Print completion for 'fn_name'
+    cat <<- EOF
+#compdef ___FILENAME___
+
+#  ___FILENAME___
+#  ___PACKAGE_NAME___ (___TEMPLATE_ID___)
+#
+#  Created by ___USERNAME___ on ___DATE_FULL___.
+#  Copyright © ___DATE_YEAR___ ___OWNER___. All rights reserved.
+
+
+_arguments -C \\
+  ":command:->command" \\
+  "*::arg:->arg"
+
+function ___FILENAME____command {
+    _arguments "1: :<#Command Completion#>"
+}
+
+case \$state in
+  command)
+    typeset -a commands
+    commands=(
+$( for k v in ${(kv)reply}; do
+  printf "      %s:\"%s\"\n" "$k" "$v" | colrm
+done )
+    )
+    _describe -t commands command commands
+    return 0
+  ;;
+
+  arg)
+    case \${line[1]} in
+      noargs)
+        _nothing
+      ;;
+      [^\s]*)
+        ___FILENAME____command
+      ;;
+    esac
+  ;;
+esac
+
+return 0
+EOF
+)

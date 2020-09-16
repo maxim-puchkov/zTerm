@@ -1,0 +1,58 @@
+#!/bin/zsh
+
+#  read_array
+#  Z-Function
+#
+#  Created by Maxim Puchkov on 2020-04-08.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Read a saved array from file.
+function read_array() {
+    autoload error
+    
+    # Name of the array variable
+    local var_id=$1
+    if [[ -z $var_id ]]; then
+        return 2
+    fi
+    
+    # File to which the array was saved
+    local default_filepath="${DEV}/Library/Data/${var_id}.array"
+    local filepath="${${2:a}:-$default_filepath}"
+    if [[ -d "$filepath" ]]; then
+        filepath="${filepath}/${var_id}"
+    fi
+    
+    if [[ ! -r "$filepath" ]]; then
+        error "No save file for '$(Bad $var_id)'."
+        return 1
+    fi
+    
+    # Read and set the array
+    local var_type="${3[1]:-a}"
+    case $var_type in
+        'A')
+            typeset -Ag $var_id
+            eval "set -A $var_id $(< $filepath)"
+            ;;
+        'a')
+            eval "$var_id=($(< $filepath))"
+            ;;
+        *)
+            error "Cannot convert to type '$(Bad $var_type)'.\n"
+                "Valid types: array ($(OK 'a'))," \
+                "associative array ($(OK 'A'))."
+            return 1
+            ;;
+    esac
+    
+    integer size=${#${(P)var_id}}
+    if [[ $size -eq 0 ]]; then
+        error "Could not read array values."
+        return 1
+    fi
+    
+#    printf "OK: read %d values of '$(OK %s)'.\n" $size "$var_id"
+    return 0
+}

@@ -1,0 +1,114 @@
+#!/bin/zsh
+
+#  system-appearance-service
+#  com.maximpuchkov.services.SystemAppearance
+#
+#  Created by Maxim Puchkov on 2020-04-25.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+#MARK: - Configuration Files
+ROOT_DIR="${ZTERM:-/usr/local/Terminal}"
+# System dark appearance description
+typeset -r appearances_file="${ROOT_DIR}/etc/SystemAppearance/appearances"
+typeset -A dark_appearance
+dark_appearance=($(< $appearances_file))
+# Start and End hour of dark appearance
+typeset -r intervals_file="${ROOT_DIR}/etc/SystemAppearance/intervals"
+typeset -A time_intervals
+time_intervals=($(< $intervals_file))
+# Current time
+typeset current_time
+current_time=$(date -j +'%s')
+
+
+
+
+#MARK: - Service Test
+# Overwrite intervals
+if [[ $1 == '--test' ]] && [[ $# -eq 4 ]]; then
+  time_intervals[begin]=$2
+  time_intervals[end]=$3
+  current_time=$(date -v "${4}H" -v "0M" -v "0S" -j +'%s')
+  test_log_name="Test ${4}@${2}-${3}"
+fi
+# Print test logs
+function TestSystemAppearanceService() {
+  typeset c dc  b db  e de
+  print "Begin <${0:t}> ${?}"
+  c=$current_time; dc=$(date -r $c)
+  b=$begin_time;   db=$(date -r $b)
+  e=$end_time;     de=$(date -r $e)
+  print -- '---------------'
+  print "Interval[begin]: ${time_intervals[begin]}"
+  print "Interval[end]:   ${time_intervals[end]}"
+  print -- '---------------'
+  print "c=$c;  b=$b;  e=$e"
+  print -- '---------------'
+  if [[ $c -ge $b ]];
+    then print "c >= b ($dc >= $db)"
+    else print "c <  b ($dc <  $db)"
+  fi
+  if [[ $c -lt $e ]];
+    then print "c <  e ($dc <  $de)"
+    else print "c >= e ($dc >= $de)"
+  fi
+  print -- '---------------'
+  print "Current:    $dc"
+  print "Begin:      $db"
+  print "End:        $de"
+  print -- '---------------'
+  print "Current status: $current_status"
+  print "New status:     $new_status"
+  print -- '---------------'
+  print "End <${0:t}> ${?}"
+} &> $ROOT_DIR/var/log/Tests/SystemAppearance/${test_log_name:-recent}.log
+
+
+
+
+#MARK: - Time and Status
+# Determine Start and End times
+typeset begin_time end_time
+begin_time=$(date -v "${time_intervals[begin]}H" -v "0M" -v "0S" -j +'%s')
+end_time=$(date -v "${time_intervals[end]}H" -v "0M" -v "0S" -j +'%s')
+
+typeset current_status new_status
+current_status=$( /usr/local/bin/dark-mode status )
+# Compare the times time and set the New Status
+if [[ $current_time -lt $begin_time && $current_time -lt $end_time ]] ||
+   [[ $current_time -ge $begin_time && $current_time -gt $end_time ]] ||
+  then
+  new_status='on'
+else
+  new_status='off'
+fi
+
+
+
+
+#MARK: - Logs
+# Prepare log messages
+typeset log_prefix log_info log_error
+log_prefix="$(date -r $current_time -j +'%b %d %T') $(hostname -s) ${0:t}[$$]:\t"
+log_info="${log_prefix}[0] system appearance changed to ${dark_appearance[$new_status]}."
+log_error="${log_prefix}[1] ${dark_appearance[$new_status]} appearance is already set."
+# Print test logs
+TestSystemAppearanceService
+if [[ $1 == '--test' ]]; then
+  exit 2
+fi
+
+
+
+
+#MARK: - System Appearance
+# Stop if the correct appearance is already set
+if [[ "$new_status" == "$current_status" ]]; then
+  echo "$log_error" >&2
+  exit 1
+fi
+# Change the system appearance
+echo "$log_info"
+/usr/local/bin/dark-mode "$new_status" &> /dev/null
+exit 0

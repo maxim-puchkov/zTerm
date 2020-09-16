@@ -1,0 +1,29 @@
+#!/bin/zsh
+
+#  run-t
+#  Terminal
+#
+#  Created by Maxim Puchkov on 2020-06-20.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# run-t - run zsh tests
+function run-t {
+    #MARK: - Function Arguments
+    # Lists of 'run-t' flags and options
+    typeset -a test_flags test_options
+    test_flags=()
+    test_options=()
+    # Parse arguments
+    builtin autoload -Uz get-arguments
+    typeset -A optlist
+    get-arguments -A optlist \
+                  -f $test_flags \
+                  -o $test_options
+    
+    #MARK: -
+    typeset shell=$(builtin whence zsh)
+    typeset dir="$ZDOTDIR/Tests"
+#    for test_script in $dir/*
+    
+}
