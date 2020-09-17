@@ -1,5 +1,4 @@
 .DS_Store
-.config/
 
 Library/Profiles
 
@@ -13,7 +12,8 @@ etc/template*
 **/*.xcworkspace/*
 **/var/
 
-**/.oh-my-zsh/
 **/.iterm2*
+**/.oh-my-zsh/
 **/.zcompdump*
+**/.zsh_sessions/
 **/.zsh_history
