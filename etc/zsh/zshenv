@@ -10,20 +10,6 @@
 # Z shell environment
 export ZSHENV="$HOME/.zshenv"
 
-
 # Terminal scripts and functions
 export ZTERM='/usr/local/Terminal'
 export ZDOTDIR="$ZTERM/Library/zsh"
-
-
-# Interactive history
-if [[ -d $zterm/var/log ]]; then
-  HISTFILE=$zterm/var/log/$USER.zsh_history
-else
-  HISTFILE=$HOME/.zsh_history
-fi
-export HISTFILE
-
-
-# Python environment
-export PYTHONENV="$HOME/.pythonenv"

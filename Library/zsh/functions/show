@@ -13,8 +13,50 @@
 #   1. `show pax'   -->  "command /bin/pax"
 #   2. `show HOME'  -->  "scalar-export-special HOME = '/Users/admin'"
 
-#MARK: - show (version 2)
-export -a ZSH_PARAMETER=(${(@f)"$(<~zterm/etc/zsh/parameter.module)"})
+##MARK: - show (version 2)
+#if [[ ${+functions[$0]} -eq 1 ]]; then
+#  echo "Reloading function ${0} ..."
+#  unset -f $0
+#  autoload $0
+#fi
+#
+## Set arrays
+#typeset -a parameter_names paramter_groups
+#set -A parameter_names   $argv
+#set -A paramter_groups   ${(@f)$(zmodload -lF zsh/parameter)#+p:}
+#
+## For each argument (parameter name)
+#for name in $parameter_names; do
+#  # And for each parameter group
+#  # (e.g., aliases, builit-ins, functions, etc.)
+#  for group in $paramter_groups; do
+#    #
+#    {
+#    parameter_typename=${group%%e#s}
+#    parameter_value="${${(P)group}[$name]}"
+#    if [[ -n "$parameter_value" ]]; then
+#      echo $parameter_typename $parameter_value
+#    else
+#      sprint -dim BAD $parameter_typename
+#    fi
+#    } 2>/dev/null
+#    # Report type every object type
+##    echo ${group[$name]}
+##    echo "N is $name ; G is $group ; val is $value"
+#
+#  done
+#done
+#
+#
+##return 2
+
+
+
+#export -a ZSH_PARAMETER=(${(@f)"$(<~zterm/etc/zsh/parameter.module)"})
+
+
+
+
 #function show() {(
 #  setopt extendedglob
 #
@@ -36,17 +78,27 @@ export -a ZSH_PARAMETER=(${(@f)"$(<~zterm/etc/zsh/parameter.module)"})
 
 
 
+
+
+#return 0
+
+
 #MARK: - show (version 1)
 if [[ $# -eq 0 ]]; then
   return 1
 fi
 
+# Formatted '>' symbol for printing
+local symbol=$'\e[1;92m>\e[0m'
+
 # For each argument, show description
 local arg desc
 for arg; do
-  builtin print -Pr -- "%B%F{10}>%f ${arg}%b"
+  #MARK: - Show
+  printf '%s show %s:\n' "$symbol" "$arg"
   desc=''
-
+  
+  # Format output of `show'
   case 1 in
     ${+aliases[$arg]})
       desc+="alias for $(esc0 4,34 -t "${aliases[$arg]}")"$'\n'
@@ -70,9 +122,21 @@ for arg; do
       desc+="${parameters[$arg]} $(esc0 1,4,32 -t "${arg}") = ${(kvj:, :)arr}"$'\n'
     ;|
   esac
-  
   not_found=$(esc0 1,91 -t "${arg}" 22,31 -t 'not found')
   builtin print -nr -- ${(%)desc:=%B$arg%b' %F{1}not found%f'$'\n'}
+  # Reset
+  printf '%b\n' '\e[0m'
+  
+  
+  
+  
+  #MARK: - Type
+  # Print output of `type'
+  printf '%s type -a %s:\n' "$symbol" "$arg"
+  # Dim output text
+  printf '%b' '\e[2m'
+  type -a $arg
+  printf '%b' '\e[0m'
 done
 
 return 0

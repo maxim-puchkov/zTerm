@@ -9,6 +9,11 @@
 
 # cats - `cat' files one by one
 function cats() {
+  if [[ ${+functions[$0]} -eq 1 ]]; then
+    unset -f $0
+    autoload $0
+  fi
+  
   #MARK: - Options
   typeset -a cat_options=()
   # Parse additional `cat' options
@@ -25,36 +30,36 @@ function cats() {
   
   #
   if [[ $# -eq 0 ]]; then
-    if autoload -Uz usage; then
-      usage 'Print files one by one' \
-          - 'cats [file...]'
-    fi
+    usage 'Print files one by one' \
+        - 'cats [file...]'
+    return 1
   fi
-  
+  printf '\n\n\n'
   
   #MARK: -
   typeset file size descs
   typeset -i  i=1 exit_code=0
   for file; do
     ## Current/Total file number
-    printf '%b[%i]%b  ' '\e[1;30;103m' $i '\e[0m'
-    let i="$i + 1"
+#    printf '%b[%i]%b  ' '\e[1;30;103m' $i '\e[0m'
+#    let i="$i + 1"
     
     ## File header
     size="$(simplify-size $(stat -f '%z' -- $file))"  # ="$(sizeof $file)" too long
     desc="$(file -Ib -- $file)"
     printf '%b%s%b (%s; %s)\n' \
-      '\e[1;4m' "$file" '\e[0m' \
+      '\e[1;4;31m' "$file" '\e[0m' \
       "$size" "$desc"
     
     ## Contents of file
-    /bin/cat -n $cat_options -- "$file"
+    (/bin/cat -n $cat_options -- "$file" &&
+    printf '%b[EOF]\n' '\e[2m')
     let exit_code="$exit_code+$status"
     
     ## File footer
-    printf '%b[EOF] %s%b\n\n\n\n' \
-      '\e[2m' "$file" '\e[0m'
+    printf '%b%s%b\n\n\n\n' '\e[2;31m' "$file" '\e[0m'
   done
   
+  printf '%s: printed %i files\n' "$0" $#
   return $exit_code
 }

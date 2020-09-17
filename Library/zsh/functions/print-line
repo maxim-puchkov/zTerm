@@ -10,7 +10,7 @@
 # print-line - output one full line of text
 function print-line() {(
   # Default values
-  typeset -i10 width=$COLUMNS
+  typeset -i width=$COLUMNS
   typeset char='*'
   
   # Parse options

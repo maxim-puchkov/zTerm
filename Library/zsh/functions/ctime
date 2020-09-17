@@ -55,9 +55,8 @@ done
 
 
 #MARK: - Executed Commands
-# Measure time to complete '$1' executions
-# of command '$2'
-function ctime-loop() {(
+# Loop with '$1' iterations of command '$2'
+function ctime-loop() {
   magentabg "Ctime Loop called for N='${1}', COMMAND='${2}'."
   
   while [[ $1 -gt 0 ]]
@@ -67,7 +66,7 @@ function ctime-loop() {(
   done
   
   return 0
-)}
+}
 
 # If commands are not specified, print error
 if [[ $# -eq 0 ]]; then

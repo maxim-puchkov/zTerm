@@ -84,8 +84,6 @@ function list-services() {
 
 
 
-
-
 #MARK: - Environment 0
 # zsh0 - clean zsh shell
 function zsh0() {

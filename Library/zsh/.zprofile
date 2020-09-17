@@ -13,6 +13,8 @@ function tldrs() {
   /usr/local/bin/tldr $argv
   /usr/local/bin/tealdeer $argv
 }
+#compdef '_tealdeer' tldrs
+
 
 # shlvl - print shell command path and shell level
 function shlvl lvl() {

@@ -16,7 +16,7 @@
 ## arg1: vars ##
 ## arg2: ##
 function fn() {(
-    autoload -Uz -- print-line error
+    autoload -Uz -- esc print-line error
     
     ## def: print function source code ##
     function fn_def() {
@@ -31,12 +31,7 @@ function fn() {(
         if [[ -z $fsource ]]; then
             error -2 'Function definition file for ${fn_name} was not found.'
         fi
-        # Abbreviate directories
-        local -a output_flags=('-P')
-        if [[ -t 1 ]]; then
-            output_flags+=('-D')
-        fi
-        builtin print $=output_flags -- "$fsource"
+        builtin print -P -- "$fsource"
         return 0
     }
     ## show: display function definition and source file ##
@@ -44,24 +39,18 @@ function fn() {(
         local fn_code=$(fn def $fn_name)
         local fn_line=${(%):-"%F{8}${(l:$COLUMNS::-:)}%f"}
         builtin print -f '%s\n%s\n%s\n\n%s\n' \
-            "$fn_line" "$fn_code" "$fn_line" "${(D)fn_file}"
+            "$fn_line" "$fn_code" "$fn_line" "${fn_file}"
         return 0
     }
-    ## open: open function source file ##
+    ## open: open function source file im Xcode ##
     function fn_open() {
         if [[ ! -r $fn_file ]]; then
-            error -1 'Cannot read source file for function ${fn_name}.'
+            error -1 'Cannot read source file of function ${fn_name}.'
         fi
-        gui-edit $fn_file
+        open -a Xcode $fn_file
         return 0
     }
-    ## isdef: check if a function is defined ##
-    function fn_isdef() {
-        if [[ ${+functions[$fn_name]} -ne 1 ]]; then
-            return 1
-        fi
-        return 0
-    }
+    
     ## sub: list functions defined within a function ##
     function fn_sub() {
         typeset fn_syntax fn_pattern
@@ -257,15 +246,13 @@ EOF
                 print -P -- "Overwrite '%F{2}${target}%f' (%F{2}${target_size}%f bytes) with updated completion file (%F{2}${new_size}%f bytes)? (yes/no)"
                 
                 # Read user response if overwrite is not enabled with option '-y'
-                (
-                    [[ -z $response ]] && read response
+                if [[ $fn_overwrite_completion -ne 1 ]]; then
+                    typeset response
+                    read response
                     if [[ ! $response =~ "${langinfo[YESEXPR]}" ]]; then
                         error -1 "User response is 'no'." \
                             "Aborting..."
                     fi
-                )
-                if [[ $? -ne 0 ]]; then
-                    return 1
                 fi
                 print -P -- "Overwriting completion function..."
             fi
@@ -276,30 +263,50 @@ EOF
     }
     
     
-    function fn_edit() {(
-        ${=EDITOR} -- $fn_file
-        return 0
-    )}
+#    #MARK: - Options
+#    # Parse
+#    typeset -A optlist
+#    autoload -Uz get-arguments
+#    get-arguments -A optlist \
+#                  --flags 'h' 'y' \
+#                  -- $argv
+#    # Set compgen overwrite response (-y)
+#
+#
+#
+#
+#    typeset response=${optlist[-y]:+'yes'}
+#
+#    # Show help message (-h)
+#    if [[ $# -eq 0 ]] ||
+#       [[ $optlist[-h] -eq 1 ]]; then
+#        $0 print-commands $0
+#        return 0
+#    fi
+#
+#
+#    if [[ $# -eq 0 ]] || [[ "$1" == '-h' ]]; then
+#        ${0}_print-commands "$0"
+#    fi
     
     
-    #MARK: - Options
-    # Parse
-    typeset -A optlist
-    autoload -Uz get-arguments
-    get-arguments -A optlist \
-                  --flags 'h' 'y' \
-                  -- $argv
-    # Set compgen overwrite response (-y)
-    typeset response=${optlist[-y]:+'yes'}
+    # Options
+    while [[ $1 =~ ^[-] ]]; do
+      case $1 in
+        (-y|--yes) let fn_overwrite_completion=1 ;;
+        (-h|--help)
+          $0 print-commands $0
+          return 0
+        ;;
+        (--) shift; break ;;
+      esac
+      shift
+    done
     
-    # Show help message (-h)
-    if [[ $# -eq 0 ]] ||
-       [[ $optlist[-h] -eq 1 ]]; then
+    if [[ $# -eq 0 ]]; then
         $0 print-commands $0
-        return 0
-    fi 
-    
-    
+        return 1
+    fi
     
     
     # Command name

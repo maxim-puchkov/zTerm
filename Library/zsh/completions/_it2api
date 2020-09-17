@@ -50,7 +50,7 @@ function _it2api_commands() {
 
 function _it2api_sessions() {
   typeset -a it2api_sessions
-  it2api_sessions=(${(@f)"$(/usr/local/Terminal/zsh/.iterm2/it2api list-sessions |
+  it2api_sessions=(${(@f)"$($ZDOTDIR/.iterm2/it2api list-sessions |
       grep -e 'id=' |
       perl -pe 's/Session \"(.+)\" id=(.+?) (.*)$/\2:\1,\ \3/g')"}
   )

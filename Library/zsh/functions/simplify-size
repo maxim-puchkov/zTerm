@@ -1,0 +1,45 @@
+#!/bin/zsh
+
+#  simplify-size
+#  Z-Function (125)
+#
+#  Created by Maxim Puchkov on 2020-09-16.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# Convert bytes to gigabytes, megabytes, or kilobytes.
+function simplify-size() {(
+  setopt noglob
+  
+  typeset -i size_bytes=${1:=0}
+  typeset -i precision=${2:=1}
+  typeset -F $precision  KB MB GB size_simplified=$size_bytes
+  
+  let KB=1024
+  let MB=$KB*$KB
+  let GB=$KB*$KB*$KB
+  
+  case 1 in
+    # Gigabyte
+    ($(( size_bytes >= $GB )))
+      let size_simplified=$size_bytes/$GB
+      printf '%s%s' "$size_simplified" 'GB'
+    ;;
+    # Megabyte
+    ($(( size_bytes >= $MB )))
+      let size_simplified=$size_bytes/$MB
+      printf '%s%s' "$size_simplified" 'MB'
+    ;;
+    # Kilobyte
+    ($(( size_bytes >= $KB )))
+      let size_simplified=$size_bytes/$KB
+      printf '%s%s' "$size_simplified" 'KB'
+    ;;
+    # Byte
+    (*)
+      printf '%d%s' $size_bytes 'B'
+    ;;
+  esac
+  
+  return 0
+)}

@@ -7,6 +7,45 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
+# Text clicked in iTerm2
+typeset clicked_path="$1"
+notify $clicked_path '' ''
+# If selected filepath contains extra
+# characters, then truncate them
+typeset filepath="$clicked_path"
+while [[ ! -r "$filepath" ]]; do
+  if [[ -z "$filepath" ]]; then
+    return 1
+  fi
+  filepath="${filepath:0:-1}"
+done
+
+
+
+
+# Open flags
+typeset -a FLAGS=()
+# Flags for readable files
+if [[ -r "$filepath" ]] &&
+   [[ ! -d "$filepath" ]]; then
+  FLAGS+=(-a Xcode)
+fi
+
+
+
+# Open file
+typeset -i exit_code=0
+open $FLAGS -- "$filepath"
+let exit_code=$?
+
+if [[ $exit_code -ne 0 ]]; then
+  notify "Cannot open file: ${clicked_path}" "Error $exit_code" "$0"
+fi
+
+return 0
+
+
+
 () {
   # Path to the file
   typeset filepath=$1
@@ -19,13 +58,12 @@
     fi
     filepath=${filepath:0:-1}
   done
-
-  # Open regular files in GUI editor
-  if [[ -f $filepath ]]; then
-    /usr/local/bin/gui-edit $filepath
-  else
-    open $filepath
+  
+  if [[ -r $filepath ]] && [[ ! -d $filepath ]]; then
+    flags+=(-a "$OPEN_APPLICATION")
   fi
+  
+  open $flags $filepath
   return $?
 } $1
 

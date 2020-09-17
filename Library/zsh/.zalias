@@ -1,26 +1,28 @@
 #!/bin/zsh
 
 # User-specific profile for interactive zsh(1) shells
-
-alias nano='nano --mouse'
-
-alias diff='diff -y'
-alias zt='open -a Xcode-beta /usr/local/Terminal/Library/Xcode/CommandLine.xcworkspace'
+#
+#
+#
+#
 
 
 #MARK: - Global Aliases
-# Redirect shell output
-alias -g noerr='2>/dev/null'  # redirect stderr
+# Silence errors
+alias -g noerr='2>/dev/null'
 alias -g 2NIL='2>/dev/null'
-alias -g quiet='&>/dev/null'  # redirect stdout and stderr
+
+# Silence errors and output
+alias -g quiet='&>/dev/null'
 alias -g NIL='&>/dev/null'
 
 # Conditional:  'if [[ ... ]] _T'
 alias -g _T='; then print -P -- TRUE; else print -P -- FALSE; fi;'
+
 # Loops:  'for ... _F' or 'while ... _F'
 alias -g _F='; do print-var x; done;'
 
-alias tl='tldrs'
+
 
 
 
@@ -140,12 +142,21 @@ alias lctl='command launchctl'
 alias cdef='compdef'
 
 
-# Command 'open'
-alias o='open "$PWD"'
 
-alias xopen='open -a Xcode'
-alias xbopen='open -a Xcode-beta' \
-      xb='open -a Xcode-beta'
+
+#function op() {
+#  open -a Xcode ${argv:=$PWD}
+#}
+
+# Command 'open'
+#alias o='open "$PWD"'
+#alias xopen='open -a Xcode'
+
+#function open()
+#alias op='() { open ${@:=$PWD}; }'
+#alias
+alias o='open'
+alias op='open -a Xcode'
 
 alias textopen='open -a TextEdit'
 alias webopen='open -a Safari'
@@ -210,6 +221,11 @@ alias wh='builtin whence -av'
 
 #MARK: - Extended Commands
 alias cd='cdp'
+alias nano='nano --mouse'
+alias diff='diff -y'
+
+alias tl='tldrs'
+alias zrc='open -a Xcode /usr/local/Terminal/Library/Xcode/CommandLine.xcworkspace'
 
 
 
@@ -227,7 +243,7 @@ alias cd='cdp'
 #alias C='retc'
 
 # Change to current Finder directory
-#alias cfd='cd -- "$(pfd)"'
+alias cfd='cd -- "$(pfd)"'
 
 # Set system appearance
 alias darks='set-system-appearance dark'

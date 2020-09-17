@@ -63,7 +63,7 @@ function template() {(
     # replace macro strings.
     function copy_template() {
         # Test run: print the names of the files only
-        if [[ -n ${optlist[t]} ]]; then
+        if [[ $template_test_run -eq 1 ]]; then
             print -P -- "TestRun $0 [$$]: "\
                         "orig[$template_orig] --> "\
                         "New[%F{2}$template_new%f]."
@@ -87,7 +87,7 @@ function template() {(
     
     
     #MARK: - Z-Shell command template
-    ## zsh: zsh script ##
+    ## zsh: executable Z shell script ##
     function template_zsh() {
         target_dir="${target_dir:-${PWD}}"
         name="${$( generate_filename ${1:-${(U)0}} )}"
@@ -96,13 +96,13 @@ function template() {(
         template_new="${target_dir}/${name}"
         template_orig="$templates_dir/$0"
         
-        copy_template
+        copy_template && chmod +x "$template_new"
     }
     
     #MARK: - Z-Shell function
     ## zfunction: zsh autoload function ##
     function template_zfunction() {
-        target_dir="${target_dir:-${zfunc}}"
+        target_dir="${target_dir:-$ZDOTDIR/functions}"
         name="${$( generate_filename $1 ):-${(U)0}}"
         m_filename=$name
         m_package_name='Z-Function'
@@ -278,26 +278,51 @@ function template() {(
     )
     
     # Function options
-    typeset -A optlist
-    get_options optlist 'd:Dt' "$@"
-    shift $optlist[length]
+#    typeset -A optlist
+#    get_options optlist 'd:Dt' "$@"
+#    shift $optlist[length]
+    # Options
+
+
+    typeset name template_orig template_new target_dir
+    typeset -i template_test_run=0
+    while [[ $1 =~ ^[-] ]]; do
+      case $1 in
+        # Set target directory
+        (-d)
+          if [[ -z "$2" ]]; then
+            error -1 'Target directory is not specified.'
+          fi
+          target_dir="${2:=$PWD}"
+          shift
+        ;;
+        # Enable test run (files not copied to target)
+        (-t)
+          let template_test_run=1
+          m_template_id='No identifier'
+        ;;
+        #
+        (--) shift; break ;;
+      esac
+      shift
+    done
+
+    
     
     if [[ $# -eq 0 ]]; then
         fn print-commands $0
         return 2
     fi
     
-    typeset name target_dir template_orig template_new
     
     # Template output directory (-d)
-    target_dir=${optlist[d]:a}
-    if [[ -n "$target_dir" ]] && [[ ! -d "$target_dir" ]]; then
-        error "Invalid directory: %F{1}$target_dir%f."
-        return 2
-    fi
-    
-    if [[ -n $optlist[t] ]]; then
-        m_template_id='No identifier'
+#    target_dir=${optlist[d]:a}
+#    target_dir=${target_dir:a}
+    if [[ -n "$target_dir" ]] &&
+       [[ ! -d "${target_dir:a}" ]]; then
+        #error "Invalid directory: %F{1}$target_dir%f."
+        error -1 'Invalid directory: ${target_dir}.'
+        return 1
     fi
     
     # Subcommand

@@ -52,8 +52,8 @@ function print-array() {(
     # Set colors and styles
     typeset index_color
     typeset {l,r}brace
-    lbrace=$(bold '{')
-    rbrace=$(bold '}')
+    lbrace=$'\e[1m{\e[22m'
+    rbrace=$'\e[1m}\e[22m'
     
     # Array to print
     typeset id=$1

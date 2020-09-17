@@ -3,5 +3,5 @@
 
 local -a found
 local expl
-found=( $ZTERM/zsh/**/*(.:t) )
+found=( $ZDOTDIR/*/*(.:t) )
 _wanted zfunctions expl 'z-function' compadd -a found
