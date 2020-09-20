@@ -25,6 +25,8 @@ alias -g _F='; do print-var x; done;'
 
 
 
+alias sp='sprint'
+
 
 #MARK: - Regular Aliases
 # Builtin 'autoload'
@@ -44,8 +46,9 @@ alias lsa='ls -a' \
       la='ls -la'
 alias l='ls -l' \
       ll='ls -lA' \
-      lll='ls -lAO' \
-      llll='ls -lAOR'
+      lll='() { ls -lA "${@:-$PWD}/"*; }'
+alias lf='ls -lO'
+
 # Function 'list'
 alias ltc='list tc' \
       ltca='list tc -a'
@@ -55,7 +58,8 @@ alias ltch='list tch'
 alias ltm='list tm'
 alias lS='list S' \
       lSa='list S -a'
-alias lf='list f'
+alias listf='list f'
+
 # iTerm2 script
 alias lsimg='imgls'
 
@@ -127,10 +131,16 @@ alias gs='git status'
 # Command 'google'
 alias ggl='/usr/local/bin/google'
 
+
 # Command 'grep'
 alias gr='grep'
 alias grepa='egrep --color=always --text --regexp ".*"'
 alias mang='grepman'
+
+alias hgrep='GREP_COLOR="1;30;43" grep'
+alias hegrep='GREP_COLOR="1;30;43" egrep'
+alias hfgrep='GREP_COLOR="1;30;43" fgrep'
+
 
 # Help
 alias help='run-help'
@@ -144,23 +154,10 @@ alias cdef='compdef'
 
 
 
-#function op() {
-#  open -a Xcode ${argv:=$PWD}
-#}
 
 # Command 'open'
-#alias o='open "$PWD"'
-#alias xopen='open -a Xcode'
-
-#function open()
-#alias op='() { open ${@:=$PWD}; }'
-#alias
 alias o='open'
 alias op='open -a Xcode'
-
-alias textopen='open -a TextEdit'
-alias webopen='open -a Safari'
-alias scriptopen='open -a "Script Editor"'
 alias vb='open -a VirtualBox'
 alias music='open -a Music'
 
@@ -190,12 +187,14 @@ alias set1='set -x; set +x -- -x -y oy -z oz1 oz2 -- -r REST' \
       set2='set -- -a -b -c -d D -e E -f F' \
       set3='set -- -a -b -c -d D -e E -f F --long LONG args "hello world"'
 
+
 # 'unset'
 alias uns='unset'
 alias unf='unfunction'
 
 
 # Command 'openssl'
+alias openssl='/usr/local/opt/openssl/bin/openssl'
 alias sha256='openssl sha256'
 
 # Command 'sqlite3'
@@ -206,14 +205,15 @@ alias str='/usr/bin/strings'
 
 
 # Builtin 'typeset'
-alias ts='typeset' \
-      tsp='typeset -p' \
-      Float='typeset -F' \
+#alias typeset='noglob typeset'
+alias ts='noglob typeset -m' \
+      tsp='noglob typeset -p -m'
+alias Float='typeset -F' \
       int='typeset -i'
 
 
 # Builtin 'whence'
-alias wh='builtin whence -av'
+alias wha='builtin whence -av'
 
 
 
@@ -222,11 +222,14 @@ alias wh='builtin whence -av'
 #MARK: - Extended Commands
 alias cd='cdp'
 alias nano='nano --mouse'
-alias diff='diff -y'
+#alias diff='diff -y'
+
+alias diff='diff --suppress-common-lines --side-by-side --color'
 
 alias tl='tldrs'
-alias zrc='open -a Xcode /usr/local/Terminal/Library/Xcode/CommandLine.xcworkspace'
+#alias zrc='open -a Xcode /usr/local/Terminal/Library/Xcode/CommandLine.xcworkspace'
 
+alias zrc='open -a Xcode ~zsh/.{zprofile,zutil,zalias,zshrc}'
 
 
 
@@ -300,3 +303,9 @@ alias my-postal='print -P "%F{14}V3T 2S5%f"'
 
 alias c='/bin/cat'
 alias n='/usr/bin/nano'
+
+alias ij='open -a "IntelliJ IDEA CE.app"'
+
+alias .g='open -a Xcode .gitignore'
+alias .ci='open -a Xcode .gitlab/.gitlab-ci.yml'
+alias mvnh='print -l -- validate compile test package integration-test verify install deploy'

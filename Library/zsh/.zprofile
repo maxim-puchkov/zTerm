@@ -6,14 +6,62 @@
 # User-specific profile for interactive zsh(1) shells.
 
 
+#code='if [[ ! -e var ]]; then
+#  typeset -a files
+#  files=( /tmp /tmp/.* /tmp/*.* /tmp/? /tmp/file-[:digit:]# )
+#  while [[ -n "$1" ]]; do
+#    builtin echo -p cd ~/Library/DES/ "/" not/a/path >outf
+#    cat <outf <(ls -ld -- **/*(.@:t)) >>&|new.txt
+#    grep -e '[a-z]' <<< "$(echo "string" "$1")"
+#  done
+#fi'
+#
+#function f() {
+#  code=${argv:=$code}
+#  print -rz "$0||
+#$code"
+#}
 
+function hist() {
+  if [[ -n $1 ]]; then
+    fc -l 1 | grep -E $1 --color='always'
+  else
+    fc -l -40
+  fi
+}
+
+function ti() {
+  setopt extendedglob
+  # Number of times command will be executed
+  typeset -i count=1000
+  case "$1" in (-[0-9]##)
+    let count="${1#-}"
+    shift
+  esac
+  
+  
+  # Time command execution
+  typeset cmd="$1"
+  trap '{
+  time (repeat '$count'; do
+    '$cmd'
+  done &>/dev/null) &&
+  header "'$0'>  '"${(q)cmd}"'  (count: '$count')"
+  } &' EXIT
+}
 
 # tldrs - run both `tldr' and `tealdeer' commands
-function tldrs() {
-  /usr/local/bin/tldr $argv
-  /usr/local/bin/tealdeer $argv
-}
+#function tldrs() {
+#  /usr/local/bin/tldr $argv
+#  /usr/local/bin/tealdeer $argv
+#}
 #compdef '_tealdeer' tldrs
+
+function header() {
+  set -- " $@"
+  print -P -- "%B%K{168}${(pr:$COLUMNS:)@}%k%b"
+}
+
 
 
 # shlvl - print shell command path and shell level
@@ -21,6 +69,15 @@ function shlvl lvl() {
   typeset -m -- 'SHELL' 'SHLVL'
 }
 
+
+# Go to working directory
+if [[ -L ~/var/select/wd ]]; then
+  cd -P ~/var/select/wd
+fi
+function wd() {
+  ln -Fins ${argv:-$PWD} ~/var/select/$0
+  return $?
+}
 
 
 

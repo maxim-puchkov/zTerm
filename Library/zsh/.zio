@@ -2,6 +2,61 @@
 # Input/output styles.
 
 
+# Enable highlighters
+ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern)
+
+#ZSH_HIGHLIGHT_STYLES=()
+ZSH_HIGHLIGHT_STYLES+=(
+  ${(@f)$(cat <~/var/styles.txt)}
+)
+
+#preexec_functions+=(update_highlight_preexec)
+#update_highlight_preexec() {
+#  set +A ZSH_HIGHLIGHT_STYLES   ${(@f)$(cat <~/var/styles.txt)}
+#  export ZSH_HIGHLIGHT_STYLES
+#}
+
+#ZSH_HIGHLIGHT_STYLES+=(
+#  [arg0]='fg=041,underline'
+#  [reserved-word]='fg=172'
+#  [assign]='fg=144'
+#  [redirection]='fg=081'
+#  [globbing]='bg=224,standout'
+#  [comment]='fg=green,standout'
+#  [history-expansion]='fg=009'
+#  [precommand]='fg=white,underline'
+#  [function]='fg=111'
+#)
+
+setstyle() {
+  key="${1?}"
+  value="${2:=bg=red}"
+  echo "$0> Style $key is set to $value"
+  ZSH_HIGHLIGHT_STYLES[$key]="$value"
+}
+
+viewstyle() {
+  typeset -p ZSH_HIGHLIGHT_STYLES
+}
+
+
+function specls() {
+  unset result
+  typeset -ag result
+  typeset value
+  typeset reset=$'\e[0m'
+  
+  typeset -i -Z3 i=0
+  for i in {000..255}; do
+    print -v value -P -- "\e[2m[${i}]\e[0m  ${FG[$i]}${argv:=TEXT}${reset} | ${BG[$i]}${argv:=TEXT}${reset}"
+    result+=("$value")
+  done
+  print -ac -- $result
+}
+
+
+
+
 
 function samename() {
   echo "Function ${0} (argc: ${#}, argv: {${@}})."
@@ -12,119 +67,6 @@ alias samename='echo "Alias samename: "'
 
 
 
-typeset -Ag format_style_codes
-format_style_codes=(
-  [reset]=0     [normal]=0
-  [bold]=1
-  [dim]=2
-  [italic]=3
-  [underline]=4
-  [blink]=5
-  [standout]=7
-  
-  [no-bold]=22
-  [no-dim]=22
-  [no-italic]=23
-  [no-underline]=24
-  [no-standout]=27
-  
-  [black]=30
-  [red]=31      [r]=31
-  [green]=32    [g]=32
-  [yellow]=33   [y]=33
-  [blue]=34     [b]=34
-  [magenta]=35  [m]=35
-  [cyan]=36     [c]=36
-  [grey]=37     [light-grey]=37
-  [default]=39
-  
-  [dark-grey]=90
-  [Red]=91       [R]=91
-  [Green]=92     [G]=92
-  [Yellow]=93    [Y]=93
-  [Blue]=94      [B]=94
-  [Magenta]=95   [M]=95
-  [Cyan]=96      [C]=96
-  [white]=97     [w]=97
-  [White]=97     [W]=97
-  
-  [blackbg]=40
-  [redbg]=41     [rbg]=41
-  [greenbg]=42   [gbg]=42
-  [yellowbg]=43  [ybg]=43
-  [bluebg]=44    [bbg]=44
-  [magentabg]=45 [mbg]=45
-  [cyanbg]=46    [cbg]=46
-  [greybg]=47    [light-greybg]=47
-  [defaultbg]=49
-  
-  [dark-greybg]=100
-  [Redbg]=101     [Rbg]=101
-  [Greenbg]=102   [Gbg]=102
-  [Yellowbg]=103  [Ybg]=103
-  [Bluebg]=104    [Bbg]=104
-  [Magentabg]=105 [Mbg]=105
-  [Cyanbg]=106    [Cbg]=106
-  [whitebg]=107   [wbg]=107
-  [Whitebg]=107   [Wbg]=107
-)
-
-
-
-function sprint() {
-  function sprint_escape() {
-    printf '\e[%im' $1
-  }
-  
-  
-  setopt extendedglob
-  
-  
-  while [[ -n "$1" ]]; do
-    case "$1" in
-      # Single or multiple minus '-' characters terminate
-      # option processing. Remaining arguments are
-      # printed as text.
-      (-#)
-        shift
-        break
-      ;;
-      
-      
-      # Determine and apply format styles.
-      # E.g.: '-bold', '-red', '-reset'.
-      (-*)
-        typeset style_name="${1#-}"
-        shift
-        
-        typeset code="${format_style_codes[$style_name]}"
-        # If style is not found, print error and continue
-        if [[ -z "$code" ]]; then
-          echo
-          error -1 +R  -- 'Style name ${style_name} not recognized'
-          continue
-        fi
-        # Print escape sequence for style code
-        sprint_escape $code
-      ;;
-      
-      
-      # Print current argument
-      (*)
-        printf '%s ' "$1"
-        shift
-      ;;
-    esac
-  done
-  
-  
-  
-  
-  if [[ $# -ne 0 ]]; then
-    printf '%s ' "$@"
-  fi
-  echo
-}
 
 
 #

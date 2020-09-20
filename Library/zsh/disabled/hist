@@ -16,6 +16,7 @@
 #   hist
 #   hist [-c count] [pattern]
 function hist() {
+
   # Length and Arrangement of event list
   typeset fc_list_count='-25'
   

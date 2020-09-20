@@ -9,8 +9,8 @@
 
 # Show enabled/disabled options.
 function zopts() {
-    local ON=$(green 'on')
-    local OFF=$(red 'off')
+    local ON=$'\e[32mon\e[0m'
+    local OFF=$'\e[31moff\e[0m'
     local title='%U%F{4}Z-Shell Options%f%u'
     local k v
     typeset -A list

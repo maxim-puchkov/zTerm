@@ -29,6 +29,15 @@ function plugins() {
   esac
 }
 
+function tldr() {
+  header 'tldr'
+  /usr/local/bin/tldr $argv
+  header 'tealdeer'
+  /usr/local/bin/tealdeer $argv
+}
+compdef '_tealdeer' tldr
+
+
 
 
 
@@ -130,7 +139,7 @@ function desk()     { cd "$HOME/Desktop/$@"; }
 # Go to Library.
 function lib()      { cd "$HOME/Library/$@"; }
 # Go to Development root.
-function dev()      { cd "$DEV/$@"; }
+function dev()      { cd "$HOME/dev/$@"; }
 # Go to Projects directory.
 function proj()     { cd "$DEV/Projects/$@"; }
 # Go to Developer Library.
@@ -283,10 +292,6 @@ function show-executables() {
 
 
 
-function print-q() {
-    builtin print -- "${(qqqq)argv}"
-}
-
 
 #TODO: - Keep -
 # print-mark: timestamp
@@ -329,6 +334,9 @@ function lorem() {
   return 0
 }
 
+function printq() {
+  print -- ${argv:q}
+}
 
 
 

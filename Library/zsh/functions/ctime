@@ -15,21 +15,23 @@
 # Examples:
 # 1. Run commands `echo "Hello"' and `printf "Hello\n"' 10 times:
 #    ctime -N 10 'echo "Hello"' 'printf "Hello\n"'
-
+if [[ ${+functions[$0]} -eq 1 ]]; then
+  unset -f $0
+  autoload $0
+fi
 
 
 #MARK: - Repetition Count
 # Default number of reptitions
-typeset -i repetition_count=10000
+typeset -i count=10
 
 # Parse options
-while [[ $1 =~ '^[-]' ]]
-do
+while [[ $1 =~ ^[-] ]]; do
   case $1 in
     # -N: number of times each command is invoked
     (-N)
       if [[ $2 -gt 0 ]]; then
-        let repetition_count="$2"
+        let count="$2"
         shift
       else
         printf '%s: count must be a positive number.\n' "$0" >&2
@@ -54,41 +56,56 @@ done
 
 
 
-#MARK: - Executed Commands
-# Loop with '$1' iterations of command '$2'
-function ctime-loop() {
-  magentabg "Ctime Loop called for N='${1}', COMMAND='${2}'."
-  
-  while [[ $1 -gt 0 ]]
+return 0
+
+(time ( repeat $count; do $=@; done ))
+
+time (
+  while [[ $count -gt 0 ]];
   do
-    zsh -c "$2"
-    let "argv[1]=($1 - 1)"
+    $@
+    let count="$count-1"
   done
-  
-  return 0
-}
-
-# If commands are not specified, print error
-if [[ $# -eq 0 ]]; then
-  printf '%s: commands are not specified.\n' "$0" >&2
-  return 1
-fi
-
-# Invoke each command N times
-while [[ -n $1 ]]; do
-  ctime-loop $repetition_count "${1}" &!
-  shift
-done
+)
+#
+#
+##MARK: - Executed Commands
+## Loop with '$1' iterations of command '$2'
+#function ctime-loop() {
+#  let N="$1"
+#  local cmd="$2"
+#  sprint -magenta-bg "Ctime Loop called for N='${1}', COMMAND='${2}'."
+#
+#  while [[ $N -gt 0 ]]
+#  do
+#    zsh -c "$cmd"
+#    let N="($N - 1)"
+#  done &>/dev/null
+#
+#  return 0
+#}
+#
+## If commands are not specified, print error
+#if [[ $# -eq 0 ]]; then
+#  printf '%s: commands are not specified.\n' "$0" >&2
+#  return 1
+#fi
+#
+## Invoke each command N times
+#while [[ -n $1 ]]; do
+#  time (ctime-loop $count "${1}") &!
+#  shift
+#done
 
 
 
 
 #printf \
 #  '%s: measuring time to run each of the %i commands N=%i times.\n' \
-#  "$0" ${#argv} $repetition_count >&2
+#  "$0" ${#argv} $count >&2
 
 #  red "Loop Command: <${1}>"
-#  green "ctime-loop $repetition_count \"${1}\" &!"
+#  green "ctime-loop $count \"${1}\" &!"
 
 #for cmd do done ctime-loop $N &!
 

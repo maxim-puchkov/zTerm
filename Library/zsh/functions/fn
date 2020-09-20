@@ -51,6 +51,7 @@ function fn() {(
         return 0
     }
     
+    
     ## sub: list functions defined within a function ##
     function fn_sub() {
         typeset fn_syntax fn_pattern

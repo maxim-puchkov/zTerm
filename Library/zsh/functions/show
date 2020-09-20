@@ -72,15 +72,7 @@
 #
 #)}
 
-#for arg; so
-#  if [[ ${+aliases[$arg]}) -eq 1 ]]; then fi ; done
 
-
-
-
-
-
-#return 0
 
 
 #MARK: - show (version 1)
