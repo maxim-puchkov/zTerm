@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-# User-specific profile for interactive zsh(1) shells
+#  User-specific profile for interactive zsh(1) shells
 #
 #
 #
@@ -24,8 +24,11 @@ alias -g _F='; do print-var x; done;'
 
 
 
-
 alias sp='sprint'
+alias hxd='open -a /Applications/"Hex Fiend.app"'
+
+alias clrscreen='printf "\e[r"'
+
 
 
 #MARK: - Regular Aliases
@@ -157,7 +160,8 @@ alias cdef='compdef'
 
 # Command 'open'
 alias o='open'
-alias op='open -a Xcode'
+alias xc='open -a Xcode'
+alias ij='open -a "IntelliJ IDEA CE"'
 alias vb='open -a VirtualBox'
 alias music='open -a Music'
 
@@ -227,7 +231,6 @@ alias nano='nano --mouse'
 alias diff='diff --suppress-common-lines --side-by-side --color'
 
 alias tl='tldrs'
-#alias zrc='open -a Xcode /usr/local/Terminal/Library/Xcode/CommandLine.xcworkspace'
 
 alias zrc='open -a Xcode ~zsh/.{zprofile,zutil,zalias,zshrc}'
 
@@ -246,7 +249,7 @@ alias zrc='open -a Xcode ~zsh/.{zprofile,zutil,zalias,zshrc}'
 #alias C='retc'
 
 # Change to current Finder directory
-alias cfd='cd -- "$(pfd)"'
+alias cfd='cd "$(pfd)"'
 
 # Set system appearance
 alias darks='set-system-appearance dark'
@@ -304,7 +307,6 @@ alias my-postal='print -P "%F{14}V3T 2S5%f"'
 alias c='/bin/cat'
 alias n='/usr/bin/nano'
 
-alias ij='open -a "IntelliJ IDEA CE.app"'
 
 alias .g='open -a Xcode .gitignore'
 alias .ci='open -a Xcode .gitlab/.gitlab-ci.yml'

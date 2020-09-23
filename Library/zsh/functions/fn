@@ -47,7 +47,7 @@ function fn() {(
         if [[ ! -r $fn_file ]]; then
             error -1 'Cannot read source file of function ${fn_name}.'
         fi
-        open -a Xcode $fn_file
+        open -a ${XCODE:=Xcode} $fn_file
         return 0
     }
     
@@ -100,22 +100,22 @@ function fn() {(
         return 0
     }
     ## options: list function flags and options ##
-    function fn_options() {
-        typeset grep_pattern='^[ ]*##[ ]*[\-\+][^ ]+: .* ##[ ]*$'
-        typeset sed_pattern='s/## ([\-\+].*): (.*) ##/\1: \2/p'
-        typeset -A reply
-        reply=("${(@f)$(grep -E $grep_pattern $fn_file |
-            sed -n -E $sed_pattern |
-            awk -F ': ' '{print $1; print $2;}' )}")
-        # Print completion for arguments
-        local k v
-        for k v in ${(kv)reply}; do
-            if [[ $k =~ '[,]' ]]; then
-                k="{$k}"
-            fi
-            printf '\t%s"[%s]" \\\\\n' "$k" "$v"
-        done
-    }
+#    function fn_options() {
+#        typeset grep_pattern='^[ ]*##[ ]*[\-\+][^ ]+: .* ##[ ]*$'
+#        typeset sed_pattern='s/## ([\-\+].*): (.*) ##/\1: \2/p'
+#        typeset -A reply
+#        reply=("${(@f)$(grep -E $grep_pattern $fn_file |
+#            sed -n -E $sed_pattern |
+#            awk -F ': ' '{print $1; print $2;}' )}")
+#        # Print completion for arguments
+#        local k v
+#        for k v in ${(kv)reply}; do
+#            if [[ $k =~ '[,]' ]]; then
+#                k="{$k}"
+#            fi
+#            printf '\t%s"[%s]" \\\\\n' "$k" "$v"
+#        done
+#    }
     
     # Completion for flags and options
     function fn_completion-arguments() {
@@ -264,6 +264,33 @@ EOF
     }
     
     
+    #MARK: - New Functions
+    function fn_options() {
+      typeset -a fn_options=()
+      set -A fn_options   $($fn_name --list-options)  2>/dev/null
+      print -nrC1 -- $fn_options
+      return "(${#fn_options} == 0)"
+    }
+    function fn_argument-completion() {
+      cat <<EOF
+# compdef ${fn_name}
+
+#  _${fn_name}
+#  Completion function
+
+
+_arguments -C -s -A "-*" -S \\
+$(print -x2 -l -r -- $'\t"'${(@f)^"$($fn_name --completion)"}'" \' $'\t''*: :_default')
+
+return 0
+
+EOF
+#      compdef "_arguments \"${(@f)$($fn_name --completion)}\"" $fn_name
+    }
+    
+    
+    
+    
 #    #MARK: - Options
 #    # Parse
 #    typeset -A optlist
@@ -294,14 +321,19 @@ EOF
     # Options
     while [[ $1 =~ ^[-] ]]; do
       case $1 in
-        (-y|--yes) let fn_overwrite_completion=1 ;;
+        (-y|--yes)
+          let fn_overwrite_completion=1
+          shift ;;
         (-h|--help)
           $0 print-commands $0
-          return 0
-        ;;
-        (--) shift; break ;;
+          return 0 ;;
+        (--)
+          shift
+          break ;;
+        (*)
+          opt=$1 error -1 -- 'Bad option: ${opt}'
+          shift ;;
       esac
-      shift
     done
     
     if [[ $# -eq 0 ]]; then
@@ -336,7 +368,7 @@ EOF
     
     # Source file
     autoload +X $fn_name
-    typeset fn_file=$functions_source[$fn_name]
+    typeset fn_file=${functions_source[$fn_name]}
     if [[ -z $fn_file ]]; then
         error -1 'Cannot read source file for function ${fn_name}.'
     fi

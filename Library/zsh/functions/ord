@@ -12,7 +12,13 @@
 # Examples:
 #   `ord -n -o m'   prints  'mno'
 #   `ord -a -1 -1'  prints  '1Za'
-function ord() {(
-  set -o extendedglob
-  printf '%b' "${(@s::j::ou)argv##-#}" '\n'
-)}
+#function ord() {(
+#  set -o extendedglob
+#  printf '%b' "${(@s::j::ou)argv##-#}" '\n'
+#)}
+
+
+function ord() {
+  builtin print -nrC1 -- "${(j::)${(@ous::)argv}}"
+  return "(${#argv} == 0)"
+}

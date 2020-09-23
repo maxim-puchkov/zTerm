@@ -1,0 +1,91 @@
+# compdef sprint
+
+#  _sprint
+#  Completion function
+
+
+_arguments -C -s -A "-*" -S \
+  "-dim[ANSI code 2]" \
+  "-G[ANSI code 92]" \
+  "-r-bg[ANSI code 41]" \
+  "-yellow[ANSI code 33]" \
+  "-White[ANSI code 97]" \
+  "-bold[ANSI code 1]" \
+  "-white-bg[ANSI code 107]" \
+  "-M-bg[ANSI code 105]" \
+  "-Magenta-bg[ANSI code 105]" \
+  "-reset[ANSI code 0]" \
+  "-no-dim[ANSI code 22]" \
+  "-M[ANSI code 95]" \
+  "-red[ANSI code 31]" \
+  "-Cyan-bg[ANSI code 106]" \
+  "-G-bg[ANSI code 102]" \
+  "-default[ANSI code 39]" \
+  "-R[ANSI code 91]" \
+  "-no-bold[ANSI code 22]" \
+  "-no-underline[ANSI code 24]" \
+  "-C-bg[ANSI code 106]" \
+  "-dgrey-bg[ANSI code 100]" \
+  "-yellow-bg[ANSI code 43]" \
+  "-W[ANSI code 97]" \
+  "-Yellow[ANSI code 93]" \
+  "-b-bg[ANSI code 44]" \
+  "-Y[ANSI code 93]" \
+  "-magenta[ANSI code 35]" \
+  "-grey-bg[ANSI code 47]" \
+  "-red-bg[ANSI code 41]" \
+  "-blink[ANSI code 5]" \
+  "-Yellow-bg[ANSI code 103]" \
+  "-blue-bg[ANSI code 44]" \
+  "-blue[ANSI code 34]" \
+  "-b[ANSI code 34]" \
+  "-y-bg[ANSI code 43]" \
+  "-grey[ANSI code 37]" \
+  "-c[ANSI code 36]" \
+  "-default-bg[ANSI code 49]" \
+  "-no-standout[ANSI code 27]" \
+  "-w-bg[ANSI code 107]" \
+  "-Green[ANSI code 92]" \
+  "-g[ANSI code 32]" \
+  "-cyan[ANSI code 36]" \
+  "-R-bg[ANSI code 101]" \
+  "-Red-bg[ANSI code 101]" \
+  "-white[ANSI code 97]" \
+  "-Blue-bg[ANSI code 104]" \
+  "-standout[ANSI code 7]" \
+  "-m[ANSI code 35]" \
+  "-Green-bg[ANSI code 102]" \
+  "-m-bg[ANSI code 45]" \
+  "-underline[ANSI code 4]" \
+  "-r[ANSI code 31]" \
+  "-Red[ANSI code 91]" \
+  "-magenta-bg[ANSI code 45]" \
+  "-dark-grey-bg[ANSI code 100]" \
+  "-Magenta[ANSI code 95]" \
+  "-g-bg[ANSI code 42]" \
+  "-italic[ANSI code 3]" \
+  "-White-bg[ANSI code 107]" \
+  "-w[ANSI code 97]" \
+  "-B-bg[ANSI code 104]" \
+  "-no-italic[ANSI code 23]" \
+  "-light-grey[ANSI code 37]" \
+  "-c-bg[ANSI code 46]" \
+  "-cyan-bg[ANSI code 46]" \
+  "-y[ANSI code 33]" \
+  "-dark-grey[ANSI code 90]" \
+  "-black-bg[ANSI code 40]" \
+  "-normal[ANSI code 0]" \
+  "-Blue[ANSI code 94]" \
+  "-black[ANSI code 30]" \
+  "-light-grey-bg[ANSI code 47]" \
+  "-Y-bg[ANSI code 103]" \
+  "-W-bg[ANSI code 107]" \
+  "-green[ANSI code 32]" \
+  "-B[ANSI code 94]" \
+  "-C[ANSI code 96]" \
+  "-Cyan[ANSI code 96]" \
+  "-green-bg[ANSI code 42]" \
+  *: :_default
+
+return 0
+

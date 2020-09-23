@@ -9,87 +9,69 @@
 
 # sprint
 function sprint() {
-if [[ ${+functions[$0]} -eq 1 ]]; then
-  unset -f $0
-  autoload $0
-fi
-
-
-typeset -Ag format_style_codes
-format_style_codes=(
-  [reset]=0     [normal]=0
-  [bold]=1
-  [dim]=2
-  [italic]=3
-  [underline]=4
-  [blink]=5
-  [standout]=7
+  setopt extendedglob
   
-  [no-bold]=22
-  [no-dim]=22
-  [no-italic]=23
-  [no-underline]=24
-  [no-standout]=27
-  
-  [black]=30
-  [red]=31      [r]=31
-  [green]=32    [g]=32
-  [yellow]=33   [y]=33
-  [blue]=34     [b]=34
-  [magenta]=35  [m]=35
-  [cyan]=36     [c]=36
-  [grey]=37     [light-grey]=37
-  [default]=39
-  
-  [black-bg]=40
-  [red-bg]=41     [r-bg]=41
-  [green-bg]=42   [g-bg]=42
-  [yellow-bg]=43  [y-bg]=43
-  [blue-bg]=44    [b-bg]=44
-  [magenta-bg]=45 [m-bg]=45
-  [cyan-bg]=46    [c-bg]=46
-  [grey-bg]=47    [light-grey-bg]=47
-  [default-bg]=49
-  
-  [dark-grey]=90
-  [Red]=91       [R]=91
-  [Green]=92     [G]=92
-  [Yellow]=93    [Y]=93
-  [Blue]=94      [B]=94
-  [Magenta]=95   [M]=95
-  [Cyan]=96      [C]=96
-  [white]=97     [w]=97
-  [White]=97     [W]=97
-  
-
-  [dark-grey-bg]=100  [dgrey-bg]=100
-  [Red-bg]=101     [R-bg]=101
-  [Green-bg]=102   [G-bg]=102
-  [Yellow-bg]=103  [Y-bg]=103
-  [Blue-bg]=104    [B-bg]=104
-  [Magenta-bg]=105 [M-bg]=105
-  [Cyan-bg]=106    [C-bg]=106
-  [white-bg]=107   [w-bg]=107
-  [White-bg]=107   [W-bg]=107
-)
-
-
-  function sprint_escape() {
+  function sprint_escape_ansi() {
     printf '\e[%im' $1
   }
   
-  
-  setopt extendedglob
+  if [[ ! -v format_style_codes ]]; then
+    typeset -Ag format_style_codes
+    format_style_codes=(
+      [reset]=0   [normal]=0    [bold]=1   [dim]=2
+      [italic]=3  [underline]=4 [blink]=5  [standout]=7
+      
+      [no-bold]=22    [no-dim]=22
+      [no-italic]=23  [no-underline]=24 [no-standout]=27
+      
+      [black]=30    [grey]=37 [light-grey]=37 [default]=39
+      [red]=31      [r]=31    [green]=32      [g]=32
+      [yellow]=33   [y]=33    [blue]=34       [b]=34
+      [magenta]=35  [m]=35    [cyan]=36       [c]=36
+      
+      [black-bg]=40   [grey-bg]=47  [light-grey-bg]=47  [default-bg]=49
+      [red-bg]=41     [r-bg]=41     [green-bg]=42       [g-bg]=42
+      [yellow-bg]=43  [y-bg]=43     [blue-bg]=44        [b-bg]=44
+      [magenta-bg]=45 [m-bg]=45     [cyan-bg]=46        [c-bg]=46
+      
+      [dark-grey]=90
+      [Red]=91       [R]=91   [Green]=92     [G]=92
+      [Yellow]=93    [Y]=93   [Blue]=94      [B]=94
+      [Magenta]=95   [M]=95   [Cyan]=96      [C]=96
+      [white]=97     [w]=97   [White]=97     [W]=97
+      
+      [dark-grey-bg]=100  [dgrey-bg]=100
+      [Red-bg]=101        [R-bg]=101    [Green-bg]=102   [G-bg]=102
+      [Yellow-bg]=103     [Y-bg]=103    [Blue-bg]=104    [B-bg]=104
+      [Magenta-bg]=105    [M-bg]=105    [Cyan-bg]=106    [C-bg]=106
+      [white-bg]=107      [w-bg]=107    [White-bg]=107   [W-bg]=107
+    )
+  fi
   
   
   while [[ -n "$1" ]]; do
     case "$1" in
-      # Single or multiple minus '-' characters terminate
+      # Single or multiple '-' characters terminate
       # option processing. Remaining arguments are
       # printed as text.
       (-#)
         shift
         break
+      ;;
+      
+      (--completion)
+        { print -aC2 -nr -- ${(kv)format_style_codes} |
+          awk '{print "-"$1"[ANSI code "$2"]"}' }
+        return 0
+      ;;
+      (--list-options)
+        print -C1 -nr -- '-'${(@k)^format_style_codes}
+        return 0
+      ;;
+      
+      (-l|--list-styles)
+        print -- ${(@k)format_style_codes}
+        return 0
       ;;
       
       
@@ -107,7 +89,7 @@ format_style_codes=(
           continue
         fi
         # Print escape sequence for style code
-        sprint_escape $code
+        sprint_escape_ansi $code
       ;;
       
       
