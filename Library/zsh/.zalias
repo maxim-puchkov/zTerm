@@ -23,6 +23,12 @@ alias -g _T='; then print -P -- TRUE; else print -P -- FALSE; fi;'
 alias -g _F='; do print-var x; done;'
 
 
+alias zshrc='open -a Xcode ~zsh/.zshrc'
+alias zalias='open -a Xcode ~zsh/.zalias'
+alias zprofile='open -a Xcode ~zsh/.zprofile'
+alias zutil='open -a Xcode ~zsh/.zutil'
+alias zzzs='open -a Xcode "$zdot/.z"*~"$zdot/."(zcompdump|zsh_sessions)*'
+
 
 alias sp='sprint'
 alias hxd='open -a /Applications/"Hex Fiend.app"'
