@@ -1,19 +1,27 @@
 .DS_Store
 
-Library/Profiles
 
-etc/commit*
-etc/template*
+Library/Profiles/*
+**/etc/*.id
+**/var/*
 
-**/__pycache__
+
+**/.zcompdump*
+**/*.zsh_history
+
+**/.iterm2/*
+**/.oh-my-zsh/*
+**/.zsh_sessions/*
+
+
+
+**/__pycache__/*
 **/*.pyc
+
 
 **/*.xcodeproj/*
 **/*.xcworkspace/*
-**/var/
 
-**/.iterm2*
-**/.oh-my-zsh/
-**/.zcompdump*
-**/.zsh_sessions/
-**/.zsh_history
+
+
+
