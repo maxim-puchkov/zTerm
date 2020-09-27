@@ -1,0 +1,36 @@
+arg0 fg=002
+builtin fg=010
+precommand fg=011
+reserved-word fg=214
+function fg=033
+alias fg=075,underline
+command fg=076,underline
+
+single-hyphen-option fg=060
+double-hyphen-option fg=060
+single-quoted-argument fg=166
+double-quoted-argument fg=166
+dollar-quoted-argument fg=166
+back-dollar-quoted-argument fg=014
+back-double-quoted-argument fg=014
+dollar-double-quoted-argument fg=075
+
+redirection fg=045
+process-substitution-delimiter fg=013,bold
+command-substitution-delimiter fg=013,bold
+
+bracket-level-1 fg=128
+bracket-level-2 fg=128
+bracket-level-3 fg=189
+bracket-level-4 fg=080
+bracket-level-5 fg=080
+bracket-error fg=001
+
+path fg=135,underline
+globbing fg=208,bold,standout
+assign underline
+
+comment fg=028,standout
+history-expansion bg=129,standout
+unknown-token fg=196,underline
+

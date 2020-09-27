@@ -7,7 +7,7 @@ ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern)
 
 #ZSH_HIGHLIGHT_STYLES=()
 ZSH_HIGHLIGHT_STYLES+=(
-  ${(@f)$(cat <~/var/styles.txt)}
+  ${(@f)$(<$zterm/etc/zsh-highlight-styles)}
 )
 
 #preexec_functions+=(update_highlight_preexec)
