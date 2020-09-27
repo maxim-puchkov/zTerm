@@ -22,23 +22,29 @@
 #$code"
 #}
 
-function hist() {
-  if [[ -n $1 ]]; then
-    fc -l 1 | grep -E $1 --color='always'
-  else
-    fc -l -40
-  fi
+function ordered-list() {
+  print -ac -oi -r -- $argv
 }
-function is() {
-  { eval '[[ '"${(q)@}"' ]]; res=$?;' ||
-    error -2 'Bad expression' }
-  case $res in
-    (0) boolval='true'  ;;
-    (*) boolval='false' ;;
-  esac
-  printf 'Expression [[ %s ]] is \e[4m%s\e[0m\n' "$*" "$boolval"
-  return $res
+
+function calc() {
+  print -- "$(( ${argv} ))"
 }
+alias calc='noglob calc'
+
+# a2x:  ascii to hex
+#function a2x() {
+#  [[ -p /dev/stdin ]] && argv+=($(<&0))
+#  python3 -c 'print(bytes.hex(b"'$argv'"));'
+##  xxd -p < <(printf '%s' "$argv")
+#}
+#
+## x2a:  hex to ascii
+#function x2a() {
+#  [[ -p /dev/stdin ]] && argv+=($(<&0))
+##  xxd -p -r < <(printf '%s' "$argv")
+#  python3 -c 'b = bytes.fromhex("'$argv'"); print(repr(b)[2:-1]);'
+#}
+
 
 
 
@@ -93,9 +99,46 @@ function diffsize() {
 
 
 
+
+function pdf-list-objects() {
+  # Check input file
+  local file="$1"
+  if [[ ! -f $file ]]; then
+    error -1 'Bad input file'
+    return 1
+  fi
+  
+  # Blue separator line
+  local line
+  print -v line -P -- "%F{4}${(r:$COLUMNS::-:)}%f"
+  
+  # PDF object tags
+  local object_begin='obj'
+  local object_end='endobj'
+  
+  # Print all PDF objects
+  print -P -- "%BPDF document%b: %U${file}%u\n"
+  print -- "$line"
+  awk '/[0-9]+[ ]+[0-9]+[ ]+'$object_begin'/, /^'$object_end'/ {
+    if ($0 == "'$object_end'") {
+      $0=$0"\n'$line'"
+    }
+    print $0
+  }' <$file
+}
+
+
+
+
+
+
+
+
+
+
 #MARK: - Compress PDF
 # Compress scanned files
-function compress-pdf() {
+function compress-pdf-zsh() {
   typeset workflow=~/Library/Services/'Compress Scanned File.workflow'
   integer replace_original_file=0
     
@@ -175,7 +218,10 @@ function compress-pdf() {
 
 
 
-#MARK: - ti
+
+
+
+#MARK: - Time 
 # ti:  measure time needed to complete a command N times
 function ti() {
   # Number of times command will be executed
@@ -224,13 +270,47 @@ function ti() {
   } &' EXIT
 }
 
-function ascii_value() {
-  set -- ${(s::)argv}
-  local char
-  for char; do
-    python -c 'print(ord("'$char'"));'
+# time-interval:  run a command for the specified number of seconds
+function time-interval() {
+  let duration="${1:=1}"
+  let end="$SECONDS+$duration"
+  shift
+  
+  while [[ $SECONDS -lt $end ]]; do
+    : # run command for '$duration' seconds
+    ${(z)=@}
   done
 }
+
+
+
+
+
+function hist() {
+  if [[ -n $1 ]]; then
+    fc -l 1 | grep -E $1 --color='always'
+  else
+    fc -l -40
+  fi
+}
+
+function is() {
+  printf '[[ %s ]]: ' "$*"
+  { eval '[[ '"${@}"' ]]; res=$?;' ||
+    error -2 'Bad expression' }
+  case $res in
+    (0) printf '\e[32m%s\e[0m' 'true'  ;;
+    (*) printf '\e[31m%s\e[0m' 'false' ;;
+  esac
+  printf '\n'
+  return $res
+}
+
+
+function list-setuidgid() {
+  /bin/ls -Lld -BFGHhk -- ${^path}/*(NS,s,t)
+}
+
 
 function help_bindkey() {
   local key cmd
@@ -239,6 +319,10 @@ function help_bindkey() {
   printf '%s\n\t->\t' "$cmd"
   $=cmd
 }
+
+
+
+
 
 # tldrs - run both `tldr' and `tealdeer' commands
 #function tldrs() {
@@ -287,8 +371,8 @@ function wd() {
       return $? ;;
     (1)
       local new_target=${argv:-$PWD}
-      printf 'New link target: \e[32m%s\e[0m\n' "$new_target"
-      ln -Fins ${argv:-$PWD} $link_dir
+      printf 'New link target: \e[32m%s\e[0m\n' "${new_target:A}"
+      ln -Fins ${new_target:A} $link_dir
       return $? ;;
     (*)
       return 1 ;;
@@ -368,6 +452,26 @@ function xmkfile() {(
   # Create and open files
   { touch "$@" && open -a "${XCODE:=Xcode}" "$@" }
 )}
+
+# mkscript:  make a new script for given command
+#
+# Examples:
+#   1. mkscript zsh > script-1.zsh
+#   2. mkscript python3 > script-2.py
+function mkscript() {
+  local cmd=${${commands[$1]}:-'/bin/zsh'}
+  cat <<EOF
+#!${cmd}
+
+#  New File
+#  ${cmd:t}
+#
+#  Created on $(date -j +'%F').
+#
+
+
+EOF
+}
 
 
 # ln-check: find and report broken symbolic links

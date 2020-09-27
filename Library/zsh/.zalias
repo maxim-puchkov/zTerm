@@ -28,7 +28,7 @@ alias sp='sprint'
 alias hxd='open -a /Applications/"Hex Fiend.app"'
 
 alias clrscreen='printf "\e[r"'
-
+alias x+='chmod +x' 
 
 
 #MARK: - Regular Aliases
@@ -129,7 +129,7 @@ alias pyg='/usr/local/bin/pygmentize'
 alias gcm='git commit -m'
 alias grs='git restore --staged'
 alias gs='git status'
-#alias gt='() { cd "$zterm" && git status; };'
+alias gt='() { cd "$zterm" && git status; };'
 
 # Command 'google'
 alias ggl='/usr/local/bin/google'
@@ -160,6 +160,7 @@ alias cdef='compdef'
 
 # Command 'open'
 alias o='open'
+alias op='open'
 alias xc='open -a Xcode'
 alias ij='open -a "IntelliJ IDEA CE"'
 alias vb='open -a VirtualBox'
@@ -230,9 +231,8 @@ alias nano='nano --mouse'
 
 alias diff='diff --suppress-common-lines --side-by-side --color'
 
-alias tl='tldrs'
-
 alias zrc='open -a Xcode ~zsh/.{zprofile,zutil,zalias,zshrc}'
+alias zpro='open -a Xcode ~zsh/.{zutil,zalias,zshrc,zprofile}'
 
 
 
@@ -299,9 +299,8 @@ alias rte='open -a Xcode $DEV/bin/run-tests.zsh'
 alias rt='zsh "$DEV/bin/run-tests.zsh"'
 
 
-alias my-phone='print -P "%F{14}+1 %B(778) 512-7614‬%b%f"'
-alias my-postal='print -P "%F{14}V3T 2S5%f"'
 
+alias mvnh='print -l -- validate compile test package integration-test verify install deploy'
 
 
 alias c='/bin/cat'
@@ -310,4 +309,10 @@ alias n='/usr/bin/nano'
 
 alias .g='open -a Xcode .gitignore'
 alias .ci='open -a Xcode .gitlab/.gitlab-ci.yml'
-alias mvnh='print -l -- validate compile test package integration-test verify install deploy'
+
+
+
+alias antlr='java -jar /usr/local/lib/antlr-4.8-complete.jar'
+alias grun='java org.antlr.v4.gui.TestRig'
+
+

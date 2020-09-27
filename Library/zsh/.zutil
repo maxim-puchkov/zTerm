@@ -335,8 +335,13 @@ function lorem() {
 }
 
 function printq() {
-  print -- ${argv:q}
+  print -- ${(q+)argv}
 }
+function printj() {
+  print -- ${(j::)argv}
+}
+
+
 
 
 
@@ -347,7 +352,7 @@ function datels() {
 function statls() {
     local cmd=(stat -t '%d %b %R' -f '%-Sp %+2l %-Su %+Sg %-4z %.12Sm %-SN %n' "$@")
     if [[ $# -eq 0 ]]; then
-        cmd=( echo $cmd )
+        cmd=(echo $cmd)
     fi
     $cmd
 }
@@ -523,7 +528,7 @@ function xman() {
       --profile "${profile}" \
       --command "${command}"
   ) $base_profile $name \
-    &>/dev/null &!
+    2>/dev/null &!
   return 0
 }
 

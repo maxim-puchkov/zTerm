@@ -8,6 +8,6 @@
 
 
 
-function esc0() {(
+function esc0() {
   esc -0 "$@"
-)}
+}

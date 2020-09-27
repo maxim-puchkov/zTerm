@@ -7,20 +7,16 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# vars=(X Y) X=(1 2) Y=(3 4) iff 'X -lt Y'
-# 1<3, 1<4, 2<3, 2<4
-
-# iff -v X Y Z
-
-# Evaluate and display the result of conditional expressions.
-
-#iff -i x=(10,20,30)
+# iff:  evaluate and display the result of conditional expressions.
+# Examples:
+#   1. iff -i x=10,20,30  25 -gt x
+#   2. iff -i a=1,2 -i b=2,1  a -eq b
 typeset -a var_specs
 zparseopts -D -E -a var_specs - i+:
-#print -l -- $var_specs
 
-typeset -ag exprs
 
+#
+typeset -a exprs
 local -a expr
 while [[ -n $1 ]]; do
   case $1 in
@@ -37,32 +33,41 @@ while [[ -n $1 ]]; do
   esac
 done
 exprs+=("${expr}")
-#print -l -- $exprs
 
 
 
-
-typeset -ag var_exprs
-var_exprs=()
-
+# var_specs are (-i x=10,20,30 -i y=...)
+# opt is '-i'
+# spec is 'x=10,20,30', 'y=...'
 local var_expr
 for opt spec in $var_specs; do
   local var_name=${spec%%=*}
   local -a var_values=(${(s:,:)${spec#*=}})
-  local -a matches=(${(M)exprs:#*'$'$var_name*})
-  red $exprs
+  # Find expression with variables and replace it
+  # with new expressions for each variable value
+  local -a matches=(${(M)exprs:#*$var_name*})
+  #local exprs var_name var_values matches
   exprs=(${exprs:|matches})
-  magenta $exprs
   for var_expr in $matches; do
     for var_value in $var_values; do
-      var_exprs+=(${var_expr/\$${var_name}/${var_value}})
+      exprs+=(${var_expr/${var_name}/${var_value}})
     done
   done
 done
 
-() {
-  print -C1 -- $argv
-} $exprs $var_exprs
+
+
+# Evaluate [[ conditional expressions ]]
+local expr
+for expr in $exprs; do
+  is $=expr
+done
+return 0
+
+
+
+
+
 
 
 
@@ -118,3 +123,7 @@ done
 #    done
 #    return 0
 #)}
+
+# vars=(X Y) X=(1 2) Y=(3 4) iff 'X -lt Y'
+# 1<3, 1<4, 2<3, 2<4
+# iff -v X Y Z

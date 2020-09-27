@@ -39,11 +39,11 @@ function showsrc() {(
     error -1 'No input.'
   fi
   
-  # Find source files in $PATH, $FPATH, and $PWD
+  # Find source files in $PATH, $FPATH, and file directory
   typeset filename="$@"
   typeset -a files
-  set -A files  ${(@f)"$(find -L -- $path $fpath $PWD \
-    -name "$filename" -mindepth 1 -maxdepth 1 2>/dev/null)"}
+  set -A files  ${(@f)"$(find -L -- $path $fpath ${filename:h} \
+    -name "${filename:t}" -mindepth 1 -maxdepth 1 2>/dev/null)"}
 
   # Print error if file is not found.
   if [[ ${#files} -eq 0 ]]; then

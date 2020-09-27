@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 #  zshenv
-#  User-specific environment for zsh(1) shells.
+#  Environment for interactive and non-interactive zsh(1) shells.
 #
 #
 #  Created on March 29, 2020.
@@ -9,6 +9,9 @@
 
 # Z shell environment
 export ZSHENV="$HOME/.zshenv"
+# Link this file to home diretory:
+#   `/bin/ln -s /usr/local/Terminal/etc/zsh/zshenv ~/.zshenv'
+
 
 # Terminal scripts and functions
 export ZTERM='/usr/local/Terminal'

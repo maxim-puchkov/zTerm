@@ -253,7 +253,7 @@ function template() {(
     
     
     # Files
-    typeset template_seq_file="$ZTERM/etc/template.seq"
+    typeset template_seq_file="$ZTERM/var/log/zsh-functinos/template.log"
     typeset template_id_file="$ZTERM/etc/template.id"
     touch $template_seq_file $template_id_file
     typeset lastid=${$(< $template_id_file):-0}

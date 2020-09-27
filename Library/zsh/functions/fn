@@ -179,6 +179,8 @@ function fn() {(
             arg_completion=(${(@f)"$(fn_completion-arguments $fn_file)"})
             cmd_completion=(${(@f)"$(fn_completion-commands $fn_file)"})
         done
+
+#MARK: -
 cat <<EOF
 #compdef ${fn_name}
 
@@ -216,6 +218,7 @@ esac
 
 return 0
 EOF
+#MARK: --
         return 0
     }
     
