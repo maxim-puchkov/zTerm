@@ -1,0 +1,15 @@
+#!/bin/zsh
+
+#  zshenv 
+#  /usr/local/zterm/Library/Z-Shell/zshenv
+#
+#  User-specific environment for zsh(1) shells.
+#  Created on October 9, 2020.
+
+
+# Link this file to the home diretory:
+#   `/bin/ln -Ffhs /usr/local/zterm/zsh/zshenv ~/.zshenv'
+
+
+export ZTERMDIR="/usr/local/zterm"
+export ZDOTDIR="$ZTERMDIR/zsh"

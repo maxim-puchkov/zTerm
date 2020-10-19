@@ -1,0 +1,4 @@
+#compdef zfc_command
+
+
+_arguments "1: :_zfunctions"

@@ -1,0 +1,1 @@
+../../iTerm 2/.iterm2_shell_integration.zsh

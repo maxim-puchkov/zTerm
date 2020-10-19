@@ -1,0 +1,81 @@
+#!/bin/zsh
+
+#  mkpl
+#  Z-Function (91)
+#
+#  Created by Maxim Puchkov on 2020-07-08.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# mkpl:
+# Make an empty property list (.plist) file.
+#
+# Usage:
+# mkpl
+emulate -LR zsh
+
+
+/bin/cat \
+<<-EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+    
+    </dict>
+</plist>
+EOF
+
+
+
+
+
+
+
+#
+## mkpl - create a property list
+#() (
+#  typeset output_file=$1
+#  typeset tmp=$2
+#  shift 2
+#
+#  #MARK: - Create empty file
+#  () (
+#    /bin/cat >$tmp \
+#<<-EOF
+#<?xml version="1.0" encoding="UTF-8"?>
+#<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+#<!--
+#  $output_file
+#  Property List
+#
+#  Created by Maxim Puchkov on $(date -j +"%F").
+#  Copyright (c) $(date -j +"%Y") Maxim Puchkov. All rights reserved.
+#-->
+#<plist version="1.0">
+#  <dict>
+#
+#  </dict>
+#</plist>
+#EOF
+#  ) >$tmp
+#
+#
+#  #MARK: - Modify property list with 'plutil'
+#  () (
+#    for keypath type value; do
+#      if ! /usr/bin/plutil -insert $keypath $type $value $tmp; then
+#        return 1
+#      fi
+#    done
+#  ) $argv 2>/dev/null
+#  if [[ $? -ne 0 ]]; then
+#    printf '%s: plutil failed to insert property list values.\n' "$0"
+#    return 1
+#  fi
+#
+#  # Copy temporary file to output file
+#  /bin/cp $tmp $output_file
+##  /bin/cat <$tmp >$output_file
+#  return 0
+#) ${1:=/dev/stdout} =() ${argv:2}

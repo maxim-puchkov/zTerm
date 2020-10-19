@@ -1,0 +1,12 @@
+#compdef typeof
+
+#  _typeof
+#  zsh completion (119)
+#
+#  Created by Maxim Puchkov on 2020-09-12.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+_command_names
+_vars
+_parameters

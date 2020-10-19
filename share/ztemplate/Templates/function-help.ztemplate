@@ -1,0 +1,5 @@
+# Print help message for ___FILENAME___.
+function ___FILENAME____help() {
+  local file=${functions_source[${0%%_*}]}
+  
+}

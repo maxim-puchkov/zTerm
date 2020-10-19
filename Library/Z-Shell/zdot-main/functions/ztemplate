@@ -1,0 +1,117 @@
+#!/bin/zsh
+
+
+# ztemplate
+#
+# Generate template files by combining the specified
+# components (e.g. file header and function).
+# Templates file are stored in: ~zterm/Library/Z-Shell/sources/ztemplate.
+#
+# Usage:
+# ztemplate [--out path] [--<macro> value] [-template ...]
+# ztemplate help
+emulate -LR zshs
+#autoload +X $0
+
+
+local prog="${0##*/}"
+# Template directory
+local ztemplate_dir=/usr/local/zterm/share/ztemplate
+local ztemplate_id_file="$ztemplate_dir/Macros/template-id"
+# Template files
+local -a templates_list=( "${ztemplate_dir}/Templates/"*(:t:r) )
+local filename template_{name,file,ext}
+# Template text macros
+local -A ztemplate_macros
+setarray -A ztemplate_macros "$ztemplate_dir/Macros/ztemplate_macros.var"
+local macro_pattern='___[A-Z0-9]*___'
+
+
+# Options
+local -A opts
+opts=( ${(kv)ztemplate_macros} )
+local -a specs
+specs=( ${(k)^opts#-}':' '-out:' 'o:=-out' )
+if [[ $# -gt 0 ]] &&
+   {! zparseopts -D -E -K -M -A opts - $specs}; then
+  return 1
+fi
+
+
+# Print list of all templates and return.
+if [[ $# -eq 0 ]] ||
+   [[ $1 =~ 'help' ]]; then
+  print -P -- "%BList of available templates%b:"
+  print -P -nr -c -- '%F{6}-'${^templates_list}'%f'
+  return 0
+fi
+
+if [[ ${+opts[--out]} -eq 1 ]]; then
+  local output_file="${opts[--out]}"
+  opts[--filename]="${output_file:t}"
+fi
+
+
+# Output to standard output or to the specified file.
+# If first argument is a "-", output to standard output.
+#local output_file=/dev/stdout
+#if [[ "$1" == '-' ]] || [[ -e $1 ]]; then
+#  output_file=/dev/stdout
+#else
+#  output_file="${1:P}"
+#  opts[--filename]="${1:t}"
+#fi
+#shift
+
+# Print error if arguments are missing.
+if [[ $# -eq 0 ]]; then
+  error -2 -m 'missing template names' \
+           -u "${prog} [--<macro> value] [file] -template [-template...]; ${prog} help"
+fi
+
+## ztemplate_apply
+# Generate substitution commands of type 's/___TEXTMACRO___/value/g'.
+local -a substitutions
+local id value macro{,_{name,value}}
+# Move compound macros to the beginning of 'substitutions'
+# array and simple macros to the end.
+for id value in ${(kvq)opts}; do
+  macro_name="___${${(UQ)id#--}//-/_}___"
+  macro_value="${${(eQ)value}//\//\\/}"
+  if [[ $macro_value =~ ${~macro_pattern} ]]; then
+    substitutions=('s/'"${macro_name}"'/'"${macro_value}"'/g' $substitutions)
+  else
+    substitutions=($substitutions 's/'"${macro_name}"'/'"${macro_value}"'/g')
+  fi
+done
+
+
+() {
+  local tmp_file=$1
+  shift
+  
+  ## ztemplte_make
+  template_ext=".${prog}"
+  for template_name; do
+    print -r -- "${template_name%$template_ext}${template_ext}" |
+    /usr/bin/sed -e 's/^[-]*//'                                 |
+    read -r filename
+    
+    template_file="${ztemplate_dir}/Templates/${filename}"
+    if [[ ! -e $template_file ]]; then
+      error -1 -m 'template ${template_name} does not exist'
+    fi
+    /bin/cat $template_file
+  done |
+  /usr/bin/perl -pe "${(j:; :)substitutions}" >$tmp_file &&
+  printf '%i\n' $(( ${(e)opts[--template-id]} + 1 )) >$ztemplate_id_file # Update id
+  
+  if [[ ${+opts[--out]} -eq 1 ]]; then
+    /bin/cp -i $tmp_file $output_file
+  else
+    cat $tmp_file
+  fi
+  return $?
+} =() $argv
+
+return 0

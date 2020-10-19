@@ -1,0 +1,11 @@
+#  POSIX compliant profile for
+#  interactive sh(1) shells.
+#
+#  Created on October 17, 2020.
+
+alias ls='/bin/ls -BFGHhk'
+alias l='ls -l'
+alias ll='ls -lA'
+alias la='ls -la'
+
+alias e='/bin/echo'

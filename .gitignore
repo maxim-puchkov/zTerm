@@ -1,0 +1,19 @@
+.DS_Store
+
+**/var/*
+
+**/iTerm\ 2/*
+**/.iterm2
+
+**/.zcompdump*
+**/*.zsh_history
+**/.zsh_sessions/*
+
+**/oh-my-zsh/*
+**/.oh-my-zsh
+
+**/__pycache__/*
+**/*.pyc
+
+**/*.xcodeproj/*
+**/*.xcworkspace/*
