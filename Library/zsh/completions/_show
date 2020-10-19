@@ -7,8 +7,4 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-_functions
-_aliases
-_command_names
-_parameters
-_dirs
+_command_names; _parameters; _dirs;

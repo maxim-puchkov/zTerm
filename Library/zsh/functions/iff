@@ -9,8 +9,8 @@
 
 # iff:  evaluate and display the result of conditional expressions.
 # Examples:
-#   1. iff -i x=10,20,30  25 -gt x
-#   2. iff -i a=1,2 -i b=2,1  a -eq b
+#   1. iff -i x=10,20,30       25 -gt x
+#   2. iff -i a=1,2  -i b=2,1  a  -eq b
 typeset -a var_specs
 zparseopts -D -E -a var_specs - i+:
 

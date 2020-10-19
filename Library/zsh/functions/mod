@@ -9,7 +9,7 @@
 
 # Print file access modes and
 function mod() {
-  local file="$1"
+  local file="${1:=$PWD}"
   print -Pn -- "> %F{blue}%U${file}%u%f"
   
   # File access modes
@@ -35,7 +35,7 @@ stat -f ' (%OMp,%OLp)%n'\
     bits+=("sticky")
   fi
   
-  print -- "Bits: ${(j:, :)bits}"
+  print -- "Bits:\t${(j:, :)bits:=none}"
 }
 
 

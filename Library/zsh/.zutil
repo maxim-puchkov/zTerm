@@ -30,36 +30,19 @@ function plugins() {
 }
 
 function tldr() {
-  header 'tldr'
-  /usr/local/bin/tldr $argv
-  header 'tealdeer'
-  /usr/local/bin/tealdeer $argv
+  header 'tldr'; /usr/local/bin/tldr $argv
+  echo
+  header 'tealdeer'; /usr/local/bin/tealdeer $argv
 }
-compdef '_tealdeer' tldr
+compdef '_tealdeer'  tldr
 
 
-
-
-
-
-# any - pick a random argument
-function any() {(
-  [[ $# -eq 0 ]] && return 1
-  
-  typeset -i index
-  let index="($RANDOM % ${#}) + 1"
-  printf '%s' "${argv[$index]}"
-  
-  if [[ -t 1 ]]; then
-    typeset -F1 chance
-    let chance="1.0/${#}*100"
-    printf ' (%.1f)\n' $chance >&2
-  else
-    printf '\n'
-  fi
-)}
-
-
+# Highlight grep
+function hgrep hegrep hfgrep() {
+  GREP_COLOR="$HGREP_COLOR" \
+    ${0#h} --color='always' $argv
+}
+compdef '_grep'  hgrep hegrep hfgrep
 
 
 #Todo: Replace 'webloc' script
@@ -81,10 +64,195 @@ function wloc() {
   return 0
 }
 
-function list-services() {
-  /bin/launchctl list |
-      /usr/bin/fgrep -e 'com.maximpuchkov'
+
+
+
+
+#MARK: - Keep
+# print-mark: timestamp
+function print-mark() {
+  trap '(
+    print -v name -P -- "%N" \
+      && print -v line -P -- "%I" \
+      && print -Pn -- "%F{11}[%U${name:t}%u:${line}]%f" \
+      && print -P -- "  '${argv:-MARK}'"
+  )' EXIT
 }
+# lorem - print lines of text
+function lorem() {
+  typeset -a lines=(
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+    'Suspendisse nec convallis neque, eget interdum diam.'
+    'Donec sit amet arcu faucibus, lobortis lacus sed, molestie massa.'
+    'Vestibulum eget cursus ligula.'
+    'Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.'
+    'Integer sit amet diam rutrum, dictum eros at, dignissim orci.'
+    'Nullam pulvinar pellentesque mollis.'
+    'Etiam ultrices fermentum augue, vitae imperdiet mi.'
+    'Nullam nec lectus nec sem eleifend pharetra.'
+    'Cras congue orci vel aliquam fermentum.'
+    'Ut quis metus quis mauris dapibus cursus ac vitae leo.'
+  )
+  # Set number of text repetitions, N
+  typeset -i N
+  let N="${${1#-}:-1}"
+  if [[ $N -lt 1 ]]; then
+    let N='1'
+  fi
+  # Print N times
+  typeset -i i=1
+  while [[ $i -le $N ]]
+  do
+    print -- "${i}: ${(@)lines}"
+    let i="($i + 1)"
+  done
+  return 0
+}
+
+function printq() {
+  print -- ${(q+)argv}
+}
+function printj() {
+  print -- ${(j::)argv}
+}
+
+# Open manual page in a seperate tab
+function xman() {
+  if [[ -z "$1" ]]; then
+    error -1 'What manual page do you want?'
+  fi
+  typeset command="/usr/bin/man $1"
+  $ZDOTDIR/.iterm2/it2api create-tab \
+    --command "$command" \
+    --profile 'Man' &>/dev/null &|
+}
+
+# Move a file to iCloud Drive.
+function icmv() {
+    # Create 'MovedFiles' directory
+    local directory=$iCloud/MovedFiles
+    if [[ ! -e $directory ]]; then
+        /usr/bin/mkdir -p -- $directory
+    fi
+    # Move files
+    local filepath
+    for filepath in $argv; do
+        /bin/mv -- $filepath $directory
+        local message="Moved %B%U${filepath:t}%u%b to %F{10}${directory}%f."
+        builtin print -P -- "$message"
+    done
+    return 0
+}
+
+# Show synonyms and antonyms for a given word (online).
+function thesaurus() {
+    local base='https://www.thesaurus.com/browse'
+    local word=${argv// /+}
+    local url="${base}/${word}"
+    /usr/bin/open -a 'Safari' -- $url
+}
+
+# funcstat: print function statistics
+function funcstat() {
+    print 'Function Trace'
+    print -l -x2 -- '\t'${^functrace}
+    echo
+    print 'Function Stack'
+    print -l -x2 -- '\t'${^funcstack}
+}
+#MARK: Keep -
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -118,13 +286,6 @@ function env1() {
     /usr/bin/env -i "${(@f)$(< $zterm/etc/zsh/env1)}" \
     /usr/local/bin/zsh -f "$@"
 }
-
-
-
-
-
-
-
 
 
 #MARK: - File Directories
@@ -285,61 +446,20 @@ function magnetize() {
 }
 
 
-# Lists every executable in PATH.
-function show-executables() {
-    print -l ${^path}/*(-*N)
-}
 
 
 
 
-#TODO: - Keep -
-# print-mark: timestamp
-function print-mark() {
-  trap '(
-    print -v name -P -- "%N" \
-      && print -v line -P -- "%I" \
-      && print -Pn -- "%F{11}[%U${name:t}%u:${line}]%f" \
-      && print -P -- "  '${argv:-MARK}'"
-  )' EXIT
-}
-# lorem - print lines of text
-function lorem() {
-  typeset -a lines=(
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
-    'Suspendisse nec convallis neque, eget interdum diam.'
-    'Donec sit amet arcu faucibus, lobortis lacus sed, molestie massa.'
-    'Vestibulum eget cursus ligula.'
-    'Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.'
-    'Integer sit amet diam rutrum, dictum eros at, dignissim orci.'
-    'Nullam pulvinar pellentesque mollis.'
-    'Etiam ultrices fermentum augue, vitae imperdiet mi.'
-    'Nullam nec lectus nec sem eleifend pharetra.'
-    'Cras congue orci vel aliquam fermentum.'
-    'Ut quis metus quis mauris dapibus cursus ac vitae leo.'
-  )
-  # Set number of text repetitions, N
-  typeset -i N
-  let N="${${1#-}:-1}"
-  if [[ $N -lt 1 ]]; then
-    let N='1'
-  fi
-  # Print N times
-  typeset -i i=1
-  while [[ $i -le $N ]]
-  do
-    print -- "${i}: ${(@)lines}"
-    let i="($i + 1)"
-  done
-  return 0
-}
 
-function printq() {
-  print -- ${(q+)argv}
-}
-function printj() {
-  print -- ${(j::)argv}
-}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -481,19 +601,6 @@ function GetProfile() {
     printf '%b\n' "\e]1337;$0\a"
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 #FIXME: Deprecated
 #MARK: - Manual Pages
 function manp() {(
@@ -511,132 +618,10 @@ function xman1() {(
     open -a Terminal -g x-man-page://"$argv"
 )}
 
-# Open manual page in a seperate tab
-function xman() {
-  # Manual page name
-  typeset name=$1
-  [[ -z $name ]] && return 1
-  
-  # iTerm2 profile
-  typeset base_profile=${${ITERM_PROFILE%:*}:='Term 3'}
-  
-  # Create an iTerm2 tab and run 'man'
-  () (
-    typeset profile="${1}: Man"
-    typeset command="/usr/bin/man $2"
-    ~zdot/.iterm2/it2api create-tab \
-      --profile "${profile}" \
-      --command "${command}"
-  ) $base_profile $name \
-    2>/dev/null &!
-  return 0
-}
 
 
 
 
-#FIXME: Deprecated
-function test_print-var() {
-    # Test 0
-    (
-        print-var
-        Standout "Exit code: $?"
-    )
-    print-line
-    
-    # Test 0
-    (
-        print-var myVar
-        Standout "Exit code: $?"
-    )
-    print-line
-    
-    # Test 1
-    (
-        typeset myVar
-        myVar='One variable'
-        
-        print-var myVar
-        Standout "Exit code: $?"
-    )
-    print-line
-    
-    # Test *
-    (
-        typeset myStr
-        typeset -i10 myInt
-        typeset -a myArr
-        typeset -A myAssoc
-        myStr='my string'
-        myInt=1234567890
-        myArr=('my' 'array' 'elements')
-        myAssoc=( [name]='John' [surname]='Doe' [age]=50 )
-        
-        print-var my{Str,Int,Arr,Assoc}
-        Standout "Exit code: $?"
-    )
-    print-line
-    
-    # Test * (null values)
-    (
-        typeset myStr
-        typeset -i10 myInt
-        typeset -a myEmptyArr
-        typeset -a myArr
-        typeset -A myAssoc
-        myStr=""
-        myInt=0
-        myEmptyArr=()
-        myArr=(1 '' 3 '' 5 "" 7 "" 9 "\"\"" "''" )
-        myAssoc=( [key]='' ['']='value' )
-        
-        print-var my{Str,Int,EmptyArr,Arr,Assoc}
-        Standout "Exit code: $?"
-    )
-    print-line
-    
-    # Test * (undefined variables)
-    (
-        typeset myVar
-        myVar='my defined variable'
-        
-        print-var my{Str,Int,Arr,Var,Assoc}
-        Standout "Exit code: $?"
-    )
-    print-line
-}
-
-
-
-
-
-
-#MARK: - Keep 
-# Move a file to iCloud Drive.
-function icmv() {
-    # Create 'MovedFiles' directory
-    local directory=$iCloud/MovedFiles
-    if [[ ! -e $directory ]]; then
-        /usr/bin/mkdir -p -- $directory
-    fi
-    # Move files
-    local filepath
-    for filepath in $argv; do
-        /bin/mv -- $filepath $directory
-        local message="Moved %B%U${filepath:t}%u%b to %F{10}${directory}%f."
-        builtin print -P -- "$message"
-    done
-    return 0
-}
-
-# Show synonyms and antonyms for a given word (online).
-function thesaurus() {
-    local base='https://www.thesaurus.com/browse'
-    local word=${argv// /+}
-    local url="${base}/${word}"
-    /usr/bin/open -a 'Safari' -- $url
-}
-#MARK: Keep -
 
 
 
@@ -908,34 +893,14 @@ function array Array {
 
 
 
-function show_prog() {
-    funcstat
-    if [[ -z $1 ]]; then
-        error -1 'Missing program name'
-    fi
-    printf '%s\n' $(esc -t $1 '1;95')
-    return 0
+
+
+
+# beep: Bell sound
+function bell beep {
+  printf '\a'
 }
-#
-#function print-input() {
-##    print -P -- "%F{5}>%f %BInput of %F{5}%U${0}%u%f:%b"
-##    print-var -1 argv
-#    print-line
-#    show 'Function: %U%F{5}'$0'%f'
-#}
 
-
-
-
-
-
-function funcstat() {
-    esc '1;91' -t 'Function Trace'
-    print -l -x2 -- '\t'${^functrace}
-    echo
-    esc '1;91' -t 'Function Stack'
-    print -l -x2 -- '\t'${^funcstack}
-}
 
 function find_replace() {
     file=$1
@@ -974,50 +939,3 @@ function find_replace() {
 #        notify -- $arg
 #    done
 #}
-
-
-# Bell sound
-function bell beep {
-  printf '\a'
-}
-
-#TODO: Test file names with spaces can open
-function openjpg() {
-  open -a Preview $(find . -name '*.jpg' 2>/dev/null)
-}
-function openpng() {
-  open -a Preview $(find . -name '*.png' 2>/dev/null)
-}
-
-
-
-
-function whencef() {
-cat <<EOF
--S  -- show steps in the resolution of symlinks
--a  -- print all occurrences in path
--c  -- csh-like output
--f  -- output contents of functions
--m  -- treat the arguments as patterns
--p  -- always do a path search
--s  -- print symlink free path as well
--v  -- verbose output
--w  -- print command type
-EOF
-  return 0
-}
-
-function whences() {
-  typeset -a names
-  names=('echo' "${0}" 'lll' 'paths' 'error' )
-  
-  greenbg '-- Begin --'
-  for name in $names; do
-    redbg "Name: '${name}'"
-    red "Command: 'whence $@ -- \"$name\"'"
-    whence $@ -- "$name"
-    redbg '-'
-    echo; echo; echo; echo;
-  done
-  greenbg '-- Done --'
-}

@@ -10,9 +10,8 @@
 # Change directory and print its path.
 function cdp() {
   #MARK: - Options
-  zmodload zsh/zutil
   typeset -A optlist
-  zparseopts -D -E -A optlist - q s L P
+  zparseopts -D -E -A optlist  q s L P
   
   
   

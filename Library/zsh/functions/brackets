@@ -8,18 +8,20 @@
 
 
 # brackets - highlight brackets, braces, and parentheses
-function brackets() {(
-    function g() {
-        GREP_COLOR="$1" egrep --color=always -E "($2|\$)" <$3
-    }
-    # In order, highlight [], (), and {}
-    g '91' '[\{\}]' <(
-        g '1;33' '[\(\)]' <(
-        g '96' '(\[|\])' \
-        <(if [[ $# -gt 0 ]]; then
+function brackets() {
+  function g() {
+    GREP_COLOR="$1" grep -E -e "($2|\$)" --color=always <$3
+  }
+  # In order, highlight [], (), and {}
+  g '91' '[\{\}]' <(
+    g '1;33' '[\(\)]' <(
+      g '96' '(\[|\])' <(
+        if [[ $# -gt 0 ]]; then
             print -- $argv
         else
             cat <&0
-        fi)
-    ))
-)}
+        fi
+      )
+    )
+  )
+}

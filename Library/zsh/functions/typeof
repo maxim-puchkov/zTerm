@@ -31,50 +31,55 @@ function typeof() {(
   }
   
   # typeof-print - format and print an object's type
-  function typeof-print() {(
+  function typeof-print() {
     # If verbose is set, print object's name
     if typeof-issetopt 'verbose'; then
-      printf '%s: ' "${1:=$name}"
+      printf '%s: ' "${1:=$__name__}"
     fi
     # Print object's type
-    printf '%s\n' "${2:=$typename}"
+    printf '%s\n' "${2:=$__typename__}"
     return 0
-  )}
+  }
   
-  # typeof-not-found - display typename as 'not found'
-  function typeof-not-found() {(
-    typeof-print "$name" 'not found'
+  # typeof-not-__found__ - display typename as 'not __found__'
+  function typeof-not-found() {
+    typeof-print "$__name__" 'not found'
     return $?
-  )}
+  }
   
   # typeof-commands - display typename of a command
   function typeof-commands() {(
-    typeset typename="${$(type -w -- $name)#*: }"
-    if [[ "$typename" == 'none' ]]; then
+    __typename__="${$(type -w -- $__name__)#*: }"
+    if [[ "$__typename__" == 'none' ]]; then
       return 1
     fi
-    typeof-print "$name" "$typename"
+    typeof-print "$__name__" "$__typename__"
     return $?
   )}
   
   # typeof-parameters - display typename of a parameter
-  function typeof-parameters() {(
-    typeset typename="${parameters[$name]}"
-    if [[ -z "$typename" ]]; then
+  function typeof-parameters() {
+    __typename__="${parameters[$__name__]}"
+    if [[ -z "$__typename__" ]]; then
       return 1
     fi
-    typeof-print "$name" "$typename"
+    typeof-print "$__name__" "$__typename__"
     return $?
-  )}
+  }
   
   
   
   
   #MARK: - Options
-  # Verbose output option is set for stdout
-  typeset -i ${0}_verbose=0
+  # Functions for checking type
+  typeset -a typeof_checks=( typeof-{commands,parameters} )
+  # Verbose output
+  typeset -i typeof_verbose=0
+  
+  
+  # Set verbose option when outputting to stdout
   if [[ -t 1 ]]; then
-    let ${0}_verbose=1
+    let typeof_verbose=1
   fi
   
   
@@ -83,11 +88,20 @@ function typeof() {(
     case $1 in
       # {-v,--verbose}: enable verbosity
       (-v|--verbose)
-        let ${0}_verbose=1
+        let typeof_verbose=1
       ;;
       # {+v,--no-verbose}: disable verbosity
-      (+v|--no-verbose)
-        let ${0}_verbose=0
+      (+|+v|--no-verbose)
+        let typeof_verbose=0
+      ;;
+      
+      # Check command type only
+      (-c)
+        typeof_checks=( typeof-commands )
+      ;;
+      # Check parameter type only
+      (-p)
+        typeof_checks=( typeof-parameters )
       ;;
       
       # Skip '--'
@@ -113,20 +127,28 @@ function typeof() {(
     return 1
   fi
   
+  
+  local __{{,type}name,result}
+  local -i __found__
+  
+  
   # Find the command or parameter to which the
   # name refers to, and print its type
-  typeset name
-  for name; do
-    # If name is a command or parameter,
-    # set 'found' to 1
-    local -i found=0
-    typeof-commands "$name" && let found=1
-    typeof-parameters "$name" && let found=1
+  for __name__; do
+    __found__=0
     
-    # If name is not found, print
-    # 'not found' message instead
-    if [[ $found -eq 0 ]]; then
-      typeof-not-found "$name"
+    # Check types
+    for check in $typeof_checks; do
+      __result__="$($check $__name__)"
+      if [[ -n "$__result__" ]]; then
+        __found__=1
+        print -r -- "$__result__"
+      fi
+    done
+    
+    # If no type is found, print error
+    if [[ $__found__ -eq 0 ]]; then
+      typeof-not-found "$__name__"
       continue
     fi
   done

@@ -253,7 +253,7 @@ function template() {(
     
     
     # Files
-    typeset template_seq_file="$ZTERM/var/log/zsh-functinos/template.log"
+    typeset template_seq_file="$ZTERM/var/log/zsh-functions/template.log"
     typeset template_id_file="$ZTERM/etc/template.id"
     touch $template_seq_file $template_id_file
     typeset lastid=${$(< $template_id_file):-0}
@@ -324,15 +324,15 @@ function template() {(
         error -1 'Invalid directory: ${target_dir}.'
         return 1
     fi
-    
+    set -x
     # Subcommand
     typeset cmd=$1
-    if ! (whence ${0}_${cmd} &>/dev/null); then
+    if [[ ${+functions[${0}_${cmd}]} -ne 1 ]]; then
         error -127 'Function command not found: ${cmd}.'
     fi
     shift
     ${0}_${cmd} "$@"
     typeset -i exit_code=$?
-    
+    set +x
     return $exit_code
 )}

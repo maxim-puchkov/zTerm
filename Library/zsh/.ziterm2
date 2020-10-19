@@ -1,0 +1,152 @@
+#!/bin/zsh
+
+#  .ziterm2
+#  Z shell
+#
+#  User-specific profile for interactive zsh(1) shells.
+#  Created on October 3, 2020.
+
+
+
+# Map multiple hotkey commands to one profile name
+## it2window_map=( [hotkey1,hotkey2,...]="profile name" ... )
+typeset -Ag it2window_map
+set -A it2window_map  ${(@Qf)"$(</usr/local/Terminal/share/iterm2/profile-hotkeys.txt)"}
+
+
+# Name of default iTerm profile
+if [[ ! -v ITERM_PROFILE ]]; then
+  typeset ITERM_PROFILE='Term 3: Dark'
+fi
+
+
+# Wrapper function
+function iterm2api() {
+  local id
+  $ZDOTDIR/.iterm2/it2api $argv |
+  grep -e 'id=[[:alnum:]-]*' |
+  cut -d '=' -f 2 |
+  read id
+  
+  
+  echo "id=$id"
+}
+
+function transparency() {
+  iterm2api set-profile-property ${TERM_SESSION_ID#*:} transparency "${1:=0}"
+  return $?
+}
+
+
+
+
+
+
+
+#MARK: - Functions for iTerm 2
+# it2:    Create and customize iTerm2 tabs.
+# usage: `it2 [option...] [command]'
+function it2() {
+  emulate -LR zsh
+  local prefix"=${ITERM_PROFILE%: *}: "
+  local -a profiles=('Dark' 'Light')
+  local profile_name
+  
+  
+  if [[ $# -eq 0 ]]; then
+    fn print-help $0
+    error -1 'enter a command'
+  fi
+  
+
+  #MARK: Commands
+  ## it2 set-profile
+  function it2_set-profile() {
+    profile_name="${prefix}${1#$prefix}"
+    printf 'Setting iTerm2 profile to %s%b\n' \
+           "${profile_name}" \
+           "\e]1337;SetProfile=${profile_name}\a" >&2
+    export ITERM_PROFILE="${profile_name}"
+    return 0
+  }
+  
+  
+  ## it2 switch-profile: switch light and dark profiles ##
+  function it2_switch-profile() {
+    local -i i=${profiles[(i)${ITERM_PROFILE#$prefix}]}
+    let i="($i % ${#profiles}) + 1"
+    profile_name="${profiles[$i]}"
+    it2_set-profile "$profile_name"
+    return $?
+  }
+  
+  function it2_split() {
+    local -a opts=()
+    while [[ "$1" =~ ^- ]]; do
+      case "$1" in
+        -r|--right) opts+=('--vertical') ;;
+        -l|--left)  opts+=('--vertical' '--before') ;;
+        -d|--down)  opts+=() ;;
+        -u|--up)    opts+=('--before') ;;
+      esac
+      shift
+    done
+    if [[ -n "$1" ]]; then
+      opts+=('--profile' "$1")
+    fi
+    iterm2api split-pane ${opts} ${ITERM_SESSION_ID#*:}
+  }
+  
+  
+  # it2window-hotkeys:  List iTerm2 window hotkeys.
+  # usage:             `it2window-hotkeys'
+  function it2_list-window-hotkeys() {
+    if [[ -t 1 ]]; then
+      print -u2 -P -- '%F{3}Window Hotkeys%f:'
+    fi
+    print -aC2 -nr -u2 -x4 -- $'\t'${(@kv)^it2window_map}
+    if [[ -t 1 ]]; then
+      print -u2 -n $'\n\n'
+    fi
+    return 0
+  }
+  
+  
+  # it2window:  Create iTerm2 hotkey window.
+  # usage:     `it2window hotkey'
+  function it2_window() {
+    # Get input for one of comma-separated hotkeys
+    # for window profile name
+    local input
+    if [[ $# -eq 0 ]]; then
+      it2_list-window-hotkeys
+      read input'?Enter window hotkey or full profile name: '
+    else
+      input=$1
+    fi
+    
+    # Try to find a hotkey
+    local hotkey profile_name
+    hotkey="${it2window_map[(I)(|*,)$input(,*|)]}"
+    profile_name="${it2window_map[$hotkey]}"
+    
+    # Open hotkey window
+    print -P -- "Creating new window with profile" \
+                "\"%U%F{3}${profile_name:=$input}%f%u\""
+    iterm2api create-tab --profile "${profile_name:=$input}" 1>/dev/null
+    return 0
+  }
+    
+  
+
+  
+  
+  typeset cmd=$1
+  shift
+  if [[ ${+functions[${0}_${cmd}]} -ne 1 ]]; then
+    error -127 'invalid command: ${cmd}'
+  fi
+  
+  ${0}_${cmd} $argv
+  return $?
+}

@@ -4,7 +4,7 @@
 _arguments -C \
   '1: :->command' \
   ': :_launch_agents' &&
-    return 0
+return 0
     
 
 case $state in

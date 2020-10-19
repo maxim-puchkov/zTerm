@@ -1,18 +1,18 @@
 #!/bin/zsh
 
 #  zshenv
+#  Z Shell
+#
 #  Environment for interactive and non-interactive zsh(1) shells.
-#
-#
 #  Created on March 29, 2020.
+
+# To link this file to your home diretory, run command:
+#   `/bin/ln -Ffhs /usr/local/Terminal/etc/zsh/zshenv ~/.zshenv'
 
 
 # Z shell environment
 export ZSHENV="$HOME/.zshenv"
-# Link this file to home diretory:
-#   `/bin/ln -s /usr/local/Terminal/etc/zsh/zshenv ~/.zshenv'
-
 
 # Terminal scripts and functions
-export ZTERM='/usr/local/Terminal'
-export ZDOTDIR="$ZTERM/Library/zsh"
+export ZTERMDIR='/usr/local/Terminal'
+export ZDOTDIR="$ZTERMDIR/Library/zsh"

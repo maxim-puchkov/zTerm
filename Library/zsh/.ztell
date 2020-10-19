@@ -1,0 +1,208 @@
+#!/bin/zsh
+
+#  .ztell
+#  Z shell
+#
+#  User-specific profile for interactive zsh(1) shells.
+#  Created on October 3, 2020.
+
+
+# tell:     run AppleScript commands.
+# usage:   `tell  [[-a|-p|--pref] name]  [args]'
+function tell() {
+  typeset -A opts
+  zparseopts -D -E -A opts - '-echo' '-line'
+  
+  if [[ ${+opts[--line]} -eq 1 ]]; then
+    set -- ${argv//;/'\n'}
+  fi
+  
+  # Parse options
+  local -a statements=()
+  while [[ "$1" =~ ^- ]]; do
+    case $1 in
+      (-a)
+        statements+='tell application "'$2'" to'
+        shift  ;;
+      (-p)
+        statements+='tell process "'$2'" to'
+        shift  ;;
+      (--pref)
+        statements+='tell '$2' preferences to'
+        shift  ;;
+      (--plist)
+        statements+='return its properties' ;;
+      
+      # (-...) statements+=''  ;;
+    esac
+    shift
+  done
+  [[ "$1" == "--" ]] && shift
+  
+  
+  if [[ ${#statements} -eq 0 ]]; then
+    statements=('tell')
+  fi
+  if [[ ${#argv} -gt 0 ]]; then
+    statements+=($argv)
+  fi
+  
+  
+  # Run applescript
+  if [[ ${#statements} -eq 0 ]]; then
+    error -1 'no commands to tell'
+  fi
+  
+  if [[ ${+opts[--echo]} -eq 1 ]]; then
+    print -P -- "%F{6}%U${0}%u%f command: ${(qq)statements}"
+  fi
+  /usr/bin/osascript -e "$statements"
+  return 0
+}
+
+
+
+
+
+
+# keystroke:  Send keystrokes to Terminal.
+# usage:     `keystroke [--modifier...] text'
+function keystroke() {
+  if [[ $# -eq 0 ]]; then
+    error -1 'no input'
+  fi
+  
+  # Options
+  local -a opts=()
+  while [[ $1 =~ ^- ]]; do
+    case ${1##-#} in
+      (cmd|command)     opts+='command' ;;
+      (s|shift)         opts+='shift'   ;;
+      (c|ctrl|control)  opts+='control' ;;
+      (o|opt|option)    opts+='option'  ;;
+      (*) break ;;
+    esac
+    shift
+  done
+  
+  # Function
+  local -a cmd=()
+  case $0 in
+    (keycode) cmd+="key code ${argv}" ;;
+    (*) cmd+="keystroke ${(qqq)argv}" ;;
+  esac
+  
+  # Modifiers (command, control, option, shift)
+  local -a modifiers=()
+  if [[ ${#opts} -gt 0 ]]; then
+    modifiers=( ${^opts}' down' )
+    cmd+="using {${(j:, :)modifiers}}"
+  fi
+  
+  tell -a "System Events" -p "Terminal" "$cmd"
+  return 0
+}
+
+
+# keycode:  Send keycodes to Terminal.
+# usage:   `keycode [--modifier...] code'
+functions -c keystroke keycode
+
+
+
+
+
+
+function dock() {
+  local cmd
+  case $# in
+    0) cmd="get autohide" ;;
+    1) cmd="set autohide to $1" ;;
+  esac
+  tell -a "System Events" --pref "Dock" "$cmd"
+}
+
+
+
+
+###  Tell aliases  ###
+function tells() tell -a "System Events" $@
+alias tellt='tells -p "Terminal"'
+
+alias finder='tell -a "Finder"'
+alias sysevents='tell -a "System Events"'
+
+alias quit-iterm2='keystroke --command q'
+alias clear-buffer='keystroke --command k'
+alias clear-buffer-scrollback
+
+# clear:  Wrapper function for '/usr/bin/clear'.
+function clear() {
+  typeset -A opts
+  zparseopts -D -E -M -A opts - s -scrollback=s b -buffer=b
+  case 1 in
+    ${+opts[-s]}) 
+  esac
+}
+
+#function clear-buffer-scrollback() keystroke --command --shift k
+
+###
+
+
+
+
+#
+function keyhex() {
+  local key=${1[1]}
+  if [[ -z "$key" ]]; then
+    read -rs -k1 key
+  fi
+  local hex=$(a2x $key)
+  printf '%s = \\x%s\n' "$key" "$hex"
+}
+
+
+
+
+
+
+
+##
+#function using-list() {
+#  local -a items=() list=()
+#  while [[ -n "$1" ]]; do
+#    case "$1" in
+#      (-P)
+#        prefix="${2:=} "
+#        shift ;;
+#      (-S)
+#        suffix=" ${2:=}"
+#        shift ;;
+#      (-I)
+#        items=( ${(s:,:)2} )
+#        shift ;;
+#      (${(j:|:)~items})
+#        list+=($1) ;;
+#    esac
+#    shift
+#  done
+#  list=( ${prefix}${^list}${suffix} )
+#  case ${#list} in
+#    (1) printf 'using %s' ;;
+#  esac
+#  print -l -- $list
+#}
+#
+## using-list -S 'down' -I command,shift,control,option command shift
+
+
+#    optarg="$2"
+#      (-R) statements+='return its' ;;
+#      (-S) statements+='tell application "System Events" to' ;;
+#      (-T) statements+='tell process "Terminal" to' ;;
+#      (*)  (opt=$1 error -1 'Bad option: ${opt}')
+#
+#tell appearance preferences
+
+#  ${^${argv:1:${argv[(I)-*]}}#-}' down'

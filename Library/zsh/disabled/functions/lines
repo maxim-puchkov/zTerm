@@ -1,0 +1,31 @@
+#!/bin/zsh
+
+#  lines
+#  Z-Function (73)
+#
+#  Created by Maxim Puchkov on 2020-06-24.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+
+
+#
+#
+#
+#    return 2
+#    awk -v lines=${(j::)line_numbers} '
+#    BEGIN {
+#        split(lines, line_numbers, "")
+#    } {
+#        printf "nr = "NR" "
+#        printf "is in line numbers?"
+#        if (NR in line_numbers) {print "YES"} else {print "NO"}
+#        if (NR in line_numbers) {print}
+#    }' <$filename
+#    return 0
+#
+##    print-var line_numbers
+#    awk 'BEGIN {split('${(j: :)line_numbers}', linesm, IFS); print "my array linesm is "linesm[1];}  {if (NR in linesm) print}' <$filename
+##    line_numbers=(1 2 3)
+##    awk '{if (NR ==
+#}

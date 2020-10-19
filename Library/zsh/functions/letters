@@ -9,18 +9,22 @@
 
 # Print/find/order English alphabet letters.
 function letters() {
+    set -- ${(uU)argv}
+    trap 'unset -fm "'$0'_*"' EXIT
+    
     # Print all letters
-    #   'letters'
+    #   `letters'
     function letters_alphabet() {
-        typeset -a az
-        set -A az $(print -C2 -- '%B'{1..26}'%b' '%F{4}'{A..Z}'%f')
-        print -c -P -- ${az}
+        print -P -- "%F{2}$0%f"
+        print -C2 -P -- '%B'{1..26}'%b' '%F{4}'{A..Z}'%f'
+        return 0
     }
     
     # Print letter index or value
-    #   'letters 1'  ~>  A
-    #   'letters Z'  ~>  26
+    #   `letters 1'  ~>  A
+    #   `letters Z'  ~>  26
     function letters_position() {
+        print -P -- "%F{2}$0%f"
         typeset -a A=({A..Z})
         local arg=$1
         local value=''
@@ -33,11 +37,13 @@ function letters() {
             error -1 'Invalid argument: $arg.'
         fi
         print -- $value
+        return 0
     }
     
     # Show relative positions of alphabet letters
-    #   'letters A Z'
+    #   `letters A Z'
     function letters_relative() {
+        print -P -- "%F{2}$0%f"
         typeset -a A=({A..Z})
         typeset -a N=({1..26})
         typeset letter=${1[1]:-L}
@@ -46,22 +52,32 @@ function letters() {
         if [[ $index -gt ${#A} ]]; then
             return 1
         fi
-        A[$index]="%B%F{9}$A[$index]%f%b"
-        N[$index]="%B%F{9}$N[$index]%f%b"
+        A[$index]="%B%F{9}${A[$index]}%f%b"
+        N[$index]="%B%F{9}${N[$index]}%f%b"
         typeset index2=${A[(wi)$compare_to]}
-        A[$index2]="%B%F{4}$A[$index2]%f%b"
-        N[$index2]="%B%F{4}$N[$index2]%f%b"
+        A[$index2]="%B%F{4}${A[$index2]}%f%b"
+        N[$index2]="%B%F{4}${N[$index2]}%f%b"
         { print -P -- ${A:0:13}
-        print -P -- ${N:0:13} } | column -t
-        
+          print -P -- ${N:0:13} } | column -t
         { print -P -- ${A:13:13}
-        print -P -- ${N:13:13}
-        echo } | column -t
+          print -P -- ${N:13:13}
+          echo } | column -t
+        return 0
+    }
+    
+    # Show range of letters
+    #   `letters 1 8'  ~>  A B C D E F G H
+    function letters_range() {
+        print -P -- "%F{2}$0%f"
+        typeset -a A=({A..Z})
+        print -- ${A[$1,$2]}
+        return 0
     }
     
     # Order letters alphabetically:
-    #   'letters c b a'  ~>  a b c
+    #   `letters c b a'  ~>  a b c
     function letters_order() {
+        print -P -- "%F{2}$0%f"
         local ordered=(${(ou)argv})
         print -P -- "Ordered: %F{10}${(j:%f, %F\{10\}:)ordered}%f."
         print -P -- "First: %B${ordered[1]}%b, last: %B${ordered[-1]}%b."
@@ -69,13 +85,19 @@ function letters() {
     }
     
     
-    
-    set -- ${(uU)argv}
     case $# in
-        (0)     letters_alphabet ;;
-        (1)     letters_position $1 ;;
-        (2)     letters_relative $1 $2 ;;
-        (<3->)  letters_order $argv ;;
+        (0)     letters_alphabet ;;  # Alphabet
+        (1)     letters_position $1 ;;  # Position
+        (2)     local -i pos_begin="$1"
+                local -i pos_end="$2"
+                if [[ $pos_begin -gt 0 ]] &&
+                   [[ $pos_end   -gt 0 ]]; then
+                    letters_range $pos_begin $pos_end  # Range
+                else
+                    letters_relative $1 $2  # Relative
+                fi ;;
+        (<3->)  letters_order $argv ;;  # Order
     esac
+    
     return $?
 }

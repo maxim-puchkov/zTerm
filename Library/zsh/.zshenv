@@ -1,1 +1,0 @@
-/usr/local/Terminal/etc/zsh/zshenv

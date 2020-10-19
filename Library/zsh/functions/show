@@ -13,122 +13,209 @@
 #   1. `show pax'   -->  "command /bin/pax"
 #   2. `show HOME'  -->  "scalar-export-special HOME = '/Users/admin'"
 
-##MARK: - show (version 2)
-#if [[ ${+functions[$0]} -eq 1 ]]; then
-#  echo "Reloading function ${0} ..."
-#  unset -f $0
-#  autoload $0
-#fi
-#
-## Set arrays
-#typeset -a parameter_names paramter_groups
-#set -A parameter_names   $argv
-#set -A paramter_groups   ${(@f)$(zmodload -lF zsh/parameter)#+p:}
-#
-## For each argument (parameter name)
-#for name in $parameter_names; do
-#  # And for each parameter group
-#  # (e.g., aliases, builit-ins, functions, etc.)
-#  for group in $paramter_groups; do
-#    #
-#    {
-#    parameter_typename=${group%%e#s}
-#    parameter_value="${${(P)group}[$name]}"
-#    if [[ -n "$parameter_value" ]]; then
-#      echo $parameter_typename $parameter_value
-#    else
-#      sprint -dim BAD $parameter_typename
-#    fi
-#    } 2>/dev/null
-#    # Report type every object type
-##    echo ${group[$name]}
-##    echo "N is $name ; G is $group ; val is $value"
-#
-#  done
-#done
-#
-#
-##return 2
+#MARK: - show (3)
+local -A __opts__
+zparseopts -D -E -A __opts__ - e
 
 
-
-#export -a ZSH_PARAMETER=(${(@f)"$(<~zterm/etc/zsh/parameter.module)"})
-
-
-
-
-#function show() {(
-#  setopt extendedglob
-#
-#  for name; do
-#    for group in $ZSH_PARAMETER; do
-#  #    red "$group"
-#      typename="${group%%e#s}"
-#      value="${${(P)group}[$name]}"
-#      print -P -- "$(esc0 3,5 -t $typename) ${value}"
-##      print -P -- "%F{3}${typename}%f ${value}"
-#    done
-#  done
-#
-#)}
-
-
-
-
-#MARK: - show (version 1)
 if [[ $# -eq 0 ]]; then
-  return 1
+  error -1 -- 'Nothing to show.'
 fi
 
-# Formatted '>' symbol for printing
-local symbol=$'\e[1;92m>\e[0m'
 
-# For each argument, show description
-local arg desc
-for arg; do
-  #MARK: - Show
-  printf '%s show %s:\n' "$symbol" "$arg"
-  desc=''
-  
-  # Format output of `show'
-  case 1 in
-    ${+aliases[$arg]})
-      desc+="alias for $(esc0 4,34 -t "${aliases[$arg]}")"$'\n'
-    ;|
-    ${+commands[$arg]})
-      desc+="command $(esc0 4,36 -t "${commands[$arg]}")"$'\n'
-    ;|
-    ${+functions[$arg]})
-      autoload +X $arg
-      desc+="$(esc0 1,35 -t 'function') $(functions $arg | highlight)"$'\n'
-    ;|
-    ${+nameddirs[$arg]})
-      desc+="directory $(esc0 4,33 -t "${nameddirs[$arg]}")"$'\n'
-    ;|
-    ${+builtins[$arg]})
-      desc+="builtin $(esc 4,32 -t "${arg}")"$'\n'
-    ;|
-    ${+parameters[$arg]})
-      local -a arr
-      set -A arr \'$'\e[92m'${(Pkv)^arg}$'\e[0m'\'
-      desc+="${parameters[$arg]} $(esc0 1,4,32 -t "${arg}") = ${(kvF)arr}"$'\n'
-    ;|
-  esac
-  not_found=$(esc0 1,91 -t "${arg}" 22,31 -t 'not found')
-  builtin print -nr -- ${(%)desc:=%B$arg%b' %F{1}not found%f'$'\n'}
-  # Reset
-  printf '%b\n' '\e[0m'
-  
-  
-  
-  
-  #MARK: - Type
-  # Print output of `type'
-  printf '%s type -a %s:\n' "$symbol" "$arg"
-  # Dim output text
-  printf '%b' '\e[2m'
-  type -a $arg
-  printf '%b' '\e[0m'
-done
+local -a __{zsh_groups,result,matches}__
+local -i __length__
+local    __{{,type,group}name,desc,match,value}__
 
-return 0
+__zsh_groups__=(
+  aliases               builtins              commands
+  dis_aliases           dis_builtins          dis_functions
+  dis_functions_source  dis_galiases          dis_saliases
+  functions             functions_source      galiases
+  history               jobdirs               jobstates
+  jobtexts              modules               nameddirs
+  options               parameters            saliases
+  userdirs              usergroups
+)
+
+
+# For each argument
+for __name__; do
+  unset __result__
+  
+  # Pick a __groupname__ (aliases, functions, commands, etc.)
+  for __groupname__ in $__zsh_groups__; do
+    unset __{typename,desc,value,matches}__
+    
+    
+    # Find matches for pattern 'name' in this group.
+    # If name is not a glob
+    # pattern, there will be zero or one __value__.
+    set -A __matches__  ${${(P)__groupname__}[(I)${~__name__}]}
+    __typename__="${__groupname__}"
+    
+    # For match
+    for __match__ in $__matches__; do
+      __value__="${${(P)__groupname__}[${__match__}]}"
+      
+      # Skip empty matches
+      if [[ -z "$__value__" ]]; then
+        if [[ ${+__opts__[-e]} -eq 1 ]]; then
+          print -u2 -- "  "$'\e[2m'"skipping $__groupname__"$'\e[22m'
+        fi
+        continue
+      fi
+      
+      local color="${fg[cyan]}"
+      local default="${fg[default]}"
+      
+      # Format value and type desc
+      case "$__groupname__" in
+        # Format parameter type
+        ('parameters')
+          __length__="${(P)#__name__}"
+          __typename__="$(typeof -p +v -- $__match__)"
+          __typename__="${__typename__}[${__length__}]"
+          case "$__value__" in
+            # association Name[size]: {
+            #  [key] = "value"
+            #  ...
+            # }
+            (*association*)
+              __value__=$(
+                print -aC2 -nr -- "${(@Pkv)^__name__}" |
+                awk '
+                  BEGIN { print "{"; }
+                        { assoc_key="'${color}'"$1"'${default}'";
+                          assoc_value="'${color}'"$2"'${default}'";
+                          print "\t["assoc_key"] = \""assoc_value"\""; }
+                    END { print "}"; }')
+            ;;
+            # array Name[size]: {
+            #  [1] = "value"
+            #  ...
+            # }
+            (*array*)
+              __value__=$(
+                print -C1 -nr -- "${(@P)__name__}" |
+                awk '
+                  BEGIN { i=1;
+                          print "{"; }
+                        { array_index="'${color}'"i"'${default}'";
+                          array_value="'${color}'"$0"'${default}'";
+                          print "\t["array_index"] = \""array_value"\"";
+                          i++; }
+                    END { print "}"; }')
+            ;;
+            # scalar[length] Name: "value"
+            (*scalar*)
+              __value__="\"${color}${(P)__name__}${default}\""
+            ;;
+            # integer[length] Name: value
+            (*)
+              __value__="${color}${(P)__name__}${default}"
+            ;;
+          esac ##case value
+        ;;
+        
+        # Format function
+        ('functions')
+          local line=$'\e[2m'${(l:$COLUMNS::-:)}$'\e[22m'
+          __value__=$'\n'"${line}"$'\n'"$(fn -- def $__name__)"$'\n'"${line}"
+        ;;
+        
+        # Command synopsis
+        ('commands')
+          local synopsis=$(synopsis ${__value__:t})
+          if [[ -n "$synopsis" ]]; then
+            __value__+=$'\n\t'"${synopsis}"
+          fi
+        ;;
+      esac ##case groupname
+      
+      # Add description and value to result for this 'name'
+      __desc__="%B>%b %U%F{5}${FX[italic]}${__typename__}${FX[no-italic]}%u %B${__match__}%f%b:"
+      __result__+=("${(%)__desc__} ${__value__}")
+    done ##(3)for value
+    
+  done ##(2)for groupname
+  
+  
+  # Print result or error
+  if [[ ${#__result__} -eq 0 ]]; then
+    error +. +R -- '${__name__} is not found'
+  fi
+  print -C1 -nr -- $__result__
+  
+  if [[ -n "$2" ]]; then
+    printf '\n'
+  fi
+  shift
+done ##(1)for name
+
+
+
+
+
+
+
+
+
+
+##MARK: - show (version 1)
+#if [[ $# -eq 0 ]]; then
+#  return 1
+#fi
+#
+## Formatted '>' symbol for printing
+#local symbol=$'\e[1;92m>\e[0m'
+#
+## For each argument, show description
+#local arg desc
+#for arg; do
+#  #MARK: - Show
+#  printf '%s show %s:\n' "$symbol" "$arg"
+#  desc=''
+#
+#  # Format output of `show'
+#  case 1 in
+#    ${+aliases[$arg]})
+#      desc+="alias for $(esc0 4,34 -t "${aliases[$arg]}")"$'\n'
+#    ;|
+#    ${+commands[$arg]})
+#      desc+="command $(esc0 4,36 -t "${commands[$arg]}")"$'\n'
+#    ;|
+#    ${+functions[$arg]})
+#      autoload +X $arg
+#      desc+="$(esc0 1,35 -t 'function') $(functions $arg | highlight)"$'\n'
+#    ;|
+#    ${+nameddirs[$arg]})
+#      desc+="directory $(esc0 4,33 -t "${nameddirs[$arg]}")"$'\n'
+#    ;|
+#    ${+builtins[$arg]})
+#      desc+="builtin $(esc 4,32 -t "${arg}")"$'\n'
+#    ;|
+#    ${+parameters[$arg]})
+#      local -a arr
+#      set -A arr \'$'\e[92m'${(Pkv)^arg}$'\e[0m'\'
+#      desc+="${parameters[$arg]} $(esc0 1,4,32 -t "${arg}") = ${(kvF)arr}"$'\n'
+#    ;|
+#  esac
+#  not_found=$(esc0 1,91 -t "${arg}" 22,31 -t 'not found')
+#  builtin print -nr -- ${(%)desc:=%B$arg%b' %F{1}not found%f'$'\n'}
+#  # Reset
+#  printf '%b\n' '\e[0m'
+#
+#
+#
+#
+#  #MARK: - Type
+#  # Print output of `type'
+#  printf '%s type -a %s:\n' "$symbol" "$arg"
+#  # Dim output text
+#  printf '%b' '\e[2m'
+#  type -a $arg
+#  printf '%b' '\e[0m'
+#done
+#
+#return 0

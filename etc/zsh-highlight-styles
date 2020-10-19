@@ -1,36 +1,93 @@
-arg0 fg=002
-builtin fg=010
-precommand fg=011
-reserved-word fg=214
-function fg=033
-alias fg=075,underline
-command fg=076,underline
+#  zsh-highlight-styles
+#  Zsh syntax highligting
+#
+#
+#  Created on September 19, 2020.
 
-single-hyphen-option fg=060
-double-hyphen-option fg=060
-single-quoted-argument fg=166
-double-quoted-argument fg=166
-dollar-quoted-argument fg=166
-back-dollar-quoted-argument fg=014
-back-double-quoted-argument fg=014
-dollar-double-quoted-argument fg=075
+# Lines that begin with a '#' are comments.
+# Comments show [highlihted syntax] in square brackets.
 
-redirection fg=045
-process-substitution-delimiter fg=013,bold
-command-substitution-delimiter fg=013,bold
 
-bracket-level-1 fg=128
-bracket-level-2 fg=128
-bracket-level-3 fg=189
-bracket-level-4 fg=080
-bracket-level-5 fg=080
-bracket-error fg=001
+default             none
+arg0                fg=002
+assign              none
+commandseparator    none
+line                none
+named-fd            none
+root                none
+unknown-token       fg=196,underline
 
-path fg=135,underline
-globbing fg=208,bold,standout
-assign underline
 
-comment fg=028,standout
-history-expansion bg=129,standout
-unknown-token fg=196,underline
+# [llll|hfgrep|Float|int]
+alias               fg=006,underline
+# [set|trap|source|return]
+builtin             fg=002
+# [cat|/bin/hostname]
+command             fg=002,underline
 
+
+# [compdef|upgrade_oh_my_zsh]
+function            fg=014
+# [builtin|command|exec]
+precommand          fg=002,bold,underline
+# [if|then|fi|while|for|do|done|nocorrect]
+reserved-word       fg=012,bold
+
+
+# [<|<<|<<<|>|>>|>!|>>!|>>&|>>&!]
+redirection         fg=012
+# echo '['']'  (with `setopt rcquotes')
+rc-quote            fg=013,bold,underline
+
+
+# (1)[# XXX ],   (2)[?|*|<xxx-xxx>],   (3)[!xxx|^xxx^xxx]
+comment             fg=028,standout
+globbing            fg=208,bold,standout
+history-expansion   fg=004,standout
+
+
+#cd:
+# (1)[/usr],   (2)[/]usr[/]s,   (3)[/]usr[/]share[/]
+path                            fg=135,underline
+path_pathseparator              fg=010,underline
+path_prefix_pathseparator       bold
+
+
+# (1)[-xxx],   (2)[--xxx]
+single-hyphen-option            fg=004
+double-hyphen-option            fg=012
+
+
+#echo:
+# (1)['xxx'],   (2)["xxx"],   (3)[$'xxx']
+single-quoted-argument          fg=003
+double-quoted-argument          fg=011
+dollar-quoted-argument          fg=214
+
+#echo:
+# (1)"[\$]",   (2)$'[\n]',   (3)"[$xxx]"|"[$]{[xxx]}"
+back-double-quoted-argument     fg=004
+back-dollar-quoted-argument     fg=005
+dollar-double-quoted-argument   fg=012
+
+# (1)`command[ xxx ]`,   (2)[`]command xxx[`]
+back-quoted-argument            none
+back-quoted-argument-delimiter  fg=013
+
+
+# (1)<(command[ xxx ]),   (2)[<|>|=](command xxx)
+process-substitution            none
+process-substitution-delimiter  fg=013,bold
+
+# (1)$(command[ xxx ]),   (2)[$](command xxx)
+command-substitution            none
+command-substitution-delimiter  fg=013
+
+
+# () { [[ $(( 12345 == 54 )) -eq $(( 45 == 54321 )) ]]; echo $?; }
+bracket-level-1     fg=033
+bracket-level-2     fg=128
+bracket-level-3     fg=128
+bracket-level-4     fg=012
+bracket-level-5     fg=004
+bracket-error       fg=001

@@ -1,41 +1,27 @@
-# Z-Shell command completions.
+#!/bin/zsh
 
-
-# Initialize the completion system.
-autoload -U compinit
-compinit
-
-
-
+#  .zcomp
+#  Z shell completions.
+#
+#
+#  User-specific profile for interactive zsh(1) shells.
 
 # Aliases
-compdef _alias          find-alias  alias_value
-
-# Homebrew
-compdef _brew_formula   brew_browse
-
-# Shell builtin commands help
-compdef _builtin        builtin-help
+compdef '_alias'    find-alias  alias_value
 
 # Commands
-compdef _command        syntax  brief  hist
-compdef _command_names  infocmd
+compdef '_command_names'      showsrc
 
-# Processes
-compdef _pids           leaks  lskq  malloc_history
-
-# Python Package Installer
-compctl -K _pip         pip  pip3  pip3.7  pip3.8
+# History
+compdef '_fc'       hist
 
 # Manual pages
-compdef _man            grepman  sections
+compdef '_man'      grepman sections
 
-# Symbolic linker
-compdef _sln            sln
+# Process IDs
+compdef '_pids'     leaks lskq malloc_history
 
-# No completion
-compdef _nothing        update.sh  spectrum  color_scheme
+# Python package installer
+compctl -K '_pip'   pip{,3{,.7,.8}}
 
-# Variables
-compdef _vars           try  tryregex
-compdef _command_names  showsrc
+compdef '_sprint'   sprint

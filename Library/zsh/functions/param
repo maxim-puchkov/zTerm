@@ -21,19 +21,33 @@ function param() {
   fi
   
   set -- ${(u)argv}
+  local desc
+  
   while [[ -n $1 ]]; do
     case $1 in
       # Search for matching value
-      ('=')
+      (-eq|--equals|'=')
         typeset -m '*' |
-          grep -E '^([[:alnum:]]+)=.*'${2}'.*$' |
-          cut -d '=' -f1
-        shift
-      ;;
+        grep -E '^([[:alnum:]]+)=.*'${2}'.*$' |
+        cut -d '=' -f1
+        shift ;;
+      
+      (-n|--name)
+        typeset +m "$2*"
+        shift ;;
+      
       # Search for matching name
       (*)
-        typeset +m "$1*"
-      ;;
+        if [[ -v $1 ]]; then
+          desc="${${$(typeset -m $1)#$1=\( }% )}"
+          
+          print -Pf '%s %s=( %s )\n' -- "${(Pt)1}" "%F{6}$1%f" "$desc"
+          print -Pf 'integer %s=%i\n' -- "%F{6}#$1%f" "${(P)#1}"
+#          desc="$(typeset $1) #  \${#${1}}=${(P)#1}"
+#          echo $desc
+        else
+          typeset +m "$1*"
+        fi
     esac
     shift
   done
