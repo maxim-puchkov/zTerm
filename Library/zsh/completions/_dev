@@ -1,4 +1,0 @@
-#compdef dev
-
-
-_files -/ -W $HOME/dev

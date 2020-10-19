@@ -1,7 +1,0 @@
-#compdef sfuc
-
-#  _sfuc
-
-
-_files -/ -W ~sfu/Courses
-return 0
