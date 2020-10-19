@@ -1,6 +1,9 @@
 .DS_Store
 
 **/var/*
+!**/var/run
+!**/var/log
+!**/var/data
 
 **/iTerm\ 2/*
 **/.iterm2
