@@ -73,6 +73,7 @@ local id="${${*%%=*}##* }"
 #unset $id
 
 # Set parameter value.
+echo "{{{$argv}}}"
 eval "typeset -g $argv"
 if [[ ${+opts[-o]} -eq 1 ]]; then
   typeset -p -m "$id"

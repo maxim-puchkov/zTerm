@@ -145,6 +145,9 @@ export GPG_TTY
 
 
 
+# Add 'dim' and 'no-dim' text effects
+FX[dim]=$'%{\033[2m%}'
+FX[no-dim]=$'%{\033[22m%}'
 
 
 # Hide zsh autosuggestions parameters
@@ -158,13 +161,18 @@ typeset -H _ZSH_AUTOSUGGEST_BIND_COUNTS
 typeset  -H ZSH_HIGHLIGHT_REVISION
 typeset -aH ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern)
 typeset -AH ZSH_HIGHLIGHT_STYLES
+
+# Read zsh highlight styles from file
 setarray -A ZSH_HIGHLIGHT_STYLES --split-at ' ' ~share/zsh-highlight-styles
 
 
-# Function 'watchfile'
-typeset WATCHFILE=/usr/local/zterm/zsh/WatchFile
 
 
+function watchfile() {
+  typeset WATCHFILE=/usr/local/zterm/zsh/WatchFile
+  /usr/bin/open -a Xcode -- "$file"
+  /usr/local/bin/watch --color --differences --interval 2 -- "zsh $file"
+}
 
 
 
@@ -175,7 +183,7 @@ typeset WATCHFILE=/usr/local/zterm/zsh/WatchFile
 # Automatically update autoload functions that
 # were modified while Terminal window is open.
 function zsh_update_preexec() {
-  # Create separate last update file for each TTY.
+  # Last update file for current TTY.
   local last_update="/tmp/${TTY##*/}_update"
   if [[ ! -e $last_update ]]; then
     touch $last_update
@@ -190,6 +198,7 @@ function zsh_update_preexec() {
         -type f -mindepth 1 \
         -mnewer $last_update
   )"})
+  # If functions were not updated, return
   if [[ ${#updated_functions} -eq 0 ]]; then
     return 0
   fi
@@ -198,8 +207,10 @@ function zsh_update_preexec() {
   # Unset and re-autoload functions.
   local updated
   for updated in $updated_functions; do
-    unset -f -- ${updated:t} && autoload -Uz -- ${updated:t}
+    typeset -f ${updated:t} || unset -f -- ${updated:t}
+    autoload -Uz -- ${updated:t}
   done
+  
   # If any function was updated, touch last update.
   if [[ $? -eq 0 ]]; then
     touch $last_update

@@ -10,16 +10,16 @@
 # Usage:
 # ztemplate [--out path] [--<macro> value] [-template ...]
 # ztemplate help
-emulate -LR zshs
+emulate -LR zsh
 #autoload +X $0
 
 
 local prog="${0##*/}"
 # Template directory
-local ztemplate_dir=/usr/local/zterm/share/ztemplate
-local ztemplate_id_file="$ztemplate_dir/Macros/template-id"
+local ztemplate_dir="/usr/local/zterm/share/ztemplate"
+local ztemplate_id_file="/usr/local/zterm/var/data/template-id"
 # Template files
-local -a templates_list=( "${ztemplate_dir}/Templates/"*(:t:r) )
+local -a templates_list=( "$ztemplate_dir/Templates/"*(:t:r) )
 local filename template_{name,file,ext}
 # Template text macros
 local -A ztemplate_macros
@@ -33,7 +33,7 @@ opts=( ${(kv)ztemplate_macros} )
 local -a specs
 specs=( ${(k)^opts#-}':' '-out:' 'o:=-out' )
 if [[ $# -gt 0 ]] &&
-   {! zparseopts -D -E -K -M -A opts - $specs}; then
+   {! zparseopts -D -K -M -A opts - $specs}; then
   return 1
 fi
 

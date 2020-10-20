@@ -44,9 +44,7 @@ function nocolor() {
 }
 
 
-# Add 'dim' and 'no-dim' text styles
-FX[dim]=$'%{\033[2m%}'
-FX[no-dim]=$'%{\033[22m%}'
+
 
 
 # clr

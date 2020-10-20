@@ -45,17 +45,30 @@ compdef '_grep'  hgrep hegrep hfgrep
 # Usage:
 # src [name]
 function src() {
-  local name {fn,cmd}_src
+  local -a files
+  local name file {fn,cmd}_src
   for name; do
-    fn_src="${functions_source[$name]}"
+    # Source files
+    files=()
+    # Function source
+    fn_src=$functions_source[$name]
     if [[ -r $fn_src ]]; then
-      highlight $fn_src
+      files+=($fn_src)
+    fi
+    # Command source
+    cmd_src=$comamnds[$name]
+    if [[ -r $cmd_src ]]; then
+      files+=($cmd_src)
     fi
     
-    cmd_src="${commands[$name]}"
-    if [[ -r $cmd_src ]]; then
-      highlight $cmd_src
-    fi
+    for file in $files; do
+      if [[ -t 0 ]] || [[ -p /dev/stdout ]]; then
+        cat $file
+      else
+        # Highlight files
+        highlight $file
+      fi
+    done
   done
 }
 

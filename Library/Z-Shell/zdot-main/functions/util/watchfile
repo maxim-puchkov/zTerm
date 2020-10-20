@@ -22,9 +22,6 @@ if [[ ! -e $file ]]; then
 fi
 
 
-/usr/bin/open -a Xcode -- "$file"
-
-/usr/local/bin/watch --color --differences --interval 2 -- "zsh $file"
 
 
 

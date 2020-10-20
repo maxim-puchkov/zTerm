@@ -22,10 +22,8 @@ function zlogin() {
 }
 
 
-read -r ZLOGIN_ENABLE <~var/data/zlogin_enable
-export ZLOGIN_ENABLE
-
-if [[ $ZLOGIN_ENABLE -eq 1 ]]; then
+read -r zlogin_enable <~var/data/zlogin_enable
+if [[ $zlogin_enable -eq 1 ]]; then
   typeset -a fields=(
     "%F{4}User%f: $USER:$(id -gn) ($SHELL)"
     "%F{4}Home%f: $HOME"
@@ -33,3 +31,4 @@ if [[ $ZLOGIN_ENABLE -eq 1 ]]; then
   )
   print -P -n -C1 -- $fields
 fi
+unset zlogin_enable
