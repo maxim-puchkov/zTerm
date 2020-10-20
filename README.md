@@ -39,10 +39,10 @@ Functions for formatting and displaying text.
 ```sh
 $ show PATH
 > parameters : scalar-tied-export-special PATH[29] = "/usr/bin:/bin:/usr/sbin:/sbin"
-$ show pwd
-> builtins pwd: defined
-> commands pwd: /bin/pwd
-     1       pwd [-L | -P]
+$ show ls
+> aliases ls: /bin/ls -BFGHhk
+> commands ls: /bin/ls
+     1       ls [-ABCFGHLOPRSTUW@abcdefghiklmnopqrstuwx1%] [file ...]
 ```
 * `synopsis` - print synopsis for a command (used by `show`). 
 * `syntaxf` - underline `${variables}` or substitute red "null" string if varialble is not set (used by `error`).
