@@ -7,9 +7,6 @@
 #  Created on October 11, 2020.
 
 
-# Add 'dim' and 'no-dim' text styles
-FX[dim]="%{\033[2m%}"
-FX[no-dim]="%{\033[22m%}"
 
 
 
@@ -39,9 +36,22 @@ function print-line() {
 
 
 function nocolor() {
-  printf '%s\n' "${@//$'\033['[0-9;]#m/}"
+  if [[ ! -t 0 ]] ||
+     [[ -p /dev/stdin ]]; then
+    set -- ${argv} ${(@f)"$(<&0)"}
+  fi
+  printf '%s\n' "${*//$'\033['[0-9;]#m/}"
 }
 
+
+# Add 'dim' and 'no-dim' text styles
+FX[dim]=$'%{\033[2m%}'
+FX[no-dim]=$'%{\033[22m%}'
+
+
+# clr
+#
+# Clear terminal buffer.
 function clr() {
   printf '%b%b%b' '\033[H' '\033[2J' '\033[3J'
 }

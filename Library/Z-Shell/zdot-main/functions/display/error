@@ -13,7 +13,7 @@
 #
 # Usage:
 # error [-c num] [-m message] [--color color]
-#       [--usage "line[;line]..."]
+#       [--usage "line1[; line2[; ...]]"]
 emulate -LR zsh
 setopt extendedglob
 

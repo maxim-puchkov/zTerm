@@ -13,10 +13,13 @@
 #
 # Options:
 # -a :: Create an autoload function
+# -A :: Navigate to autoload function directory
 # -d <dir> :: Create autoload function subdirectory
-# -s <dir> :: Specify existing autoload function subdirectory
-# -X :: Function tab width
-#
+# -D :: List all function directories
+# -s <dir> :: Specify function subdirectory for created functions
+# -m :: Sort autoload functions by modification time
+# -X <width> :: Specify tab width
+
 # Usage:
 # `mkfn -A'
 # `mkfn -d <dir>'
@@ -29,7 +32,8 @@ setopt noclobber
 local -A opts
 opts=([-X]='2')
 local -a specs
-specs=(${(k)^opts#-}':' 'A' 'a' 'd:' 's:' 'm')
+specs=('A' 'a' 'D' 'd:' 's:' 'm')
+specs+=(${(k)^opts#-}':')
 if [[ $# -gt 0 ]] &&
    {! zparseopts -D -E -K -M -A opts - $specs}; then
   return 1
@@ -40,6 +44,9 @@ fi
 local functions_dir="$ZDOTDIR/functions"
 
 
+
+
+# `mkfn' will return if any of the following options is set.
 case 1 in
   # -d <directory>: Create a new function subdirectory in $ZDOTDIR/functions and return.
   ${+opts[-d]})
@@ -50,6 +57,16 @@ case 1 in
     else
       error -1 -m 'cannot create function directory: ${new_dir}'
     fi ;;
+  
+  # -D: Show function directories.
+  ${+opts[-D]})
+    if [[ ${+functions[nf]} -eq 1 ]]; then
+      nf -r "$ZDOTDIR/functions"
+    else
+      /usr/bin/find $ZDOTDIR/functions -type d 2>/dev/null
+    fi
+    return $? ;;
+  
   # -A: Change working directory to root directory of zsh autoload functions.
   ${+opts[-A]})
     print -P "Function directory: %F{6}${functions_dir}%f"

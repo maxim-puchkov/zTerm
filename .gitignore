@@ -5,18 +5,19 @@
 !**/var/log
 !**/var/data
 
-**/iTerm\ 2/*
+**/iTerm 2
 **/.iterm2
+
+**/oh-my-zsh
+**/.oh-my-zsh
+
+**/__pycache__
+**/*.pyc
 
 **/.zcompdump*
 **/*.zsh_history
-**/.zsh_sessions/*
+**/.zsh_sessions
 
-**/oh-my-zsh/*
-**/.oh-my-zsh
 
-**/__pycache__/*
-**/*.pyc
-
-**/*.xcodeproj/*
-**/*.xcworkspace/*
+**/*.xcodeproj
+**/*.xcworkspace

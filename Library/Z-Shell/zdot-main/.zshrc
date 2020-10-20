@@ -31,13 +31,13 @@ hash -d text=~/private/var/test/text
 
 
 # PATH
-typeset -aU privatepath=( ~/private/bin )
-export  -aUT PATH path=( $path ~zterm/bin $privatepath ) # $M2
+typeset -aU privatepath=(~/private/bin)
+export -aUT PATH path=( $path ~zterm/bin $privatepath ) # $M2
 
 # FPATH
 export -aUT FPATH fpath=(
   $fpath
-  ${(@f)"$(find -P -- $ZDOTDIR/functions -type d 2>/dev/null)"}
+  ${(@f)"$(/usr/bin/find -P -- $ZDOTDIR/functions -type d 2>/dev/null)"}
   $ZDOTDIR/completions
   /usr/local/share/zsh-completions
 )
@@ -66,14 +66,11 @@ export HISTFILE=$ZTERMDIR/var/log/History/$USER.zsh_history
 
 
 #MARK: - Z-Shell
-# Bindkey
-bindkey '^X\x7f' backward-kill-line  # Command-Delete
+# Options
+setopt extendedglob
 
 # Modules
 zmodload zsh/{zutil,zselect}
-
-# Options
-setopt extendedglob
 
 # Functions
 autoload -Uz $ZDOTDIR/{functions,completions}/**/*(.N)
@@ -100,6 +97,8 @@ unalias 'run-help' {1..9} '-' 'diff'
 # Initialize the completion system
 compinit
 
+# Bindkey
+bindkey '^X\x7f' backward-kill-line  # Command-Delete
 
 
 
@@ -187,8 +186,9 @@ function zsh_update_preexec() {
   # Find updated functions.
   local -a updated_functions
   updated_functions=(${(@f)"$(
-    find -L $zsh_update_dirs -type f \
-         -mindepth 1 -mnewer $last_update
+    /usr/bin/find -L -- $zsh_update_dirs \
+        -type f -mindepth 1 \
+        -mnewer $last_update
   )"})
   if [[ ${#updated_functions} -eq 0 ]]; then
     return 0
@@ -275,11 +275,12 @@ function man() {
 # `zalias <name> <value>'   -- write new alias to 'zalias' file.
 function zalias() {
   local name=$1
+  local source_file=$ZDOTDIR/sources/zalias
   case $# in
     (0)
-      printf 'Open "%s" in Xcode? [yn]\n' "$ZDOTDIR/sources/zalias"
+      printf 'Open "%s" in Xcode? [yn]\n' "$source_file"
       if read -qs; then
-        /usr/bin/open -a Xcode
+        /usr/bin/open -a Xcode "$source_file"
       fi ;;
     
     (1)
@@ -313,6 +314,59 @@ function zalias() {
 #
 # Usage:
 # is condition[ ...] name
+# function is() { ... }
+
+
+# isx
+#
+# Usage:
+# isx
+function isx() {
+  local lhs op rhs expr result
+  
+  while [[ -n "$1" ]]; do
+  while [[ -n "$1" ]] &&
+  
+    unset larg op rarg expr result
+    
+    # Check for input errors
+    if [[ "$1" =~ ^[-] ]]; then
+      # `isx 1 -eq'
+      if [[ -z "$2" ]]; then
+        error -1 -m 'missing argument after operator ${1}'
+      fi
+    else
+      # `isx 2'
+      if [[ ! "$2" =~ ^[-] ]]; then
+        error -1 -m 'missing operator after argument ${1}'
+      fi
+    fi
+    
+    
+    # Make an expression
+    case "$1" in
+      # Unary operator
+      -*) op=$1
+          rhs=$2
+          shift 2 ;;
+      # Binary operator
+      *)  lhs=$1
+          op=$2
+          rhs=$3
+          shift 3 ;;
+    esac
+    
+    # Evaluate current expression
+    expr="[[ $lhs $op $rhs ]]"
+    eval "$expr"
+    let result=$?
+    
+    # Print result (true/false)
+    printzf "  $expr is %0(r.$fg[green]true.$fg[red]false)$fg[default]" r:$result
+  done
+}
+
+
 
 
 

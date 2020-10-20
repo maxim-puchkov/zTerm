@@ -41,6 +41,7 @@ alias 2on='opacity 1.0'
 #MARK: - Noglob Aliases
 alias pipeset='noglob pipeset'
 
+alias isx='noglob isx'
 alias casex='noglob casex'
 alias expx='noglob expx'
 
@@ -365,8 +366,8 @@ alias -g _T='; then print -P -- %2FTRUE%f; else print -P -- %1FFALSE%f; fi;'
 
 
 
-#MARK: Function Aliases
-function calculate~alias() {
+
+function calculate() {
   printf '%i\n' "$(( ${argv} ))"
 }
-alias {calculate,calc,+}='noglob calculate~alias'
+alias {calculate,calc,+}='noglob calculate'
