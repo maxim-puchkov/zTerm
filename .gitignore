@@ -1,23 +1,31 @@
 .DS_Store
 
-**/var/*
-!**/var/run
-!**/var/log
-!**/var/data
 
-**/iTerm 2
+# Ignore everything in 'var'.
+/var/*
+
+
+# Ignore 'iTerm 2' and 'oh-my-zsh' directories in 'Library'.
+/Library/iTerm\ 2
+/Library/Z-Shell/oh-my-zsh
+
+
+# Ignore symbolic links.
 **/.iterm2
-
-**/oh-my-zsh
 **/.oh-my-zsh
 
+
+# Ignore python compiled code.
 **/__pycache__
-**/*.pyc
-
-**/.zcompdump*
-**/*.zsh_history
-**/.zsh_sessions
+**/*.py[co]
 
 
+# Ignore any compdump, history, and session files.
+**/*.*compdump*
+**/*.*_history
+**/*.*_sessions
+
+
+# Ignore Xcode projects and workspaces.
 **/*.xcodeproj
 **/*.xcworkspace

@@ -198,7 +198,7 @@ function zsh_update_preexec() {
         -type f -mindepth 1 \
         -mnewer $last_update
   )"})
-  # If functions were not updated, return
+  # If functions were not updated, return.
   if [[ ${#updated_functions} -eq 0 ]]; then
     return 0
   fi
@@ -207,7 +207,9 @@ function zsh_update_preexec() {
   # Unset and re-autoload functions.
   local updated
   for updated in $updated_functions; do
-    typeset -f ${updated:t} || unset -f -- ${updated:t}
+    if {! typeset -f ${updated:t}}; then
+      unset -f -- ${updated:t}
+    fi
     autoload -Uz -- ${updated:t}
   done
   

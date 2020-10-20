@@ -61,8 +61,13 @@ function src() {
       files+=($cmd_src)
     fi
     
+    if [[ ${#files} -eq 0 ]]; then
+      return 1
+    fi
+    
     for file in $files; do
-      if [[ -t 0 ]] || [[ -p /dev/stdout ]]; then
+      if [[ -t 0 ]] ||
+         [[ -p /dev/stdout ]]; then
         cat $file
       else
         # Highlight files
