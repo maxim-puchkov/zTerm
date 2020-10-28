@@ -10,23 +10,55 @@
 # syntaxf
 #
 # Highlight shell parameters in text.
+# Unexpanded parameters of type '${name}' are substituted
+# with unerlined value of 'name' or with red "null" label.
+#
+# If a parameter is not enclosed in curly braces { }, then
+# its value will be printed as is.
+#
+#
 #
 # Usage:
 # `syntaxf [ text ]'
+#
+#
+#
+# Examples:
+# * Unerline parameters HOME and USER in variable 'original_text'
+#   and store the result in 'formatted_text':
+#   - typeset original_text='Display ${HOME} directory of user ${USER}'
+#   - typeset formatted_text=$(syntaxf $original_text)
+# * Result: "Display ${${HOME:+${HOME}}:-null} directory of user ${${USER:+${USER}}:-null}"
+#
+# * Underline parameter SHLVL, do not format parameter SHELL,
+#   and print "null" for invalid parameter USR in 'text'
+#   - typeset text='${SHLVL} $SHELL ${USR}'
+# * Result: "${${SHLVL:+${SHLVL}}:-null} $SHELL ${${USR:+${USR}}:-null}"
+#
+# * Print the formatted text:
+#   - print -P -- $formatted_text
+#   - print -- ${(e)formatted_text}
 emulate -LR zsh
+
+if autoload -Uz spectrum; then
+  spectrum
+fi
+
 
 # Append input after arguments.
 if [[   -p /dev/stdin ]] ||
    [[ ! -t 0 ]]; then
-  local -a input
-  pipeset -a input </dev/stdin
-  set -- $argv $input
+  local -a syntaxf_input
+  set -A syntaxf_input ${(@f)"$(<&0)"}
+  set -- $argv $syntaxf_input
 fi
+
 
 # Set colors.
 local syntaxf_style_ok=${(%)FX[underline]}
 local syntaxf_style_bad=${(%)FG[001]}
 local syntaxf_style_reset=${(%)FX[reset]}
+
 
 # Set Find & Replace values.
 local find='(^|[^\])[$]{([^}]+)}'
@@ -34,25 +66,11 @@ local replace_set="$syntaxf_style_ok"'${\2}'"$syntaxf_style_reset"
 local replace_not_set="$syntaxf_style_bad"'null'"$syntaxf_style_reset"
 local replace='\1${${\2:+'$replace_set'}:-'$replace_not_set'}'
 
-# Substitute.
+
+# Substitute ${variables} with underlined ${variables}
+# or with red "null" label. 
 printf '%s\n' "$*" |
 /usr/bin/sed -E -e "s#${find}#${replace}#g"
 
+
 return $?
-
-
-## Format syntax
-#function syntaxf() {(
-#    typeset -i replace_color=4
-#    if [[ $1 == '-c' ]]; then
-#        replace_color=$2
-#        shift 2
-#    fi
-#    # echo '${a:b:c} hey bob \${hey}' | sed -E -e 's/(^|[^\])[$][{]([^}]+)[}]/${\2:+'$(red '${\2}')'}:-'$(green '${\2')'__End}/g'
-#    typeset find replace
-#    find='([^\\])?\$\{((\(.+\))?([!@#$%^&*-]|[[:alnum:]_]+)(:.+)?)\}'
-#    replace='\1${${\2:+'$(esc 4 -t '${\2}' -r 0)'}:-"'$(esc 33 -t '<no value>' -r 0)'"}'
-#    /usr/bin/sed -E -e 's/'$find'/'$replace'/g' <<< "$argv"
-#    return 0
-#)}
-#

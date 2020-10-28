@@ -9,14 +9,15 @@
 
 # show - describe a shell command or parameter
 #
+# Usage:
+# show [ name ... ]
+#
 # Examples:
-#   1. `show pax'   -->  "command /bin/pax"
-#   2. `show HOME'  -->  "scalar-export-special HOME = '/Users/admin'"
+#   1. `show pax'    -->   "command /bin/pax"
+#   2. `show HOME'   -->   scalar-export-special HOME[12] = "/Users/admin"
+emulate -LR zsh
+autoload -Uz -- zfn
 
-#MARK: - show (4)
-# -G: print skipped groups ???:
-local -A __opts__
-zparseopts -D -E -A __opts__ - G
 
 local -a __{zsh_groups,result,matches}__
 local -i __length__
@@ -33,10 +34,13 @@ __zsh_groups__=(
 )
 
 if [[ $# -eq 0 ]]; then
-  error -1 -- 'nothing to show'
+  error -1 -m 'nothing to show'
 fi
 
-# 1. For each 'name' (
+
+
+
+# 1. For each 'name'
 for __name__; do
   unset __result__
   
@@ -55,15 +59,6 @@ for __name__; do
     for __match__ in $__matches__; do
       # Skip empty value
       __value__="${${(P)__groupname__}[${__match__}]}"
-      #???: -
-      if [[ -z "$__value__" ]]; then
-        # Print empty matches if the -G flag is set
-        if [[ ${+__opts__[-G]} -eq 1 ]]; then
-          printf "  %b%s%b\n"   $'\e[2m' "skipping $__groupname__" $'\e[22m' >&2
-        fi
-        continue
-      fi
-      #???: -
     
       # Format value and type desc
       case "$__groupname__" in
@@ -76,7 +71,7 @@ for __name__; do
         # Format function
         ('functions')
           local line=$'\e[2m'${(l:$COLUMNS::-:)}$'\e[22m'
-          __value__=$'\n'"${line}"$'\n'"$(fn -- def $__name__)"$'\n'"${line}" ;;
+          __value__=$'\n'"${line}"$'\n'"$(zfn show $__name__)"$'\n'"${line}" ;;
         # Command synopsis
         ('commands')
           local synopsis=$(synopsis "${__value__:t}" 2>/dev/null)
@@ -104,6 +99,8 @@ for __name__; do
   fi
   shift
 done ##(1)for name
+
+
 
 
 return 0

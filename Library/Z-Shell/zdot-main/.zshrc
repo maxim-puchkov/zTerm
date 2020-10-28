@@ -11,10 +11,10 @@
 hash -d zterm=$ZTERMDIR
 hash -d zdot=$ZDOTDIR
 
+hash -d lib=~zterm/Library
 hash -d sources=~zdot/sources
 hash -d functions=~zdot/functions
 hash -d completions=~zdot/completions
-hash -d modules=~zdot/modules
 
 hash -d etc=~zterm/etc
 hash -d share=~zterm/share
@@ -30,17 +30,30 @@ hash -d text=~/private/var/test/text
 
 
 
+#MARK: - Paths
 # PATH
 typeset -aU privatepath=(~/private/bin)
-export -aUT PATH path=( $path ~zterm/bin $privatepath ) # $M2
+export -aUT PATH path=(
+  $path
+  ~zterm/bin
+  $privatepath
+  #$M2
+)
+
 
 # FPATH
 export -aUT FPATH fpath=(
   $fpath
-  ${(@f)"$(/usr/bin/find -P -- $ZDOTDIR/functions -type d 2>/dev/null)"}
+  ${(@f)"$(
+    /usr/bin/find --     \
+      $ZDOTDIR/functions \
+      -type d            \
+      2>/dev/null
+  )"}
   $ZDOTDIR/completions
   /usr/local/share/zsh-completions
 )
+
 
 # PYTHONPATH
 export -aUT PYTHONPATH pythonpath=(
@@ -48,8 +61,11 @@ export -aUT PYTHONPATH pythonpath=(
   $pythonpath
 )
 
-# Oh-my-zsh directory
-export ZSH=$ZDOTDIR/.oh-my-zsh
+
+# MANPATH
+MANPATH="$(/usr/bin/man -W)"
+export -aUT MANPATH manpath
+
 
 # Interactive history
 export HISTFILE=$ZTERMDIR/var/log/History/$USER.zsh_history
@@ -73,9 +89,11 @@ setopt extendedglob
 zmodload zsh/{zutil,zselect}
 
 # Functions
-autoload -Uz $ZDOTDIR/{functions,completions}/**/*(.N)
-autoload -Uz 'run-help' 'compinit'
+autoload -Uz 'compinit' 'run-help' 'zargs'
+autoload -Uz $ZDOTDIR/{functions,completions}/**/*~*.awk(.N)
 
+# Oh-my-zsh directory
+export ZSH=$ZDOTDIR/.oh-my-zsh
 # Oh-my-zsh's plugins and themes
 setarray -a plugins ~share/oh-my-zsh/plugins
 setarray -a themes  ~share/oh-my-zsh/themes
@@ -91,11 +109,14 @@ fi
   done
 } ~zdot/sources/*(N)
 
-# Unalias Oh-my-zsh's aliases
-unalias 'run-help' {1..9} '-' 'diff'
+# Unalias oh-my-zsh aliases
+unalias 'run-help' {1..9} '-' 'diff' 'md' 'rd'
+
+# Unfunction oh-my-zsh's functions
+unfunction d
 
 # Initialize the completion system
-compinit
+compinit -d $ZTERMDIR/var/zcompdump
 
 # Bindkey
 bindkey '^X\x7f' backward-kill-line  # Command-Delete
@@ -121,20 +142,12 @@ export HGREP_COLOR='1;30;103'
 # ls
 export LSCOLORS='Gxfxcxdxbxegedabagacad'
 
-
 # du, ls
 export -i BLOCKSIZE=1024
-
-
-# man
-MANPATH="$(/usr/bin/man -W)"
-export -aUT MANPATH manpath
-
 
 # less, man
 export PAGER="less"
 export LESS="-R"
-
 
 # gpg
 GPG_TTY=$(tty)
@@ -145,9 +158,6 @@ export GPG_TTY
 
 
 
-# Add 'dim' and 'no-dim' text effects
-FX[dim]=$'%{\033[2m%}'
-FX[no-dim]=$'%{\033[22m%}'
 
 
 # Hide zsh autosuggestions parameters
@@ -156,6 +166,7 @@ typeset -H ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS
 typeset -H ZSH_AUTOSUGGEST_CLEAR_WIDGETS
 typeset -H ZSH_AUTOSUGGEST_IGNORE_WIDGETS
 typeset -H _ZSH_AUTOSUGGEST_BIND_COUNTS
+
 
 # Hide zsh highlighting parameters
 typeset  -H ZSH_HIGHLIGHT_REVISION
@@ -166,12 +177,17 @@ typeset -AH ZSH_HIGHLIGHT_STYLES
 setarray -A ZSH_HIGHLIGHT_STYLES --split-at ' ' ~share/zsh-highlight-styles
 
 
-
-
-function watchfile() {
-  typeset WATCHFILE=/usr/local/zterm/zsh/WatchFile
-  /usr/bin/open -a Xcode -- "$file"
-  /usr/local/bin/watch --color --differences --interval 2 -- "zsh $file"
+# add-color-functions
+# Define functions for printing colored text.
+() {
+  local color_name
+  local -a exclude=(default)
+  for color_name in ${(k)fg:|exclude}; do
+    function "$color_name"() {
+      print -r -- "${fg[$0]}${argv}${fg[default]}"
+      return "$# == 0"
+    }
+  done
 }
 
 
@@ -179,43 +195,50 @@ function watchfile() {
 
 
 
-#MARK: - zsh_update_preexec
-# Automatically update autoload functions that
-# were modified while Terminal window is open.
+
+
+
+
+
+
+
+#MARK: - Preexec
+# zsh_update_preexec
+#
+# Update autoload functions that were modified
+# while the terminal window is open.
 function zsh_update_preexec() {
   # Last update file for current TTY.
   local last_update="/tmp/${TTY##*/}_update"
   if [[ ! -e $last_update ]]; then
-    touch $last_update
+    /usr/bin/touch $last_update
     return 0
   fi
   
-  
-  # Find updated functions.
-  local -a updated_functions
-  updated_functions=(${(@f)"$(
-    /usr/bin/find -L -- $zsh_update_dirs \
-        -type f -mindepth 1 \
-        -mnewer $last_update
+  # Find all updated functions.
+  local -a updated_files
+  updated_files=(${(@f)"$(
+    /usr/bin/find --       \
+      $zsh_update_dirs     \
+      -type f              \
+      -mnewer $last_update \
+      2>/dev/null
   )"})
-  # If functions were not updated, return.
-  if [[ ${#updated_functions} -eq 0 ]]; then
-    return 0
-  fi
-  
   
   # Unset and re-autoload functions.
-  local updated
-  for updated in $updated_functions; do
-    if {! typeset -f ${updated:t}}; then
-      unset -f -- ${updated:t}
+  local file name
+  for file in ${updated_files[@]}; do
+    name=${file:t}
+    if [[ ${+functions[$name]} -eq 1 ]]; then
+      unset -f -- $name
     fi
-    autoload -Uz -- ${updated:t}
+    autoload -Uz -- $name
   done
   
-  # If any function was updated, touch last update.
-  if [[ $? -eq 0 ]]; then
-    touch $last_update
+  # If functions were updated, touch last update.
+  if [[ ${#updated_files} -gt 0 ]]; then
+    /usr/bin/touch $last_update
+    return 0
   fi
 }
 
@@ -225,7 +248,10 @@ typeset -a zsh_update_dirs=($ZDOTDIR/functions)
 preexec_functions+=(zsh_update_preexec)
 
 
-
+# Announce the name of all executed commands.
+function announce_preexec() {
+  print
+}
 
 
 
@@ -238,13 +264,31 @@ preexec_functions+=(zsh_update_preexec)
 
 #MARK: - OTHER -
 
-typeset okvar='OK_VAR'
-typeset badvar='BAD_VAR'
-typeset sfmt1='He said, ${okvar}'
-typeset sfmt2='He said, "${okvar}". But they said, "${badvar}"'
+#TODO: - move
+function watchfile() {
+  typeset file=/usr/local/zterm/var/run/WatchFile
+  if [[ ! -e $file ]]; then
+    return 1
+  fi
+  /usr/bin/open -a Xcode -- "$file"
+  /usr/local/bin/watch --color --differences --interval 2 -- "zsh $file"
+}
+
+#TODO: - move
+function run_awk() {
+  /usr/bin/awk "{ $argv }" ~text/awk.txt
+}
+
+#TODO: - move
+function run_sed() {
+  /usr/bin/sed -E -n -e "$argv" ~text/sed.txt
+}
 
 
 
+
+
+#TODO: - move
 # printzf
 #
 # Print zformat.
@@ -258,11 +302,11 @@ function printzf() {
   local -A opts
   zparseopts -D -E -A opts -
   local args
-  zformat -f args $argv
+  zformat -f args "$argv"
   print -r -- "$args"
 }
 
-
+#TODO: - move
 # man
 #
 # Colored man pages.
@@ -278,43 +322,7 @@ function man() {
 
 
 
-# zalias
-#
-# Add and edit zsh aliases defined in ~zdot/sources/zalias.
-#
-# Usage:
-# `zalias'                  -- ask to open 'zalias' file in Xcode.
-# `zalias <name>'           -- print value for the specified alias.
-# `zalias <name> <value>'   -- write new alias to 'zalias' file.
-function zalias() {
-  local name=$1
-  local source_file=$ZDOTDIR/sources/zalias
-  case $# in
-    (0)
-      printf 'Open "%s" in Xcode? [yn]\n' "$source_file"
-      if read -qs; then
-        /usr/bin/open -a Xcode "$source_file"
-      fi ;;
-    
-    (1)
-      if [[ ${+aliases[$name]} -eq 1 ]]; then
-        builtin alias -L $name
-      else
-        error -1 -m '${name} is not an alias'
-      fi ;;
-    
-    (*)
-      local insert_text
-      local -a value=(${argv:2})
-      if [[ ${+aliases[$name]} -eq 0 ]]; then
-        insert_text="alias ${name}='${value}'"
-        echo $insert_text
-      else
-        error -1 -m 'alias ${name} already exists'
-      fi ;;
-  esac
-  return 0
-}
+
 
 
 
@@ -330,62 +338,71 @@ function zalias() {
 # function is() { ... }
 
 
-# isx
+#TODO: - move
+# ifx
+#
+# Evaluate multiple expressions at once.
 #
 # Usage:
-# isx
-function isx() {
-  local lhs op rhs expr result
+# ifx [ [ -op arg ] ... ]
+#     [ [ arg1 -op arg2 ] ... ]
+function ifx() {
+  local -a expr
+  local -i result
   
-  while [[ -n "$1" ]]; do
-  while [[ -n "$1" ]] &&
-  
-    unset larg op rarg expr result
-    
-    # Check for input errors
-    if [[ "$1" =~ ^[-] ]]; then
-      # `isx 1 -eq'
-      if [[ -z "$2" ]]; then
-        error -1 -m 'missing argument after operator ${1}'
-      fi
-    else
-      # `isx 2'
-      if [[ ! "$2" =~ ^[-] ]]; then
-        error -1 -m 'missing operator after argument ${1}'
-      fi
-    fi
-    
-    
+  # Group unary and binary conditions with arguments.
+  while [[ "$1" =~ ^[-] && -n "$2" ]] ||
+        [[ -n "$1" && "$2" =~ ^[-] && -n "$3" ]]; do
     # Make an expression
+    unset expr result
+    
     case "$1" in
-      # Unary operator
-      -*) op=$1
-          rhs=$2
+      # Unary: [[ -n "$var" ]]
+      -*) expr=($1 $2)
           shift 2 ;;
-      # Binary operator
-      *)  lhs=$1
-          op=$2
-          rhs=$3
+      # Binary: [[ $x -gt $y ]]
+      *)  expr=($1 $2 $3)
           shift 3 ;;
     esac
-    
-    # Evaluate current expression
-    expr="[[ $lhs $op $rhs ]]"
-    eval "$expr"
+    # Evaluate the expression
+    eval "[[ $expr ]]"
     let result=$?
-    
     # Print result (true/false)
-    printzf "  $expr is %0(r.$fg[green]true.$fg[red]false)$fg[default]" r:$result
+    printzf "[[ $expr ]] is %0(r.$fg[green]true.$fg[red]false)$fg[default]" r:$result
+  done
+  
+  # If there are more arguments, the expression was
+  # incorrect or incomplete.
+  if [[ $# -gt 0 ]]; then
+    error -1 -m 'not an expression: ${argv}'
+  fi
+  
+  return 0
+}
+
+
+#TODO: - move
+function saytime() {
+  builtin strftime '%R' |
+  /usr/bin/say
+}
+
+#TODO: - move
+function eval-every() {
+  local -i interval=$1
+  shift
+  local -a cmd=($argv)
+  while true; do
+    println -IL --bg 11 -- $cmd
+    $cmd
+    printf '\n'
+    sleep $interval
   done
 }
 
 
 
-
-
-
-#MARK: - Parse `cpl'
-# Options
+# cpl Options
 ## -a, --alpha :: Alpha option -
 #              -- cont -
 #              -- continue 2.
@@ -449,6 +466,7 @@ function casex() {
       done
     ;;
   esac
+  
   return 0
 }
 
@@ -457,13 +475,16 @@ function casex() {
 
 
 
-
+#TODO: - move
 # expx
+#
+# Options:
+# -f [flags] :: Set expansion flag :: ( '#' '##' '%' '%%' )
+#
 # Usage:
 # `expx [ -f <flags> ] value
 function expx() {
   # Function options
-  ## -f [flags] :: Set the expansion modifier flags :: ( '#' '##' '%' '%%' )
   local -A opts
   opts=([-f]='#')
   local -a specs
@@ -494,6 +515,7 @@ function expx() {
       "$(println -F1 $value)" "$(println -F3 $flags)" \
       "$(println -F4 -u $pattern)" "$(println -F2 $result)"
   done
+  
   return 0
 }
 
@@ -507,30 +529,12 @@ function expx() {
 
 
 
+#TODO: - move
+quote() {
+  printf '%s\n' "${(qqqq)@}"
+}
 
-
-
-#???: cdefopt
-function cdefopt() {
-  local short long description completion
-  printf 'Enter short option name: ';   read short
-#  short=${short//}
-  
-  printf 'Enter long option name: ';    read long
-  printf 'Enter option description: ';  read description
-  printf 'Enter option completion: ';   read completion
-  
-cat <<EOF
-#compdef <#name#>
-
-#  _<#name#>
-#  Z shell completion function
-
-_arguments -C -s -S -A \"-*\" \
-  '($short $long)'
-
-EOF
-  
-  
-  return 0
+#TODO: - move
+escape() {
+  printf "\$'%s%s'\n" "\033\[" "${(j.;.)*}"
 }

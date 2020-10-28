@@ -17,7 +17,7 @@
 # `2hex 48656c6c6f'   ->   "Hello"
 # `2hex 776f726c64'   ->   "world"
 emulate -LR zsh
-
+autoload -Uz pipeset
 
 
 # Append piped input after arguments.
@@ -34,7 +34,6 @@ if (( ${(c)#argv} % 2 == 1 )); then
 fi
 
 
-
 # Group bytes (every two
 # adjacent characters).
 printf '%s' "$argv"      |
@@ -43,7 +42,6 @@ pipeset -a hex
 
 # Prepend \x to each group.
 set -A hex '\x'${^hex}
-
 
 
 # Print hex string.

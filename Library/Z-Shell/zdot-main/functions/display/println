@@ -7,82 +7,150 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# New File
+# println
 #
-# <#Description...#>
+# Print formatted text.
 #
 # Usage:
-# New File <#usage...#>
+# println [ -s <padding> ] [ -w <width> ] [ -LI ] [ -biuBSD ] [ -FK <color> ]
+#
+# Examples:
+# println -LI -K1 -- "Line of text with red background"
+# println -b -i -u
+#
+#
+# Options:
+# @define option
+#
+# @option       -s
+# @description  Padding string.
+# @completion   :str:->("*" "-" "_" "#" "%")
+#
+# @option       -w
+# @description  Line width.
+# @completion   :width:->("$COLUMNS" "$COLUMNS/2")
+#
+# @option       -L
+# @description  Full line width.
+#
+# @option       -I
+# @description  Indent text 1 space in.
+#
+# @option       -F,--fg
+# @description  Foreground color.
+# @completion   :color:->({0..255})
+#
+# @option       -K,--bg
+# @description  Background color.
+# @completion   :color:->({0..255})
+#
+# @option       -b
+# @description  Bold text.
+#
+# @option       -i
+# @description  Italic text.
+#
+# @option       -u
+# @description  Unerline text.
+#
+# @option       -B
+# @description  Blink text.
+#
+# @option       -S
+# @description  Standout text.
+#
+# @option       -D
+# @description  Dim text.
 emulate -LR zsh
+setopt promptsubst
 
 
-# Options
-# -s :: Line padding string :: ( "*" "-" "_" "#" "%" )
-# -w :: Line width :: ( "$COLUMNS" "$COLUMNS/2" )
-# -F :: Always use full line width
-# -I :: Indent text
-# --fg :: Foreground color :: ( {000..255} )
-# --bg :: Background color :: ( {000..255} )
-# -b :: Bold
-# -i :: Italic
-# -u :: Underline
-# -B :: Blink
-# -S :: Standout
-# -D :: Dim
+# Autoload spectrum colors (FG, BG, FX).
+autoload -Uz spectrum && spectrum
+
+
+
+
+
+
+
+# Function options.
 local -A opts
 opts=([-s]='*')
 local -a {alt,}specs
-specs=('s:' 'w:'  'L' 'I'  '-fg:' '-bg:'  'b' 'i' 'u'  'B' 'S' 'D')
-altspecs=('F:=-fg' 'K:=-bg')
+specs=('s:' 'w:'   'L' 'I'   'F:' 'K:'   'b' 'i' 'u'   'B' 'S' 'D')
+altspecs=('-fg:=F' '-bg:=K')
 if [[ $# -gt 0 ]] &&
    {! zparseopts -D -K -M -A opts - $specs $altspecs}; then
   return 1
 fi
 
 
-# Variables
+# Variables.
 local line="$argv"
 local str
 local -i w
 local -i -Z3 color_number=000
 
 
+
+
+# Check each enabled option:
 case 1 in
+  
   # -w <num>: line width
-  ${+opts[-w]}) let w=${opts[-w]} ;|
+  ${+opts[-w]})
+    let w=${opts[-w]} ;|
+  
   # -c <text>: line characters
-  ${+opts[-s]}) str="${opts[-s]}" ;|
+  ${+opts[-s]})
+    str="${opts[-s]}" ;|
   
   # -I: indent text 1 space
-  ${+opts[-I]}) argv=" ${argv} " ;|
+  ${+opts[-I]})
+    argv=" ${argv} " ;|
+  
   # -L: full line width
-  ${+opts[-L]}) let w=$COLUMNS ;|
+  ${+opts[-L]})
+    let w=$COLUMNS ;|
   
-  ${+w}) line=${(pr:$w::$str:)argv} ;|
+  ${+w})
+    line=${(pr:$w::$str:)argv} ;|
   
-  # --fg <color>: foreground color
-  ${+opts[--fg]})
-    color_number=${opts[--fg]}
+  # -F <color>: foreground color
+  ${+opts[-F]})
+    color_number=$(( ${opts[-F]} % 256 ))
     line="${(%)FG[$color_number]}${line}${fg[default]}" ;|
   
-  # --bg <color>: background color
-  ${+opts[--bg]})
-    color_number=${opts[--bg]}
+  # -K <color>: background color
+  ${+opts[-K]})
+    color_number=$(( ${opts[-K]} % 256 ))
     line="${(%)BG[$color_number]}${line}${bg[default]}" ;|
   
   # -b: bold
-  ${+opts[-b]}) line="${(%)FX[bold]}${line}${(%)FX[no-bold]}" ;|
+  ${+opts[-b]})
+    line="${(%)FX[bold]}${line}${(%)FX[no-bold]}" ;|
+  
   # -i: italic
-  ${+opts[-i]}) line="${(%)FX[italic]}${line}${(%)FX[no-italic]}" ;|
+  ${+opts[-i]})
+    line="${(%)FX[italic]}${line}${(%)FX[no-italic]}" ;|
+  
   # -u: underline
-  ${+opts[-u]}) line="${(%)FX[underline]}${line}${(%)FX[no-underline]}" ;|
+  ${+opts[-u]})
+    line="${(%)FX[underline]}${line}${(%)FX[no-underline]}" ;|
   
   # -B: blink
-  ${+opts[-B]}) line="${(%)FX[blink]}${line}${(%)FX[no-blink]}" ;|
+  ${+opts[-B]})
+    line="${(%)FX[blink]}${line}${(%)FX[no-blink]}" ;|
+  
   # -S: standout
-  ${+opts[-S]}) line="${(%)FX[reverse]}${line}${(%)FX[no-reverse]}" ;|
+  ${+opts[-S]})
+    line="${(%)FX[reverse]}${line}${(%)FX[no-reverse]}" ;|
+  
   # -d: dim
-  ${+opts[-D]}) line="${(%)FX[dim]}${line}${(%)FX[no-dim]}" ;|
+  ${+opts[-D]})
+    line="${(%)FX[dim]}${line}${(%)FX[no-dim]}" ;|
+  
 esac
 
 

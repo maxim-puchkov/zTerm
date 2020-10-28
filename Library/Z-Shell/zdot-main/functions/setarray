@@ -17,10 +17,11 @@
 # Usage:
 # setarray [--type [aA]] [--comment pattern] [array]
 emulate -LR zsh
+autoload -Uz error zparseopts-generate
 
 
-# Make '-a <name>' or '-A <name>' equivalent
-# to '--type [a|A] <name>'.
+# Make '-[aA] <name>' be equivalent to
+# option '--type [aA] <name>'.
 if [[ "$1" =~ ^[-][Aa]$ ]]; then
   set -- '--type' ${1#-} ${argv:2}
 fi
@@ -30,7 +31,7 @@ zparseopts-generate -A opts --short-options -- ${(@)argv}
 
 
 if [[ $# -lt 2 ]]; then
-  error -1 -m 'not enough arguments'
+  error -1 -m 'not enough arguments' 0</dev/null
 fi
 
 

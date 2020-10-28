@@ -1,0 +1,4 @@
+#compdef foo
+
+
+eval "$(zfn complete foo)"

@@ -17,6 +17,8 @@
 emulate -LR zsh
 setopt extendedglob
 
+autoload -Uz syntaxf
+
 
 # If 'SET_ERROR_TRAP' is 1 (default), then
 # the caller caller will return immediately
@@ -37,8 +39,8 @@ fi
 local -A opts
 opts=([--code]="1" [--color]="red")
 local -a specs
-specs=('-code:'    'c:=-code'     '-trace'   'T=-trace'   '-color:'
-       '-message:' 'm:=-message'  '-usage:'  'u:=-usage' )
+specs=('-code:'    'c:=-code'     '-trace'  'T=-trace'   '-color:'
+       '-message:' 'm:=-message'  '-usage:' 'u:=-usage'  '-program:' 'P:=-program' )
 if [[ $# -gt 0 ]] &&
    {! zparseopts -D -E -K -M -A opts - $specs}; then
   return 1
@@ -47,17 +49,18 @@ fi
 
 
 
-# Prepend standard input to arguments.
+# Append piped input after parameters.
 if [[ -p /dev/stdin ]]; then
-  local -a input
-  setarray -a input /dev/stdin
-  set -- $argv $input
+  local -a error_input
+  set -A error_input ${(@f)"$(<&0)"}
+  set -- $argv $error_input
 fi
 
 
 
 
 # Set variables
+local program_name=${opts[--program]}
 local -i code=${opts[--code]}  title_width=6      # Width is length of "Usage:" (6)
 local c_error=${opts[--color]} c_usage='cyan'     # Error and Usage title colors
 # Error message text and usage text
@@ -66,8 +69,13 @@ set -A excluded_titles "$ZSH_ARGZERO" '\(anon\)'  # Exclude top level and anon f
 set -A message    ${opts[--message]} $argv        # Append arguments to error message
 set -A usage      ${opts[--usage]}                # Usage lines delimited with "; "
 # Title labels
-local error_title="%F{$c_error}\${\${0#(${(j:|:)~excluded_titles})}:-Error}%f"
+local error_title="%F{$c_error}"
 local usage_title="%F{$c_usage}Usage%f"
+if [[ ${+opts[--program]} -eq 1 ]]; then
+  error_title+="${program_name}%f"
+else
+  error_title+="\${\${0#(${(j:|:)~excluded_titles})}:-Error}%f"
+fi
 
 
 

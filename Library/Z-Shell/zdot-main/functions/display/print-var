@@ -15,6 +15,8 @@
 # Usage:
 # print-var [name]
 emulate -LR zsh
+autoload -Uz error
+
 local var_{name,value} k v
 
 
@@ -32,8 +34,14 @@ function get-longest-key() {
     cmd='print length(line);'
   fi
   print -nr -C1 -- ${(Pk)1} |
-  awk '(length > maxlength) {maxlength = length; line = $0;}
-                        END {'"$cmd"'}'
+  /usr/bin/awk '
+    (length > maxlength) {
+      maxlength = length;
+      line = $0;
+    }
+    END {
+      '"$cmd"'
+    }'
   return 0
 }
 
@@ -60,7 +68,8 @@ while [[ -n "$1" ]]; do
         result+=("$var_index" "$var_value")
       done
       print -nr -aC2 -- ${(@)result}
-      print -- "}" ;;
+      print -- "}"
+    ;;
     
     # array[length] = {
     #   [1] = "value"
@@ -76,17 +85,20 @@ while [[ -n "$1" ]]; do
         let i="$i + 1"
       done
       print -nr -aC2 -- ${(@)result}
-      print -- "}" ;;
+      print -- "}"
+    ;;
     
     # scalar[length] = "value"
     (*scalar*)
       result+="\"${(P)1}\""
-      print -r -- "${result}" ;;
+      print -r -- "${result}"
+    ;;
     
     # parameter[length] = value
     (*)
       result+="${(P)1}"
-      print -r -- "${result}" ;;
+      print -r -- "${result}"
+    ;;
   esac
   shift
 done

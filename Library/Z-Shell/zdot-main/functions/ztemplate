@@ -3,28 +3,43 @@
 
 # ztemplate
 #
-# Generate template files by combining the specified
-# components (e.g. file header and function).
-# Templates file are stored in: ~zterm/Library/Z-Shell/sources/ztemplate.
+# Generate template files by combining specified
+# components (e.g., header and options).
+#
+# Template files are stored in directory:
+# ~zterm/Library/Z-Shell/sources/ztemplate.
 #
 # Usage:
-# ztemplate [--out path] [--<macro> value] [-template ...]
+# ztemplate [--out path] [--<macro> value] [make] [[-...]<template> ...]
 # ztemplate help
+# ztemplate edit
 emulate -LR zsh
-#autoload +X $0
+setopt extendedglob
+
+local PROG="${0##*/}"
+autoload -Uz setarray error
 
 
-local prog="${0##*/}"
-# Template directory
+
+
+# ztemplate files.
 local ztemplate_dir="/usr/local/zterm/share/ztemplate"
 local ztemplate_id_file="/usr/local/zterm/var/data/template-id"
-# Template files
-local -a templates_list=( "$ztemplate_dir/Templates/"*(:t:r) )
+if [[ ! -d $ztemplate_dir ]]; then
+  error -1 -m 'directory does not exist: ${ztemplate_dir}'
+fi
+
+# List of template file names.
+local -a templates_list=( "$ztemplate_dir/Templates/"**(N:t:r) )
+local margin='  '
 local filename template_{name,file,ext}
-# Template text macros
+
+# Template text macros.
+local macro_pattern='___[A-Z0-9]*___'
 local -A ztemplate_macros
 setarray -A ztemplate_macros "$ztemplate_dir/Macros/ztemplate_macros.var"
-local macro_pattern='___[A-Z0-9]*___'
+
+
 
 
 # Options
@@ -38,80 +53,158 @@ if [[ $# -gt 0 ]] &&
 fi
 
 
-# Print list of all templates and return.
-if [[ $# -eq 0 ]] ||
-   [[ $1 =~ 'help' ]]; then
-  print -P -- "%BList of available templates%b:"
-  print -P -nr -c -- '%F{6}-'${^templates_list}'%f'
-  return 0
-fi
-
-if [[ ${+opts[--out]} -eq 1 ]]; then
-  local output_file="${opts[--out]}"
-  opts[--filename]="${output_file:t}"
-fi
-
-
 # Output to standard output or to the specified file.
-# If first argument is a "-", output to standard output.
-#local output_file=/dev/stdout
-#if [[ "$1" == '-' ]] || [[ -e $1 ]]; then
-#  output_file=/dev/stdout
-#else
-#  output_file="${1:P}"
-#  opts[--filename]="${1:t}"
-#fi
-#shift
-
-# Print error if arguments are missing.
-if [[ $# -eq 0 ]]; then
-  error -2 -m 'missing template names' \
-           -u "${prog} [--<macro> value] [file] -template [-template...]; ${prog} help"
+local output_file
+if [[ ${+opts[--out]} -eq 1 ]]; then
+  output_file="${opts[--out]:P}"
+  opts[--filename]="${${output_file:t}##[^[:alnum:]]##}"
 fi
 
-## ztemplate_apply
-# Generate substitution commands of type 's/___TEXTMACRO___/value/g'.
-local -a substitutions
-local id value macro{,_{name,value}}
-# Move compound macros to the beginning of 'substitutions'
-# array and simple macros to the end.
-for id value in ${(kvq)opts}; do
-  macro_name="___${${(UQ)id#--}//-/_}___"
-  macro_value="${${(eQ)value}//\//\\/}"
-  if [[ $macro_value =~ ${~macro_pattern} ]]; then
-    substitutions=('s/'"${macro_name}"'/'"${macro_value}"'/g' $substitutions)
-  else
-    substitutions=($substitutions 's/'"${macro_name}"'/'"${macro_value}"'/g')
+
+
+
+
+# @define command         1: :->command
+# @define arg             *: :_ztemplates
+
+# @command make
+# @description Create file.
+function ztemplate_make() {
+  #### ztemplate_apply ####
+  # Generate substitution commands.
+  local -a substitutions
+  local id value macro{,_{name,value}}
+  # Convert options to array of type 's/___MACRO_ID___/macro value/g'.
+  for id value in ${(kvq)opts}; do
+    macro_name="___${${(QU)id#--}//[ \-]/_}___"
+    macro_value="${${(Qe)value}//\//\\/}"
+    # Move compound macros to the beginning and
+    # simple macros to the end of the array.
+    if [[ "$macro_value" =~ ${~macro_pattern} ]]; then
+      substitutions=('s/'"${macro_name}"'/'"${macro_value}"'/g' $substitutions)
+    else
+      substitutions=($substitutions 's/'"${macro_name}"'/'"${macro_value}"'/g')
+    fi
+  done
+  
+  
+  #### ztemplte_make ####
+  () {
+    local tmp_file=$1
+    shift
+    
+    template_ext=".${PROG}"
+    for template_name; do
+      print -r -- "${template_name%$template_ext}${template_ext}" |
+      /usr/bin/sed -e 's/^[-]*//'                                 |
+      read -r filename
+      
+      template_file="${ztemplate_dir}/Templates/${filename}"
+      if [[ ! -e $template_file ]]; then
+        error -1 -m 'template ${template_name} does not exist'
+      fi
+      /bin/cat -- "$template_file"
+    done |
+    /usr/bin/perl -pe "${(j:; :)substitutions}" >$tmp_file && {
+      # Update id
+      local -i id
+      read -r id <$ztemplate_id_file
+      printf '%i\n' $(( id + 1 )) >|$ztemplate_id_file
+    }
+    
+    if [[ ${+opts[--out]} -eq 1 ]]; then
+      /bin/cp -i $tmp_file $output_file
+      if [[ ${+opts[--mode]} -eq 1 ]]; then
+        /bin/chmod ${opts[--mode]} $output_file
+      fi
+    else
+      /bin/cat -- "$tmp_file"
+    fi
+    return $?
+  } =() $argv
+}
+
+
+# @command       help
+# @description   List all available templates.
+function ztemplate_help() {
+  print -P -- "%BAvailable templates%b:"
+  print -P -nr -c -- "%F{6}${margin}-${(@)^templates_list}%f"
+  return 0
+}
+
+
+# @command  edit
+# @description   Edit template files or default text macros.
+function ztemplate_edit() {
+  if [[ -z "$1" ]]; then
+    error -1 -m 'what do you want to edit: templates or macros?'
   fi
-done
-
-
-() {
-  local tmp_file=$1
+  local -a files=()
+  
+  local what=$1
   shift
   
-  ## ztemplte_make
-  template_ext=".${prog}"
-  for template_name; do
-    print -r -- "${template_name%$template_ext}${template_ext}" |
-    /usr/bin/sed -e 's/^[-]*//'                                 |
-    read -r filename
+  case $what in
+    templates)
+      local edit_all='all'
+      if [[ $# -eq 0 ]]; then
+        error -1 -m 'specify template file names or enter ${edit_all} to edit all files'
+      fi
+      
+      local pattern
+      case $argv in
+        ($edit_all) pattern="" ;;
+        (*) pattern="${(j:|:)argv}" ;;
+      esac
+      
+      local dir="$ztemplate_dir/Templates"
+      files=( ${dir}/(${~pattern})**(N) )
+      if [[ ${#files} -eq 0 ]]; then
+        error -1 -m 'no templates files in ${dir} match pattern ${pattern}'
+      fi
+      
+      # Print
+      print -P -- "%BEditing template files%b:"
+      print -P -oi -nr -C1 -- "%F{6}${margin}${(@)^files:t:r}%f" |
+      /bin/cat -n
+    ;;
     
-    template_file="${ztemplate_dir}/Templates/${filename}"
-    if [[ ! -e $template_file ]]; then
-      error -1 -m 'template ${template_name} does not exist'
-    fi
-    /bin/cat $template_file
-  done |
-  /usr/bin/perl -pe "${(j:; :)substitutions}" >$tmp_file &&
-  printf '%i\n' $(( ${(e)opts[--template-id]} + 1 )) >$ztemplate_id_file # Update id
+    macros)
+      files=($ztemplate_dir/Macros/ztemplate_macros.var)
+    ;;
+    
+    *)
+      error -1 -m 'invalid argument: ${what}'
+    ;;
+  esac
   
-  if [[ ${+opts[--out]} -eq 1 ]]; then
-    /bin/cp -i $tmp_file $output_file
-  else
-    cat $tmp_file
-  fi
+  /usr/bin/open -a Xcode -- $files
   return $?
-} =() $argv
+}
 
-return 0
+
+
+
+
+# If arguments were provided but the first argument
+# is not a subcommand, do 'make' (for compatibility).
+if [[ $1 =~ ^[-] ]]; then
+  set -- 'make' $argv
+fi
+# If arguments were not provided, do 'help'.
+if [[ $# -eq 0 ]]; then
+  set -- 'help'
+fi
+
+
+# Set ztemplate subcommand.
+local subcommand=$1
+if [[ ${+functions[${PROG}_${subcommand}]} -eq 0 ]]; then
+  error -127 -m 'no such command: ${subcommand}'
+fi
+shift
+
+
+${PROG}_${subcommand} ${argv}
+return $?

@@ -7,50 +7,87 @@
 #  Created on October 9, 2020.
 
 
+# zalias
+#
+# Add and edit zsh aliases defined in ~zdot/sources/zalias.
+#
+# Usage:
+# `zalias'                  - ask to open 'zalias' in Xcode.
+# `zalias <name>'           - print value for the specified alias.
+# `zalias <name> <value>'   - write new alias to 'zalias' file.
+function zalias() {
+  local name=$1
+  local source_file="$ZDOTDIR/sources/zalias"
+  case $# in
+    # Open 'zalias'.
+    (0)
+      printf 'Open "%s" in Xcode? [yn]\n' "$source_file"
+      if read -qs; then
+        /usr/bin/open -a Xcode -- "$source_file"
+      fi
+    ;;
+    
+    # Print alias value.
+    (1)
+      if [[ ${+aliases[$name]} -eq 1 ]]; then
+        builtin alias -L $name
+      else
+        error -1 -m '${name} is not an alias'
+      fi
+    ;;
+    
+    # Define an an alias.
+    (*)
+      local insert_text
+      local -a value=(${argv:2})
+      if [[ ${+aliases[$name]} -eq 0 ]]; then
+        # TODO: insert alias -
+        insert_text="alias ${name}='${value}'"
+        echo $insert_text
+      else
+        error -1 -m 'alias ${name} already exists'
+      fi
+    ;;
+  esac
+  return 0
+}
+
+
+
+
+
+
+
+
+
+
+
+
 #MARK: - Recently Added
-#alias wf='watch -c -d -n2 "zsh /usr/local/zterm/zsh/WatchFile"'
+alias termsize='typeset LINES COLUMNS'
+
+# zdot-Function 'watchfile'
 alias wf='watchfile'
-alias re='exec -l zsh'
-
-alias theme='open -a Xcode ~zdot/custom-themes/term3.zsh-theme'
-alias zterm='open -a Xcode ~zterm/zterm.xcodeproj'
-
-
-# Date
-alias ddate='/bin/date -j +"%Y-%m-%d"'    # Default: 2020-10-11
-alias ldate='/bin/date -j +"%B %-e, %Y"'  # Long: October 11, 2020
-alias atdate='/bin/date -j +"%F at %T"'   # At: 2020-10-11 at 00:00:00
-
-alias mtime='/usr/bin/stat -t "%F at %T" -f "%N%t[modified on %Sm]"'
-
 
 # Property lists
 alias pb='/usr/libexec/PlistBuddy'
-alias print-pl='/usr/libexec/PlistBuddy -c "print"'
 
-# Terminals
-alias term1='/usr/bin/open -a Terminal'
-alias term2='/usr/bin/open -a iTerm'
+# Tell
+alias tells='tell -a "System Events"'
+alias tellt='tell -a "System Events" -p "Terminal"'
+
+# Keystroke
+alias quit-iterm2='keystroke --command q'
+alias clear-buffer='keystroke --command k'
 
 # iTerm window opacity
 alias 2o='opacity'
-alias 2of='opacity 0.0'
+alias 2off='opacity 0.0'
 alias 2on='opacity 1.0'
 
-
-#MARK: - Noglob Aliases
-alias pipeset='noglob pipeset'
-
-alias isx='noglob isx'
-alias casex='noglob casex'
-alias expx='noglob expx'
-
-
-
-#MARK: - Temporary Aliases
-# Zdot dirs
-alias zdot1='cd /usr/local/zterm/zsh'
-alias zdot2='cd /usr/local/Terminal/Library/zsh'
+alias grepdir='grep -R'
+alias grepzt='grep -R ~zterm'
+alias grepzd='grep -R ~zdot'
 
 
 
@@ -58,6 +95,116 @@ alias zdot2='cd /usr/local/Terminal/Library/zsh'
 
 
 
+
+
+
+
+#MARK: - Function Aliases
+# Function 'compdef'
+alias cdef='compdef'
+
+# Function 'run-help'
+alias help='run-help'
+
+# Function 'order'
+alias ord='order -c'
+
+# Function 'zfn'
+alias fn='zfn'
+
+
+
+
+
+
+#MARK: - Builtin Aliases
+# Builtin 'autoload'
+alias aut='builtin autoload'
+alias autz='builtin autoload -Uz'
+
+# Builtin 'builtin'
+alias bltn='builtin'
+
+# Builtin 'echo'
+alias e='builtin echo -'
+
+# Builtin 'functions'
+alias fns='builtin functions'
+
+# Builtin 'print'
+alias p='print'
+alias printp='builtin print -P' \
+      pp='printp'
+## Print new line
+alias printl='builtin print -l' \
+      pl='printl'
+## Print without new line
+alias printn='builtin print -n' \
+      pn='printn'
+## Print hashed directories
+alias printd='builtin print -P -D'
+## Print prompt sequences
+alias print-='builtin print -P --' \
+      p-='print-'
+      
+# Builtin 'exec'
+alias re='builtin exec -l ${0#-}'
+
+# Builtin 'type'
+alias types='builtin type -a'
+
+
+# Builtin 'typeset'
+alias ts='typeset'
+alias tsp='typeset -p'
+alias tsm='noglob typeset -m'
+alias tspm='noglob typeset -p -m'
+## Types
+alias {Assoc,Asc}='typeset -A'
+alias {array,Arr}='typeset -a'
+alias Float='typeset -F'
+alias int='typeset -i'
+
+
+# Builtin 'unset'
+alias uns='builtin unset'
+alias unf='builtin unfunction'
+
+# Builtin 'whence'
+alias wha='builtin whence -a'
+
+
+
+
+
+
+
+
+#MARK: - Usr Local Aliases
+# Command 'diff'
+alias diff='/usr/local/bin/diff --color=always'
+alias diffl='diff --suppress-common-lines --side-by-side'
+# Command 'google'
+alias ggl='/usr/local/bin/google'
+
+# Command 'nano'
+alias nano='/usr/local/bin/nano --mouse'
+
+# Command 'openssl'
+alias openssl='/usr/local/opt/openssl/bin/openssl'
+alias sha256='openssl sha256'
+
+
+# Python
+alias python='/usr/local/bin/python3'
+alias python3.7='/usr/local/bin/python3.7'
+alias python3.8='/usr/local/bin/python3.8'
+##
+alias pip='command pip3'
+alias idle='command idle3'
+##
+alias p2='python2'
+alias p3='python3'
 
 
 
@@ -69,15 +216,14 @@ alias zdot2='cd /usr/local/Terminal/Library/zsh'
 
 
 #MARK: - Regular Aliases
-# Builtin 'autoload'
-alias aut='builtin autoload'
-alias autz='builtin autoload -Uz'
+# Command 'cat'
+alias can='/bin/cat -n'
+alias cate='/bin/cat -etv -n'
 
-# Builtin 'builtin'
-alias bltn='builtin'
-
-# Function 'compdef'
-alias cdef='compdef'
+# Commands 'cp', 'mv', and 'rm'
+alias cp='/bin/cp -i'
+alias mv='/bin/mv -i'
+alias rm='/bin/rm -i'
 
 
 # Command 'ls'
@@ -93,12 +239,223 @@ alias l='ls -l'   \
 ## List flags
 alias lf='ls -lO'
 ## List dot-files
-alias -- {.ls,ls.}='() ( cd -q ${@:-$PWD};  ls -d  .*; )'
+alias -- {.ls,ls.}='() ( cd -q ${@:-$PWD} && ls -d  .*; )'
 alias -- {.l1,l1.}='() ( cd -q ${@:-$PWD} && ls -1d .*; )'
 alias -- {.ll,ll.}='() ( cd -q ${@:-$PWD} && ls -ld .*; )'
-## List zdot-files ???:
-alias -- .z='() ( cd -q $ZDOTDIR && find ./.z*(:t) -prune -type f; )'
 
+
+# Command 'chflags'
+alias hide='chflags hidden'
+alias unhide='chflags nohidden'
+alias lock='chflags uchg'
+alias unlock='chflags nouchg'
+
+
+# Command 'chmod'
+alias -- +x='chmod +x'
+alias -- -x='chmod -x'
+
+
+# Command 'date'
+alias ddate='date -j +"%Y-%m-%d"'    # Default:  2020-10-11
+alias ldate='date -j +"%B %-e, %Y"'  # Long:  October 11, 2020
+alias atdate='date -j +"%F at %T"'   # At:    2020-10-11 at 23:59:59
+alias logdate='date -j +"%b %d %T"'  # Log:   Oct 11 23:59:59
+
+
+# Command 'find'
+alias findl='/usr/bin/find -L'
+
+
+# Command 'git'
+alias gcm='git commit -m'
+alias grs='git restore --staged'
+alias gs='git status'
+alias gt='() { cd $ZTERMDIR && git status; };'
+alias gpu='git push && git push upstream'
+
+
+# Command 'grep'
+alias gr='grep'
+alias grepa='egrep --color=always --text --regexp ".*"'
+
+# Command 'hexdump'
+alias hd='/usr/bin/hexdump'
+
+# Command 'launchctl'
+alias lctl='/bin/launchctl'
+
+
+# Commands 'ln' and 'unlink'
+alias ln='/bin/ln -Ffhs'
+alias {lns,sln}='/bin/ln -s'
+alias {unl,uln}='/bin/unlink'
+
+
+# Command 'open'
+alias {o,op}='/usr/bin/open'
+## Open in Xcode
+alias xc='open -a Xcode'
+alias .g='open -a Xcode .gitignore'
+alias .ci='open -a Xcode .gitlab/.gitlab-ci.yml'
+alias zshrc='open -a Xcode ~zdot/.zshrc'
+alias zprofile='open -a Xcode ~zdot/.zprofile'
+alias zzz='open -a Xcode ~zterm/zterm.xcodeproj'
+# Open in IntelliJ IDEA
+alias ij='open -a "IntelliJ IDEA CE"'
+## Open an application
+alias term1='open -a Terminal'
+alias term2='open -a iTerm'
+alias music='open -a Music'
+alias hxf='open -a "Hex Fiend"'
+alias vb='open -a VirtualBox'
+
+
+# Command 'sqlite3'
+alias s3='/usr/bin/sqlite3'
+
+# Command 'stat'
+alias created-on='/usr/bin/stat -f "%N: created on %SB"'
+alias modified-on='/usr/bin/stat -t "%F at %T" -f "%N%t[modified on %Sm]"'
+
+# Command 'strings'
+alias str='/usr/bin/strings'
+
+# Command 'tar'
+alias tarch='/usr/bin/tar zcvf'
+
+
+
+
+
+
+
+
+
+#MARK: 1c Aliases
+alias c='cat'
+alias g='google'
+alias j='() { print -r -- "${(j::)argv}"; }'
+alias n='nano'
+alias q='exit 0;'
+alias ,='() { print -nr -c -- "{${(j:, :)argv}}" "(length ${#argv})"; }'
+alias a='ls -a'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#MARK: - Custom Aliases
+# Change to current Finder directory
+alias cfd='cd "$(pfd)"'
+
+
+
+# Show an object
+alias {s,i}='show'
+
+
+
+
+
+#MARK: Java
+alias antlr='java -jar /usr/local/lib/antlr-4.8-complete.jar'
+alias grun='java org.antlr.v4.gui.TestRig'
+
+
+
+
+#MARK: - noglob Aliases
+alias pipeset='noglob pipeset'
+
+alias ifx='noglob ifx'
+alias casex='noglob casex'
+alias expx='noglob expx'
+
+
+
+
+
+
+
+
+#MARK: - Global Aliases
+# Quiet
+alias -g _nerr='2>/dev/null'
+alias -g _nout='1>/dev/null'
+alias -g _nin='0</dev/null'
+alias -g _n='&>/dev/null'
+
+
+alias -g _ofd2='>&2'
+alias -g _ofd1='>&1'
+
+
+
+# Conditional:  'if [[ ... ]] _T'
+alias -g _T='; then print -P -- %2FTRUE%f; else print -P -- %1FFALSE%f; fi;'
+
+
+
+
+
+
+function calculate() {
+  printf '%i\n' "$(( ${argv} ))"
+}
+alias {calculate,calc,+}='noglob calculate'
+
+
+
+
+
+
+
+
+
+
+
+
+#TODO: - DELETE ALIASES -
+# Set iTerm profile
+alias it2s='it2 switch-profile'     \
+      it2l='it2 set-profile Light'  \
+      it2d='it2 set-profile Dark'   \
+      it2ds='it2 set-profile "Dark Small"' \
+      2s='it2s'
+alias 22='it2'
+
+# Show command source code
+alias ss='showsrc'
+
+# Print type of arguments
+alias tf='typeof +v'
+
+
+# Silence errors
+alias -g noerr='2>/dev/null'
+alias -g 2NIL='2>/dev/null'
+
+# Silence errors and output
+alias -g quiet='&>/dev/null'
+alias -g NIL='&>/dev/null'
+
+
+# Command 'chmod'
+alias -- +r='chmod +r' \
+         -r='chmod -r'
+alias -- +w='chmod +w' \
+         -w='chmod -w'
 
 # Function 'list'
 ## List time of Creation
@@ -120,254 +477,6 @@ alias lsf='list f'
 # List images (iterm2)
 alias lsimg='imgls'
 
-
-
-# Command 'chflags'
-alias hide='chflags hidden' \
-      unhide='chflags nohidden'
-alias lock='chflags uchg'   \
-      unlock='chflags nouchg'
-
-
-# Command 'chmod'
-alias -- +r='chmod +r' \
-         -r='chmod -r'
-alias -- +w='chmod +w' \
-         -w='chmod -w'
-alias -- +x='chmod +x' \
-         -x='chmod -x'
-
-
-# Builtin 'echo'
-alias e='builtin echo -'
-alias E='sprint --magenta-bg --white --bold --'
-
-# Command 'find'
-alias findl='/usr/bin/find -L'
-
-# Builtin 'functions'
-alias fns='functions'
-
-# Command 'google'
-alias ggl='/usr/local/bin/google'
-
-
-# Command 'git'
-alias gcm='git commit -m'
-alias grs='git restore --staged'
-alias gs='git status'
-alias gt='() { cd ~zterm && git status; };'
-
-
-# Command 'grep'
-alias gr='grep'
-alias grepa='egrep --color=always --text --regexp ".*"'
-
-
-# Command 'hexdump'
-alias hd='/usr/bin/hexdump'
-
-# Help
-alias help='run-help'
-
-# Command 'launchctl'
-alias lctl='/bin/launchctl'
-
-# Command 'ln'
-alias lns='ln -s'  \
-      sln='ln -s'
-## Unlink
-alias unl='unlink' \
-      uln='unlink'
-
-
-# Builtin 'print'
-alias p='print'
-alias printp='builtin print -P' \
-      pp='printp'
-## Print new line
-alias printl='builtin print -l' \
-      pl='printl'
-## Print without new line
-alias printn='builtin print -n' \
-      pn='printn'
-## Print hashed directories
-alias printd='builtin print -P -D'
-## Print prompt sequences
-alias print-='builtin print -P --'    \
-      p-='print-'
 ## Print parser status
 alias print-parser='print -P -- "%_"' \
       print-parser-rev='print -P -- "%^"'
-
-
-# Command 'openssl'
-alias openssl='/usr/local/opt/openssl/bin/openssl'
-alias sha256='openssl sha256'
-
-
-# Command 'open'
-alias o='open'
-alias op='open'
-## Open in editor
-alias xc='open -a Xcode'
-alias ij='open -a "IntelliJ IDEA CE"'
-## Open dot files in Xcode
-alias .g='open -a Xcode .gitignore'
-alias .ci='open -a Xcode .gitlab/.gitlab-ci.yml'
-## Open Z shell project files
-alias zshrc='open -a Xcode ~zdot/.zshrc'
-alias zprofile='open -a Xcode ~zdot/.zprofile'
-##
-alias zzz='open ~zterm/zterm.xcodeproj'
-## Open an application
-alias hxf='open -a "Hex Fiend"'
-alias vb='open -a VirtualBox'
-alias music='open -a Music'
-
-
-# Python
-alias python='/usr/local/bin/python3'
-alias python3.7='/usr/local/bin/python3.7'
-alias python3.8='/usr/local/bin/python3.8'
-##
-alias pip='command pip3'
-alias idle='command idle3'
-##
-alias p2='python2'
-alias p3='python3'
-
-
-## Unset
-alias uns='builtin unset'
-alias unf='builtin unfunction'
-
-
-# Command 'sqlite3'
-alias s3='/usr/bin/sqlite3'
-
-# Command 'strings'
-alias str='/usr/bin/strings'
-
-# Builtin 'type'
-alias types='builtin type -a'
-
-# Command 'tar'
-alias tarch='/usr/bin/tar zcvf'
-
-
-# Builtin 'typeset'
-alias ts='typeset'            \
-      tsp='typeset -p'        \
-      tsm='noglob typeset -m' \
-      tspm='noglob typeset -p -m'
-## Other types
-alias Assoc='typeset -A' \
-      Asc='typeset -A'
-alias Arr='typeset -a'
-alias Float='typeset -F'
-alias int='typeset -i'
-
-
-# Builtin 'whence'
-alias wha='builtin whence -a'
-
-
-
-
-
-#MARK: One letter aliases
-alias c='cat'
-alias j='() { print -r -- "${(j::)argv}"; }'
-alias n='nano'
-alias q='exit 0;'
-alias ,='() { print -nr -c -- "{${(j:, :)argv}}" "(length ${#argv})"; }'
-alias a='ls -a'
-
-
-
-# Commands 'cp', 'mv', 'rm', 'ln'
-alias cp='/bin/cp -i'
-alias mv='/bin/mv -i'
-alias rm='/bin/rm -i'
-alias ln='/bin/ln -Ffhs'
-
-
-
-
-
-alias nano='nano --mouse'
-#alias diff\?='diff --brief --report-identical-files'
-
-
-alias diff='/usr/local/bin/diff --color=always'
-alias diffl='diff --suppress-common-lines --side-by-side'
-
-
-
-
-#MARK: Custom commands
-# Change to current Finder directory
-alias cfd='cd "$(pfd)"'
-
-# Set system appearance
-alias darks='set-system-appearance dark'
-alias lights='set-system-appearance light'
-
-# Set iTerm profile
-alias it2s='it2 switch-profile'     \
-      it2l='it2 set-profile Light'  \
-      it2d='it2 set-profile Dark'   \
-      it2ds='it2 set-profile "Dark Small"' \
-      2s='it2s'
-alias 22='it2'
-
-# Show an object
-alias {s,i}='show'
-
-# Show command source code
-alias ss='showsrc'
-
-# Print type of arguments
-alias tf='typeof +v'
-
-
-
-#MARK: Java
-alias antlr='java -jar /usr/local/lib/antlr-4.8-complete.jar'
-alias grun='java org.antlr.v4.gui.TestRig'
-
-
-
-#MARK: - Global Aliases
-# Silence errors
-alias -g noerr='2>/dev/null'
-alias -g 2NIL='2>/dev/null'
-
-# Silence errors and output
-alias -g quiet='&>/dev/null'
-alias -g NIL='&>/dev/null'
-
-alias -g _nerr='2>/dev/null'
-alias -g _nout='1>/dev/null'
-alias -g _nin='0</dev/null'
-alias -g _n='&>/dev/null'
-
-
-alias -g _u2='>&2'
-alias -g _u1='>&1'
-
-
-
-# Conditional:  'if [[ ... ]] _T'
-alias -g _T='; then print -P -- %2FTRUE%f; else print -P -- %1FFALSE%f; fi;'
-
-
-
-
-
-
-function calculate() {
-  printf '%i\n' "$(( ${argv} ))"
-}
-alias {calculate,calc,+}='noglob calculate'

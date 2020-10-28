@@ -7,21 +7,6 @@
 #  Created on October 9, 2020.
 
 
-# log
-function log() {
-  [[ $# -eq 0 ]] && return 1
-  local filename="$(date -j +'%F_%T')_${1}"
-  if ! (type -- $1 &>/dev/null); then
-    return 1
-  fi
-  $argv &>~log/Commands/$filename
-  return $?
-}
-
-
-
-
-
 # nf
 #
 # Print number of files in directories.
@@ -79,10 +64,6 @@ function nf() {
 
 
 
-
-
-
-
 # list-times:   Display AMCB times for file.
 # usage:       `list-times [-amcb] file...'
 function list-times () {
@@ -124,38 +105,46 @@ function list-times () {
 
 
 
-function mktdir() {
-  local root_dir=~/var/dev/tdirs
-  local dir_name='td'
-  local -i id=1
-  read id <~share/tdir.id
-  local tdir="${root_dir}/${dir_name}${id}"
-  /bin/mkdir -- "$tdir"  2> >(error)
-  if [[ $? -eq 0 ]]; then
-    printf '%i\n' $(( id + 1 )) >~share/tdir.id
-    cd $tdir
-    pwd
+
+
+# log
+function log() {
+  [[ $# -eq 0 ]] && return 1
+  local filename="$(date -j +'%F_%T')_${1}"
+  if ! (type -- $1 &>/dev/null); then
+    return 1
   fi
-}
-# Last test directory
-function ltdir() {
-  cd ~/var/dev/tdirs/*(omY1)
-  pwd
-}
+  $argv &>~log/Commands/$filename
+  return $?
+} #???: -log
 
 
 
+# recent
 function recent() {
   set -- ${argv:=$PWD}
   local dir
   for dir; do
-    (cd -q $dir && /bin/ls -ld -BFGHhk -- **(OmY10))
+    if [[ ! -d $dir ]]; then
+      error -1 -m '${dir} is not a directory'
+    fi
+    
+    print -nr -aC1 -- $dir/**(Om:t) | nl -b a
   done
 }
 
+# web
 function web() {
-  /usr/bin/open -a Safari "https://${argv}"
+  set -- "${argv:=localhost}"
+  local url="${argv##http(|s):/##}"
+  /usr/bin/open -a Safari -- "https://${url}"
 }
+
+
+
+
+
+
 
 
 
@@ -175,8 +164,17 @@ function hist() {
 function histat() {
   local -i N=${1:=25}
   fc -l 1    |
-  awk '(! /\.\//) { CMD[$2]++; count++; }
-              END { for (a in CMD) {print CMD[a] " " CMD[a]*100/count "% " a;} }' |
+  awk '
+    (! /\.\//) {
+      CMD[$2]++;
+      count++;
+    }
+    END {
+      for (a in CMD) {
+        print CMD[a] " " CMD[a]*100/count "% " a;
+      }
+    }
+  '          |
   sort -n -r |
   head -n $N |
   column -t  |

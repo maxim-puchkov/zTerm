@@ -16,10 +16,16 @@ emulate -LR zsh
 setopt extendedglob
 
 
+#@define arg *: :_typeset
+
+
 # Pipeset options
 ## -o: output set parameters in form of calls to typeset ##
 local -A opts
 zparseopts -D -E -K -M -A opts - o
+# Check if there is an '-a' or '-A' option.
+local -a typeset_opts
+zparseopts -E -a typeset_opts - A a
 
 
 # Get standard or piped input
@@ -30,17 +36,11 @@ if [[   -p /dev/stdin ]] ||
 fi
 
 
-# Check if there is an '-a' or '-A' typeset
-# option before the first '--'.
-local -a typeset_array_opts
-set -A typeset_array_opts  ${(M)${argv:1:${argv[(i)--]}}:#(#s)-[Aa](#e)}
-
-
 
 
 # Append pipeset_input after typeset's options and arguments.
 if [[ -n "$pipeset_input" ]]; then
-  if [[ ${#typeset_array_opts} -gt 0 ]]; then
+  if [[ ${#typeset_opts} -gt 0 ]]; then
   
     # Arrays
     if [[ "$argv" =~ '=\(' ]]; then
@@ -73,7 +73,6 @@ local id="${${*%%=*}##* }"
 #unset $id
 
 # Set parameter value.
-echo "{{{$argv}}}"
 eval "typeset -g $argv"
 if [[ ${+opts[-o]} -eq 1 ]]; then
   typeset -p -m "$id"

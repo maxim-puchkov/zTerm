@@ -1,6 +1,6 @@
 # Function options
-## -x :: Option with default value
-## -y :: Option
+# -x: Option with default value
+# -y: Option
 local -A opts
 opts=( [-x]='default value' )
 local -a specs

@@ -1,6 +1,6 @@
 # Function options
-## -x, --xlong :: Option with default value
-## -y, --ylong :: Option
+# -x, --xlong: Option with default value
+# -y, --ylong: Option
 local -A opts
 opts=( [-x]='default value' )
 local -a {alt,}specs
