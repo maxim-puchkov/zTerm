@@ -9,30 +9,448 @@
 
 # zfn
 #
-# <#Description...#>
+# Configure zsh autoload functions.
 #
 # Usage:
-# zfn
-# <#usage...#>
+# zfn ...
 emulate -LR zsh
+setopt extendedglob
+
+autoload -Uz error ztemplate pipeset
+autoload -Uz spectrum && spectrum
+
+local PROG="${0##*/}"
+
+
+# Environment variables for zfn's AWK programs.
+## Tag delimiter
+export ZFN_DELIMITER=":%:"
+
+## Tag words
+local -a tagwords=('name' 'description' 'completion')
+export ZFN_TAGWORDS="${(pj:$ZFN_DELIMITER:)tagwords}"
+
+
+
 
 
 # Function options
-## -x :: Option with default value
-## -y :: Option
-local -A opts
-opts=( [-x]='default value' )
-local -a specs
-specs=( ${(k)^opts#-}':' )
+#
+# @define option
+# @define command   1:_zfn_functions:->command
+# @define arg       *: :_zfn_functions
+#
+# @annotation     command @
+#
+# @option       -Z <dir>
+# @description  Set root autoload function directory.
+# @completion   :dir:->_files -W -/ $ZDOTDIR
+#
+# @option       -d <dir>
+# @description  Set function subdirectory relative to the root directory.
+#
+# @option       -w
+# @description  Write 'ztemplate' files to output path.
+#
+# @option       -o
+# @description  Open function file if it exists or will be created.
+#
+local -AU opts
+opts=( [-Z]="$ZDOTDIR" [-X]="6" )
+local -aU specs
+specs=( ${(k)^opts#-}':' 'd:' 'w' 'o' )
 if [[ $# -gt 0 ]] &&
    {! zparseopts -D -K -M -A opts - $specs}; then
   return 1
 fi
 
 
-local subcommand="${1:=help}"
-shift
-if [[ ${+functions[${0}_${subcommand}]} -eq 0 ]]; then
+
+
+# zfn function directories.
+local ROOT_DIR="${opts[-Z]}"
+local FDIR="$ROOT_DIR/functions"
+local CDIR="$ROOT_DIR/completions"
+
+# zfn files.
+local zfn_dir="${FDIR}/${0}.d"
+local zfn_log="/usr/local/zterm/var/log/functions.log"
+
+# ztemplate text macros.
+local -A zt_macros
+zt_macros=([--generator]="'${0%%_*}'")
+
+
+
+
+
+# Unset zfn functions.
+function __zfn_unset() {
+  unset -f -m "(__)#zfn*?"
+}
+trap __zfn_unset EXIT
+
+
+
+function __zfn_require_write_permission() {
+  local option_name='-w'
+  print -Pf '%s: cannot make function %s unless option "%s" is set\n' \
+         -- "%F{4}$PROG%f" "%F{1}$function_name%f" "%F{2}$option_name%f"
+         >&2
+}
+
+
+
+
+
+
+#MARK: - Complete
+# @command      tags
+# @description  Parse function source file to generate completion tags.
+function zfn_tags() {
+  # Outputs:
+  #   ^define[ ]^option[ ]
+  #   ^option[ ]-o[ ]description[ ]completion[ ]
+  #   ...
+  # Symbol '^' replaces '@'. Delimiter is shown with [ ].
+  local program="${zfn_dir}/${0}.awk"
+  /usr/bin/awk      \
+      -v v_prefix="${function_name}_" \
+      ${argv[@]}    \
+      -f "$program" \
+      $function_file
+}
+
+
+# @command      complete
+# @description  Parse completion tags to generate completion function.
+function zfn_complete() {
+  # Pipe 'tags' into 'complete' to generate completion function.
+  # Outputs:
+  #   _arguments '(-o --option)'{-o,--option}'[desc]action' 'n: :->cmd'...
+  #   case $state in (cmd) local -a cmds=(...); _describe -t cmds 'cmd' cmds;;... esac
+  #   ...
+  local program="${zfn_dir}/${0}.awk"
+  zfn tags "$function_name" |
+  /usr/bin/awk      \
+      ${argv[@]}    \
+      -f "$program"
+}
+
+
+
+
+
+#MARK: - Display
+# @command      isdef
+# @description  Check if autoload function is defined (loaded).
+function zfn_isdef() {
+  local reply
+  local -i return_code=0
+  
+  if [[ ${+functions[$function_name]} -eq 0 ]]; then
+    # Not function.
+    reply="$fg[1]not a function"
+    let return_code=2
+  else
+    # Check if autoload function is defined.
+    builtin functions $function_name                        |
+    /usr/bin/sed -n -e '/^[[:blank:]]*# undefined$/{n; p;}' |
+    /usr/bin/grep -F -q -e 'builtin autoload -X'
+    
+    if [[ $? -eq 0 ]]; then
+      # Not defined function.
+      reply="an $fg[3]undefined autoload function"
+      let return_code=1
+    else
+      # Defined/Loaded function.
+      reply="a $fg[2]defined function"
+      let return_code=0
+    fi
+  fi
+  
+  # Print reply message.
+  if [[ "$subcommand" == "${0##${PROG}_}" ]]; then
+    printf "$fg[4]%s$fg[default]: %s is %s$fg[default]\n" \
+           "$PROG" "$function_name" "$reply"
+  fi
+  return $return_code
+}
+
+
+# @command       show
+# @description   Show function source code.
+function zfn_show() {
+  local file
+  for file in $matching_files; do
+    highlight $file 2>/dev/null
+  done
+  return $?
+}
+
+# @command      print
+# @description  Print unformatted source code.
+function zfn_print() {
+  local file
+  for file in $matching_files; do
+    /bin/cat -- "$file"
+  done
+  return $?
+}
+
+# @command      open
+# @description  Open function source file im Xcode.
+function zfn_open() {
+  /usr/bin/open -a Xcode -- $matching_files
+  return $?
+}
+
+# @command      where
+# @description  Print location of the source file.
+function zfn_where() {
+  local file
+  for file in $matching_files; do
+    if [[ ! -p /dev/stdout ]] &&
+       [[ -t 1 ]]; then
+      printf '%s' "$fg[6]${file:t}$fg[default]: "
+    fi
+    printf '%s\n' "$file"
+  done
+  return "${#matching_files} == 0"
+}
+
+
+
+
+
+
+
+
+#MARK: - Create
+# @command      make
+# @description  Make a new autoload function.
+function zfn_make() {
+  # Check that function file does not exist.
+  out_path+="/${function_name}"
+  if [[ -e $out_path ]]; then
+    # Open file if '-o' is set.
+    if [[ ${+opts[-o]} -eq 1 ]]; then
+      /usr/bin/open -a Xcode -- $out_path
+      return 0
+    fi
+    error -1 -m 'file already exists: ${out_path}'
+  fi
+  
+  # If '-w' is set, write template to output path.
+  local -A zt_options
+  if [[ ${+opts[-w]} -eq 1 ]]; then
+    zt_options=([--out]="$out_path")
+  else
+    __zfn_require_write_permission
+  fi
+  # Create a new 'ztemplate' file.
+  local -a zt_templates=('zsh' 'file-header' 'function-header' 'options' 'function-commands')
+  ztemplate ${(@kv)zt_options} ${(@kv)zt_macros} make '-'${(@)^zt_templates}
+  
+  if [[ -e $out_path ]]; then
+    # Print success message.
+    printf 'Autoload function created: %s\n' \
+            "%F{2}$out_path%f"
+    # Write log.
+    print -Pf '%s %s\n' \
+           -- "%D{%v at %T}" "$out_path" \
+           >>$zfn_log
+    # Open file if '-o' is set.
+    if [[ ${+opts[-o]} -eq 1 ]]; then
+      /usr/bin/open -a Xcode -- $out_path
+    fi
+    return 0
+  fi
+  return 1
+}
+
+
+# @command      makecomp
+# @description  Make a new completion function.
+function zfn_makecomp() {
+  # Check that completion file does not exist.
+  out_path+="/_$function_name"
+  if [[ -e $out_path ]]; then
+    # Open file if '-o' is set.
+    if [[ ${+opts[-o]} -eq 1 ]]; then
+      /usr/bin/open -a Xcode -- $out_path
+      return 0
+    fi
+    error -1 -m 'file already exists: ${out_path}'
+  fi
+  
+  # If '-w' is set, write template to output path.
+  local -A zt_options
+  if [[ ${+opts[-w]} -eq 1 ]]; then
+    zt_options=([--out]="$out_path")
+  else
+    __zfn_require_write_permission
+  fi
+  # Create a new 'ztemplate' file.
+  local -a zt_templates=('completion')
+  ztemplate ${(@kv)zt_options} ${(@kv)zt_macros} make '-'${(@)^zt_templates}
+  
+  if [[ -e $out_path ]]; then
+    # Write completion function to file.
+    printf 'eval "$(autoload -Uz zfn && zfn complete %s)"\n' \
+           "$function_name" \
+           >>$out_path
+    # Print success message.
+    printf 'Completion function created: %s\n' \
+            "%F{2}$out_path%f"
+    # Write log.
+    print -Pf '%s %s\n' \
+           -- "%D{%v at %T}" "$out_path" \
+           >>$zfn_log
+    # Open file if '-o' is set.
+    if [[ ${+opts[-o]} -eq 1 ]]; then
+      /usr/bin/open -a Xcode -- $out_path
+    fi
+    return 0
+  fi
+  return 1
+}
+
+
+# @command      rename
+# @description  Rename a function.
+function zfn_rename() {
+  # Get new name.
+  local new_name=$1
+  if [[ -z "$new_name" ]]; then
+    error -1 -m 'new function name is not specified'
+  fi
+  # Set old and new file names.
+  local renamed
+  if [[ ! -f "$function_file" ]]; then
+    error -1 -m 'cannot rename ${function_name} - source file not found'
+  fi
+  renamed="${function_file:h}/${new_name}"
+  
+  # Rename function file and replace all occurrences of
+  # previous function name with new name.
+  /bin/mv -i "$function_file" "$renamed" &&
+  /usr/bin/sed -I "" -e "s/${function_file:t}/${renamed:t}/" -- $renamed &&
+  print -Pf '%s: Function renamed: %s --> %s\n' \
+         -- "%F{4}$PROG%f" "%F{1}${function_file:t}%f" "%F{2}${renamed:t}%f"
+  
+  # Open file if '-o' is set.
+  if [[ ${+opts[-o]} -eq 1 ]]; then
+    /usr/bin/open -a Xcode -- $renamed
+  fi
+  return 0
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Function arguments:
+#  'zfn subcommand function_name [arguments]'
+if [[ $# -eq 0 ]]; then
+  error -1 -m 'not enough arguments'
+fi
+
+# Set zfn subcommand ($1).
+local subcommand=$1
+if [[ ${+functions[${PROG}_${subcommand}]} -eq 0 ]]; then
   error -127 -m 'no such command: ${subcommand}'
 fi
-${0}_${subcommand} ${argv}
+shift
+
+# Set function name ($2).
+local function_name=$1
+if [[ -z "$function_name" ]]; then
+  error -1 -m 'function name is not specified'
+fi
+shift
+
+
+
+
+# Set initial output path for commands.
+local out_path
+case $subcommand in
+  # Completion commands.
+  (tags|complete|makecomp) out_path="$CDIR" ;;
+  # Function commands.
+  (*) out_path="$FDIR" ;;
+esac
+
+# Set output subdirectory with: -d <dir>.
+if [[ ${+opts[-d]} -eq 1 ]]; then
+  out_path+="/${opts[-d]}"
+fi
+# Check that output directory exists.
+if [[ ! -d $out_path ]]; then
+  error -1 -m 'invalid function subdirectory: ${out_path}'
+fi
+
+
+
+
+
+# Set list of all matching files.
+local -aU matching_files
+case $subcommand in
+  # Function name may be a pattern.
+  (isdef|make|open|where|print|show)
+    # Find all files that match 'function_name'
+    # as a pattern.
+    /usr/bin/find -- $fpath       \
+        -name "${~function_name}" \
+        -type f                   \
+        -mindepth 1 -maxdepth 1   \
+        2>/dev/null |
+    pipeset -a -U matching_files
+  ;;
+  
+  # Function name must be a name of a function.
+  (*)
+    # Check that 'function_name' is a function.
+    if [[ ${+functions[$function_name]} -eq 0 ]]; then
+      error -1 -m '${function_name} is not a function'
+    fi
+    # Load undefined autoload functions.
+    zfn_isdef $function_name
+    if [[ $? -eq 1 ]]; then
+      autoload +X -- $function_name
+    fi
+  ;;
+esac
+matching_files=( $functions_source[$function_name] $matching_files[@] )
+
+
+# Check that there is at least one matching source file.
+if [[ ${#matching_files} -eq 0 ]]; then
+  error -1 -m 'not found: ${function_name}'
+fi
+
+# Set function source file.
+local function_file="${matching_files[1]}"
+
+
+
+
+# Invoke subcommand with arguments.
+${PROG}_${subcommand} ${argv}
+return $?
