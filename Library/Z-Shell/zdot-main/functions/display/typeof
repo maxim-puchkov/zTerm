@@ -9,7 +9,7 @@
 
 # typeof - print the type of a command, function, shell
 #          parameter, or other object.
-function typeof() {(
+function typeof() {
   # typeof-print - format and print an object's type
   function typeof-print() {
     # If verbose is set, print object's name
@@ -108,7 +108,7 @@ function typeof() {(
   fi
   
   
-  local __{{,type}name,result}
+  local __{result,name}__
   local -i __found__
   
   
@@ -134,4 +134,4 @@ function typeof() {(
   done
   
   return 0
-)}
+}

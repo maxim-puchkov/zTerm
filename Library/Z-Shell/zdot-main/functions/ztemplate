@@ -16,8 +16,9 @@
 emulate -LR zsh
 setopt extendedglob
 
-local PROG="${0##*/}"
 autoload -Uz setarray error
+
+typeset PROG="${0##*/}"
 
 
 
@@ -30,7 +31,7 @@ if [[ ! -d $ztemplate_dir ]]; then
 fi
 
 # List of template file names.
-local -a templates_list=( "$ztemplate_dir/Templates/"**(N:t:r) )
+local -a templates_list=( "$ztemplate_dir/Templates/"**(.,@N:t:r) )
 local margin='  '
 local filename template_{name,file,ext}
 
@@ -42,7 +43,15 @@ setarray -A ztemplate_macros "$ztemplate_dir/Macros/ztemplate_macros.var"
 
 
 
-# Options
+# Function options.
+# @define option
+# @define command 1
+# @define arg     *: :( $ZTERMDIR/share/ztemplate/Templates/*(:t:r) )
+# @annotation option @opt
+#
+# @opt -o,--out: Output file path.
+# @opt --filename 1
+# @opt --project 2
 local -A opts
 opts=( ${(kv)ztemplate_macros} )
 local -a specs
@@ -64,12 +73,14 @@ fi
 
 
 
-# @define command         1: :->command
-# @define arg             *: :_ztemplates
+
 
 # @command make
-# @description Create file.
+# @description Make new file with templates.
 function ztemplate_make() {
+  if [[ $# -eq 0 ]]; then
+    error -1 -m 'not enough arguments'
+  fi
   #### ztemplate_apply ####
   # Generate substitution commands.
   local -a substitutions
@@ -97,18 +108,19 @@ function ztemplate_make() {
     for template_name; do
       print -r -- "${template_name%$template_ext}${template_ext}" |
       /usr/bin/sed -e 's/^[-]*//'                                 |
-      read -r filename
+      builtin read -r filename
       
       template_file="${ztemplate_dir}/Templates/${filename}"
       if [[ ! -e $template_file ]]; then
-        error -1 -m 'template ${template_name} does not exist'
+        error -1 -m 'template does not exist: ${template_name}'
       fi
       /bin/cat -- "$template_file"
     done |
+    #???:    for ... | perl >... && {...}     -
     /usr/bin/perl -pe "${(j:; :)substitutions}" >$tmp_file && {
       # Update id
       local -i id
-      read -r id <$ztemplate_id_file
+      builtin read -r id <$ztemplate_id_file
       printf '%i\n' $(( id + 1 )) >|$ztemplate_id_file
     }
     
@@ -134,8 +146,8 @@ function ztemplate_help() {
 }
 
 
-# @command  edit
-# @description   Edit template files or default text macros.
+# @command      edit
+# @description  Edit template files or default text macros.
 function ztemplate_edit() {
   if [[ -z "$1" ]]; then
     error -1 -m 'what do you want to edit: templates or macros?'
@@ -186,11 +198,17 @@ function ztemplate_edit() {
 
 
 
-
 # If arguments were provided but the first argument
-# is not a subcommand, do 'make' (for compatibility).
-if [[ $1 =~ ^[-] ]]; then
+# is not a subcommand, do 'make' (for compatibility
+# with old ztemplate).
+if [[ "$1" =~ ^[-] ]]; then
   set -- 'make' $argv
+fi
+# If the subcommand is 'edit' and the second argument
+# is not specified, do 'edit macros'
+if [[ "$1" == 'edit' ]] &&
+   [[ -z "$2" ]]; then
+  set -- $1 'macros'
 fi
 # If arguments were not provided, do 'help'.
 if [[ $# -eq 0 ]]; then

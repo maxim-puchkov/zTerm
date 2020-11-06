@@ -10,6 +10,7 @@
 # zfd
 #
 # <#Description...#>
+# @define command 1
 #
 # Usage:
 # zfd
@@ -17,8 +18,9 @@
 emulate -LR zsh
 autoload -Uz error pipeset
 
+
 # @command      cd
-# @description  Change working directory to functions' directory.
+# @description  Change working directory to function directory.
 function zfd_cd() {
   local dir="$ZDOTDIR/functions"
   if [[ $# -gt 0 ]]; then
@@ -34,7 +36,7 @@ function zfd_cd() {
 # @description  List autoload functions.
 function zfd_list() {
   (builtin cd $ZDOTDIR/functions &&
-  /bin/ls -ld -rogTt -- **/*(.))
+  /bin/ls -ldr -og -Tt -- **/*(.))
 }
 
 

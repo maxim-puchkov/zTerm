@@ -8,6 +8,9 @@
 
 
 # keys
+# @define     command 1
+# @define     arg     *: :_key
+# @annotation command @
 #
 # Configure and use hotkey commands.
 #
@@ -29,8 +32,8 @@ keys_write () {
     error -1 -m 'keys are not set'
   fi
 }
-# Set key
-keys_set () {
+#@ set new key or modify existing key
+keys_set() {
   if [[ ${+keys[$1]} -eq 0 ]]
   then
     keys+=([$1]=$2)
@@ -39,7 +42,7 @@ keys_set () {
     error -1 -m 'key ${1} is already set'
   fi
 }
-# Unset key
+#@ remove key
 keys_unset () {
   if [[ ${+keys[$1]} -eq 1 ]]
   then
@@ -49,8 +52,12 @@ keys_unset () {
     error -1 -m 'key ${1} is not set'
   fi
 }
-# Run
+#@ run a key command
 keys_run () {
+  if [[ $# -eq 0 ]]
+  then
+    error -1 -m 'not enough arguments'
+  fi
   if [[ ${+keys[$1]} -eq 1 ]]
   then
     key_cmd=${keys[$1]}

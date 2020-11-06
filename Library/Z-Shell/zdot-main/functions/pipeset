@@ -28,6 +28,11 @@ local -a typeset_opts
 zparseopts -E -a typeset_opts - A a
 
 
+if [[ $# -eq 0 ]]; then
+  error -1 -m 'not enough arguments'
+fi
+
+
 # Get standard or piped input
 if [[   -p /dev/stdin ]] ||
    [[ ! -t 0 ]]; then

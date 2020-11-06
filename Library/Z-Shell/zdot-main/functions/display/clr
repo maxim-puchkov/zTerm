@@ -16,6 +16,8 @@
 emulate -LR zsh
 
 
+# Function options.
+# @define option
 local -A opts
 local -a specs
 specs=('r' 's')
@@ -25,24 +27,24 @@ if [[ $# -gt 0 ]] &&
 fi
 
 
+# Escape sequences.
 local -a esc_seq=('\e[H' '\e[2J')
 
-# Also clear scrollback buffer.
-if [[ $+opts[-s] -eq 1 ]]; then
-  
+
+# @option -s
+# @description Clear scrollback buffer.
+if [[ ${+opts[-s]} -eq 1 ]]; then
+  esc_seq+=('\e[3J')
 fi
 
 
-
-# Clear buffer.
-printf '%b%b%b' '\e[H' '\e[2J' '\e[3J'
+# Print escape sequences.
+printf "%b" "${esc_seq[@]}"
 
 
 # @option -r
 # @description Reset shell.
-if [[ $+opts[-r] -eq 1 ]]; then
-  trap '
-    print -P -- "[%*] %F{4}Reset ${0#-}%f"
-    builtin exec -l ${0#-}
-  ' EXIT
+if [[ ${+opts[-r]} -eq 1 ]]; then
+  print -P -- "[%*] %F{3}The shell has been reset%f.\n"
+  builtin exec -l ${ZSH_ARGZERO#-}
 fi

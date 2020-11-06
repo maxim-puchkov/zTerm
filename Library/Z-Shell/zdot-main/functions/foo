@@ -7,31 +7,32 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# MARK: - foo
-# foo
-
+# MARK: - Function foo
+#@define      option
+#@annotation  option  @opt
 #
-# @define option
-# @annotation option @opt
-
-# @opt -x:   Option x
-# @opt -y: opt y
+#@define      command
+#@annotation  command @cmd
 
 
-# @define command 1: :->_alice
-# @annotation command @
 
-#@ anno 1
-function foo_a() {
-  echo 'anno 1'
+#@
+function a() {
+  unset opts
+  typeset -Ag opts
+  local Z=${Z:-'-D -E -F -K -M'}
+  local S=${S:-'a b: c:: d+:: -e:: f g-::-'}
+  zparseopts \
+    $=Z      \
+    -A opts  \
+    -        \
+    $=S
+  show opts
+  
 }
 
 
-#@ anno 2
-foo_b () {
-  echo 'anno 2'
-}
+local cmd=$1
+shift
+$cmd $argv
 
-
-#@ anno 3
-foo_c() { echo $3; }
