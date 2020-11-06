@@ -1,4 +1,4 @@
-#compdef tealdeer
+#compdef tealdeer tldr
 
 
 _arguments -S \
@@ -16,5 +16,6 @@ _arguments -S \
     '--seed-config[create a basic config]' \
     '*:: :-> tealdeer_commands' && return 0
 
-local tealdeer_commands=(${$( tealdeer --list )%','})
+local tealdeer_commands
+set -A tealdeer_commands ${(@f)"$(/usr/local/bin/tealdeer --list 2>/dev/null)"}
 _describe 'tealdeer commands' tealdeer_commands
