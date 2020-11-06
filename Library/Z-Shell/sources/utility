@@ -7,23 +7,27 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# tldr
-#
-# Combine 'tldr' and 'tealdeer' programs.
-function tldr() {
-  print-line 'tldr';     /usr/local/bin/tldr $argv;
-  printf '\n'
-  print-line 'tealdeer'; /usr/local/bin/tealdeer $argv
-}
-compdef '_tealdeer'  tldr
+## tldr
+##
+## Combine 'tldr' and 'tealdeer' programs.
+#function tldr() {
+#  print-line 'tldr';     /usr/local/bin/tldr $argv;
+#  printf '\n'
+#  print-line 'tealdeer'; /usr/local/bin/tealdeer $argv
+#}
+#compdef '_tealdeer'  tldr
 
 
 # hgrep, hegrep, hfgrep
 #
-# Grep with background color.
+# Search for patterns in file and highlight
+# background color of the matching text.
 function hgrep hegrep hfgrep() {
+  typeset HGREP_COLOR="${HGREP_COLOR:-1;30;103}"
   GREP_COLOR="$HGREP_COLOR" \
-    ${0#h} --color='always' $argv
+    ${0#h} \
+      --color='always' \
+      $argv
 }
 compdef '_grep'  hgrep hegrep hfgrep
 

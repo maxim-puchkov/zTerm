@@ -10,6 +10,5 @@
 # Link this file to the home diretory:
 #   `/bin/ln -Ffhs /usr/local/zterm/zsh/zshenv ~/.zshenv'
 
-
 export ZTERMDIR="/usr/local/zterm"
 export ZDOTDIR="$ZTERMDIR/zsh"

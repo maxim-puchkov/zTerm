@@ -129,7 +129,8 @@ function recent() {
       error -1 -m '${dir} is not a directory'
     fi
     
-    print -nr -aC1 -- $dir/**(Om:t) | nl -b a
+    print -nr -aC1 -- $dir/**(Om:t) |
+    /bin/cat -n 
   done
 }
 

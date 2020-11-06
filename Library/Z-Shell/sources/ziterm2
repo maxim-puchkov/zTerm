@@ -11,7 +11,7 @@
 # Map multiple hotkey commands to one profile name
 ## it2window_map=( [hotkey1,hotkey2,...]="profile name" ... )
 typeset -Ag it2window_map
-setarray -A it2window_map ~share/iterm2/window-profile-hotkeys.var
+setarray -A it2window_map "$ZTERMDIR/share/iterm2/window-profile-hotkeys.var"
 
 # Name of default iTerm profile
 if [[ ! -v ITERM_PROFILE ]]; then
