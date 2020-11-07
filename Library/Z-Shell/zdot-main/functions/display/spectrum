@@ -15,14 +15,14 @@
 #
 #
 # Usage:
-# spectrum [ -[UuVv] -[pe] -[fbx] -[cDdNnZz] -[FBX] ]
+# spectrum [ -[UuVv] -[pe] -[fbx] -[cDdHMmZz] -[FBX] ]
 #
 # Examples:
 # `autoload -Uz spectrum && spectrum'
 #
 # See also:
 # oh-my-zsh/lib/spectrum.zsh
-emulate -LR zsh
+emulate -LR bash
 autoload -U colors && colors
 
 
@@ -49,11 +49,12 @@ typeset E=$'\033'
 if [[ $# -eq 0 ]]; then
   set -- -pe -fbx
 fi
+# @opt -H: set bright fg,bg colors
 # @opt -c: set 256 fg,bg colors
 # @opt -D: set aliases FG|BG[-\] for fg|bg[default\]
 # @opt -d: set aliases fg|bg[-\] for fg|bg[default\]
-# @opt -N: set alias FX[-\] for fx[normal\]
-# @opt -n: set alias fx[-\] for fx[normal\]
+# @opt -M: set alias FX[-\] for fx[normal\]
+# @opt -m: set alias fx[-\] for fx[normal\]
 # @opt -Z: set aliases FG|BG[0..99\] for FG|BG[000..099\]
 # @opt -z: set aliases fg|bg[0..99\] for FG|BG[000..099\]
 
@@ -68,12 +69,10 @@ fi
 
 
 local -A opts
-local -a {,{style,function,alias}_}specs
-set -A style_specs      U u V v p e f b x
-set -A function_specs   F B X
-set -A alias_specs      c D d N n Z z
-set -A specs            $style_specs $function_specs $alias_specs
-if {! zparseopts -D -E -F -K -M -A opts - $specs}; then
+local -a specs
+set -A specs U u V v p e f b x  F B X  H c D d M m Z z
+echo ${specs[@]}
+if ! zparseopts -D -E -F -K -M -A opts - ${specs[@]}; then
   return 1
 fi
 
@@ -91,7 +90,8 @@ fi
 
 
 #MARK: - Styles
-local -a foreground background effects {p,e,all}_styles
+local -a foreground background effects
+local -a p_styles e_styles all_styles
 set -A foreground  FG fg
 set -A background  BG bg
 set -A effects     FX fx
@@ -141,7 +141,7 @@ fi
 
 
 
-
+# Set styles
 local style color_name num effect_name effect c
 for style in ${styles[@]}; do
   typeset -g -AH -- $style
@@ -212,37 +212,51 @@ function spectrum_effect() {
 }
 
 
-#MARK: - Functions
+#TODO: - Style Functions
 case 1 in
+  # -F: foreground color style functions (red, green, etc.).
   $+opts[-F])
-  echo F
+
+    
+#    set -A style_functions
+#  print -- ${(k)fg:#default}
+#    function ${(k)^fg:#default} {
+#      printf '%b%s%b\n' "${fg[$0]}" "$@" "${fg[default]}"
+#    }
   ;|
+  # -B: background color style functions (red-bg, green-bg, etc.).
   $+opts[-B])
-  echo B
+    function ${(k)^bg:#default}'-bg' {
+      printf '%b%s%b\n' "${bg[${0%%-*}]}" "$@" "${bg[default]}"
+    }
   ;|
+  # -X: text effect style functions (bold, underline, etc.).
   $+opts[-X])
     function ${(k)fx} {
       printf '%b%s%b\n' "${fx[$0]}" "$@" "${fx[none]}"
     }
-#    for effect in ${(k)fx}; do
-#      echo $effect
-#      function $effect() {
-#
-#      }
-#
-#    done
-#
-#
-#  echo -X
   ;|
 esac
 
 
 
+
 #MARK: - Aliases
 case 1 in
+  # -B:
+  ${+opts[-H]})
+    for color_name num in ${(@kvaO)color[(I)<30-39>]}; do
+      if [[ $color_name == 'default' ]]; then
+        continue
+      fi
+      let num="$num + 60"
+      fg[${(C)color_name}]="${E}[${num}m"
+      let num="$num + 10"
+      bg[${(C)color_name}]="${E}[${num}m"
+    done
+  ;|
   # -c: fg,bg[000..255] = FG,BG[000..255]
-  $+opts[-c])
+  ${+opts[-c]})
     for c in {000..255}; do
       fg[$c]=${(%)FG[$c]}
       bg[$c]=${(%)BG[$c]}
@@ -250,7 +264,7 @@ case 1 in
   ;|
   
   # -D: FG,BG[-] = fg,bg[default]
-  $+opts[-D])
+  ${+opts[-D]})
     FG[-]=$fg[default]
     BG[-]=$bg[default]
   ;|
@@ -282,8 +296,22 @@ case 1 in
     for c in {0..99}; do
       local -iZ3 col="$c"
       fg[$c]=${(%)FG[$col]}
-      bg[$c]=$BG[$col]
+      bg[$c]=${(%)BG[$col]}
     done
+  ;|
+  
+  
+  $+opts[-F])
+    typeset -a style_functions
+    style_functions=( ${(k)fg:#default} )
+    print -- $style_functions
+    function ${style_functions[@]} {
+      if [[ ! -t 0 || -p /dev/stdin ]]; then
+        set -- $@
+      fi
+      printf "$fg[$0]%s$fg[default]\n" "$@"
+      return "$# == 0"
+    }
   ;|
 esac
 

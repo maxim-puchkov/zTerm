@@ -177,17 +177,17 @@ setarray -A ZSH_HIGHLIGHT_STYLES --split-at ' ' $ZTERMDIR/share/zsh-highlight-st
 
 # add-color-functions
 # Define functions for printing colored text.
-() {
-  local color_name
-  local -a exclude=(default)
-  for color_name in ${(k)fg:|exclude}; do
-    function "$color_name"() {
-      print -r -- "${fg[$0]}${argv}${fg[default]}"
-      return "$# == 0"
-    }
-  done
-}
-
+#() {
+#  local color_name
+#  local -a exclude=(default)
+#  for color_name in ${(k)fg:|exclude}; do
+#    function "$color_name"() {
+#      print -r -- "${fg[$0]}${argv}${fg[default]}"
+#      return "$# == 0"
+#    }
+#  done
+#}
+# use `spectrum -ef -F'
 
 
 
@@ -284,16 +284,6 @@ hash tldr==tealdeer
 
 #MARK: - OTHER -
 function zterm() {
-  function zterm_grep() {
-    /usr/bin/grep      \
-        --recursive    \
-        --no-messages  \
-        --color=always \
-        --text         \
-        --exclude='*.'{'*_'{history,sessions},zsh-theme} \
-        "$@" \
-        $ZDOTDIR
-  }
   zterm_grep $argv
 }
 
@@ -311,7 +301,20 @@ function run_sed() {
 }
 
 
-
+function il() {
+  local -A opts=([-m]="*")
+  local -a specs=(I)
+  if {! zparseopts -D -F -K -M -A opts - $specs}; then
+    return 1
+  fi
+  
+  if [[ ${+opts[-I]} -eq 1 ]] &&
+     [[ ! -t 0 || -p /dev/stdin ]]; then
+    set -- $argv ${(@f)"$(<&0)"}
+  fi
+  local mark='*'
+  print -nr -C1 -- ${mark}' '${^argv}
+}
 
 
 
@@ -337,10 +340,8 @@ function run_sed() {
 
 
 #TODO: - move
-function saytime() {
-  builtin strftime '%I:%M %p' |
-  /usr/bin/say
-}
+alias saytime='builtin strftime "%I:%M %p" | /usr/bin/say &!'
+
 
 #TODO: - move
 function eval-every() {
