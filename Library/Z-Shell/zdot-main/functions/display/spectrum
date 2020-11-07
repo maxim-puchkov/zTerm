@@ -22,7 +22,7 @@
 #
 # See also:
 # oh-my-zsh/lib/spectrum.zsh
-emulate -LR bash
+emulate -LR zsh
 autoload -U colors && colors
 
 
@@ -59,19 +59,12 @@ fi
 # @opt -z: set aliases fg|bg[0..99\] for FG|BG[000..099\]
 
 
-# @opt -F: set style functions for fg
-# @opt -B: set style functions for bg
-# @opt -X: set style functions for fx
-
-
-
-
-
-
+#!!!: @opt -F: set style functions for fg
+#!!!: @opt -B: set style functions for bg
+#!!!: @opt -X: set style functions for fx
 local -A opts
 local -a specs
 set -A specs U u V v p e f b x  F B X  H c D d M m Z z
-echo ${specs[@]}
 if ! zparseopts -D -E -F -K -M -A opts - ${specs[@]}; then
   return 1
 fi
@@ -207,36 +200,36 @@ fi
 
 
 
-function spectrum_effect() {
-  printf "%b%s%b\n" "$fx[$0]" "$@" "$fx[none]"
-}
+#function spectrum_effect() {
+#  printf "%b%s%b\n" "$fx[$0]" "$@" "$fx[none]"
+#}
 
 
 #TODO: - Style Functions
-case 1 in
-  # -F: foreground color style functions (red, green, etc.).
-  $+opts[-F])
-
-    
-#    set -A style_functions
-#  print -- ${(k)fg:#default}
-#    function ${(k)^fg:#default} {
-#      printf '%b%s%b\n' "${fg[$0]}" "$@" "${fg[default]}"
+#case 1 in
+#  # -F: foreground color style functions (red, green, etc.).
+#  $+opts[-F])
+#
+#
+##    set -A style_functions
+##  print -- ${(k)fg:#default}
+##    function ${(k)^fg:#default} {
+##      printf '%b%s%b\n' "${fg[$0]}" "$@" "${fg[default]}"
+##    }
+#  ;|
+#  # -B: background color style functions (red-bg, green-bg, etc.).
+#  $+opts[-B])
+#    function ${(k)^bg:#default}'-bg' {
+#      printf '%b%s%b\n' "${bg[${0%%-*}]}" "$@" "${bg[default]}"
 #    }
-  ;|
-  # -B: background color style functions (red-bg, green-bg, etc.).
-  $+opts[-B])
-    function ${(k)^bg:#default}'-bg' {
-      printf '%b%s%b\n' "${bg[${0%%-*}]}" "$@" "${bg[default]}"
-    }
-  ;|
-  # -X: text effect style functions (bold, underline, etc.).
-  $+opts[-X])
-    function ${(k)fx} {
-      printf '%b%s%b\n' "${fx[$0]}" "$@" "${fx[none]}"
-    }
-  ;|
-esac
+#  ;|
+#  # -X: text effect style functions (bold, underline, etc.).
+#  $+opts[-X])
+#    function ${(k)fx} {
+#      printf '%b%s%b\n' "${fx[$0]}" "$@" "${fx[none]}"
+#    }
+#  ;|
+#esac
 
 
 
