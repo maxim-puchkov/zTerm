@@ -1,7 +1,0 @@
-#compdef zfunctions
-
-
-local -a found
-local expl
-found=( $ZDOTDIR/{functions,completion}/*(.:t) )
-_wanted zfunctions expl 'z-function' compadd -a found

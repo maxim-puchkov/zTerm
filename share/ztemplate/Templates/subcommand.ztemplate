@@ -1,4 +1,0 @@
-# foo
-function ___FILENAME____foo() {
-  echo "Subcommand Foo"
-}

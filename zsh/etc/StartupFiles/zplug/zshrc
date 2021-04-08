@@ -1,0 +1,109 @@
+#
+#
+#
+#
+#
+
+
+###  Powerlevel10k  ###
+# Enable instant prompt. Should stay close to the top of ~/.zsh/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+# To customize prompt, run `p10k configure` or edit '$ZDOTDIR/.p10k.zsh'
+[[ ! -f $ZDOTDIR/.p10k.zsh ]] || source $ZDOTDIR/.p10k.zsh
+
+
+
+
+###  zplug  ###
+export ZPLUG_HOME="$HOME/.local/share/zplug"
+source "$ZPLUG_HOME/init.zsh" || return
+
+ZPLUG_CACHE_DIR="$HOME/.cache/zplug"
+
+zplug "lib/cli",        from:oh-my-zsh
+zplug "lib/completion", from:oh-my-zsh
+zplug "$ZDOTDIR/lib",   from:local
+zplug "plugins/git",    from:oh-my-zsh
+zplug "plugins/osx",    from:oh-my-zsh
+zplug 'zsh-users/zsh-autosuggestions'
+zplug 'zsh-users/zsh-syntax-highlighting', defer:2
+#zplug "$ZDOTDIR/lib/themes/my.zsh-theme" as:theme, from:local
+#zplug romkatv/powerlevel10k, use:powerlevel10k.zsh-theme
+zplug "romkatv/powerlevel10k", as:theme, depth:1
+
+# Install missing plugins if needed.
+if ! zplug check; then
+  zplug install &!
+fi
+
+zplug load
+
+
+
+
+###  Zsh  ###
+# Paths
+path+=( "$HOME/bin" )
+fpath+=( "$ZDOTDIR/functions" "$ZDOTDIR/completions" )
+
+
+# Autoload Functions
+## run-help
+unalias -m run-help
+typeset HELPDIR="/usr/share/zsh/$ZSH_VERSION/help"
+autoload -Uz run-help
+
+## zrecompile
+#autoload -Uz zrecompile
+#if [[ ! -d $ZDOTDIR/zwc ]]; then
+#  mkdir $ZDOTDIR/zwc
+#fi
+#zrecompile -q -p \
+#           -R $ZDOTDIR/.zshrc -- \
+#           -M $ZDOTDIR/.zcompdump -- \
+#           $ZDOTDIR/zwc/functions.zwc $ZDOTDIR/functions/*(N-.) &!
+
+#() {
+#  if [[ $# -gt 0 ]]; then
+#    cat -n "$ZDOTDIR/zwc/functions.zwc"
+#    echo autoload -w "$ZDOTDIR/zwc/functions.zwc"
+#  else
+#  echo $# bad
+#  fi
+#} $ZDOTDIR/zwc/*.zwc(N-.)
+
+
+
+# Options
+setopt interactivecomments
+setopt long_list_jobs
+setopt extended_glob                    # Glob options
+setopt glob_assign
+setopt hist_find_no_dups                # History options
+setopt hist_ignore_all_dups
+setopt hist_reduce_blanks
+setopt hist_save_no_dups
+setopt hist_expire_dups_first
+setopt hist_ignore_dups
+setopt hist_ignore_space
+setopt hist_verify
+setopt hist_subst_pattern
+setopt share_history
+#setopt extended_history
+setopt auto_cd                          # cd options
+setopt auto_pushd
+setopt pushd_ignore_dups
+setopt pushd_minus
+
+
+# History
+HISTFILE="$ZDOTDIR/.zsh_history"
+HISTSIZE=50000
+SAVEHIST=50000
+
+ZSH_CUSTOM="$ZDOTDIR/lib"
