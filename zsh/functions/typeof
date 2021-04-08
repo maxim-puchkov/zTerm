@@ -1,0 +1,137 @@
+#!/bin/zsh
+
+#  typeof
+#  Z-Function (71)
+#
+#  Created by Maxim Puchkov on 2020-06-21.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# typeof - print the type of a command, function, shell
+#          parameter, or other object.
+function typeof() {
+  # typeof-print - format and print an object's type
+  function typeof-print() {
+    # If verbose is set, print object's name
+    if [[ $typeof_verbose -eq 1 ]]; then
+      printf '%s: ' "${1:=$__name__}"
+    fi
+    # Print object's type
+    printf '%s\n' "${2:=$__typename__}"
+    return 0
+  }
+  
+  # typeof-not-found - display typename as 'not found'
+  function typeof-not-found() {
+    typeof-print "$__name__" 'not found'
+    return $?
+  }
+  
+  # typeof-commands - display typename of a command
+  function typeof-commands() {(
+    __typename__="${$(type -w -- $__name__)#*: }"
+    if [[ "$__typename__" == 'none' ]]; then
+      return 1
+    fi
+    typeof-print "$__name__" "$__typename__"
+    return $?
+  )}
+  
+  # typeof-parameters - display typename of a parameter
+  function typeof-parameters() {
+    __typename__="${parameters[$__name__]}"
+    if [[ -z "$__typename__" ]]; then
+      return 1
+    fi
+    typeof-print "$__name__" "$__typename__"
+    return $?
+  }
+  
+  
+  
+  
+  #MARK: - Options
+  # Functions for checking type
+  typeset -a typeof_checks=( typeof-{commands,parameters} )
+  # Verbose output
+  typeset -i typeof_verbose=0
+  
+  
+  # Set verbose option when outputting to stdout
+  if [[ -t 1 ]]; then
+    let typeof_verbose=1
+  fi
+  
+  
+  # Parse user's option values
+  while [[ $1 =~ ^[-+] ]]; do
+    case $1 in
+      # {-v,--verbose}: enable verbosity
+      (-v|--verbose)
+        let typeof_verbose=1
+      ;;
+      # {+v,--no-verbose}: disable verbosity
+      (+|+v|--no-verbose)
+        let typeof_verbose=0
+      ;;
+      
+      # Check command type only
+      (-c)
+        typeof_checks=( typeof-commands )
+      ;;
+      # Check parameter type only
+      (-p)
+        typeof_checks=( typeof-parameters )
+      ;;
+      
+      # Skip '--'
+      (--)
+        shift
+        break
+      ;;
+      # Bad options
+      (*)
+        (name="$1" \
+          error -1 +R -- 'invalid option ${name} was ignored.')
+      ;;
+    esac
+    shift
+  done
+  
+  
+  
+  
+  #MARK: - Arguments
+  # If names are not given, return code 1
+  if [[ $# -eq 0 ]]; then
+    return 1
+  fi
+  
+  
+  local __{result,name}__
+  local -i __found__
+  
+  
+  # Find the command or parameter to which the
+  # name refers to, and print its type
+  for __name__; do
+    __found__=0
+    
+    # Check types
+    for check in $typeof_checks; do
+      __result__="$($check $__name__)"
+      if [[ -n "$__result__" ]]; then
+        __found__=1
+        print -r -- "$__result__"
+      fi
+    done
+    
+    # If no type is found, print error
+    if [[ $__found__ -eq 0 ]]; then
+      typeof-not-found "$__name__"
+      continue
+    fi
+  done
+  
+  return 0
+}

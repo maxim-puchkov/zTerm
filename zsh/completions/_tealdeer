@@ -1,0 +1,21 @@
+#compdef tealdeer tldr
+
+
+_arguments -S \
+    '(-h --help)'{-h,--help}'[display help text]' \
+    '(-V --version)'{-V,--version}'[display version information]' \
+    '(-l --list)'{-l,--list}'[list all commands in the cache]' \
+    '(-f --render)'{-f,--render}'[render a specific markdown file]:file:_files' \
+    '(-o --os)'{-o,--os}'[override the operating system]:type:(linux osx sunos windows)' \
+    '(-u --update)'{-u,--update}'[update the local cache]' \
+    '(-c --clear-cache)'{-c,--clear-cache}'[clear the local cache]' \
+    '(-p --pager)'{-p,--pager}'[use a pager to page output]' \
+    '(-m --markdown)'{-m,--markdown}'[display the raw markdown instead of rendering it]' \
+    '(-q --quiet)'{-q,--quiet}'[suppress informational messages]' \
+    '--config-path[display config file path]' \
+    '--seed-config[create a basic config]' \
+    '*:: :-> tealdeer_commands' && return 0
+
+local tealdeer_commands
+set -A tealdeer_commands ${(@f)"$(/usr/local/bin/tealdeer --list 2>/dev/null)"}
+_describe 'tealdeer commands' tealdeer_commands

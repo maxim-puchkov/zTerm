@@ -45,3 +45,6 @@ hash -d zshzterm=/Users/Shared/Developer/Frameworks/zTerm.framework/Versions/Cur
 
 hash -d zsh1="$HOME/private/zsh/env/1.0"
 hash -d zsh-ziterm="/Users/Shared/Developer/ziTerm2"
+
+
+hash -d zterm2="$HOME/private/zTerm2"
