@@ -1,6 +1,0 @@
-local subcommand="${1:=help}"
-shift
-if [[ ${+functions[${0}_${subcommand}]} -eq 0 ]]; then
-  error -127 -m 'no such command: ${subcommand}'
-fi
-${0}_${subcommand} ${argv}
