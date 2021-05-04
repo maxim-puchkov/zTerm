@@ -33,7 +33,7 @@ local -A opts
 local -a specs
 specs=('n' 'v')
 if [[ $# -gt 0 ]] &&
-   {! zparseopts -D -K -M -A opts - $specs}; then
+   {! zparseopts -D -E -F -K -M -A opts - $specs}; then
   return 1
 fi
 

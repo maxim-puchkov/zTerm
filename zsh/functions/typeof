@@ -18,18 +18,16 @@ function typeof() {
     fi
     # Print object's type
     printf '%s\n' "${2:=$__typename__}"
-    return 0
   }
   
   # typeof-not-found - display typename as 'not found'
   function typeof-not-found() {
-    typeof-print "$__name__" 'not found'
-    return $?
+    typeof-print "$__name__" 'not found' 1>&2
   }
   
   # typeof-commands - display typename of a command
   function typeof-commands() {(
-    __typename__="${$(type -w -- $__name__)#*: }"
+    __typename__="${$(builtin type -w -- $__name__)#*: }"
     if [[ "$__typename__" == 'none' ]]; then
       return 1
     fi
@@ -63,9 +61,9 @@ function typeof() {
   fi
   
   
-  # Parse user's option values
-  while [[ $1 =~ ^[-+] ]]; do
-    case $1 in
+  # Parse options
+  while [[ "$1" =~ ^[-+] ]]; do
+    case "$1" in
       # {-v,--verbose}: enable verbosity
       (-v|--verbose)
         let typeof_verbose=1
@@ -91,8 +89,7 @@ function typeof() {
       ;;
       # Bad options
       (*)
-        (name="$1" \
-          error -1 +R -- 'invalid option ${name} was ignored.')
+        error -0 'invalid option was ignored: ${1}.'
       ;;
     esac
     shift

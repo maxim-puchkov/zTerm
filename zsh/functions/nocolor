@@ -14,8 +14,8 @@
 # Usage:
 # nocolor
 # <#usage...#>
-emulate -LR zsh
-setopt extendedglob
+emulate -L zsh
+setopt extended_glob
 
 if [[ ! -t 0 ]] ||
    [[ -p /dev/stdin ]]; then

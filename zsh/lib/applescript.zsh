@@ -7,7 +7,7 @@
 #  ~/private/zsh/lib/applescript.zsh
 
 
-autoload -Uz error
+#autoload -Uz error
 
 
 # NAME
@@ -19,15 +19,19 @@ autoload -Uz error
 # EXAMPLES
 #   tell 'application "System Events"' 'return its properties'
 #   tell 'application "Finder"' 'return POSIX path of (insertion location as alias)'
-function tell() {
-  local -a tell_cmds=( "tell ${1}"  ${(@F)argv:2}  "end tell" )
-  local tell_out="${(Q)$( command osascript -s es       \
-                          <<<${(@F)tell_cmds}     \
-                          2> >(error -I -d: -f2-) )}"
-  if [[ $status -eq 0  ]] \
-  && [[ -n "$tell_out" ]]; then
-    printf '%s\n' "$tell_out"
-  fi
+function tell {
+  local -a tell_commands=( "tell ${1}" ${(@F)argv:2} "end tell" )
+  printf '%s\n' "$(command osascript -s eh <<<${(@F)tell_commands})"
+}
+
+# FUNCTION
+#   <#name#> <#<args>#>
+#
+# DESCRIPTION
+#   <#Description...#>
+function close {
+  local what="application \"${1}\""
+  command osascript -s eh -e "tell ${what} to quit"
 }
 
 
@@ -36,35 +40,52 @@ function tell() {
 ## Xcode ##
 
 # FUNCTION
-#   xc-source: Source the document which is currently opened in Xcode.
-function xc-source() {
-  local xcode_document="$(xc-document)"
-  if [[ $? -eq 0 ]] && [[ -r $xcode_document ]]; then
-    print -u2 -P -- "%F{3}[sourcing %U$xcode_document%u]%f"
+#   xcode-source: Source the document which is currently opened in Xcode.
+function xcode-source {
+  local xcode_document="$(xcode-document)"
+  if [[ $? -eq 0 ]] \
+  && [[ -r "$xcode_document" ]]; then
+    print -u2 -P -- "%F{3}[sourcing %U${xcode_document}%u]%f"
     source $xcode_document
+    [[ $? -eq 0 ]] || print -u2 -P '%1Ferror%f'
   fi
 }
 
 # FUNCTION
-#   xc-document: Return path of the document opened in Xcode.
-function xc-document() {
-  printf '%s\n' "$( tell 'script "Xcode"' 'return get_opened_document_path()' )"
+#   xcode-document: Return path of the document opened in Xcode.
+function xcode-document {
+  printf '%s\n' "$(tell 'script "Xcode"' 'return get_opened_document_path()')"
 }
 
 
 
 
 ## System Events ##
-# NAME
-#   ps-names
-#
-# DESCRIPTION
-#   List names of all running apps and processes.
-function ps-names() {
-  typeset -a running_processes
-  running_processes=( $(tell 'script "System Events"' 'return list_process_names()') )
-  print -nr -oi -C1 -- ${running_processes}
+# FUNCTION
+#   processes
+function processes {
+  typeset -A opts
+  zparseopts -D -F -M -A opts - '-id' 'i=-id'
+  if [[ $+opts[--id] -eq 1 ]]; then
+    print -nr -C1 -- ${(@s:, :)"$(
+      osascript -e 'tell script "System Events" to return get_process_ids()'
+    )"} | sort -k1n
+  else
+    print -oi -nr -C1 -- ${(@s:, :)"$(
+      osascript -e 'tell script "System Events" to return get_process_names()'
+    )"}
+  fi
 }
+alias psid='processes --id'
+
+
+function psapps {
+  command ps -Ahw -o 'command' \
+  | command grep -e '^/Applications' \
+  | command cat -n
+}
+
+
 
 
 
@@ -94,3 +115,26 @@ function chrome_limit_windows() {
 alias tell-xcode="tell 'script \"Xcode\"'"
 alias tell-chrome="tell 'script \"Google Chrome\"'"
 alias tell-sysevents="tell 'script \"System Events\"'"
+
+alias xcs='xcode-source 2>/dev/null'
+alias xfd='xcode-document'  # xcode file directory
+
+
+
+function add-alias {
+  local name value
+  vared -p "alias name: "  name
+  vared -p "alias value: " value
+  command sed -E -n -e "/Recently Added/{p;i\\
+alias ${name}=${(qq)value}
+;}" < ~/f
+}
+
+function clear-recent-apps() {
+  osascript <<<'
+tell script "System Events"
+  toggle_dock_recents()
+  toggle_dock_recents()
+end tell
+'
+}

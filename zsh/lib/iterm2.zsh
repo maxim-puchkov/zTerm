@@ -8,13 +8,14 @@
 
 
 # Docs: https://iterm2.com/python-api/
-typeset ITERM2_APP_SUPPORT="$HOME/Library/Application Support/iTerm2"
-typeset ITERM2_SHARE="/usr/local/share/iterm2"
+export ITERM2_APP_SUPPORT="$HOME/Library/Application Support/iTerm2"
+export ITERM2_SHARED="/usr/local/share/iterm2"
 
 
-#MARK: - Functions
+
+###  Functions  ###
 # iterm2-edit: edit iTerm scripts in Xcode.
-function iterm2-edit {
+function iterm2_edit {
   local -a files=()
   local iterm_scripts_dir="$HOME/Library/Application Support/iTerm2/Scripts"
   local name
@@ -25,30 +26,73 @@ function iterm2-edit {
   command open -a Xcode -- $files
 }
 
-### Other Functions ###
+
+function iterm2_annotate {
+  printf '\e]1337;AddAnnotation=%i|%s\a' "${(c)#*}" "$*"
+}
+
+function iterm2_profile {
+  if [[ -n "$*" ]]; then
+    printf '\e]1337;SetProfile=%s\a' "$*"
+  else
+    printf 'Current Profile: %s\n' "$ITERM_PROFILE"
+  fi
+}
+
+
+#TODO: [not implemented]
+function iterm2_profconfig {
+  local config="$ZDOTDIR/etc/profiles/$ITERM_PROFILE.zsh"
+  echo $config
+  [[ -e $config ]] && echo 1
+}
+
+
+
+
+##  Other functions  ##
 function iterm2_notify {
-  printf '\e]9;%s\a' "$@"
+  printf '\e]9;%s\a' "$*"
 }
 function iterm2_bounce {
   printf '\e]1337;RequestAttention=yes\a'
 }
 function iterm2_badge {
-  printf '\e]1337;SetBadgeFormat=%s\a' $(echo "$@" | command base64)
+  printf '\e]1337;SetBadgeFormat=%s\a' "$(echo "$@" | command base64)"
 }
 
 
-#MARK: - Aliases
-alias it2r='it2run'
-alias it2prof='typeset -p1 ITERM_PROFILE'
-alias it2cd='cd $ITERM2_APP_SUPPORT'
 
-alias it2dynamic='open -a Xcode "/Users/Shared/iTerm2/Dynamic Profiles/"*'
-alias it2scripts='open -a Xcode $ITERM2_APP_SUPPORT/Scripts/**/*.py'
 
-alias it2w='echo "$ITERM_PROFILE (${COLUMNS}x${LINES})"'
-alias 2r='it2run'
-alias it2func='it2run call_function'
 
-#"$ITERM2/iterm2env/versions/3.8.6/bin/python3"
-
+# Completion
 compdef '_arguments "*:*:( $HOME/Library/Application\ Support/iTerm2/Scripts/*.py(:t) )"' it2run
+
+
+
+
+
+###  Aliases  ###
+alias it2dynamic='open -a Xcode $ITERM2_SHARED/Dynamic Profiles/*'
+alias it2scripts='open -a Xcode $ITERM2_APP_SUPPORT/iTerm2/Scripts/*'
+
+
+
+
+
+
+# Run
+alias 2r='it2run'
+alias 2f='it2run call_function'
+alias 2x='$ITERM2_SHARED/bin/it2xcrun'
+
+# Profiles
+alias 2p='iterm2_profile'
+alias 2l='iterm2_profile Light'
+alias 2d='iterm2_profile Dark'
+
+# Profile and size
+alias it2w='print -- "$ITERM_PROFILE (${COLUMNS}x${LINES})"'
+
+# Python
+alias it2py="\"$ITERM2_APP_SUPPORT/iterm2env/versions/3.8.6/bin/python3\""

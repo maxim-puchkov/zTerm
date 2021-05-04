@@ -16,7 +16,7 @@
 #   1. `show pax'    -->   "command /bin/pax"
 #   2. `show HOME'   -->   scalar-export-special HOME[12] = "/Users/admin"
 emulate -LR zsh
-autoload -Uz -- zfn
+autoload -Uz error synopsis
 
 
 local -a __{zsh_groups,result,matches}__
@@ -47,7 +47,7 @@ for __name__; do
   
   
   # 2. For each 'groupname' (aliases, functions, commands, etc.)
-  for __groupname__ in $__zsh_groups__; do
+  for __groupname__ in ${__zsh_groups__[@]}; do
     # Find a 'match' in this group for the specified 'name'.
     # If the name is a glob pattern, there may be many 'matches'.
     unset __{typename,desc,value,matches}__
@@ -56,7 +56,7 @@ for __name__; do
     
     
     # 3. For every 'match'
-    for __match__ in $__matches__; do
+    for __match__ in ${__matches__[@]}; do
       # Skip empty value
       __value__="${${(P)__groupname__}[${__match__}]}"
     
@@ -67,22 +67,25 @@ for __name__; do
           # Remove matched name because it is
           # in the header of 'print-var'
           __value__="$(print-var $__name__)"
-          __match__='' ;;
+        ;;
         # Format function
         ('functions')
-          local line=$'\e[2m'${(l:$COLUMNS::-:)}$'\e[22m'
-          __value__=$'\n'"${line}"$'\n'"$(zfn show $__name__)"$'\n'"${line}" ;;
+          local __line__=$'\e[2m'${(l:$COLUMNS::-:)}$'\e[22m'
+#          __value__=${__line__}
+          #__value__="${line}"$'\n'"$(zfn show $__name__)"$'\n'"${line}"
+        ;;
         # Command synopsis
         ('commands')
-          local synopsis=$(synopsis "${__value__:t}" 2>/dev/null)
-          if [[ -n "$synopsis" ]]; then
-            __value__+=$'\n'"${synopsis}"
-          fi ;;
+          local __synopsis__=$(synopsis "${__value__:t}" 2>/dev/null)
+          if [[ -n "$__synopsis__" ]]; then
+            __value__+=$'\n'"${__synopsis__}"
+          fi
+        ;;
       esac ##case groupname
       
       # Add description and value to result for this 'name'
       __desc__="%B>%b %U%F{5}${FX[italic]}${__typename__}${FX[no-italic]}%u %B${__match__}%f%b:"
-      __result__+=("${(%)__desc__} ${__value__}")
+      __result__+=("${(%)__desc__}"$'\n'"${__value__}")
     done ##(3)for value
     
     
@@ -92,7 +95,7 @@ for __name__; do
   
   # Print result or error
   if [[ ${#__result__} -gt 0 ]]; then
-    print -nr -C1 -- $__result__
+    print -nr -C1 -- ${__result__[@]}
     [[ -n "$2" ]] && printf '\n'
   else
     error -0 -m '${__name__} is not found'

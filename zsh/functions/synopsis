@@ -13,14 +13,14 @@
 # Usage:
 # synopsis  <#...#>
 emulate -LR zsh
+autoload -Uz error
 
-
-if (/usr/bin/man -W -- $argv &>/dev/null); then
-  /usr/bin/man $argv                     |
-  /usr/bin/col -b                        |
-  /usr/bin/awk '/^SYN/, /^$/ {print $0}' |
-  /usr/bin/sed -e '/^SYN/d' -e '/^$/d'   |
-  /bin/cat -n
+if (command man -W -- "$argv" &>/dev/null); then
+  command man "$argv" \
+  | command col -b \
+  | command awk '/^SYN/, /^$/ {print $0;}' \
+  | command sed -e '/^SYN/d' -e '/^$/d' \
+  | command cat -n
 else
   error -1 'no manual page for ${argv}'
 fi

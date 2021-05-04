@@ -27,7 +27,8 @@ autoload -Uz run-help
 export HISTFILE="$ZDOTDIR/.zsh_history"            # History file
 
 # Oh-my-zsh
-export ZSH="$ZDOTDIR/oh-my-zsh"
+export ZSH="$HOME/.local/share/oh-my-zsh"
+#export ZSH="$ZDOTDIR/oh-my-zsh"
 ZSH_CUSTOM="$ZDOTDIR/lib"
 ZSH_THEME="my"
 plugins=(

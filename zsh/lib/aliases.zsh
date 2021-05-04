@@ -3,41 +3,53 @@
 #  zsh-aliases.zsh
 #  ~zdot/zsh-aliases.zsh
 #
-#  Zsh alises and hashed directories.
+#  Zsh alises.
 #  Created by mpuchkov/506:20 on March 27, 2021.
 
 
 #MARK: - Recently Added
+alias -g @-1='1> /dev/null'
+alias -g @-2='2> /dev/null'
+alias -g @--='&> /dev/null'
 
-#function open() {
-##  command open "${@:-.}"
-#}
+alias -g '...'='../..'
+alias -g '....'='../../..'
+alias -g '.....'='../../../..'
+alias -g '......'='../../../../..'
 
-alias zt='cd ~/private/zTerm2'
+alias lvl='typeset SHLVL'
+alias zc='zsh -c'
 
-function test() {
-  builtin test "$@"
-  [[ $? -ne 2 ]] && print -P -- "%(?.%2Ftrue.%1Ffalse)%f"
-}
+# Local aliases
+alias admin='command ssh -l admin localhost'
+alias ubuntu='command ssh -l osboxes ubuntu.vm'
+alias mininet='command ssh -l mininet mininet.vm'
+
+alias mod='stat -f "%p"'
 
 
 
 
-
-
-# Open zsh configuration files in Xcode
-alias zshenv='open -a Xcode ~/.zshenv'
+#MARK: - Files
+# Open zsh configuration files in Xcode.
+alias zshenv='open -a Xcode $HOME/.zshenv'
 alias zshrc='open -a Xcode $ZDOTDIR/.zshrc'
 alias zprofile='open -a Xcode $ZDOTDIR/.zprofile'
 
+alias zalias='open $ZDOTDIR/lib/aliases.zsh'
+alias {zhashdir,zdirs}='open $ZDOTDIR/lib/directories.zsh'
+
+alias zlib='open -a Xcode $ZDOTDIR/lib/*'
+alias zlibfuncs='open $ZDOTDIR/lib/functions.zsh'
+alias zshfuncs='open -a Xcode $ZDOTDIR/{functions,completions}/*'
+
 alias {zshxc,xczsh}='open -a Xcode ~/iCloud/Developer/Projects/Zsh/Zsh.xcodeproj'
-alias notes='open -e ~/Documents/Notes/iTerm-Notes.rtf'
 
 
 
 
 
-#MARK: - Command Aliases
+#MARK: - Commands
 # Command 'cat'
 alias {catn,can}='/bin/cat -n'                        #
 alias cate='/bin/cat -entv'                           #
@@ -48,10 +60,20 @@ alias unhide='chflags nohidden'                       #
 alias lock='chflags uchg'                             #
 alias unlock='chflags nouchg'                         #
 
+# Command 'chown'
+alias {chownl,lnown}='chown -h'                       # Change owner of a symlink
+alias chown-some='/usr/sbin/chown -R -H root:wheel'   # Follow symlinks, but not in recursion
+alias chown-all='/usr/sbin/chown -R -L root:wheel'    # Follow ALL links
+
 # Command 'chmod'
-alias -- chmod-symlink='/bin/chmod -h'                # Operate on symlinks
+alias -- {chmodl,lnmod}='/bin/chmod -h'               # Operate on symlinks
 alias -- +x='/bin/chmod +x'                           #
 alias -- -x='/bin/chmod -x'                           #
+alias -- +w='/bin/chmod +w'                           #
+alias -- -w='/bin/chmod -w'                           #
+alias -- +r='/bin/chmod +r'                           #
+alias -- -r='/bin/chmod -r'                           #
+
 
 # Command 'cp'
 alias cp='/bin/cp -i'                                 #
@@ -59,19 +81,19 @@ alias cpv='cp -v'                                     #
 alias cpdir='cp -R'                                   #
 
 # Command 'du'
-alias du='command du -h'
-alias du0='du -d0'
-alias du1='du -d1'
+alias du='command du -h'                              #
+alias du0='du -d0'                                    #
+alias du1='du -d1'                                    #
 
 # Command 'find'
-alias findl='command find -L'                        #
+alias findl='command find -L'                         #
 
 # Command 'hexdump'
-alias hd='command hexdump'                           #
+alias hd='command hexdump'                            #
 
 # Command 'head'
-alias h1='command head -n1'                           # 1 line
-alias b32='command head -c32'                         # 32 bytes
+alias 1line='command head -n1'                        # First line in file
+alias 32bytes='command head -c32'                     # First 32 bytes in file
 
 # Command 'git'
 alias gs='git status'                                 # Status
@@ -85,8 +107,15 @@ alias diff='/usr/local/bin/diff --color=always --suppress-common-lines -s -y -P'
 alias diffl='diff --suppress-common-lines --side-by-side'                         #
 
 # Command 'grep'
-alias gr='grep'                                       #
-alias grepa='grep -E --text --color=always -e ".*"'   #
+alias grep='command grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn,.idea,.tox}'
+alias grepdir='grep -R -H -n'
+alias grepfiles='grep -R -l'
+alias grepfiles!='grep -R -L'
+#alias gr='grep'                                       #
+#alias grepa='grep -E --text --color=always -e ".*"'   #
+
+# Command 'killall'
+alias {kall,killl}='command killall'
 
 
 # Command 'ls'
@@ -115,9 +144,10 @@ alias lscv='ls -C'                           #           vertical columns   (↓
 alias lsch='ls -x'                           #           horizontal columns (→)
 alias 'ls,'='ls -m'                          # Comma-separated
 alias 'ls?'='ls -q'                          # Print non-printable as ?
-alias lsattrib='ls -la -O@e'                 # Extended attributes, ACL, flags
+alias lsattrib='ls -la -Oe@'                 # Extended attributes, ACL, flags
 alias {lsd,lld}='ls -ld'                     #
-alias lss='command ls -lgoBFGSr'             #
+alias lad='ls -lad'                          #
+alias lss='command ls -lgo -BFG -Sr'         # Size
 
 
 # Command 'launchctl'
@@ -138,17 +168,19 @@ alias nano='/usr/local/bin/nano --mouse'              #
 
 # Command 'open'
 alias o='open'                                        #
-alias pwdo='open -R $PWD'                             #
-alias reveal='open -R'                                #
 alias app='open -a'                                   #
+alias {openr,reveal}='open -R'                        #
+alias {opf,pwdo}='open -R $PWD'                       #
 alias term1='open -a Terminal'        # Applications  #
 alias term2='open -a iTerm'                           #
-alias xe='open -a Xcode'                              #
+alias {xe,xopen,openx}='open -a Xcode'                #
 alias music='open -a Music'                           #
+alias notes='open -a Notes'                           #
 alias intellij='open -a "IntelliJ IDEA CE"'           # IntelliJ IDEA
 alias vb='open -a VirtualBox'                         #
 alias hxf='open -a "Hex Fiend"'                       #
 
+#???: Command 'xed'
 alias .g='xed .gitignore'                    # Files  # .gitignore
 alias .ci='xed .gitlab/.gitlab-ci.yml'                # .gitlab.ci-yml
 
@@ -156,15 +188,17 @@ alias .ci='xed .gitlab/.gitlab-ci.yml'                # .gitlab.ci-yml
 alias openssl='/usr/local/opt/openssl/bin/openssl'    #
 
 # Command 'osascript'
-alias osascript='command osascript -s e'              #
-alias {osa,osas}='osascript -s s'                     #
-alias osah='osascript -s h'                           #
+alias osa='osascript -s es'                           # AppleScript object output
+alias osah='osascript -s eh'                          # Human-readable output
 
 # Command 'pbcopy'
 alias {pbc,cpb}='command pbcopy'                      # Copy to clipboard
 
 # Command 'ps'
-alias pa='/bin/ps -aw'                                #
+alias ps='/bin/ps -o pid,tty,etime,command -h'        #
+alias psu='/bin/ps -o pid,tty,user,gid,etime,command' #
+alias paw='/bin/ps -aw'                               #
+alias psa='/bin/ps -Ahw'
 
 # Command 'rm'
 alias rm='/bin/rm -i'                                 #
@@ -180,7 +214,7 @@ alias sudol='/usr/bin/sudo --login'                   #
 
 # Command 'say'
 alias say='command say -v Samantha'                   #
-alias alex='command say -v Alex'                      #
+alias alex='command say -v Alex'                      # Default voice
 
 # Command 'tar'
 alias tarch='command tar zcvf'                        #???: check
@@ -197,10 +231,12 @@ alias {tldr,tl}='/usr/local/bin/tealdeer'             #
 
 
 
-#MARK: - Builtin Aliases
+#MARK: - Builtins
 # Builtin 'autoload'
 alias aut='builtin autoload -U'             #
 alias autz='builtin autoload -Uz'           #
+alias autx='builtin autoload +X'            #
+alias autw='builtin autoload -w'            #
 
 # Builtin 'builtin'
 alias bltn='builtin'                        #
@@ -210,6 +246,9 @@ alias bk='builtin bindkey'                  #
 
 # Builtin 'exec'
 alias re='builtin exec -l ${SHELL:-zsh}'    # Reset shell
+
+# Builtin 'command'
+alias cmd='builtin command'                 #
 
 # Builtin 'fc'
 alias hist='builtin fc -l'                  # List events
@@ -231,22 +270,24 @@ alias e='builtin echo -'                    #
  
 # Builtin 'print'
 alias p='builtin print'                     #
-alias pnr='builtin print -nr'               #
 alias printd='builtin print -P -D'          # Substitute <named dirs> using <~dir>
 alias {printl,pl}='builtin print -l'        # Split lines
 alias {printn,pn}='builtin print -n'        # No new line
+alias pnr='builtin print -nr'               # No new line (ignore \n,\t,etc.)
 alias {printp,pp}='builtin print -P'        # Prompt expansion
-alias 'printp-'='builtin print -P --'       #
 alias {pc1,print1}='print -nr -C1 --'       # Print in 1 column
 alias {pc2,print2}='print -nr -aC2 --'      # Print in 2 columns
+alias pb='print -bn'                        # Recognize ^X, \M-X, \C-X
 
 # Builtin 'printf'
 alias {beep,bell}='builtin printf "\x07"'   # Bell
-alias q='() { printf "%q\n" "$*"; }'        # quote
+alias printq='() { printf "%q\n" "$*"; }'   # Shell quote
 
-#
-alias po='builtin popd'
-alias pu='builtin pushd'
+# Builtin 'popd'
+alias po='builtin popd'                     #
+
+# Builtin 'pushd'
+alias pu='builtin pushd'                    #
 
 # Builtin 'exit'
 alias quit='builtin exit 0;'                #
@@ -283,13 +324,14 @@ alias unf='builtin unset -f'                #
 
 # Builtin 'vared'
 alias v='builtin vared'                     #
+alias v+='builtin vared -c -p "value: "'    #
 
 # Builtin 'which'
 alias wh='builtin which'                    #
-alias wha='builtin which -a'                #  Print all occurrences in path
+alias wha='builtin which -a'                # Print all occurrences in path
 
 # Builtin 'zparseopts'
-alias zopts='builtin zparseopts -D -E -F -K -M -A opts -'
+alias zopts='zparseopts -D -E -F -K -M -A opts -'
 
 
 
@@ -297,7 +339,7 @@ alias zopts='builtin zparseopts -D -E -F -K -M -A opts -'
 
 
 
-#MARK: - Function Aliases
+#MARK: - Functions
 # Function 'compdef'
 alias cdef='compdef'
 
@@ -318,20 +360,18 @@ alias ord='order -c'
 # Function 'show'
 alias {s,i}='show'
 
+
+
 ## Function 'zfn'
 #alias fn='zfn'
 
 
 alias prex='add-zsh-hook preexec'
+alias prex-='add-zsh-hook -D preexec'
 alias prec='add-zsh-hook precmd'
+alias prec-='add-zsh-hook -D precmd'
 
+alias rm-zsh-hook='add-zsh-hook -D'
 
 #MARK: Plugins
 alias cfd='cd "$(pfd)"'                      # Change to current Finder directory
-
-
-#MARK: System
-alias chown-sym='chown -h' # Change owner of a symlink
-alias chownH='chown -R -H root:wheel' # Follow symlinks, but not in recursion
-alias chown-all='/usr/sbin/chown -R -L root:wheel'  # Follow ALL links
-

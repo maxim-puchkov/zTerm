@@ -21,21 +21,21 @@
 # Usage:
 # pwd
 # pwd [ -rLP ]
-emulate -LR sh
-
+emulate -L zsh
 if [[ $# -eq 0 ]]
 then
   local logical=${PWD:a}
   printf '%s\n' "$logical"
-  
   local physical=${PWD:P}
   if [[ "$physical" != "$logical" ]]
   then
-    printf '%b%s%b\n' "\033[2m" "$physical" "\033[22m"
+    printf '%s\n' "$physical"
+    #printf '%b%s%b\n' "\033[2m" "$physical" "\033[22m"
   fi
 else
+  set -- "-${(@s::)^argv#-}"
   local arg
   for arg; do
-    builtin pwd $arg
+    builtin pwd $arg 2> >(error -I -d: -f3-)
   done
 fi

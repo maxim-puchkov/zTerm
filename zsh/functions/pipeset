@@ -13,7 +13,7 @@
 # Usage:
 # pipeset
 emulate -LR zsh
-setopt extendedglob
+setopt extended_glob
 
 
 #@define arg *: :_typeset

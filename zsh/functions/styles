@@ -24,12 +24,12 @@
 #
 # See also:
 # oh-my-zsh/lib/spectrum.zsh
-emulate -LR zsh
+emulate -L zsh
 
 typeset PROG="${0##/*}"
 typeset ESC=$'\033'
 
-# Exit trap.
+# Unset styles sub-functions on exit.
 trap "unset -f -m \"(__)${PROG}_*\"" EXIT
 
 
@@ -104,7 +104,8 @@ all_styles=(
 
 
 #MARK: - Private Functions
-# Set 'styles' option.
+# Enable an option by setting
+# its value in 'opts'.
 function __styles_setopt() {
   local opt
   for opt; do
@@ -112,7 +113,10 @@ function __styles_setopt() {
   done
 }
 
-# Set 'styles' style function.
+# Set 'fg', 'bg', or 'fx' style functions by
+# copying base style function to another
+# function with name of an SGR parameter.
+# (E.g: red, bg-Black, strikethrough.)
 function __styles_setfunction() {
   local style_function="__${PROG}_${1}_style_function"
   shift 1
@@ -123,74 +127,51 @@ function __styles_setfunction() {
 }
 
 
-#MARK: Style Functions
-# Foreground source style function.
+#MARK: Base Style Functions
+# Print with foreground color.
 function __styles_fg_style_function() {
   local -A opts
-  if ! zparseopts -D -K -M -A opts - N; then
-    return 1
-  fi
-  if [[ ${+opts[-N]} -ne 1 ]] &&
-     [[ ! -t 0 || -p /dev/stdin ]]; then
+  local -a specs=( '-stdin' 'I=-stdin' )
+  zparseopts -D -M -A opts - $specs || return 1
+  if [[ ${+opts[--stdin]} -eq 1 ]] \
+  && [[ ! -t 0 || -p /dev/stdin ]]; then
     set -- "$@" "${(@f)$(<&0)}"
   fi
-  
-  if [[ $# -gt 0 ]]; then
-    printf "%b" "$fg[${0}]"
-    print "$@"
-    printf "%b" "$fg[default]"
-    return 0
-  else
-    return 1
-  fi
+  [[ $# -gt 0 ]] || return 1
+  printf "%b" "$fg[${0}]"
+  print "$@"
+  printf "%b" "$fg[default]"
 }
 
-# Background source style function.
+# Print with background color.
 function __styles_bg_style_function() {
   local -A opts
-  if ! zparseopts -D -K -M -A opts - N; then
-    return 1
-  fi
-  if [[ ${+opts[-N]} -ne 1 ]] &&
-     [[ ! -t 0 || -p /dev/stdin ]]; then
+  local -a specs=( '-stdin' 'I=-stdin' )
+  zparseopts -D -M -A opts - $specs || return 1
+  if [[ ${+opts[--stdin]} -eq 1 ]] \
+  && [[ ! -t 0 || -p /dev/stdin ]]; then
     set -- "$@" "${(@f)$(<&0)}"
   fi
-  
-  if [[ $# -gt 0 ]]; then
-    printf "%b" "$bg[${0%-bg}]"
-    print "$@"
-    printf "%b" "$bg[default]"
-    return 0
-  else
-    return 1
-  fi
+  [[ $# -gt 0 ]] || return 1
+  printf "%b" "$bg[${0%-bg}]"
+  print "$@"
+  printf "%b" "$bg[default]"
 }
 
-# Effect source style function.
+# Print with text effects.
 function __styles_fx_style_function() {
   local -A opts
-  if ! zparseopts -D -K -M -A opts - N; then
-    return 1
-  fi
-  if [[ ${+opts[-N]} -ne 1 ]] &&
-     [[ ! -t 0 || -p /dev/stdin ]]; then
+  local -a specs=( '-stdin' 'I=-stdin' )
+  zparseopts -D -M -A opts - $specs || return 1
+  if [[ ${+opts[--stdin]} -eq 1 ]] \
+  && [[ ! -t 0 || -p /dev/stdin ]]; then
     set -- "$@" "${(@f)$(<&0)}"
   fi
-  
-  if [[ $# -gt 0 ]]; then
-    printf "%b" "$fx[${0}]"
-    print "$@"
-    printf "%b" "$fx[none]"
-    return 0
-  else
-    return 1
-  fi
+  [[ $# -gt 0 ]] || return 1
+  printf "%b" "$fx[${0}]"
+  print "$@"
+  printf "%b" "$fx[none]"
 }
-
-
-
-
-
 
 
 
@@ -252,7 +233,7 @@ if ! zparseopts -D -E -F -K -M -A opts - ${specs[@]}; then
 fi
 
 # If '-A' is set, set default options for additional styles:
-# aliases (-a), bright colors (-H), functions (-S).
+# aliases (-a), bright colors (-H), and functions (-S).
 if [[ ${+opts[-A]} -eq 1 ]]; then
   __styles_setopt -a -H -S
 fi
@@ -278,16 +259,12 @@ fi
 
 
 
-
-
-
 #MARK: - Select styles
 # Style groups.
 local -a foreground background effects
 set -A foreground  FG fg
 set -A background  BG bg
 set -A effects     FX fx
-
 
 # Choose the specified style arrays.
 local -a styles which
@@ -296,11 +273,10 @@ case 1 in
   $+opts[-p]) styles+=( ${(M)all_styles[@]:#[A-Z]} )  ;|
   $+opts[-e]) styles+=( ${(M)all_styles[@]:#[a-z]} )  ;|
   # -f,-b,-x: Add specified style groups.
-  $+opts[-f]) which+=($foreground[@])  ;|
-  $+opts[-b]) which+=($background[@])  ;|
-  $+opts[-x]) which+=($effects[@])     ;|
+  $+opts[-f]) which+=( ${foreground[@]} )  ;|
+  $+opts[-b]) which+=( ${background[@]} )  ;|
+  $+opts[-x]) which+=( ${effects[@]} )     ;|
 esac
-
 
 # If neither prompt (-p) nor literal (-e) escape
 # sequence group is specified, set all styles.
@@ -308,20 +284,12 @@ if [[ ${#styles} -eq 0 ]]; then
   set -A styles ${all_styles[@]}
 fi
 
-# If any of '-f', '-b', or '-x' is set,
-# restrict styles to foreground, background,
-# and text effects, respectively.
+# Options '-f', '-b', or '-x' restict which styles
+# will be set (foreground, background, and text
+# effects, respectively).
 if [[ ${#which} -gt 0 ]]; then
   set -A styles ${styles:*which}
 fi
-
-
-
-
-
-
-
-
 
 
 
@@ -332,7 +300,6 @@ case 1 in
   $+opts[-U])
     unset -m -- "${all_styles[@]}"
     unset -m -- "${all_style_functions[@]}"
-    
     # Print verbose output:
     if [[ ${+opts[-v]} -eq 1 ]]; then
       print -Pf 'Unset %s styles: %s.\n' \
@@ -341,7 +308,6 @@ case 1 in
              -- "%F{blue}ALL%f" >&2
     fi
   ;;
-  
   # If '-u' is set, only the changed styles are reset.
   $+opts[-u])
     unset -m -- "${styles[@]}"
@@ -352,10 +318,6 @@ case 1 in
     fi
   ;;
 esac
-
-
-
-
 
 
 
@@ -423,11 +385,6 @@ if [[ ${+opts[-v]} -eq 1 ]]; then
   print -Pf 'Set %s styles: %s.\n' \
          -- "%F{blue}${#styles}%f" "%B%F{blue}${(j:, :)styles:-none}%f%b" >&2
 fi
-
-
-
-
-
 
 
 
@@ -500,7 +457,6 @@ esac
 
 
 
-
 case 1 in
   #MARK: - Set additional colors
   # -H: all bright colors (-r, -R).
@@ -525,7 +481,6 @@ case 1 in
     fi
   ;|
   
-  
   # -N: fg,bg 000..255 colors (-c, -C).
   ## -c: fg[000..255] = FG[000..255]
   $+opts[-c])
@@ -548,8 +503,6 @@ case 1 in
   
   
   
-  
-  
   #MARK: - Set style functions
   # -S: all style functions (-F, -B, -X).
   ## -F: set foreground style functions (red, green, ...).
@@ -557,7 +510,6 @@ case 1 in
     # Functions: red, green, ..., Red, Green, etc.
     set -A style_functions "${(@k)fg:#(default|[^[:alpha:]]*)}"
     __styles_setfunction 'fg' "${style_functions[@]}"
-    
     # Print verbose output:
     if [[ ${+opts[-v]} -eq 1 ]]; then
       print -Pf 'Set %s style functions: %s.\n' \
@@ -573,7 +525,6 @@ case 1 in
     # Functions for 'bg': red-bg, green-bg, ..., Red-bg, Green-bg, etc.
     set -A style_functions "${(@k)^bg:#(default|[^[:alpha:]]*)}-bg"
     __styles_setfunction 'bg' "${style_functions[@]}"
-    
     # Print verbose output:
     if [[ ${+opts[-v]} -eq 1 ]]; then
       print -Pf 'Set %s style functions: %s.\n' \
@@ -589,7 +540,6 @@ case 1 in
     # Functions: [no-]bold, [no-]underline, [no-]italic, etc.
     set -A style_functions "${(@k)fx:#([^[:alpha:]]*|none|reset|normal)}"
     __styles_setfunction 'fx' "${style_functions[@]}"
-    
     # Print verbose output:
     if [[ ${+opts[-v]} -eq 1 ]]; then
       print -Pf 'Set %s style functions: %s.\n' \
@@ -600,8 +550,5 @@ case 1 in
     fi
   ;|
 esac
-
-
-
 
 return 0

@@ -14,7 +14,7 @@
 # Usage:
 # order -c
 # <#usage...#>
-emulate -LR zsh
+emulate -L zsh
 
 
 # Function options

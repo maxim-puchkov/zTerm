@@ -8,7 +8,34 @@
 
 
 
-return 1
+
+
+
+function delete-zwc() {
+  command find -H "${@:-.}" -name '*.zwc' -type f -maxdepth 1 -print -delete
+}
+function delete-zwc-old() {
+  command find -H "${@:-.}" -name '*.zwc.old' -type f -maxdepth 1 -print -delete
+}
+
+function zdot-delete-zwc() {
+  delete-zwc $ZDOTDIR
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+return 0
 
 ##  zwc  ##
 # Delete files in $ZDOTDIR/zwc.

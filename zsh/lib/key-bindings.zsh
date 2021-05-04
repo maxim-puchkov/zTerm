@@ -5,26 +5,97 @@
 #
 
 
+
+
 ###  Zsh Key Bindings  ###
 bindkey -e
-bindkey '^X^?' backward-kill-line   # command+delete
+
 
 
 
 
 #MARK: - Recently Added
-## Edit the current command line in $EDITOR
-autoload -U edit-command-line
-zle -N edit-command-line
-bindkey '^X^E' edit-command-line
+bindkey '^X^?' backward-kill-line         # command + delete
+bindkey '^[e' expand-cmd-path             #
+bindkey "^[m" copy-prev-shell-word        #
+bindkey ' ' magic-space                   #
 
-## Other
-bindkey '^[e' expand-cmd-path
-bindkey "^[m" copy-prev-shell-word  #
-bindkey ' ' magic-space
+bindkey -s '^[X' '/Users/Shared/iTerm2/bin/it2xcrun^M'
+
+autoload -U edit-command-line
+zle -N edit-command-line                  # Edit current command line in $EDITOR
+bindkey '^X^E' edit-command-line          # control+X + control+E
+
+
+
+
+
+
+
+function widg {
+  emulate -L zsh
+  setopt extendedglob cbases
+  autoload -Uz modify-current-argument
+  
+  function setarg {
+    REPLY="aklcei"
+  }
+  modify-current-argument setarg
+}
+zle -N widg
+bindkey '^X^W' widg
+
+
+## Other keys
+# bindkey "${terminfo[kcbt]}"     # shift + tab
+
+
+
+###  Functions  ###
+# Convert input to modifier key equivalents ($^~@).
+# shift=$, ctrl=^, opt=~, cmd=@
+function keyeq() {
+  echo "$@" | sed \
+    -e 's/ctrl/^/g' -e 's/opt/~/g' \
+    -e 's/cmd/@/g'  -e 's/shft/$/g' \
+    -e 's/[^@~$\^]//g'
+}
+
+# Control: ^k
+function ctrl {
+  bindkey "^$1" ${@:2}
+}
+# Meta: ^MK≈
+function meta {
+  bindkey "^M$1" ${@:2}
+}
+# Escape+: ^[k
+function esc+ {
+  bindkey "^[$1" ${@:2}
+}
+
 
 
 return 0
+
+
+
+
+
+#bindkey -N zmap emacs && bindkey -A zmap main
+#bindkey -N zsafe .safe
+
+
+#bindkey '^[l' insert-last-word
+#bindkey -s '^[N' ". ~/.new^J"
+#bindkey -s '^[.' ". ~/.new^J"
+
+
+#alias .safe='bindkey -A zsafe main'       # use safe keymap
+#alias .emacs='bindkey -A zmap main'        # use emacs keymap
+#alias keymap='bindkey -M'                    #
+#alias keymaps='bindkey -lL'
+#alias bindkeys='bindkey -L'
 
 
 
@@ -34,7 +105,6 @@ return 0
 # http://zsh.sourceforge.net/Doc/Release/Zsh-Line-Editor.html
 # http://zsh.sourceforge.net/Doc/Release/Zsh-Line-Editor.html#Zle-Builtins
 # http://zsh.sourceforge.net/Doc/Release/Zsh-Line-Editor.html#Standard-Widgets
-
 
 # Make sure that the terminal is in application mode when zle is active, since
 # only then values from $terminfo are valid
@@ -143,14 +213,6 @@ bindkey -s '\el' 'ls\n'                               # [Esc-l] - run command: l
 bindkey '^r' history-incremental-search-backward      # [Ctrl-r] - Search backward incrementally for a specified string. The string may begin with ^ to anchor the search to the beginning of the line.
 bindkey ' ' magic-space                               # [Space] - don't do history expansion
 
-
-# Edit the current command line in $EDITOR
-autoload -U edit-command-line
-zle -N edit-command-line
-bindkey '\C-x\C-e' edit-command-line
-
-# file rename magick
-bindkey "^[m" copy-prev-shell-word 
 
 # consider emacs keybindings:
 
