@@ -1,0 +1,1 @@
+/Users/mpuchkov/.zsh/etc/StartupFiles/zplug/zshrc

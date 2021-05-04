@@ -1,9 +1,0 @@
-same-file -ef
-numerically-equal -eq
-numerically-greater-than-or-equal -ge
-numerically-greater-than -gt
-numerically-less-than-or-equal -le 
-numerically-less-than -lt
-numerically-not-equal -ne
-newer-than -nt
-older-than -ot

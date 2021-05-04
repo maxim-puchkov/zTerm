@@ -1,0 +1,109 @@
+#!/bin/zsh
+
+#  show
+#  Z-Function (77)
+#
+#  Created by Maxim Puchkov on 2020-06-30.
+#  Copyright © 2020 Maxim Puchkov. All rights reserved.
+
+
+# show - describe a shell command or parameter
+#
+# Usage:
+# show [ name ... ]
+#
+# Examples:
+#   1. `show pax'    -->   "command /bin/pax"
+#   2. `show HOME'   -->   scalar-export-special HOME[12] = "/Users/admin"
+emulate -LR zsh
+autoload -Uz error synopsis
+
+
+local -a __{zsh_groups,result,matches}__
+local -i __length__
+local    __{{,type,group}name,desc,match,value}__
+__zsh_groups__=(
+  aliases               builtins              commands
+  dis_aliases           dis_builtins          dis_functions
+  dis_functions_source  dis_galiases          dis_saliases
+  functions             functions_source      galiases
+  history               jobdirs               jobstates
+  jobtexts              modules               nameddirs
+  options               parameters            saliases
+  userdirs              usergroups
+)
+
+if [[ $# -eq 0 ]]; then
+  error -1 -m 'nothing to show'
+fi
+
+
+
+
+# 1. For each 'name'
+for __name__; do
+  unset __result__
+  
+  
+  
+  # 2. For each 'groupname' (aliases, functions, commands, etc.)
+  for __groupname__ in ${__zsh_groups__[@]}; do
+    # Find a 'match' in this group for the specified 'name'.
+    # If the name is a glob pattern, there may be many 'matches'.
+    unset __{typename,desc,value,matches}__
+    set -A __matches__  ${${(P)__groupname__}[(I)${~__name__}]}
+    __typename__="${__groupname__}"
+    
+    
+    # 3. For every 'match'
+    for __match__ in ${__matches__[@]}; do
+      # Skip empty value
+      __value__="${${(P)__groupname__}[${__match__}]}"
+    
+      # Format value and type desc
+      case "$__groupname__" in
+        # Format parameter type
+        ('parameters')
+          # Remove matched name because it is
+          # in the header of 'print-var'
+          __value__="$(print-var $__name__)"
+        ;;
+        # Format function
+        ('functions')
+          local __line__=$'\e[2m'${(l:$COLUMNS::-:)}$'\e[22m'
+#          __value__=${__line__}
+          #__value__="${line}"$'\n'"$(zfn show $__name__)"$'\n'"${line}"
+        ;;
+        # Command synopsis
+        ('commands')
+          local __synopsis__=$(synopsis "${__value__:t}" 2>/dev/null)
+          if [[ -n "$__synopsis__" ]]; then
+            __value__+=$'\n'"${__synopsis__}"
+          fi
+        ;;
+      esac ##case groupname
+      
+      # Add description and value to result for this 'name'
+      __desc__="%B>%b %U%F{5}${FX[italic]}${__typename__}${FX[no-italic]}%u %B${__match__}%f%b:"
+      __result__+=("${(%)__desc__}"$'\n'"${__value__}")
+    done ##(3)for value
+    
+    
+  done ##(2)for groupname
+  
+  
+  
+  # Print result or error
+  if [[ ${#__result__} -gt 0 ]]; then
+    print -nr -C1 -- ${__result__[@]}
+    [[ -n "$2" ]] && printf '\n'
+  else
+    error -0 -m '${__name__} is not found'
+  fi
+  shift
+done ##(1)for name
+
+
+
+
+return 0

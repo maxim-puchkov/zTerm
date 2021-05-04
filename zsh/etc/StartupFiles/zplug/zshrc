@@ -1,0 +1,162 @@
+#
+#
+#
+#
+#
+
+
+###  Powerlevel10k  ###
+# Enable instant prompt. Should stay close to the top of ~/.zsh/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+# To customize prompt, run `p10k configure` or edit '$ZDOTDIR/.p10k.zsh'.
+[[ ! -f $ZDOTDIR/.p10k.zsh ]] || source $ZDOTDIR/.p10k.zsh
+
+
+
+
+###  Paths  ###
+path=(
+  $path[@]
+  "$HOME/bin"
+)
+fpath=(
+  "/usr/share/zsh/$ZSH_VERSION/functions"
+  "$ZDOTDIR/functions"
+  "$ZDOTDIR/completions"
+)
+
+
+
+
+###  zplug  ###
+ZPLUG_HOME="$HOME/.local/share/zplug"
+ZPLUG_CACHE_DIR="$HOME/.cache/zplug"
+source "$ZPLUG_HOME/init.zsh" || return
+
+zplug "lib/cli",        from:oh-my-zsh
+zplug "lib/completion", from:oh-my-zsh
+zplug "$ZDOTDIR/lib",   from:local
+zplug "plugins/git",    from:oh-my-zsh
+zplug "plugins/osx",    from:oh-my-zsh
+zplug 'zsh-users/zsh-autosuggestions'
+zplug 'zsh-users/zsh-syntax-highlighting', defer:2
+zplug "romkatv/powerlevel10k", as:theme, depth:1
+if ! zplug check; then
+  zplug install &!
+fi
+zplug load
+
+
+
+
+###  Options  ###
+setopt interactivecomments
+setopt long_list_jobs
+setopt extended_glob                    # Glob 
+setopt glob_assign
+setopt hist_find_no_dups                # History
+setopt hist_ignore_all_dups
+setopt hist_reduce_blanks
+setopt hist_save_no_dups
+setopt hist_expire_dups_first
+setopt hist_ignore_dups
+setopt hist_ignore_space
+setopt hist_verify
+setopt hist_subst_pattern
+setopt share_history
+setopt extended_history
+setopt auto_cd                          # Change directories
+setopt auto_pushd
+setopt pushd_ignore_dups
+setopt pushd_minus
+
+
+
+
+###  Parameters  ###
+# History
+HISTFILE="$ZDOTDIR/.zsh_history"
+HISTSIZE=50000
+SAVEHIST=50000
+
+# ls
+if [[ "$(tput colors)" -gt 8 ]]; then
+  export LSCOLORS="GxFxcxdxbxegedabagacah"
+else
+  export LSCOLORS="Exfxcxdxbxegedabagacad"
+fi
+export LS_COLWIDTHS="8:3:3:0:6:8:4:0"
+
+# Other parameters
+ZSH_CUSTOM="$ZDOTDIR/lib"
+
+
+
+
+###  Autoload Functions  ###
+# compinit: completion system.
+autoload -Uz compinit
+compinit -i -d "$ZDOTDIR/.zcompdump"
+
+# run-help: zsh builtin help.
+unalias -m run-help
+typeset HELPDIR="/usr/share/zsh/$ZSH_VERSION/help"
+autoload -Uz run-help
+
+
+# styles: colors and text effects.
+autoload -Uz styles && styles -UA
+
+# zcompare: compare and compile zsh files if needed.
+autoload -Uz zcompare
+zcompare -U -z -R $ZDOTDIR/zwc/zshrc.zwc $ZDOTDIR/.zshrc
+zcompare -U -z -R $ZDOTDIR/zwc/zprofile.zwc $ZDOTDIR/.zprofile
+zcompare -U -z -M $ZDOTDIR/zwc/functions.zwc $ZDOTDIR/functions/*
+zcompare -U -z -M $ZDOTDIR/zwc/completions.zwc $ZDOTDIR/completions/*
+autoload -w $ZDOTDIR/zwc/*(N-.)
+
+
+true 
+
+
+
+function term {
+  local -A opts
+  local -a specs=(
+    '-version'    'v=-version'
+    '-program'    'p=-program'
+    '-session-id' 'i=-session-id'
+  )
+  zparseopts -D -E -M -A opts - $specs[@] || return 2
+  if [[ ${(v)#opts} -eq 0 ]]; then
+    print -- "$TERM"
+  fi
+  if [[ ${+opts[--program]} -eq 1 ]]; then
+    print -- "$TERM_PROGRAM"
+  fi
+  if [[ ${+opts[--session-id]} -eq 1 ]]; then
+    print -- "$TERM_SESSION_ID"
+  fi
+  if [[ ${+opts[--version]} -eq 1 ]]; then
+    print -- "$TERM_PROGRAM_VERSION"
+  fi
+}
+
+
+function group {
+  local REPLY
+  if [[ "$1" =~ ^[0-9]+ ]]; then
+    REPLY="${(k)usergroups[(R)$1]}"
+  else
+    REPLY="${usergroups[$1]}"
+  fi
+  if [[ -z "$REPLY" ]]; then
+    error -1 -m 'no such user group: ${1}'
+  fi
+  printf '%s: %s\n' "$1" "$REPLY"
+}
