@@ -6,6 +6,8 @@
 #  Created by mpuchkov/506:20 on April 13, 2021.
 #  ~Projects/zTerm2/zsh/functions/zdot
 
+command open -a "Visual Studio Code" $ZDOTDIR
+
 #
 ## zdot
 #function zdot {

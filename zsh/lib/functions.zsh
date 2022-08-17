@@ -25,9 +25,9 @@ function x{,trace} {
 
 # FUNCTION
 #   ti [-n <number>] <commands>
-function ti() {
+function ti {
   local -A opts=( -n 10 )
-  zparseopts -D -F -K -A opts - n:
+  builtin zparseopts -D -F -K -A opts - n:
   print -P "Command: %F{3}${(z)argv}%f"
   print -P "Repeat: %F{3}${opts[-n]}%f"
   eval "time ( ${(z)argv}
@@ -52,8 +52,11 @@ function statset() {
     error -1 -m 'cannot read file: ${file}.'
   fi
   typeset -g -A stats
-  stats=( 'name' "${file:t}"  'file' "${file:P}"
-    $(command stat -s $file | command sed -E -e 's/st_([a-z]*)=([0-9]*)/\1 \2/g') )
+  stats=(
+    'name' "${file:t}"  'file' "${file:P}"
+    $(command stat -s $file \
+    | command sed -E -e 's/st_([a-z]*)=([0-9]*)/\1 \2/g')
+  )
 }
 
 
@@ -88,7 +91,7 @@ function pwdl() {
   print-link "$WD"
 }
 
-
+alias wdl='pwdl'
 
 
 
@@ -124,7 +127,7 @@ function print-link() {
 
 # Read specified line from file.
 function read-line {
-  sed -n -e "/${2}/p" $1
+  command sed -n -e "/${2}/p" $1
 }
 
 # Get 
@@ -180,6 +183,14 @@ function announce_short {
 
 
 
+
+
+
+
+
+
+
+
 ###  Other Functions  ###
 # Generate bundle identifier com.organization.
 function bundle-id() {
@@ -203,19 +214,20 @@ function shellsc() {
 }
 
 
-#???: path
-function path {
-  print ${1:P}
-#  local arg=$1
-#  if [[ $PWD/$arg ]]
-}
-
 # MISC FUNCTION
 #   args - print arguments and argument count.
 function args {
   emulate -L zsh
   trap 'printf "%s [count: %i]\n" "${(j:, :)argv:-(no arguments)}" $#' EXIT
 }
+
+
+
+
+
+
+
+## File functions ##
 
 # FUNCTION
 #   files
@@ -236,6 +248,15 @@ function files {
   typeset -p 1 files
 }
 
+# pbfile - Paste the clipboard into a new file (arg1).
+function pbfile {
+  typeset file="${1:-Pasted-file.txt}"
+  if [[ -e $file ]]; then 
+    error 'File already exists: ${file}'
+  fi
+  command pbpaste > $file
+  printf "File created: %s\n" "$file"
+}
 
 
 
@@ -320,14 +341,53 @@ function termsize {
   printf "$fstr" $COLUMNS $LINES
 }
 
+function term {
+  local -A opts
+  local -a specs=(
+    '-version'    'v=-version'
+    '-program'    'p=-program'
+    '-session-id' 'i=-session-id'
+  )
+  zparseopts -D -E -M -A opts - $specs[@] || return 2
+  if [[ ${(v)#opts} -eq 0 ]]; then
+    print -- "$TERM"
+  fi
+  if [[ ${+opts[--program]} -eq 1 ]]; then
+    print -- "$TERM_PROGRAM"
+  fi
+  if [[ ${+opts[--version]} -eq 1 ]]; then
+    print -- "$TERM_PROGRAM_VERSION"
+  fi
+  if [[ ${+opts[--session-id]} -eq 1 ]]; then
+    print -- "$TERM_SESSION_ID"
+  fi
+}
+
+function group {
+  local REPLY
+  if [[ "$1" =~ ^[0-9]+ ]]; then
+    REPLY="${(k)usergroups[(R)$1]}"
+  else
+    REPLY="${usergroups[$1]}"
+  fi
+  if [[ -z "$REPLY" ]]; then
+    error -1 -m 'no such user group: ${1}'
+  fi
+  printf '%s: %s\n' "$1" "$REPLY"
+}
+
+
+
+
+
 # statt - stat time
 function statt {
   local statfmt='File:%t%SN%nAccess:%t%Sa%nModify:%t%Sm%nChange:%t%Sc%nBirth:%t%SB'
   stat -f "$statfmt" "$@"
 }
 
-# bytes - generate random bytes.
-function bytes {
+# random_bytes - generate random bytes.
+function random-bytes {
   local -i count=${1:-1}
   command dd \
     bs=1 count=$count \

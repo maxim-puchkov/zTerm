@@ -10,10 +10,7 @@
 #autoload -Uz error
 
 
-# NAME
-#   tell
-#
-# SYNOPSIS
+# FUNCTION
 #   tell <commands>
 #
 # EXAMPLES
@@ -25,10 +22,10 @@ function tell {
 }
 
 # FUNCTION
-#   <#name#> <#<args>#>
+#   close <app>
 #
 # DESCRIPTION
-#   <#Description...#>
+#   Close an opened application.
 function close {
   local what="application \"${1}\""
   command osascript -s eh -e "tell ${what} to quit"
@@ -40,7 +37,10 @@ function close {
 ## Xcode ##
 
 # FUNCTION
-#   xcode-source: Source the document which is currently opened in Xcode.
+#   xcode-source
+#
+# DESCRIPTION
+#   Source the document which is currently opened in Xcode.
 function xcode-source {
   local xcode_document="$(xcode-document)"
   if [[ $? -eq 0 ]] \
@@ -52,7 +52,10 @@ function xcode-source {
 }
 
 # FUNCTION
-#   xcode-document: Return path of the document opened in Xcode.
+#   xcode-document
+#
+# DESCRIPTION
+#   Return path of the document opened in Xcode.
 function xcode-document {
   printf '%s\n' "$(tell 'script "Xcode"' 'return get_opened_document_path()')"
 }
@@ -63,6 +66,9 @@ function xcode-document {
 ## System Events ##
 # FUNCTION
 #   processes
+#
+# DESCRIPTION
+#   List processes.
 function processes {
   typeset -A opts
   zparseopts -D -F -M -A opts - '-id' 'i=-id'
@@ -79,6 +85,7 @@ function processes {
 alias psid='processes --id'
 
 
+# List Applications
 function psapps {
   command ps -Ahw -o 'command' \
   | command grep -e '^/Applications' \
@@ -92,18 +99,18 @@ function psapps {
 
 ## Google Chrome ##
 # Open new window with url.
-function chrome_make_new_window() {
+function chrome_make_new_window {
   local url="${*// /+}"
   tell 'script "Google Chrome"' 'make_new_window("normal", "'"$url"'")'
 }
 
 # Move front tab in a normal window to a new incognito window.
-function chrome_move_tab_to_incognito() {
+function chrome_move_tab_to_incognito {
   tell 'script "Google Chrome"' 'move_tab_to_incognito()'
 }
 
 # Close chrome windows if more than 'max_windows' windows are opened.
-function chrome_limit_windows() {
+function chrome_limit_windows {
   local max_windows="${*:-5}"
   tell 'script "Google Chrome"' 'limit_windows('"$max_windows"')'
 }
@@ -116,25 +123,43 @@ alias tell-xcode="tell 'script \"Xcode\"'"
 alias tell-chrome="tell 'script \"Google Chrome\"'"
 alias tell-sysevents="tell 'script \"System Events\"'"
 
-alias xcs='xcode-source 2>/dev/null'
-alias xfd='xcode-document'  # xcode file directory
+alias xcs='xcode-source'
+alias xcsq='xcode-source 2>/dev/null'
+alias xfd='echo "${$(xcode-document):h}"' # Xcode file directory
 
 
 
-function add-alias {
-  local name value
-  vared -p "alias name: "  name
-  vared -p "alias value: " value
-  command sed -E -n -e "/Recently Added/{p;i\\
-alias ${name}=${(qq)value}
-;}" < ~/f
-}
 
-function clear-recent-apps() {
-  osascript <<<'
+# FUNCTION
+#   clear-recent-apps
+#
+# DESCRIPTION
+#   Clear recent applications from the Dock.
+#
+# USES
+#   ~/Library/Script Libraries/System Events.scptd
+function clear-recent-apps {
+  command osascript <<<'
 tell script "System Events"
   toggle_dock_recents()
   toggle_dock_recents()
 end tell
 '
 }
+
+
+
+
+
+
+
+
+
+## Finder ##
+
+function pfd {
+  tell 'app "Finder"' 'return POSIX path of (target of front window as alias)'
+}
+
+alias cfd='cd $(pfd)'
+alias ofd='open $(pfd)'

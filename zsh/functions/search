@@ -13,7 +13,9 @@
 #
 # Usage:
 # search <#...#>
-emulate -LR zsh
+emulate -L zsh
+autoload -Uz error
+
 typeset PROG="${0##*/}"
 # Function options.
 # @define     option
@@ -23,17 +25,21 @@ typeset PROG="${0##*/}"
 # @opt -g,--google: search on Google.
 # @opt -i,--images: search images on Google.
 # @opt -d,--duckduckgo: search on DuckDuckGo.
-# @opt -t,--thesaurus: search synonyms on Thesaurus.com.
-# @opt -d,--dictionary: search definitions on Dictionary.com.
+# @opt -T,--thesaurus: search synonyms on Thesaurus.com.
+# @opt -D,--dictionary: search definitions on Dictionary.com.
+#:: opt -t
+#:: opt -y
 local -A opts
 local -a specs=(
   -google       'g=-google'
   -images       'i=-images'
   -duckduckgo   'd=-duckduckgo'
-  -thesaurus    't=-thesaurus'
   -dictionary   'D=-dictionary'
+  -thesaurus    'T=-thesaurus'
+  -translate    't=-translate'
+  -youtube      'y=-youtube'
 )
-if ! zparseopts -D -E -F -K -M -A opts - ${specs[@]} \
+if ! zparseopts -D -F -K -M -A opts - ${specs[@]} \
    2> >(error -I -d: -f3-); then
   return 1
 fi
@@ -50,17 +56,21 @@ if [[ -z "$query" ]]; then
   error -1 -m 'search query is not specified'
 fi
 
-
-# Search urls.
+# URLs to open.
 local -a urls=()
 case 1 in
   $+opts[--google]) urls+="https://www.google.com/search?q=${query}"          ;|
   $+opts[--images]) urls+="https://www.google.com/search?q=${query}&tbm=isch" ;|
-  $+opts[--duck])   urls+="https://duckduckgo.com/?q=${query}&t=osx"          ;|
-  $+opts[--thesaurus])  urls+="https://www.thesaurus.com/browse/${query}"     ;|
+  $+opts[--duckduckgo]) urls+="https://duckduckgo.com/?q=${query}&t=osx"      ;|
   $+opts[--dictionary]) urls+="https://www.dictionary.com/browse/${query}"    ;|
+  $+opts[--thesaurus])  urls+="https://www.thesaurus.com/browse/${query}"     ;|
+  $+opts[--translate])
+    urls+="https://translate.google.com/?sl=en&tl=ru&text=${query}&op=translate" ;|
+  $+opts[--youtube])
+    urls+="https://www.youtube.com/results?search_query=${query}"             ;|
+    
 esac
 
 # Open all urls in browser.
-/usr/bin/open -- "${urls[@]}"
+command open -- "${urls[@]}"
 return $?

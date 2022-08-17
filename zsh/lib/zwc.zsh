@@ -35,7 +35,7 @@ function zdot-delete-zwc() {
 
 
 
-return 0
+# return 0
 
 ##  zwc  ##
 # Delete files in $ZDOTDIR/zwc.
