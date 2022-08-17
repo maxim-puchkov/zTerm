@@ -20,11 +20,10 @@ Functions which extend shell builtins.
 
 ## Display
 Functions for formatting and displaying text.
-* `spectrum` - set FG, BG, FX and fg, bg, fx arrays.
+* `styles` - set FG, BG, FX and fg, bg, fx arrays which can be used for styling text
 ```sh
-  spectrum -p  # set arrays FG,BG,FX
-  spectrum -e  # set arrays fg,bg,fx
-  spectrum -u -cdnz -FBX  # (re)set arrays FG,BG,FX,fg,bg,fx, style functions, and style aliases
+  styles -UA # set all styles
+  echo "$bg[red]Hello, world$bg[default]"
 ```
 * `2hex` - print ASCII input as hex.
 * `order` - print characters or words in alphabetical order.
@@ -49,26 +48,3 @@ $ show ls
 ## Util
 * `mvtr` - move files to trash.
 * `youtube-hd` - download HD youtube videos and audio and merge it into `.mkv` format. 
-
-
-### zterm Functions (old)
-Functions which manage other functions.
-* `zfd` - list functions in autoload functions' directory.
-* `zfn` - create, edit, and autocomplete for zsh functions.
-```sh
-  # Add zfn-tags to function source.
-  function foo {
-    # @define option
-    # @option -x
-    # @option -y
-    # 
-    # @define command
-    # @command bar
-    function foo_bar() { ... }
-    ...
-  }
-```
-```sh
-  # Create completion function for foo's options '-x', '-y' and command 'foo bar'.
-  zfn -w makecomp foo 
-```
