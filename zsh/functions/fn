@@ -112,12 +112,14 @@ __fn__where() {
 # +description  Parse function source file to generate completion tags.
 __fn__tags() {
   local function_name="$1"
+  autoload +X $function_name
   local function_file="${functions_source[$function_name]}"
   if [[ -z "$function_file" ]]; then
     error -1 -m 'function file for ${function_name} not found'
   fi
-  local awk_program=~/AWK/tags.awk
-  command awk -f "$HOME/AWK/tags.awk" -v v_prefix="__${PROG}__" "$function_file"
+  # local awk_program="$_ZFN_AWK_DIR/tags.awk"
+  local awk_program="$_ZFN_AWK_DIR/${0##*_}.awk"
+  command awk -f $awk_program -v v_prefix="__${PROG}__" "$function_file"
   #local awk_program="$_ZFN_AWK_DIR/${0#*_}.awk"
 #  /usr/bin/awk "$@"                   \
 #      -f "$awk_program"               \
@@ -130,9 +132,9 @@ __fn__tags() {
 # +description  Parse completion tags to generate completion function.
 __fn__complete() {
   local function_name="$1"
-  local awk_program="$_ZFN_AWK_DIR/${0#*_}.awk"
-  $PROG tags "$function_name" |
-  command awk "$@" -f "$awk_program"
+  # local awk_program="$_ZFN_AWK_DIR/complete.awk"
+  local awk_program="$_ZFN_AWK_DIR/${0##*_}.awk"
+  $PROG tags "$function_name" | command awk -f "$awk_program"
 }
 
 

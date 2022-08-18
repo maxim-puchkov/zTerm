@@ -23,6 +23,7 @@ fi
 path=(
   $path[@]
   "$HOME/bin"
+  "$ZDOTDIR/bin"
 )
 fpath=(
   "/usr/share/zsh/$ZSH_VERSION/functions"

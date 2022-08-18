@@ -7,4 +7,5 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-builtin eval "$(autoload -Uz zfn && zfn complete error)"
+#builtin eval "$(autoload -Uz fn && fn complete error)"
+

@@ -7,5 +7,5 @@
 #  Copyright © 2020 Maxim Puchkov. All rights reserved.
 
 
-# builtin eval "$(autoload -Uz zfn && zfn complete mvtr)"
+# builtin eval "$(autoload -Uz fn && autoload +X mvtr && fn complete mvtr)"
 _files 

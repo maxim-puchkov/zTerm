@@ -258,6 +258,13 @@ function pbfile {
   printf "File created: %s\n" "$file"
 }
 
+# sizeof - Print size of file in human readable form.
+function sizeof {
+  for f; do
+    [[ -f $f ]] || error -1 'not a regular file: ${f}'
+    command ls -lah $f | awk '{print $5}'
+  done
+}
 
 
 
@@ -386,7 +393,7 @@ function statt {
   stat -f "$statfmt" "$@"
 }
 
-# random_bytes - generate random bytes.
+# random-bytes - generate random bytes.
 function random-bytes {
   local -i count=${1:-1}
   command dd \
