@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.9
 """Display file in binary.
 
 Syntax: <cmdname> filename"""
