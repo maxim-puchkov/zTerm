@@ -23,7 +23,10 @@ Functions for formatting and displaying text.
 * `styles` - set FG, BG, FX and fg, bg, fx arrays which can be used for styling text
 ```sh
   styles -UA # set all styles
-  echo "$bg[red]Hello, world$bg[default]"
+  echo "$bg[red]Hello, world$bg[default]" # use parameters directly, or use functions:
+  red "Hello"      # red color (fg)
+  Green-bg "World" # bright green background color (bg)
+  blink "..."      # blinking text (fx)
 ```
 * `2hex` - print ASCII input as hex.
 * `order` - print characters or words in alphabetical order.

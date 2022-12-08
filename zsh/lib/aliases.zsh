@@ -7,10 +7,20 @@
 #  Created by mpuchkov/506:20 on March 27, 2021.
 
 
-#MARK: - Recently Added
-alias gloc='open -a "Google Chrome" "http://localhost:3000/solana"'
-alias floc='open -a "Firefox-96" "http://localhost:3000/solana"'
-alias pb='open -a Safari https://www.chess.com/puzzles/battle'
+# TODOs:
+# - Remove MARKs (Xcode Syntax)
+
+
+
+# New aliases
+alias is='test'         # added by `add-alias` on 2022-08-15 at 21:20:12
+alias isset='is -v'     # added by `add-alias` on 2022-08-29 at 21:41:00
+
+
+
+
+
+
 
 
 
@@ -38,36 +48,6 @@ export BALL0="4xVMddJBcERGqVHp6VjBx45tWTp9f1pHVY8espXXbcwd"
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #MARK: - Solana
 alias so='solana'
 alias spl='spl-token'
@@ -75,22 +55,41 @@ alias spl='spl-token'
 alias sp='solana program'
 alias spd='solana program deploy'
 
+alias gloc='open -a "Google Chrome" "http://localhost:3000/solana"'
+alias floc='open -a "Firefox" "http://localhost:3000/solana"'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #MARK: - Work
 # Mainframe
 export MAINFRAME=~/mainframe
-alias mf='cd $MAINFRAME'
+alias {mf,mainframe}='cd $MAINFRAME'
 alias sg='cd $MAINFRAME/code/shotgun-app'
-alias times='cd $MAINFRAME/code/timesheet'
-alias times2='cd $MAINFRAME/code/timesheet2'
+alias times='cd $MAINFRAME/code/timesheet'   # old project with broken database
+alias times2='cd $MAINFRAME/code/timesheet2' # current project with correct database
 alias venv='source ./venv/bin/activate'
 alias django='python3 manage.py'
 
-# Projects
+
+
+# My projects
+alias {mycode,coded,proj}='cd ~/private/code'     # My code dir 
 alias wd='cd -P "$WD"'
-alias proj='cd ~/private/code'
-alias {mycode,coded}='cd ~/private/code'
 alias sniper='cd ~/private/code/sniper'
 alias sdl='cd ~/private/code/solanadreamland'
 
@@ -140,8 +139,8 @@ alias zshenv='open -a $CODE_EDITOR $HOME/.zshenv'
 alias zshrc='open -a $CODE_EDITOR $ZDOTDIR/.zshrc'
 alias zprofile='open -a $CODE_EDITOR $ZDOTDIR/.zprofile'
 
-alias zalias='open $ZDOTDIR/lib/aliases.zsh'
-alias {zhashdir,zdirs}='open $ZDOTDIR/lib/directories.zsh'
+alias zalias='open -a $CODE_EDITOR $ZDOTDIR/lib/aliases.zsh'
+alias {zhashdir,zdirs}='open -a $CODE_EDITOR $ZDOTDIR/lib/directories.zsh'
 
 alias zlib='open -a $CODE_EDITOR $ZDOTDIR/lib/*'
 alias zlibfuncs='open $ZDOTDIR/lib/functions.zsh'
@@ -149,6 +148,7 @@ alias zshfuncs='open -a $CODE_EDITOR $ZDOTDIR/{functions,completions}/*'
 
 alias {zshxc,xczsh}='open -a $CODE_EDITOR ~/iCloud/Developer/Projects/Zsh/Zsh.xcodeproj'
 
+alias zcode='open -a $CODE_EDITOR $ZDOTDIR'
 
 
 
@@ -215,6 +215,7 @@ alias gp='git push'
 alias gl='git pull'
 alias gb='git branch'
 alias gq='git checkout master && git pull remote master && git push'
+alias gf='git fetch'
 
 # Installed command 'diff'
 alias diff='/usr/local/bin/diff --color=always --suppress-common-lines -s -y -P'  #
@@ -233,7 +234,7 @@ alias {kall,killl}='command killall'
 
 
 # Command 'ls'
-alias ls='command ls -BFG -h -%'             #
+alias ls='command ls -FG -h -%'              #
 alias lsA='ls -A -H'                         # All (except ./..; follow links)
 alias lsa='ls -a -H'                         # All (follow links)
 alias l='ls -l'                      # Long  #
@@ -327,8 +328,9 @@ alias str='command strings'                           #
 
 # Command 'stat'
 alias statz='command stat -f "%Z"'                    #
-alias mod='command stat -f "%p"'                      #
+alias mode='command stat -f "%p"'                     #
 alias inode='command stat -f "%i"'                    #
+alias flags='command stat -f "%f"'                    #
 
 # Command 'sudo'
 alias sudol='/usr/bin/sudo --login'                   #
@@ -414,6 +416,7 @@ alias {pc2,print2}='print -nr -aC2 --'      # Print in 2 columns
 # Builtin 'printf'
 alias {beep,bell}='builtin printf "\x07"'   # Bell
 alias printq='() { printf "%q\n" "$*"; }'   # Shell quote
+alias pf='printf'
 
 # Builtin 'popd'
 alias po='builtin popd'                     #
@@ -525,10 +528,12 @@ alias -g @dev='-e devnet -k ~/.config/solana/devnet.json'
 
 
 # Misc
+alias pb='open -a Safari https://www.chess.com/puzzles/battle'
 
 alias docs='open ~/Documents'
 alias goopter-dev='ssh -p 10022 -i ~/.ssh/key/goopter-maxim.pem maxim@dev.goopter.com'
 
+alias p2='command python2'
 alias p3='command python3'
 
 alias pxd='echo "${$(xcode-document):h}"'   # print xcode file directory
@@ -640,9 +645,14 @@ function soex() {
 
 alias corrupt='flip-bit.py'
 
-alias bits='stat -f "%z"'
+alias bytes='stat -f "%z"'
 function filesize {
-    printf "%s: %i bits\n" "$1" $(stat -f "%z" $1)
+    # printf "%s: %i bytes\n" "$1" $(stat -f "%z" $1)
+    command stat -f '%N: %z bytes' $1
+}
+function bits {
+    [[ -e $1 ]] || error -1 'file does not exist: ${1}'
+    printf '%i\n' $(( `bytes $1` * 8 ))
 }
 
 alias decompile='objdump -d' # *disassemble
@@ -670,8 +680,22 @@ function test-dd {
 
 
 ## Recently Added Aliases ##
+alias sdo='sudo'    # added by `add-alias` on 2022-12-08 at 14:33:08
+alias touchp='pbfile'    # added by `add-alias` on 2022-12-06 at 16:12:14
+alias gif='app licecap'    # added by `add-alias` on 2022-10-17 at 18:12:18
+alias dotar='tar xvzf'    # added by `add-alias` on 2022-10-15 at 00:21:23
+alias untar='tar xvzf'    # added by `add-alias` on 2022-10-02 at 20:37:18
+alias pyg='pygmentize'    # added by `add-alias` on 2022-09-06 at 15:01:06
+alias m='man'    # added by `add-alias` on 2022-08-31 at 17:26:56
+alias xxp='xxd -p'    # added by `add-alias` on 2022-08-30 at 20:41:14
+alias utmpx='cat /var/run/utmpx'    # added by `add-alias` on 2022-08-30 at 20:40:51
+alias rand='python3 -c "import random; print(random.randint(1, 100))"'    # added by `add-alias` on 2022-08-29 at 21:29:11
+alias mksh='mkzsh -sx'    # added by `add-alias` on 2022-08-27 at 17:57:28
+alias pr='open -a Safari "https://www.chess.com/puzzles/rush"'    # added by `add-alias` on 2022-08-27 at 10:53:29
+alias hello='printf "Hello, World!\n"'    # added by `add-alias` on 2022-08-27 at 10:44:10
+alias python='python3'    # added by `add-alias` on 2022-08-26 at 12:41:28
 alias cra='clear-recent-apps'    # added by add-alias on 2022-08-16 at 12:22:59
-alias is='test'    # added by add-alias on 2022-08-15 at 21:20:12
+
 
 # Add alias to the 'zalias' file.
 function add-alias {
@@ -682,6 +706,13 @@ function add-alias {
   local FILE=$ZDOTDIR/lib/aliases.zsh
   local TMP=/tmp/aliases.zsh
   rsync -a $FILE $TMP
-  awk '//; /^## Recently Added Aliases ##/ {print "alias '$name'='${(qq)value}'    # '$comment'"}' $TMP > $FILE
+  local quoted_value=${(qq)value//\"/\\\"}
+  awk '//; /^## Recently Added Aliases ##/ {print "alias '$name'='${quoted_value}'    # '$comment'"}' $TMP > $FILE
+  if [[ $? -ne 0 ]]; then
+    printf 'Error adding alias. Restoring file: %s\n' "$FILE"
+    rsync -a $TMP $FILE
+  else
+    printf 'Alias added successfully: %s=%s\n' "$name" "$quoted_value"
+  fi
   source $FILE
 }

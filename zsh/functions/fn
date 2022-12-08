@@ -57,6 +57,7 @@ __fn__commands() {
 # fn open
 __fn__open() {
   [[ ${+functions[$1]} -eq 1 ]] || return 1
+  autoload +X "$1"
   command open -a ${CODE_EDITOR:-Xcode} -- "${functions_source[$1]}"
 }
 

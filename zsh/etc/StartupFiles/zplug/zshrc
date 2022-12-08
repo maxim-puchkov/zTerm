@@ -80,7 +80,7 @@ setopt pushd_minus
 
 
 ###  Parameters  ###
-# History
+# Zsh history
 HISTFILE="$ZDOTDIR/.zsh_history"
 HISTSIZE=250000
 SAVEHIST=250000
@@ -93,14 +93,16 @@ else
 fi
 export LS_COLWIDTHS="8:3:3:0:6:8:4:0"
 
-# Other parameters
-ZSH_CUSTOM="$ZDOTDIR/lib"
-export CODE_EDITOR="Visual Studio Code"
+# Homebrew
+export HOMEBREW_EVAL_ALL=1
 
 # Python
 export PYTHONDONTWRITEBYTECODE=1
 export PYTHONSTARTUP=~/.pythonstartup
 
+# Other parameters
+ZSH_CUSTOM="$ZDOTDIR/lib"
+export CODE_EDITOR="Visual Studio Code"
 
 
 
@@ -180,3 +182,81 @@ function decrypt {
   typeset file="$1"
   openssl $OPENSSL_CIPHER -d $OPENSSL_OPTIONS -in $file -out "${file:r}.new"
 }
+
+
+# copymode <src> [<dest> ...] - copy file mode from `src` to `dest`
+function copymode {
+  local src="$1"
+  shift
+  local mode=`command stat -f '%Lp' $src`
+  local dest
+  for dest; do
+    command chmod $mode $dest && printf 'Changed mode of %s to %i\n' "$dest" $mode || error -1 -m 'failed to change mode of ${dest}'
+  done
+}
+
+# isascii <file ...> - check if `file` is ASCII or Binary
+function isascii {
+  local encoding="ascii"
+  local f
+  for f; do
+    [[ -e $f  ]] || error -1 -m 'file does not exist: ${f}'
+    [[ ! -d $f ]] || error -1 -m '${f} is a directory'
+    printf '%s: ' "$f"
+    if iconv --from-code=$encoding --to-code=$encoding "$f" &>/dev/null; then
+      echo "ascii"
+    else
+      echo "binary"
+    fi
+  done
+}
+
+# onlyascii <file> - print only ASCII characters from a `file`
+function onlyascii {
+  local encoding="ascii"
+  iconv -f $encoding -t $encoding -c $1
+}
+
+# cmdlog <command> - print logs for `command`
+function cmdlog {
+  local cmd_name="$1"
+  command log show --predicate "process == '${cmd_name}'"
+}
+
+
+
+function isstdin {
+  [[ ! -t 0 || -p /dev/stdin ]]
+}
+
+function setstdin {
+  if isstdin; then
+    set -- "${(@f)$(<&0)}"
+  else
+    error -1 -m 'no input'
+  fi
+}
+
+
+# percent <num> <total> - calculate percentage of the given number in total.
+function percent {
+  typeset -F result num total
+  let num="$1"
+  let total="$2"
+  let result="$num / $total * 100"
+  printf '%.2f%%\n' $result
+}
+
+
+function lorem {
+  typeset outfile=$1
+  typeset loremfile=/Users/Shared/Files/lorem.txt
+  command cp $loremfile $outfile
+}
+
+
+
+
+
+
+
