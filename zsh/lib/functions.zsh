@@ -388,10 +388,11 @@ function group {
 
 
 # statt - stat time
-function statt {
+function {statt,filetime} {
   local statfmt='File:%t%SN%nAccess:%t%Sa%nModify:%t%Sm%nChange:%t%Sc%nBirth:%t%SB'
   stat -f "$statfmt" "$@"
 }
+
 
 # random-bytes - generate random bytes.
 function random-bytes {
@@ -401,11 +402,50 @@ function random-bytes {
     </dev/random 2>/dev/null
 }
 
+# zero-bytes - generate zero bytes.
+function zero-bytes {
+  local -i count=${1:-1}
+  command dd \
+    bs=1 count=$count \
+    </dev/zero 2>/dev/null
+}
+
+
+# touchx - touch a file and make it executable
+function touchx {
+  local file="$1"
+  touch $file
+  chmod +x $file
+}
+
+
+# website-ip - print ip of the website
+function website-ip {
+  local website="${1//http(s|):\/\//}"
+  command ping -c1 $website | awk 'NR==1 {gsub(/[^1-9.]/, "", $3); print $3}'
+}
 
 
 
+function find-idential-files {
+  local file="$1"
+  local dir="$2"
+  [[ $# -lt 2 ]] && error -1 -m 'not enough arguments'
+  local other_file
+  for other_file in $dir/*(.,@N); do
+    if [[ ! -f $other_file ]] continue
+    if [[ $file == $other_file ]] continue
+    if command diff -q -s $file $other_file >/dev/null; then
+      print -P "Files ${fg[green]}$file${fg[default]} and ${fg[green]}$other_file${fg[default]} are idential"
+    fi
+  done
+}
 
-
-
-
-
+function find-all-idential-files {
+  local dir="$1"
+  [[ $# -lt 1 ]] && error -1 -m 'not enough arguments'
+  local file
+  for file in $dir/*(.,@N); do
+    find-idential-files $file $dir
+  done 
+}

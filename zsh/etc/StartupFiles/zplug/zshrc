@@ -17,14 +17,14 @@ fi
 [[ ! -f $ZDOTDIR/.p10k.zsh ]] || source $ZDOTDIR/.p10k.zsh
 
 
-
-
+# path=(/usr/local/bin /usr/bin /bin /usr/sbin /sbin)
 ###  Paths  ###
-path=(
-  $path[@]
-  "$HOME/bin"
-  "$ZDOTDIR/bin"
-)
+# path=(
+#   "/usr/local/opt/openssl/bin/"
+#   $path[@]
+#   "$HOME/bin"
+#   "$ZDOTDIR/bin"
+# )
 fpath=(
   "/usr/share/zsh/$ZSH_VERSION/functions"
   "$ZDOTDIR/functions"
@@ -98,12 +98,18 @@ export HOMEBREW_EVAL_ALL=1
 
 # Python
 export PYTHONDONTWRITEBYTECODE=1
-export PYTHONSTARTUP=~/.pythonstartup
+export PYTHONSTARTUP="$HOME/private/etc/.pythonstartup"
 
 # Other parameters
 ZSH_CUSTOM="$ZDOTDIR/lib"
 export CODE_EDITOR="Visual Studio Code"
 
+# Set user's env parameters from ~/var/select/env
+if [[ -d ~/var/select/env ]]; then
+  for f in ~/var/select/env/*(N@); do
+    export "${f:t}"="$(readlink ${f})"
+  done
+fi
 
 
 ###  Autoload Functions  ###
@@ -117,7 +123,7 @@ typeset HELPDIR="/usr/share/zsh/$ZSH_VERSION/help"
 autoload -Uz run-help
 
 
-# styles: colors and text effects.
+# styles: set command line colors and text effects.
 autoload -Uz styles && styles -UA
 
 # zcompare: compare and compile zsh files if needed.
@@ -136,23 +142,28 @@ autoload -w $ZDOTDIR/zwc/*.zwc(N-.)
 
 
 
+
+###  Path modifications  ### 
+# llvm
+export LDFLAGS="-L/usr/local/opt/llvm/lib -L/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib"
+export CPPFLAGS="-I/usr/local/opt/llvm/include"
+# path=(/usr/local/opt/llvm/bin $path)
+
+# Cargo
+# path=(~/.cargo/bin $path)
+#source $HOME/.cargo/env
+
+# Solana
+#path=(~/.local/share/solana/install/active_release/bin/sdk/bpf/scripts $path)
+#path=(~/.cache/solana/v1.21/bpf-tools/rust/bin $path)
+
+
+
+###  Source files  ###
+# Load user's zsh configuration
 if [[ -e ~/private/zsh/.zshrc ]]; then
   source ~/private/zsh/.zshrc
 fi
-
-
-# llvm
-export LDFLAGS="-L/usr/local/opt/llvm/lib"
-export CPPFLAGS="-I/usr/local/opt/llvm/include"
-path=(/usr/local/opt/llvm/bin $path)
-
-#path=(~/.local/share/solana/install/active_release/bin/sdk/bpf/scripts $path)
-#path=(~/.cache/solana/v1.21/bpf-tools/rust/bin $path)
-path=(~/.cargo/bin $path)
-
-#source $HOME/.cargo/env
-
-
 
 source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
@@ -170,21 +181,33 @@ source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 
 
-typeset OPENSSL_CIPHER="aria-256-ofb"
-# typeset OPENSSL_OPTIONS=(-salt -pbkdf2 -pass pass:$USER)
-
-function encrypt {
-  typeset file="$1"
-  openssl $OPENSSL_CIPHER $OPENSSL_OPTIONS -in $file -out "${file}.enc"
-}
-
-function decrypt {
-  typeset file="$1"
-  openssl $OPENSSL_CIPHER -d $OPENSSL_OPTIONS -in $file -out "${file:r}.new"
-}
+# New functions (should be moved to other files) #
+export OPENSSL_CIPHER="aes-256-cbc" #"aria-256-ofb"
+export OPENSSL_OPTIONS=(-salt -pbkdf2) #-pass pass:$USER)
+if [[ -f ~/private/etc/openssl_password ]]; then
+  export OPENSSL_PASSWORD=$(<~/private/etc/openssl_password)
+fi
 
 
-# copymode <src> [<dest> ...] - copy file mode from `src` to `dest`
+### Moved to ~/bin/encrypt ###
+# encrypt <file> - encrypt a file and save it as <file.enc>
+# function encrypt {
+#   typeset file="$1"
+#   shift
+#   openssl $OPENSSL_CIPHER $OPENSSL_OPTIONS -in $file "$@"
+#   #-out "${file}.enc"
+# }
+
+# # decrypt <file> - decrypt an encrypted file and save it as <file.new>
+# function decrypt {
+#   typeset file="$1"
+#   shift
+#   openssl $OPENSSL_CIPHER -d $OPENSSL_OPTIONS -in $file "$@"
+#   #-out "${file:r}.new"
+# }
+
+
+# copymode <src> [<dest> ...] - copy file mode from `src` to `dest[]` files
 function copymode {
   local src="$1"
   shift
@@ -195,6 +218,7 @@ function copymode {
   done
 }
 
+
 # isascii <file ...> - check if `file` is ASCII or Binary
 function isascii {
   local encoding="ascii"
@@ -203,7 +227,7 @@ function isascii {
     [[ -e $f  ]] || error -1 -m 'file does not exist: ${f}'
     [[ ! -d $f ]] || error -1 -m '${f} is a directory'
     printf '%s: ' "$f"
-    if iconv --from-code=$encoding --to-code=$encoding "$f" &>/dev/null; then
+    if command iconv --from-code=$encoding --to-code=$encoding "$f" &>/dev/null; then
       echo "ascii"
     else
       echo "binary"
@@ -214,8 +238,9 @@ function isascii {
 # onlyascii <file> - print only ASCII characters from a `file`
 function onlyascii {
   local encoding="ascii"
-  iconv -f $encoding -t $encoding -c $1
+  command iconv -f $encoding -t $encoding -c $1
 }
+
 
 # cmdlog <command> - print logs for `command`
 function cmdlog {
@@ -224,7 +249,7 @@ function cmdlog {
 }
 
 
-
+# isstdin - returns 0 if process can read from standard input.
 function isstdin {
   [[ ! -t 0 || -p /dev/stdin ]]
 }
@@ -260,3 +285,53 @@ function lorem {
 
 
 
+### PRIVATE DATA ###
+# SECRETS: #
+
+# *** removed
+
+
+
+
+
+
+
+
+
+
+
+# ?
+function youtube-mp32 {
+  typeset url="$1"
+  youtube-dl --extract-audio --audio-format mp3 "$url"
+}
+
+
+
+
+# Check if the argument(s) are in path
+function in-path {
+  for arg; do
+    local dir="${arg:a}"
+    case ":${PATH}:" in
+        *:"${arg:A}":*)
+          green "directory ${dir} is in PATH"
+          ;;
+        *)
+          # Prepending path in case a system-installed rustc needs to be overridden
+          red directory "${dir} is not in PATH"
+          ;;
+    esac
+  done
+}
+
+
+# Cd to directory of the given path (if it's not a directory)
+function cdd {
+  local path="$1"
+  while [[ ! -d $path ]]; do
+    path=${path:h}
+  done
+  echo "cd ${(D)path}"
+  cd $path
+}

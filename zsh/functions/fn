@@ -16,7 +16,7 @@ function fn {
 
 emulate -L zsh
 setopt extended_glob
-autoload -Uz error
+autoload -Uz error highlight
 
 [[ -n "${functions_source[$0]}" ]] || {
      builtin unfunction   -- "$0" \
@@ -69,7 +69,10 @@ __fn__show() {
   }
   [[ -n "${functions_source[$1]}" ]] || autoload +X "$1"
   print -nrC1 -- "${functions[$1]}" \
-  | command sed -E -n -e 's/^\t//p'
+  | command sed -E -e 's/^\t//' \
+  | highlight
+
+  # | command sed -E -n -e 's/^\t//p' \
 }
 
 # fn where

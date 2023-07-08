@@ -13,7 +13,7 @@
 # show [ name ... ]
 #
 # Examples:
-#   1. `show pax'    -->   "command /bin/pax"
+#   1. `show pax'    -->   "commands pax: /bin/pax"
 #   2. `show HOME'   -->   scalar-export-special HOME[12] = "/Users/admin"
 emulate -LR zsh
 autoload -Uz error synopsis
@@ -36,7 +36,6 @@ __zsh_groups__=(
 if [[ $# -eq 0 ]]; then
   error -1 -m 'nothing to show'
 fi
-
 
 
 
@@ -70,9 +69,13 @@ for __name__; do
         ;;
         # Format function
         ('functions')
-          local __line__=$'\e[2m'${(l:$COLUMNS::-:)}$'\e[22m'
+          ## ???
+          # local __line__=$'\e[2m'${(l:$COLUMNS::-:)}$'\e[22m'
 #          __value__=${__line__}
           #__value__="${line}"$'\n'"$(zfn show $__name__)"$'\n'"${line}"
+
+          ## Uncomment to highlight function source code:
+          # __value__=$(echo $__value__ | highlight)
         ;;
         # Command synopsis
         ('commands')

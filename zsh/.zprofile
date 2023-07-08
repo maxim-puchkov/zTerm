@@ -1,1 +1,1 @@
-/Users/mpuchkov/.zsh/etc/StartupFiles/zplug/zprofile
+etc/StartupFiles/zprofile

@@ -15,8 +15,8 @@
 emulate -LR zsh
 autoload -Uz error
 
-if (command man -W -- "$argv" &>/dev/null); then
-  command man "$argv" \
+if (command man -W $argv &>/dev/null); then
+  command man $argv \
   | command col -b \
   | command awk '/^SYN/, /^$/ {print $0;}' \
   | command sed -e '/^SYN/d' -e '/^$/d' \

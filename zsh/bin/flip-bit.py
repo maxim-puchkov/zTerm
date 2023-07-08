@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.9
 """Toggle the bit at the specified offset.
 
 Syntax: <cmdname> filename [bit-pos]"""

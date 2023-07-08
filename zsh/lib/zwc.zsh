@@ -10,7 +10,7 @@
 
 
 
-
+#?
 function delete-zwc() {
   command find -H "${@:-.}" -name '*.zwc' -type f -maxdepth 1 -print -delete
 }

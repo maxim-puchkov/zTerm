@@ -79,12 +79,15 @@ alias floc='open -a "Firefox" "http://localhost:3000/solana"'
 # Mainframe
 export MAINFRAME=~/mainframe
 alias {mf,mainframe}='cd $MAINFRAME'
+alias core='cd $MAINFRAME/code/corepython'
+alias cbin='cd $MAINFRAME/code/corebin'
 alias sg='cd $MAINFRAME/code/shotgun-app'
 alias times='cd $MAINFRAME/code/timesheet'   # old project with broken database
 alias times2='cd $MAINFRAME/code/timesheet2' # current project with correct database
+alias t2='times2'    # added by `add-alias` on 2023-01-15 at 00:46:04
 alias venv='source ./venv/bin/activate'
 alias django='python3 manage.py'
-
+alias pystart='code $PYTHONSTARTUP'
 
 
 # My projects
@@ -153,16 +156,25 @@ alias zcode='open -a $CODE_EDITOR $ZDOTDIR'
 
 
 
+
+
+
+
+
+
+###  Permanent aliasses  ###
 #MARK: - Commands
 # Command 'cat'
-alias {catn,can}='/bin/cat -n'                        #
-alias cate='/bin/cat -entv'                           #
-alias catx='xxd -p'
-alias catxx='xxd'
+alias {catn,can}='/bin/cat -n'                        # Line numbers
+alias cate='/bin/cat -entv'                           # Non-printing characters
+alias {cax,catx}='xxd -p'                             # Hex
+alias {caxx,catxx}='xxd'                              # 
 
 # Command 'chflags'
 alias hide='chflags hidden'                           #
 alias unhide='chflags nohidden'                       #
+alias hidel='chflags -h hidden'                       # 
+alias unhidel='chflags -h nohidden'                   #
 alias lock='chflags uchg'                             #
 alias unlock='chflags nouchg'                         #
 
@@ -205,17 +217,17 @@ alias gs='git status'                                 # Status
 #alias gcm='git commit -m'                             # Commit with message
 alias grs='git restore --staged'                      # Restore staged files
 alias gpu='git push && git push upstream'             # Push to origin and upstream
-alias gtz='() { cd -q $ZDOTDIR && git status; };'     #
 alias gc='git checkout'
 alias gcm='git checkout master'
-alias gd='git diff'
-alias gds='git diff --staged'
+alias gd='git diff'                                   # Diff
+alias gds='git diff --staged'                         # Diff staged files
 alias ga='git add'
+alias gb='git branch'
+alias gf='git fetch'
 alias gp='git push'
 alias gl='git pull'
-alias gb='git branch'
 alias gq='git checkout master && git pull remote master && git push'
-alias gf='git fetch'
+alias {gtz,gitz}='() { cd -q $ZDOTDIR && git status; };'     #
 
 # Installed command 'diff'
 alias diff='/usr/local/bin/diff --color=always --suppress-common-lines -s -y -P'  #
@@ -223,14 +235,15 @@ alias diffl='diff --suppress-common-lines --side-by-side'                       
 
 # Command 'grep'
 alias grep='command grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn,.idea,.tox}'
-alias grepdir='grep -R -H -n'
-alias grepfiles='grep -R -l'
-alias grepfiles!='grep -R -L'
+alias grepd{,ir}='grep -R -H -n'
+alias grepf{,iles}='grep -R -l'
+alias 'grepfiles!'='grep -R -L'
 #alias gr='grep'                                       #
 #alias grepa='grep -E --text --color=always -e ".*"'   #
+alias grepl='grep -R -S'                               # Follow symbolic links
 
 # Command 'killall'
-alias {kall,killl}='command killall'
+alias {kall,killl,killa,ka}='command killall'
 
 
 # Command 'ls'
@@ -262,7 +275,7 @@ alias 'ls?'='ls -q'                          # Print non-printable as ?
 alias lsattrib='ls -la -Oe@'                 # Extended attributes, ACL, flags
 alias {lsd,lld}='ls -ld'                     #
 alias lad='ls -lad'                          #
-alias lss='command ls -lgo -BFG -Sr'         # Size
+alias lss='command ls -lgo -BFG -Sr'         # Size sort
 
 
 # Command 'launchctl'
@@ -305,7 +318,7 @@ alias .g='xed .gitignore'                    # Files  # .gitignore
 alias .ci='xed .gitlab/.gitlab-ci.yml'                # .gitlab.ci-yml
 
 # Installed command 'openssl'
-alias openssl='/usr/local/opt/openssl/bin/openssl'    #
+# alias openssl='/usr/local/opt/openssl/bin/openssl'    #
 
 # Command 'osascript'
 alias osa='osascript -s es'                           # AppleScript object output
@@ -341,6 +354,10 @@ alias alex='command say -v Alex'                      # Default voice
 
 # Command 'tar'
 alias tarch='command tar zcvf'                        #???: check
+#TODO:
+# alias dotar=''
+# alias untar=''
+
 
 # Installed command 'tealdeer'
 alias {tldr,tl}='/usr/local/bin/tealdeer'             #
@@ -349,7 +366,7 @@ alias {tldr,tl}='/usr/local/bin/tealdeer'             #
 alias tf='command tail -f'
 
 # Command 'ts-node'
-alias ts='ts-node'
+alias tsn='ts-node'
 
 # Command 'xcode-select'
 alias xcselect='command xcode-select'                 #
@@ -436,7 +453,7 @@ alias logdate='strftime "%b %d %T"'         # Log         Oct 11 23:59:59
 alias types='builtin type -a'               # Print all command types
 
 # Builtin 'typeset'
-#alias ts='typeset'                          #
+alias ts='typeset'                          #
 alias tsm='noglob typeset -m'               #
 alias tsp='typeset -p'                      # Output in form of calls to typeset
 alias tspm='noglob typeset -p -m'           #   (all matches)
@@ -456,7 +473,7 @@ alias unf='builtin unset -f'                #
 
 # Builtin 'vared'
 alias v='builtin vared'                     #
-alias v+='builtin vared -c -p "value: "'    #
+alias v+='builtin vared -c -p "value: "'    # add variable <arg>
 
 # Builtin 'which'
 alias wh='builtin which'                    #
@@ -482,7 +499,7 @@ alias ggl='search --google'
 alias gglimg='search --images'
 alias duck='search --duckduckgo'
 alias translate='search --translate'
-alias thesaurus='serach --thesaurus'
+alias thesaurus='search --thesaurus'
 
 # Function 'run-help'
 alias {help,h}='run-help'
@@ -529,9 +546,11 @@ alias -g @dev='-e devnet -k ~/.config/solana/devnet.json'
 
 # Misc
 alias pb='open -a Safari https://www.chess.com/puzzles/battle'
+alias pr='open -a Safari "https://www.chess.com/puzzles/rush"'    # added by `add-alias` on 2022-08-27 at 10:53:29
+alias pra='open -a Safari "https://www.chess.com/puzzles/rated"'
 
 alias docs='open ~/Documents'
-alias goopter-dev='ssh -p 10022 -i ~/.ssh/key/goopter-maxim.pem maxim@dev.goopter.com'
+# alias goopter-dev='ssh -p 10022 -i ~/.ssh/key/goopter-maxim.pem maxim@dev.goopter.com'
 
 alias p2='command python2'
 alias p3='command python3'
@@ -680,10 +699,30 @@ function test-dd {
 
 
 ## Recently Added Aliases ##
+alias http='python3 -m http.server'    # added by `add-alias` on 2023-07-07 at 15:38:03
+alias pastef='pbfile'    # added by `add-alias` on 2023-07-04 at 18:20:32
+alias safari='open -a Safari'    # added by `add-alias` on 2023-06-19 at 00:10:15
+alias day='date -j +"%Y-%m-%d"'    # added by `add-alias` on 2023-06-07 at 16:20:32
+alias gpt='open https://chat.openai.com'    # added by `add-alias` on 2023-05-22 at 22:30:40
+alias cr='crontab'    # added by `add-alias` on 2023-05-22 at 19:40:16
+alias ping1='ping -c1'    # added by `add-alias` on 2023-05-18 at 09:42:15
+alias pbuddy='/usr/libexec/PlistBuddy'    # added by `add-alias` on 2023-05-16 at 12:18:37
+alias ts2date='date -r'    # added by `add-alias` on 2023-04-26 at 17:49:10
+alias wl='otool -L'    # added by `add-alias` on 2023-04-20 at 15:23:10
+alias boom='app '''Boom 3D''''    # added by `add-alias` on 2023-02-02 at 08:59:49
+alias dt='date'    # added by `add-alias` on 2023-01-15 at 00:45:40
+alias ct='crontab'    # added by `add-alias` on 2022-12-20 at 21:30:20
+alias mkd='mkdir'    # added by `add-alias` on 2022-12-13 at 22:16:24
+alias c='cat'    # added by `add-alias` on 2022-12-13 at 21:18:54
+alias youtube-mp3='open https://yt5s.io/en5/youtube-to-mp3'    # added by `add-alias` on 2022-12-10 at 21:56:05
+alias getconf-help='open https://sites.ualberta.ca/dept/chemeng/AIX-43/share/man/info/C/a_doc_lib/cmds/aixcmds2/getconf.htm'    # added by `add-alias` on 2022-12-10 at 11:28:02
+alias select-dir='select x in ~/*; do case $x in (*) echo x is $x ;; esac; echo $x; done'    # added by `add-alias` on 2022-12-09 at 10:34:09
+alias line='repeat $(tput cols) echo -ne - "-"'    # added by `add-alias` on 2022-12-08 at 22:21:37
+alias print-bin='binary.py'    # added by `add-alias` on 2022-12-08 at 15:31:33
 alias sdo='sudo'    # added by `add-alias` on 2022-12-08 at 14:33:08
 alias touchp='pbfile'    # added by `add-alias` on 2022-12-06 at 16:12:14
 alias gif='app licecap'    # added by `add-alias` on 2022-10-17 at 18:12:18
-alias dotar='tar xvzf'    # added by `add-alias` on 2022-10-15 at 00:21:23
+# alias dotar='tar xvzf'    # added by `add-alias` on 2022-10-15 at 00:21:23
 alias untar='tar xvzf'    # added by `add-alias` on 2022-10-02 at 20:37:18
 alias pyg='pygmentize'    # added by `add-alias` on 2022-09-06 at 15:01:06
 alias m='man'    # added by `add-alias` on 2022-08-31 at 17:26:56
@@ -691,9 +730,8 @@ alias xxp='xxd -p'    # added by `add-alias` on 2022-08-30 at 20:41:14
 alias utmpx='cat /var/run/utmpx'    # added by `add-alias` on 2022-08-30 at 20:40:51
 alias rand='python3 -c "import random; print(random.randint(1, 100))"'    # added by `add-alias` on 2022-08-29 at 21:29:11
 alias mksh='mkzsh -sx'    # added by `add-alias` on 2022-08-27 at 17:57:28
-alias pr='open -a Safari "https://www.chess.com/puzzles/rush"'    # added by `add-alias` on 2022-08-27 at 10:53:29
 alias hello='printf "Hello, World!\n"'    # added by `add-alias` on 2022-08-27 at 10:44:10
-alias python='python3'    # added by `add-alias` on 2022-08-26 at 12:41:28
+# alias python='python3'    # added by `add-alias` on 2022-08-26 at 12:41:28
 alias cra='clear-recent-apps'    # added by add-alias on 2022-08-16 at 12:22:59
 
 
@@ -716,3 +754,8 @@ function add-alias {
   fi
   source $FILE
 }
+
+
+
+
+alias ca{h,th}='highlight'
