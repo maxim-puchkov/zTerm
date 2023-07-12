@@ -7,56 +7,174 @@
 #  Created by mpuchkov/506:20 on March 27, 2021.
 
 
-#MARK: - Recently Added
-alias -g @-1='1> /dev/null'
-alias -g @-2='2> /dev/null'
-alias -g @--='&> /dev/null'
+# TODOs:
+# - Remove MARKs (Xcode Syntax)
 
-alias -g '...'='../..'
-alias -g '....'='../../..'
-alias -g '.....'='../../../..'
-alias -g '......'='../../../../..'
 
-alias lvl='typeset SHLVL'
-alias zc='zsh -c'
 
-# Local aliases
-alias admin='command ssh -l admin localhost'
-alias ubuntu='command ssh -l osboxes ubuntu.vm'
-alias mininet='command ssh -l mininet mininet.vm'
+# New aliases
+alias is='test'         # added by `add-alias` on 2022-08-15 at 21:20:12
+alias isset='is -v'     # added by `add-alias` on 2022-08-29 at 21:41:00
 
-alias mod='stat -f "%p"'
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Candy Machine v2
+alias candy2='ts-node ~/private/code/metaplex/js/packages/cli/src/candy-machine-v2-cli.ts'
+function devnet() {
+    typeset cmd="$1"
+    shift 1
+    typeset DEVNET_KEY="$HOME/.config/solana/devnet.json"
+    candy2 "$cmd" -e devnet -k "$DEVNET_KEY" "$@"
+}
+
+export DEVNET_PUBKEY="F8w4SHpKo2rsWLe3xPwVssPz5P2uTRpJTt2cNmMbe2d5"
+export DEV2_PUBKEY="9XKq42MKEXu4zXf8w5FAhLzbasL6Ng6KREM4PhEegkrG"
+
+# NFT mints
+export BALL0="4xVMddJBcERGqVHp6VjBx45tWTp9f1pHVY8espXXbcwd"
+
+
+
+
+
+#MARK: - Solana
+alias so='solana'
+alias spl='spl-token'
+
+alias sp='solana program'
+alias spd='solana program deploy'
+
+alias gloc='open -a "Google Chrome" "http://localhost:3000/solana"'
+alias floc='open -a "Firefox" "http://localhost:3000/solana"'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#MARK: - Work
+# Mainframe
+export MAINFRAME=~/mainframe
+alias {mf,mainframe}='cd $MAINFRAME'
+alias core='cd $MAINFRAME/code/corepython'
+alias cbin='cd $MAINFRAME/code/corebin'
+alias sg='cd $MAINFRAME/code/shotgun-app'
+alias times='cd $MAINFRAME/code/timesheet'   # old project with broken database
+alias times2='cd $MAINFRAME/code/timesheet2' # current project with correct database
+alias t2='times2'    # added by `add-alias` on 2023-01-15 at 00:46:04
+alias venv='source ./venv/bin/activate'
+alias django='python3 manage.py'
+alias pystart='code $PYTHONSTARTUP'
+
+
+# My projects
+alias {mycode,coded,proj}='cd ~/private/code'     # My code dir 
+alias wd='cd -P "$WD"'
+alias sniper='cd ~/private/code/sniper'
+alias sdl='cd ~/private/code/solanadreamland'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 #MARK: - Files
 # Open zsh configuration files in Xcode.
-alias zshenv='open -a Xcode $HOME/.zshenv'
-alias zshrc='open -a Xcode $ZDOTDIR/.zshrc'
-alias zprofile='open -a Xcode $ZDOTDIR/.zprofile'
+alias zshenv='open -a $CODE_EDITOR $HOME/.zshenv'
+alias zshrc='open -a $CODE_EDITOR $ZDOTDIR/.zshrc'
+alias zprofile='open -a $CODE_EDITOR $ZDOTDIR/.zprofile'
 
-alias zalias='open $ZDOTDIR/lib/aliases.zsh'
-alias {zhashdir,zdirs}='open $ZDOTDIR/lib/directories.zsh'
+alias zalias='open -a $CODE_EDITOR $ZDOTDIR/lib/aliases.zsh'
+alias {zhashdir,zdirs}='open -a $CODE_EDITOR $ZDOTDIR/lib/directories.zsh'
 
-alias zlib='open -a Xcode $ZDOTDIR/lib/*'
+alias zlib='open -a $CODE_EDITOR $ZDOTDIR/lib/*'
 alias zlibfuncs='open $ZDOTDIR/lib/functions.zsh'
-alias zshfuncs='open -a Xcode $ZDOTDIR/{functions,completions}/*'
+alias zshfuncs='open -a $CODE_EDITOR $ZDOTDIR/{functions,completions}/*'
 
-alias {zshxc,xczsh}='open -a Xcode ~/iCloud/Developer/Projects/Zsh/Zsh.xcodeproj'
+alias {zshxc,xczsh}='open -a $CODE_EDITOR ~/iCloud/Developer/Projects/Zsh/Zsh.xcodeproj'
+
+alias zcode='open -a $CODE_EDITOR $ZDOTDIR'
 
 
 
 
 
+
+
+
+
+
+###  Permanent aliasses  ###
 #MARK: - Commands
 # Command 'cat'
-alias {catn,can}='/bin/cat -n'                        #
-alias cate='/bin/cat -entv'                           #
+alias {catn,can}='/bin/cat -n'                        # Line numbers
+alias cate='/bin/cat -entv'                           # Non-printing characters
+alias {cax,catx}='xxd -p'                             # Hex
+alias {caxx,catxx}='xxd'                              # 
 
 # Command 'chflags'
 alias hide='chflags hidden'                           #
 alias unhide='chflags nohidden'                       #
+alias hidel='chflags -h hidden'                       # 
+alias unhidel='chflags -h nohidden'                   #
 alias lock='chflags uchg'                             #
 alias unlock='chflags nouchg'                         #
 
@@ -73,7 +191,6 @@ alias -- +w='/bin/chmod +w'                           #
 alias -- -w='/bin/chmod -w'                           #
 alias -- +r='/bin/chmod +r'                           #
 alias -- -r='/bin/chmod -r'                           #
-
 
 # Command 'cp'
 alias cp='/bin/cp -i'                                 #
@@ -97,10 +214,20 @@ alias 32bytes='command head -c32'                     # First 32 bytes in file
 
 # Command 'git'
 alias gs='git status'                                 # Status
-alias gcm='git commit -m'                             # Commit with message
+#alias gcm='git commit -m'                             # Commit with message
 alias grs='git restore --staged'                      # Restore staged files
 alias gpu='git push && git push upstream'             # Push to origin and upstream
-alias gtz='() { cd -q $ZDOTDIR && git status; };'     #
+alias gc='git checkout'
+alias gcm='git checkout master'
+alias gd='git diff'                                   # Diff
+alias gds='git diff --staged'                         # Diff staged files
+alias ga='git add'
+alias gb='git branch'
+alias gf='git fetch'
+alias gp='git push'
+alias gl='git pull'
+alias gq='git checkout master && git pull remote master && git push'
+alias {gtz,gitz}='() { cd -q $ZDOTDIR && git status; };'     #
 
 # Installed command 'diff'
 alias diff='/usr/local/bin/diff --color=always --suppress-common-lines -s -y -P'  #
@@ -108,25 +235,26 @@ alias diffl='diff --suppress-common-lines --side-by-side'                       
 
 # Command 'grep'
 alias grep='command grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn,.idea,.tox}'
-alias grepdir='grep -R -H -n'
-alias grepfiles='grep -R -l'
-alias grepfiles!='grep -R -L'
+alias grepd{,ir}='grep -R -H -n'
+alias grepf{,iles}='grep -R -l'
+alias 'grepfiles!'='grep -R -L'
 #alias gr='grep'                                       #
 #alias grepa='grep -E --text --color=always -e ".*"'   #
+alias grepl='grep -R -S'                               # Follow symbolic links
 
 # Command 'killall'
-alias {kall,killl}='command killall'
+alias {kall,killl,killa,ka}='command killall'
 
 
 # Command 'ls'
-alias ls='command ls -BFG -hk -%'            #
+alias ls='command ls -FG -h -%'              #
 alias lsA='ls -A -H'                         # All (except ./..; follow links)
 alias lsa='ls -a -H'                         # All (follow links)
 alias l='ls -l'                      # Long  #
 alias {lA,ll}='ls -lA -H'                    # All (except ./..; follow links)
 alias {la,al}='ls -la -H'                    # All (follow links)
 alias {lsO,lsf}='ls -la -O'                  # All (with file flags)
-alias {lsn,lid}='ls -l -n'    # Owner/Group  # Numeric uid, gid
+alias {lsn,lsid}='ls -l -n'   # Owner/Group  # Numeric uid, gid
 alias {lgo,lls}='ls -l -go'                  # No owner/group
 alias {lsr,lll}='ls -R'         # Recursive  #
 alias {llr,llll}='ls -l -R -H'               #     (long, follow links)
@@ -147,7 +275,7 @@ alias 'ls?'='ls -q'                          # Print non-printable as ?
 alias lsattrib='ls -la -Oe@'                 # Extended attributes, ACL, flags
 alias {lsd,lld}='ls -ld'                     #
 alias lad='ls -lad'                          #
-alias lss='command ls -lgo -BFG -Sr'         # Size
+alias lss='command ls -lgo -BFG -Sr'         # Size sort
 
 
 # Command 'launchctl'
@@ -166,26 +294,31 @@ alias mv='/bin/mv -i'                                 #
 # Command 'nano'
 alias nano='/usr/local/bin/nano --mouse'              #
 
+# Command 'npm'
+alias ns='npm start'
+
 # Command 'open'
 alias o='open'                                        #
 alias app='open -a'                                   #
-alias {openr,reveal}='open -R'                        #
-alias {opf,pwdo}='open -R $PWD'                       #
+alias {cdo,openr,opend,reveal}='open -R'              #
+alias {openf,opf,pwdo}='open -R $PWD'                 #
 alias term1='open -a Terminal'        # Applications  #
 alias term2='open -a iTerm'                           #
-alias {xe,xopen,openx}='open -a Xcode'                #
+alias {xe,xopen,openx,ox,opx}='open -a Xcode'         #
 alias music='open -a Music'                           #
 alias notes='open -a Notes'                           #
 alias intellij='open -a "IntelliJ IDEA CE"'           # IntelliJ IDEA
 alias vb='open -a VirtualBox'                         #
 alias hxf='open -a "Hex Fiend"'                       #
+alias {vs,code,vscode}='open -a "Visual Studio Code"' #
+alias srctree='open -a Sourcetree'
 
 #???: Command 'xed'
 alias .g='xed .gitignore'                    # Files  # .gitignore
 alias .ci='xed .gitlab/.gitlab-ci.yml'                # .gitlab.ci-yml
 
 # Installed command 'openssl'
-alias openssl='/usr/local/opt/openssl/bin/openssl'    #
+# alias openssl='/usr/local/opt/openssl/bin/openssl'    #
 
 # Command 'osascript'
 alias osa='osascript -s es'                           # AppleScript object output
@@ -208,6 +341,9 @@ alias str='command strings'                           #
 
 # Command 'stat'
 alias statz='command stat -f "%Z"'                    #
+alias mode='command stat -f "%p"'                     #
+alias inode='command stat -f "%i"'                    #
+alias flags='command stat -f "%f"'                    #
 
 # Command 'sudo'
 alias sudol='/usr/bin/sudo --login'                   #
@@ -218,14 +354,26 @@ alias alex='command say -v Alex'                      # Default voice
 
 # Command 'tar'
 alias tarch='command tar zcvf'                        #???: check
+#TODO:
+# alias dotar=''
+# alias untar=''
 
-# Command 'xcode-select'
-alias xcselect='command xcode-select'                 #
 
 # Installed command 'tealdeer'
 alias {tldr,tl}='/usr/local/bin/tealdeer'             #
 
+# Command 'tail'
+alias tf='command tail -f'
 
+# Command 'ts-node'
+alias tsn='ts-node'
+
+# Command 'xcode-select'
+alias xcselect='command xcode-select'                 #
+
+# Command 'yarn'
+alias ya='yarn add'
+alias ys='yarn start'
 
 
 
@@ -267,6 +415,9 @@ alias -- -T='functions -t'                  # -T: turn on trace (extended)
 
 # Builtin 'echo'
 alias e='builtin echo -'                    #
+
+# Builtin 'exit'
+alias quit='builtin exit 0;'                #
  
 # Builtin 'print'
 alias p='builtin print'                     #
@@ -277,20 +428,18 @@ alias pnr='builtin print -nr'               # No new line (ignore \n,\t,etc.)
 alias {printp,pp}='builtin print -P'        # Prompt expansion
 alias {pc1,print1}='print -nr -C1 --'       # Print in 1 column
 alias {pc2,print2}='print -nr -aC2 --'      # Print in 2 columns
-alias pb='print -bn'                        # Recognize ^X, \M-X, \C-X
+#alias pb='print -bn'                        # Recognize ^X, \M-X, \C-X
 
 # Builtin 'printf'
 alias {beep,bell}='builtin printf "\x07"'   # Bell
 alias printq='() { printf "%q\n" "$*"; }'   # Shell quote
+alias pf='printf'
 
 # Builtin 'popd'
 alias po='builtin popd'                     #
 
 # Builtin 'pushd'
 alias pu='builtin pushd'                    #
-
-# Builtin 'exit'
-alias quit='builtin exit 0;'                #
 
 # Builtin 'strftime'
 alias strf='builtin strftime'               #
@@ -324,7 +473,7 @@ alias unf='builtin unset -f'                #
 
 # Builtin 'vared'
 alias v='builtin vared'                     #
-alias v+='builtin vared -c -p "value: "'    #
+alias v+='builtin vared -c -p "value: "'    # add variable <arg>
 
 # Builtin 'which'
 alias wh='builtin which'                    #
@@ -347,9 +496,10 @@ alias cdef='compdef'
 alias srch='search'
 alias define='search --dictionary'
 alias ggl='search --google'
-alias duck='search --duckduckgo'
 alias gglimg='search --images'
-alias thesaurus='serach --thesaurus'
+alias duck='search --duckduckgo'
+alias translate='search --translate'
+alias thesaurus='search --thesaurus'
 
 # Function 'run-help'
 alias {help,h}='run-help'
@@ -360,12 +510,10 @@ alias ord='order -c'
 # Function 'show'
 alias {s,i}='show'
 
+# Function 'fn'
 
 
-## Function 'zfn'
-#alias fn='zfn'
-
-
+# Function 'add-zsh-hook'
 alias prex='add-zsh-hook preexec'
 alias prex-='add-zsh-hook -D preexec'
 alias prec='add-zsh-hook precmd'
@@ -375,3 +523,239 @@ alias rm-zsh-hook='add-zsh-hook -D'
 
 #MARK: Plugins
 alias cfd='cd "$(pfd)"'                      # Change to current Finder directory
+
+
+
+#MARK: - Global
+alias -g '...'='../..'
+alias -g '....'='../../..'
+alias -g '.....'='../../../..'
+alias -g '......'='../../../../..'
+
+alias -g @-1='1> /dev/null'
+alias -g @-2='2> /dev/null'
+alias -g @--='&> /dev/null'
+
+
+alias -g @dev='-e devnet -k ~/.config/solana/devnet.json'
+
+
+
+
+
+
+# Misc
+alias pb='open -a Safari https://www.chess.com/puzzles/battle'
+alias pr='open -a Safari "https://www.chess.com/puzzles/rush"'    # added by `add-alias` on 2022-08-27 at 10:53:29
+alias pra='open -a Safari "https://www.chess.com/puzzles/rated"'
+
+alias docs='open ~/Documents'
+# alias goopter-dev='ssh -p 10022 -i ~/.ssh/key/goopter-maxim.pem maxim@dev.goopter.com'
+
+alias p2='command python2'
+alias p3='command python3'
+
+alias pxd='echo "${$(xcode-document):h}"'   # print xcode file directory
+alias cxd='cd "${$(xcode-document):h}"'     # change to xcode file directory
+
+alias lvl='typeset SHLVL'
+alias zc='zsh -c'
+
+
+# Local aliases
+alias admin='command ssh -Y -l admin localhost'
+alias ubuntu='command ssh -Y -l osboxes ubuntu.vm'
+alias mininet='command ssh -Y -l mininet mininet.vm'
+
+
+
+alias ports="netstat -anvp tcp | awk 'NR<3 || /LISTEN/'"
+alias {psports,portsps}="ports | awk '/[[:digit:]]+/ {print \$9}' | sort | ips"
+
+
+# ips - "input ps"
+#   Usage: `ips <pid>` or `echo <pid> | ips`
+function ips() {
+    emulate -L zsh
+    autoload -Uz error
+    if [[ ! -t 0 ]]; then
+		set -- "$@" "${(f)$(<&0)}"
+	fi
+    [[ $# -gt 0 ]] || error -1 -u "'$0 <pid>' or 'echo <pid> | $0'" 'not enough arguments'
+    command ps -o pid,tty,etime,command -h '-p '${^@}
+}
+
+function len() {
+    printf '%d\n' "${(c)#*}"
+}
+function len2() {
+    echo $(( $(len "$@") * 2 ))
+}
+
+
+#MARK: - Solana functions
+# Link a different private-key for 'sniper'.
+# Defaults to devnet wallet.
+function pk() {
+    builtin cd -q ~/private/code/sniper/config
+    typeset key_number="$1"
+    
+    typeset key_file
+    case $key_number in
+        "0") key_file=""
+             echo "Removing private key file"
+        ;;
+        "2") key_file="private-key.dev2" ;;
+        *)   key_file="private-key.devnet" ;;
+    esac
+    
+    typeset key_symlink="private-key"
+    command unlink "$key_symlink"
+    if [[ -n "$key_file" ]]; then
+        command ln -s "$key_file" "$key_symlink"
+    fi
+    print-link "$key_symlink"
+}
+
+# Solana 'Hello world' program
+export SOL_HELLO=~/private/code/example-helloworld
+function redeploy() (
+    builtin cd -q $SOL_HELLO
+    solana program deploy dist/program/helloworld.so
+)
+
+# Open solana explorer
+function soex() {
+    typeset query="$1"
+    typeset url="https://explorer.solana.com/address/${query}?cluster=devnet"
+    open "$url"
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+alias corrupt='flip-bit.py'
+
+alias bytes='stat -f "%z"'
+function filesize {
+    # printf "%s: %i bytes\n" "$1" $(stat -f "%z" $1)
+    command stat -f '%N: %z bytes' $1
+}
+function bits {
+    [[ -e $1 ]] || error -1 'file does not exist: ${1}'
+    printf '%i\n' $(( `bytes $1` * 8 ))
+}
+
+alias decompile='objdump -d' # *disassemble
+alias decompile-all='objdump -D'
+
+function hg {
+    history 0 | grep "$@"    
+}
+
+
+
+function test-dd {
+    typeset DEV_FILE=$1
+    [[ -e /dev/$DEV_FILE ]] || error -1 'dev file not found: ${DEV_FILE}'
+    dd if=/dev/$DEV_FILE of=./$DEV_FILE bs=1024 count=1 conv=notrunc #2>/dev/null
+    xxd -p ./$DEV_FILE
+}
+
+
+
+
+
+
+
+
+
+## Recently Added Aliases ##
+alias http='python3 -m http.server'    # added by `add-alias` on 2023-07-07 at 15:38:03
+alias pastef='pbfile'    # added by `add-alias` on 2023-07-04 at 18:20:32
+alias safari='open -a Safari'    # added by `add-alias` on 2023-06-19 at 00:10:15
+alias day='date -j +"%Y-%m-%d"'    # added by `add-alias` on 2023-06-07 at 16:20:32
+alias gpt='open https://chat.openai.com'    # added by `add-alias` on 2023-05-22 at 22:30:40
+alias cr='crontab'    # added by `add-alias` on 2023-05-22 at 19:40:16
+alias ping1='ping -c1'    # added by `add-alias` on 2023-05-18 at 09:42:15
+alias pbuddy='/usr/libexec/PlistBuddy'    # added by `add-alias` on 2023-05-16 at 12:18:37
+alias ts2date='date -r'    # added by `add-alias` on 2023-04-26 at 17:49:10
+alias wl='otool -L'    # added by `add-alias` on 2023-04-20 at 15:23:10
+alias boom='app '''Boom 3D''''    # added by `add-alias` on 2023-02-02 at 08:59:49
+alias dt='date'    # added by `add-alias` on 2023-01-15 at 00:45:40
+alias ct='crontab'    # added by `add-alias` on 2022-12-20 at 21:30:20
+alias mkd='mkdir'    # added by `add-alias` on 2022-12-13 at 22:16:24
+alias c='cat'    # added by `add-alias` on 2022-12-13 at 21:18:54
+alias youtube-mp3='open https://yt5s.io/en5/youtube-to-mp3'    # added by `add-alias` on 2022-12-10 at 21:56:05
+alias getconf-help='open https://sites.ualberta.ca/dept/chemeng/AIX-43/share/man/info/C/a_doc_lib/cmds/aixcmds2/getconf.htm'    # added by `add-alias` on 2022-12-10 at 11:28:02
+alias select-dir='select x in ~/*; do case $x in (*) echo x is $x ;; esac; echo $x; done'    # added by `add-alias` on 2022-12-09 at 10:34:09
+alias line='repeat $(tput cols) echo -ne - "-"'    # added by `add-alias` on 2022-12-08 at 22:21:37
+alias print-bin='binary.py'    # added by `add-alias` on 2022-12-08 at 15:31:33
+alias sdo='sudo'    # added by `add-alias` on 2022-12-08 at 14:33:08
+alias touchp='pbfile'    # added by `add-alias` on 2022-12-06 at 16:12:14
+alias gif='app licecap'    # added by `add-alias` on 2022-10-17 at 18:12:18
+# alias dotar='tar xvzf'    # added by `add-alias` on 2022-10-15 at 00:21:23
+alias untar='tar xvzf'    # added by `add-alias` on 2022-10-02 at 20:37:18
+alias pyg='pygmentize'    # added by `add-alias` on 2022-09-06 at 15:01:06
+alias m='man'    # added by `add-alias` on 2022-08-31 at 17:26:56
+alias xxp='xxd -p'    # added by `add-alias` on 2022-08-30 at 20:41:14
+alias utmpx='cat /var/run/utmpx'    # added by `add-alias` on 2022-08-30 at 20:40:51
+alias rand='python3 -c "import random; print(random.randint(1, 100))"'    # added by `add-alias` on 2022-08-29 at 21:29:11
+alias mksh='mkzsh -sx'    # added by `add-alias` on 2022-08-27 at 17:57:28
+alias hello='printf "Hello, World!\n"'    # added by `add-alias` on 2022-08-27 at 10:44:10
+# alias python='python3'    # added by `add-alias` on 2022-08-26 at 12:41:28
+alias cra='clear-recent-apps'    # added by add-alias on 2022-08-16 at 12:22:59
+
+
+# Add alias to the 'zalias' file.
+function add-alias {
+  local name value comment
+  [[ -n $1 ]] && name=$1  || vared -p "alias name: "  name
+  [[ -n $2 ]] && value=$2 || vared -p "alias value: " value
+  [[ -n $3 ]] && comment=$3 || comment="added by \`$0\` on $(strftime '%F at %T')"
+  local FILE=$ZDOTDIR/lib/aliases.zsh
+  local TMP=/tmp/aliases.zsh
+  rsync -a $FILE $TMP
+  local quoted_value=${(qq)value//\"/\\\"}
+  awk '//; /^## Recently Added Aliases ##/ {print "alias '$name'='${quoted_value}'    # '$comment'"}' $TMP > $FILE
+  if [[ $? -ne 0 ]]; then
+    printf 'Error adding alias. Restoring file: %s\n' "$FILE"
+    rsync -a $TMP $FILE
+  else
+    printf 'Alias added successfully: %s=%s\n' "$name" "$quoted_value"
+  fi
+  source $FILE
+}
+
+
+
+
+alias ca{h,th}='highlight'

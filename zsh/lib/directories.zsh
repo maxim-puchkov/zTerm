@@ -21,6 +21,7 @@ hash -d proj=~iCloud/"Developer/Projects"
 
 hash -d Desk="$HOME/Desktop"
 hash -d Docs="$HOME/Documents"
+hash -d work="$HOME/Documents/Work"
 
 # Shared
 hash -d Shared="/Users/Shared"
@@ -47,4 +48,4 @@ hash -d custom="$ZSH_CUSTOM"
 # Other zsh
 hash -d "zsh-${ZSH_VERSION}"="/usr/share/zsh/$ZSH_VERSION"
 hash -d zterm1="/Users/Shared/Developer/Frameworks/zTerm.framework/Versions/Current"
-hash -d zterm2=~Projects/zTerm2
+hash -d zterm2=~proj/zTerm2

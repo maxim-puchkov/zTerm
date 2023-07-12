@@ -16,7 +16,7 @@ function fn {
 
 emulate -L zsh
 setopt extended_glob
-autoload -Uz error
+autoload -Uz error highlight
 
 [[ -n "${functions_source[$0]}" ]] || {
      builtin unfunction   -- "$0" \
@@ -41,32 +41,38 @@ EOF
 #@fn commands: list function subcommands.
 __fn__commands() {
   local -A opts=(
-    '-F'  ", "
-    '-P'  "__${PROG}__"
+    '--field-separator'  ", "
+    '--prefix'           "__${1:-PROG}__"
   )
-  zparseopts -D -F -K -A opts - 'F:' 'P:'
-  local separator="${opts[-F]}"
-  local prefix="${opts[-P]}"
+  local -a specs=( '-field-separator:' 'F:=-field-separator' '-prefix:' 'P:=-prefix' )
+  zparseopts -D -F -M -K -A opts - $specs
+  local separator="${opts[--field-separator]}"
+  local prefix="${opts[--prefix]}"
   local -a subcmds=( ${${functions[(I)$prefix*]}#$prefix} )
-  print -- "${(pj:$separator:)subcmds}"
+  [[ ${#subcmds} -gt 0 ]] || return 1
+  print -nrC1 -- "${(pj:$separator:)subcmds}"
 }
 
 
 # fn open
 __fn__open() {
   [[ ${+functions[$1]} -eq 1 ]] || return 1
-  command open -a Xcode -- "${functions_source[$1]}"
+  autoload +X "$1"
+  command open -a ${CODE_EDITOR:-Xcode} -- "${functions_source[$1]}"
 }
 
-# fn print
-__fn__print() {
+# fn show
+__fn__show() {
   [[ ${+functions[$1]} -eq 1 ]] || {
     error -1 -P "$PROG" -m 'function ${1} not found'
     return 1
   }
   [[ -n "${functions_source[$1]}" ]] || autoload +X "$1"
   print -nrC1 -- "${functions[$1]}" \
-  | command sed -E -n -e 's/^\t//p'
+  | command sed -E -e 's/^\t//' \
+  | highlight
+
+  # | command sed -E -n -e 's/^\t//p' \
 }
 
 # fn where
@@ -76,7 +82,7 @@ __fn__where() {
     return 1
   }
   [[ -n "${functions_source[$1]}" ]] || autoload +X "$1"
-  printf '%s\n' "${functions_source[$1]}"
+  print -nrC1 -- "${functions_source[$1]}"
 }
 
 
@@ -110,12 +116,14 @@ __fn__where() {
 # +description  Parse function source file to generate completion tags.
 __fn__tags() {
   local function_name="$1"
+  autoload +X $function_name
   local function_file="${functions_source[$function_name]}"
   if [[ -z "$function_file" ]]; then
     error -1 -m 'function file for ${function_name} not found'
   fi
-  local awk_program=~/AWK/tags.awk
-  command awk -f "$HOME/AWK/tags.awk" -v v_prefix="__${PROG}__" "$function_file"
+  # local awk_program="$_ZFN_AWK_DIR/tags.awk"
+  local awk_program="$_ZFN_AWK_DIR/${0##*_}.awk"
+  command awk -f $awk_program -v v_prefix="__${PROG}__" "$function_file"
   #local awk_program="$_ZFN_AWK_DIR/${0#*_}.awk"
 #  /usr/bin/awk "$@"                   \
 #      -f "$awk_program"               \
@@ -128,10 +136,9 @@ __fn__tags() {
 # +description  Parse completion tags to generate completion function.
 __fn__complete() {
   local function_name="$1"
-  local awk_program="$_ZFN_AWK_DIR/${0#*_}.awk"
-  zfn tags "$function_name" |
-  /usr/bin/awk "$@"         \
-      -f "$awk_program"
+  # local awk_program="$_ZFN_AWK_DIR/complete.awk"
+  local awk_program="$_ZFN_AWK_DIR/${0##*_}.awk"
+  $PROG tags "$function_name" | command awk -f "$awk_program"
 }
 
 

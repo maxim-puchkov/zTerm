@@ -1,3 +1,7 @@
+# What is zTerm?
+zTerm is my personal zsh configuration which I use on daily basis. Whenever I need a new command in my terminal, I add it here. This repository contains may useful commands and aliases which help me improve my productivity when using command-line. I continuously imrpove it and add new code to it. 
+
+
 # zTerm 2
 zTerm is a framework for managing zsh configuration. It includes zsh functions, completions, as well as AppleScript script libraries and zsh interface functions.  
 
@@ -20,11 +24,13 @@ Functions which extend shell builtins.
 
 ## Display
 Functions for formatting and displaying text.
-* `spectrum` - set FG, BG, FX and fg, bg, fx arrays.
+* `styles` - set FG, BG, FX and fg, bg, fx arrays which can be used for styling text
 ```sh
-  spectrum -p  # set arrays FG,BG,FX
-  spectrum -e  # set arrays fg,bg,fx
-  spectrum -u -cdnz -FBX  # (re)set arrays FG,BG,FX,fg,bg,fx, style functions, and style aliases
+  styles -UA # set all styles
+  echo "$bg[red]Hello, world$bg[default]" # use parameters directly, or use functions:
+  red "Hello"      # red color (fg)
+  Green-bg "World" # bright green background color (bg)
+  blink "..."      # blinking text (fx)
 ```
 * `2hex` - print ASCII input as hex.
 * `order` - print characters or words in alphabetical order.
@@ -49,26 +55,3 @@ $ show ls
 ## Util
 * `mvtr` - move files to trash.
 * `youtube-hd` - download HD youtube videos and audio and merge it into `.mkv` format. 
-
-
-### zterm Functions (old)
-Functions which manage other functions.
-* `zfd` - list functions in autoload functions' directory.
-* `zfn` - create, edit, and autocomplete for zsh functions.
-```sh
-  # Add zfn-tags to function source.
-  function foo {
-    # @define option
-    # @option -x
-    # @option -y
-    # 
-    # @define command
-    # @command bar
-    function foo_bar() { ... }
-    ...
-  }
-```
-```sh
-  # Create completion function for foo's options '-x', '-y' and command 'foo bar'.
-  zfn -w makecomp foo 
-```

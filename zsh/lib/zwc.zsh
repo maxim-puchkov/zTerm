@@ -10,7 +10,7 @@
 
 
 
-
+#?
 function delete-zwc() {
   command find -H "${@:-.}" -name '*.zwc' -type f -maxdepth 1 -print -delete
 }
@@ -35,7 +35,7 @@ function zdot-delete-zwc() {
 
 
 
-return 0
+# return 0
 
 ##  zwc  ##
 # Delete files in $ZDOTDIR/zwc.
