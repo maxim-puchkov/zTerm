@@ -1,3 +1,7 @@
+# What is zTerm?
+zTerm is my personal zsh configuration which I use on daily basis. Whenever I need a new command in my terminal, I add it here. This repository contains may useful commands and aliases which help me improve my productivity when using command-line. I continuously imrpove it and add new code to it. 
+
+
 # zTerm 2
 zTerm is a framework for managing zsh configuration. It includes zsh functions, completions, as well as AppleScript script libraries and zsh interface functions.  
 
