@@ -449,3 +449,11 @@ function find-all-idential-files {
     find-idential-files $file $dir
   done 
 }
+
+
+function git-open {
+  local rest="$(git remote -v | cut -d ':' -f2 | cut -d '.' -f1 | head -n1)"
+  local url="https://github.com/${rest}"
+  echo $url
+  open "$url"
+}
