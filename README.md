@@ -1,5 +1,5 @@
 # What is zTerm?
-zTerm is my personal zsh configuration which I use on daily basis. Whenever I need a new command in my terminal, I add it here. This repository contains may useful commands and aliases which help me improve my productivity when using command-line. I continuously imrpove it and add new code to it. 
+zTerm is my personal zsh configuration which I use on daily basis. Whenever I need a new command in my terminal, I add it here. This repository contains many useful commands and aliases which help me improve my productivity when using command-line. I continuously imrpove it and add new code to it. 
 
 
 # zTerm 2
@@ -11,7 +11,8 @@ Below is a brief description of some functions included in zTerm 2.
 [View all functions](zsh/functions)  
 
 
-## Extended Commands
+## Examples
+### Extended Commands
 Functions which extend shell builtins. 
 * `cd` - modified `cd` zsh builtin that prints new working directory and lists its contents.
 * `pwd` - modified `pwd` zsh builtin that automatically prints logical and physical working directories if they are not the same. 
@@ -22,7 +23,7 @@ Functions which extend shell builtins.
 * `error` - print error message and `return` from the calling function.
 
 
-## Display
+### Display
 Functions for formatting and displaying text.
 * `styles` - set FG, BG, FX and fg, bg, fx arrays which can be used for styling text
 ```sh
